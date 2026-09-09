@@ -356,8 +356,14 @@ export function repairKnownContentDefects(
 }
 
 const expectedDefaultVueInterpolationOpenings = 38
+const expectedDefaultVueInterpolationClosings = 38
 const legacyVueInterpolationOpening = '{{'
+const legacyVueInterpolationClosing = '}}'
 const migratedVueInterpolationOpening = '&#123;&#123;'
+const migratedVueInterpolationClosing = '&#125;&#125;'
+const nestedTypeClosingLegacySource = 'api/crypto.md'
+const legacyNestedTypeClosing = '- }} - 选项参数\n'
+const migratedNestedTypeClosing = '- &#125;&#125; - 选项参数\n'
 
 function countOutsideMarkdownCode(markdown: string, token: string): number {
   const { protectedRanges } = scanMarkdownCode(markdown)
@@ -373,15 +379,18 @@ function countOutsideMarkdownCode(markdown: string, token: string): number {
 }
 
 function assertDefaultVueInterpolationState(
-  sources: readonly { readonly markdown: string }[],
+  sources: readonly {
+    readonly entry: ContentEntry
+    readonly markdown: string
+  }[],
 ): void {
-  const legacy = sources.reduce(
+  const legacyOpenings = sources.reduce(
     (count, source) =>
       count +
       countOutsideMarkdownCode(source.markdown, legacyVueInterpolationOpening),
     0,
   )
-  const migrated = sources.reduce(
+  const migratedOpenings = sources.reduce(
     (count, source) =>
       count +
       countOutsideMarkdownCode(
@@ -390,15 +399,58 @@ function assertDefaultVueInterpolationState(
       ),
     0,
   )
+  const legacyClosingTotal = sources.reduce(
+    (count, source) =>
+      count +
+      countOutsideMarkdownCode(source.markdown, legacyVueInterpolationClosing),
+    0,
+  )
+  const migratedClosingTotal = sources.reduce(
+    (count, source) =>
+      count +
+      countOutsideMarkdownCode(
+        source.markdown,
+        migratedVueInterpolationClosing,
+      ),
+    0,
+  )
+  const nestedTypeSource = sources.find(
+    ({ entry }) => entry.legacySource === nestedTypeClosingLegacySource,
+  )
+  const legacyNestedTypeClosings = nestedTypeSource
+    ? countOutsideMarkdownCode(
+        nestedTypeSource.markdown,
+        legacyNestedTypeClosing,
+      )
+    : 0
+  const migratedNestedTypeClosings = nestedTypeSource
+    ? countOutsideMarkdownCode(
+        nestedTypeSource.markdown,
+        migratedNestedTypeClosing,
+      )
+    : 0
+  const legacyClosings = legacyClosingTotal - legacyNestedTypeClosings
+  const migratedClosings = migratedClosingTotal - migratedNestedTypeClosings
   const validLegacyState =
-    legacy === expectedDefaultVueInterpolationOpenings && migrated === 0
+    legacyOpenings === expectedDefaultVueInterpolationOpenings &&
+    legacyClosings === expectedDefaultVueInterpolationClosings &&
+    legacyNestedTypeClosings === 1 &&
+    migratedOpenings === 0 &&
+    migratedClosings === 0 &&
+    migratedNestedTypeClosings === 0
   const validMigratedState =
-    legacy === 0 && migrated === expectedDefaultVueInterpolationOpenings
+    legacyOpenings === 0 &&
+    legacyClosings === 0 &&
+    legacyNestedTypeClosings === 0 &&
+    migratedOpenings === expectedDefaultVueInterpolationOpenings &&
+    migratedClosings === expectedDefaultVueInterpolationClosings &&
+    migratedNestedTypeClosings === 1
 
   if (!validLegacyState && !validMigratedState) {
     throw new Error(
-      `Audited Vue interpolation state mismatch: expected ${expectedDefaultVueInterpolationOpenings} legacy or migrated openings, ` +
-        `legacy=${legacy}, migrated=${migrated}`,
+      `Audited Vue interpolation state mismatch: expected ${expectedDefaultVueInterpolationOpenings} paired openings/closings and one nested-type closing literal; ` +
+        `legacy openings=${legacyOpenings}, closings=${legacyClosings}, nested=${legacyNestedTypeClosings}; ` +
+        `migrated openings=${migratedOpenings}, closings=${migratedClosings}, nested=${migratedNestedTypeClosings}`,
     )
   }
 }
@@ -609,6 +661,7 @@ function validateApiLayout(
 
 function isWithinFreeDocsArea(repositoryPath: string): boolean {
   return [
+    'docs/.vitepress',
     'docs/assets',
     'docs/images',
     'docs/plugins',
@@ -629,7 +682,10 @@ function validateDocsLayout(
 
   const allowedFiles = new Set([
     ...entries.map(({ source }) => source),
+    'docs/index.md',
+    'docs/404.md',
     'docs/public/CNAME',
+    'docs/public/logo.png',
     ...imageNames.map(
       (name) => `docs/public/images/${migratedImageName(name)}`,
     ),
@@ -788,11 +844,12 @@ export async function migrateContent(
     }
   }
 
+  const expectedPublicCname = 'docs.monkeyking.com\n'
   const legacyCname = resolveRepoPath(rootDirectory, 'api/CNAME')
   const publicCname = resolveRepoPath(rootDirectory, 'docs/public/CNAME')
-  if (existsSync(legacyCname)) {
-    copyIfChanged(legacyCname, publicCname)
-  } else if (!existsSync(publicCname) && options.entries === undefined) {
+  if (existsSync(legacyCname) || existsSync(publicCname)) {
+    writeIfChanged(publicCname, expectedPublicCname)
+  } else if (options.entries === undefined) {
     throw new Error('Missing api/CNAME and docs/public/CNAME')
   }
 

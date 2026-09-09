@@ -37,6 +37,7 @@ const fixturePath = resolve(
   process.cwd(),
   'tests/fixtures/content/link-cases.md',
 )
+const expectedPublicCname = 'docs.monkeyking.com\n'
 
 function entryFor(legacySource: string) {
   const entry = contentEntries.find(
@@ -552,6 +553,69 @@ describe('content migration orchestration', () => {
     )
   })
 
+  test('writes the exact public CNAME bytes instead of copying the legacy value', async () => {
+    const only = testEntry('only', 'docs/guide/only.md')
+    writeFixture(root, only.legacySource, '# Only\n')
+    writeFixture(root, 'api/CNAME', 'docs.autojs6.com')
+
+    await migrateContent({
+      rootDirectory: root,
+      entries: [only],
+      imageNames: [],
+      deletedSources: [],
+    })
+
+    expect(readFileSync(resolve(root, 'docs/public/CNAME'), 'utf8')).toBe(
+      expectedPublicCname,
+    )
+  })
+
+  test('repairs a drifted public CNAME during a canonical-only pass', async () => {
+    const only = testEntry('only', 'docs/guide/only.md')
+    writeFixture(root, only.source, '# Only\n')
+    writeFixture(root, 'docs/public/CNAME', 'wrong.example\n')
+
+    await migrateContent({
+      rootDirectory: root,
+      entries: [only],
+      imageNames: [],
+      deletedSources: [],
+    })
+
+    expect(readFileSync(resolve(root, 'docs/public/CNAME'), 'utf8')).toBe(
+      expectedPublicCname,
+    )
+  })
+
+  test('preserves the planned VitePress site shell across repeated runs', async () => {
+    const only = testEntry('only', 'docs/guide/only.md')
+    writeFixture(root, only.legacySource, '# Only\n')
+    const shellFiles = new Map([
+      ['docs/index.md', '# Home\n'],
+      ['docs/404.md', '# Not found\n'],
+      ['docs/public/logo.png', 'logo-bytes'],
+      ['docs/.vitepress/config.ts', 'export default {}\n'],
+      ['docs/.vitepress/theme/index.ts', 'export default {}\n'],
+      ['docs/superpowers/keep.md', 'keep\n'],
+    ])
+    for (const [path, content] of shellFiles) writeFixture(root, path, content)
+    const options = {
+      rootDirectory: root,
+      entries: [only],
+      imageNames: [],
+      deletedSources: [],
+    } as const
+
+    await migrateContent(options)
+    const snapshot = snapshotFiles(root)
+    await migrateContent(options)
+
+    expect(snapshotFiles(root)).toEqual(snapshot)
+    for (const [path, content] of shellFiles) {
+      expect(readFileSync(resolve(root, path), 'utf8')).toBe(content)
+    }
+  })
+
   test('runs the default 101-page migration three times without changing the second pass', async () => {
     cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
       recursive: true,
@@ -559,12 +623,22 @@ describe('content migration orchestration', () => {
     writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
 
     expect(countCatalogToken(root, '{{')).toBe(38)
+    expect(countCatalogToken(root, '}}')).toBe(39)
     expect(countCatalogToken(root, '&#123;&#123;')).toBe(0)
+    expect(countCatalogToken(root, '&#125;&#125;')).toBe(0)
+    expect(readFileSync(resolve(root, 'api/crypto.md'), 'utf8')).toContain(
+      '- }} - 选项参数',
+    )
 
     const firstReport = await migrateContent({ rootDirectory: root })
     const firstSnapshot = snapshotFiles(root)
     expect(countCatalogToken(root, '{{')).toBe(0)
+    expect(countCatalogToken(root, '}}')).toBe(0)
     expect(countCatalogToken(root, '&#123;&#123;')).toBe(38)
+    expect(countCatalogToken(root, '&#125;&#125;')).toBe(39)
+    expect(
+      readFileSync(resolve(root, entryFor('api/crypto.md').source), 'utf8'),
+    ).toContain('- &#125;&#125; - 选项参数')
     const secondReport = await migrateContent({ rootDirectory: root })
     const secondSnapshot = snapshotFiles(root)
     const thirdReport = await migrateContent({ rootDirectory: root })
@@ -615,6 +689,67 @@ describe('content migration orchestration', () => {
     },
   )
 
+  test.each([
+    [
+      'missing paired closing',
+      'api/dataTypes.md',
+      (source: string) => source.replace('{{ a: number }}', '{{ a: number }'),
+    ],
+    [
+      'extra paired closing',
+      'api/dataTypes.md',
+      (source: string) => `${source}\n}}\n`,
+    ],
+    [
+      'mixed paired closing',
+      'api/dataTypes.md',
+      (source: string) =>
+        source.replace('{{ a: number }}', '{{ a: number &#125;&#125;'),
+    ],
+    [
+      'drifted nested-type closing literal',
+      'api/crypto.md',
+      (source: string) =>
+        source.replace('- }} - 选项参数', '- } } - 选项参数'),
+    ],
+  ])(
+    'rejects a %s before writing',
+    async (_state, legacySource, mutate) => {
+      cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
+        recursive: true,
+      })
+      const sourcePath = resolve(root, legacySource)
+      writeFileSync(sourcePath, mutate(readFileSync(sourcePath, 'utf8')))
+
+      await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
+        /Audited Vue interpolation state mismatch/,
+      )
+      expect(existsSync(resolve(root, contentEntries[0].source))).toBe(false)
+      expect(existsSync(sourcePath)).toBe(true)
+    },
+  )
+
+  test('rejects migrated closing-token drift before writing', async () => {
+    cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
+      recursive: true,
+    })
+    await migrateContent({ rootDirectory: root })
+    const dataTypesPath = resolve(root, entryFor('api/dataTypes.md').source)
+    writeFileSync(
+      dataTypesPath,
+      readFileSync(dataTypesPath, 'utf8').replace(
+        '&#123;&#123; a: number &#125;&#125;',
+        '&#123;&#123; a: number &#125;&#125',
+      ),
+    )
+    const snapshot = snapshotFiles(root)
+
+    await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
+      /Audited Vue interpolation state mismatch/,
+    )
+    expect(snapshotFiles(root)).toEqual(snapshot)
+  })
+
   test('validates every final brand result before writing any page', async () => {
     const first = testEntry('first', 'docs/guide/first.md')
     const second = testEntry('second', 'docs/guide/second.md')
@@ -642,6 +777,9 @@ describe('content migration orchestration', () => {
     ['api top-level', 'api/rogue.bin'],
     ['image', 'api/images/rogue.png'],
     ['docs', 'docs/rogue.txt'],
+    ['public', 'docs/public/rogue.png'],
+    ['nested docs', 'docs/unplanned/rogue.md'],
+    ['lookalike VitePress', 'docs/.vitepress-rogue/config.mts'],
   ])('rejects an unknown %s artifact before mutation', async (_kind, artifact) => {
     const only = testEntry('only', 'docs/guide/only.md')
     writeFixture(root, only.legacySource, '# Only\n')
