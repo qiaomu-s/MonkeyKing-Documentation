@@ -44,6 +44,7 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
 
 const forbiddenLegacyBrandPatterns: readonly RegExp[] = Object.freeze([
   /AutoJs6/,
+  /(?<![\w])AutoJs(?![\w-])/,
   /autojs6/,
   /org\.autojs\.autojs(?!pro)/,
   /(?<![\w])autojs(?![\w])/,
@@ -151,6 +152,7 @@ function replaceCurrentProductBrands(line: string): string {
     .replace(/AUTOJS6/g, 'MONKEYKING')
     .replace(/\bAutoJs6-Documentation\b/g, 'MonkeyKing-Documentation')
     .replace(/AutoJs6/g, 'Monkey King')
+    .replace(/(?<![\w])AutoJs(?![\w-])/g, 'Monkey King')
     .replace(/autojs6/g, 'monkeyking')
     .replace(/(?<![\w])autojs(?![\w])/g, 'monkeyking')
 

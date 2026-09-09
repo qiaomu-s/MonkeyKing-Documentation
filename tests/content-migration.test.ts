@@ -256,6 +256,41 @@ describe('deterministic Markdown migration', () => {
     expect(() => assertAllowedLegacyBrands(output, { current })).not.toThrow()
   })
 
+  test('replaces standalone AutoJs without changing allowed names or URLs', () => {
+    const input = [
+      'AutoJs adjusts coordinates for the current product.',
+      'Keep AutoJsPro, AutoJs-Docs, and Auto.js unchanged.',
+      'External: https://example.com/products/AutoJs',
+    ].join('\n')
+
+    expect(applyBrandPolicy(input, { current })).toBe(
+      [
+        'Monkey King adjusts coordinates for the current product.',
+        'Keep AutoJsPro, AutoJs-Docs, and Auto.js unchanged.',
+        'External: https://example.com/products/AutoJs',
+      ].join('\n'),
+    )
+  })
+
+  test('rejects standalone AutoJs while preserving approved legacy forms', () => {
+    expect(() => assertAllowedLegacyBrands('AutoJs\n', { current })).toThrow(
+      /Unapproved legacy brand references/,
+    )
+
+    expect(() =>
+      assertAllowedLegacyBrands(
+        [
+          'AutoJsPro',
+          'AutoJs-Docs',
+          'Auto.js',
+          'https://example.com/products/AutoJs',
+          'Keep upstream Auto.js, AutoJs-Docs, Auto.js Pro, and `org.autojs.autojs`.',
+        ].join('\n'),
+        { current },
+      ),
+    ).not.toThrow()
+  })
+
   test('keeps historical changelog identity while updating current URLs', () => {
     const changelog = entryFor('api/changelog.md')
     const input =
