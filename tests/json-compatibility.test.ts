@@ -5,7 +5,9 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  renameSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { createHash } from 'node:crypto'
@@ -14,13 +16,16 @@ import { basename, extname, resolve } from 'node:path'
 import Ajv2020 from 'ajv/dist/2020.js'
 import {
   contentEntries,
+  frozenLegacyJsonStems,
   legacyAllEntryIds,
 } from '../scripts/content/catalog'
+import type { ContentEntry } from '../scripts/content/catalog'
 import {
   buildLegacyJson,
   createLegacyJsonOutputs,
   resolveEntryMarkdownPath,
 } from '../scripts/json/build'
+import { frozenLegacyJsonManifest } from '../scripts/json/frozen'
 import {
   parseLegacyMarkdown,
   stringifyLegacyDocument,
@@ -34,28 +39,16 @@ const retiredJsonFilenames = [
   'toc.json',
   'util.json',
 ] as const
-const frozenJsonHashes = {
-  'accessibilityActionsType.json':
-    '135ef9e95e2803174f72ba77eb53c7f819c23bd074cf10ac0f7823266822fced',
-  'coordinates-based-automation.json':
-    'b9cb567af85eeda2db3ee8f6e4f786d3e76493ea71a85c4496bc268f13d4d607',
-  'coordinatesBasedAutomation.json':
-    '203775cf8672d3bce5bc3e280d749639c5ef2a3a460bb19b8ba3b88430691d5b',
-  'errors.json':
-    'd988e2ac4af1cf7fc867da3f3a970d32214ea789699ca06e71f4e7c4ac4ca191',
-  'globals.json':
-    '12d8d4d329947023987583805a0cf097d334fc9d226cefa36b583c1b98d6283e',
-  'imageWrapper.json':
-    'a6b43d45784ff4b0399746df63236087a56c39cd14425633ef41d4533a3ae5f5',
-  'intent.json':
-    '676513ed7e2e7dfc4d848de3adc72f2442ad1fdd968e18ec578594d23c888ab7',
-  'intrinsicTypes.json':
-    'd3df3c9d02e63328ff76543eb5cb28f4dc38abd35c6767e86d953694acf64eb6',
-  'widgets-based-automation.json':
-    '0da3b149a8eb254e6fca9efa6f7aa1194fe72d5c4272ce7dd55993487d344249',
-  'widgetsBasedAutomation.json':
-    '04b03a2d9cc21f68be86b8b014bb964112b76148e6285c25d53d90734e04e9ed',
-} as const
+const frozenJsonHashes = Object.fromEntries(
+  frozenLegacyJsonManifest.map(({ stem, sha256 }) => [`${stem}.json`, sha256]),
+)
+const expectedCommittedJsonFilenames = [
+  ...contentEntries.flatMap((entry) =>
+    entry.legacyJsonNames.map((name) => `${name}.json`),
+  ),
+  'all.json',
+  ...Object.keys(frozenJsonHashes),
+].sort()
 
 function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
@@ -89,6 +82,36 @@ function createTemporaryLegacyProject(): string {
   return temporaryRoot
 }
 
+function replaceEntryPaths(
+  entry: ContentEntry,
+  source: string,
+  legacySource = 'missing/legacy.md',
+): ContentEntry {
+  return { ...entry, source, legacySource }
+}
+
+function snapshotJsonDirectory(rootDirectory: string): Record<string, string> {
+  const jsonDirectory = resolve(rootDirectory, 'json')
+  return Object.fromEntries(
+    readdirSync(jsonDirectory)
+      .sort()
+      .map((filename) => [
+        filename,
+        readFileSync(resolve(jsonDirectory, filename)).toString('base64'),
+      ]),
+  )
+}
+
+function temporaryJsonArtifacts(rootDirectory: string): string[] {
+  return readdirSync(rootDirectory)
+    .filter(
+      (filename) =>
+        filename.startsWith('.json-staging-') ||
+        filename.startsWith('.json-backup-'),
+    )
+    .sort()
+}
+
 describe('legacy JSON compatibility', () => {
   test('provides the TypeScript legacy parser module', () => {
     expect(
@@ -103,6 +126,17 @@ describe('legacy JSON compatibility', () => {
         resolve(process.cwd(), 'scripts/json/legacy-document.schema.json'),
       ),
     ).toBe(true)
+  })
+
+  test('centralizes the frozen legacy JSON manifest', () => {
+    expect(existsSync(resolve(process.cwd(), 'scripts/json/frozen.ts'))).toBe(true)
+    expect(frozenLegacyJsonManifest.map(({ stem }) => stem)).toEqual(
+      frozenLegacyJsonStems,
+    )
+    expect(Object.isFrozen(frozenLegacyJsonManifest)).toBe(true)
+    expect(frozenLegacyJsonManifest.every((entry) => Object.isFrozen(entry))).toBe(
+      true,
+    )
   })
 
   test('preserves the legacy parser golden behavior', () => {
@@ -136,6 +170,33 @@ describe('legacy JSON compatibility', () => {
     ).toThrow(/YAML metadata blocks are not supported.*active\.md/i)
   })
 
+  test('allows YAML marker text when marked does not lex it as an HTML block', () => {
+    const markdown = [
+      '# Active',
+      '',
+      '```html',
+      '<!-- YAML',
+      'added: v1',
+      '-->',
+      '```',
+      '',
+      'The literal `<!-- YAML` marker is documented here.',
+    ].join('\n')
+
+    expect(() =>
+      parseLegacyMarkdown(markdown, '..\\api\\active.md'),
+    ).not.toThrow()
+  })
+
+  test('rejects a YAML marker nested inside a marked HTML token', () => {
+    expect(() =>
+      parseLegacyMarkdown(
+        '# Active\n\n<div>\n<!-- YAML\nadded: v1\n-->\n</div>\n',
+        '..\\api\\active.md',
+      ),
+    ).toThrow(/YAML metadata blocks are not supported.*active\.md/i)
+  })
+
   test('selects canonical Markdown when present and otherwise falls back to legacy input', () => {
     const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-input-'))
     const entry = contentEntries[0]
@@ -162,6 +223,106 @@ describe('legacy JSON compatibility', () => {
     }
   })
 
+  test('rejects relative and absolute Markdown paths that escape the project root', () => {
+    const sandboxRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-path-'))
+    const temporaryRoot = resolve(sandboxRoot, 'project')
+    const outsidePath = resolve(sandboxRoot, 'outside.md')
+    const entry = contentEntries[0]
+
+    try {
+      mkdirSync(temporaryRoot)
+      writeFileSync(outsidePath, 'outside')
+
+      expect(() =>
+        resolveEntryMarkdownPath(
+          temporaryRoot,
+          replaceEntryPaths(entry, '../outside.md'),
+        ),
+      ).toThrow(/unsafe|outside|escape/i)
+      expect(() =>
+        resolveEntryMarkdownPath(
+          temporaryRoot,
+          replaceEntryPaths(entry, outsidePath),
+        ),
+      ).toThrow(/unsafe|absolute|outside|escape/i)
+      expect(readFileSync(outsidePath, 'utf8')).toBe('outside')
+    } finally {
+      rmSync(sandboxRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects symlink and non-regular Markdown inputs', () => {
+    const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-input-kind-'))
+    const entry = contentEntries[0]
+    const canonicalPath = resolve(temporaryRoot, entry.source)
+    const outsidePath = resolve(temporaryRoot, 'outside.md')
+
+    try {
+      mkdirSync(resolve(canonicalPath, '..'), { recursive: true })
+      writeFileSync(outsidePath, 'outside')
+      symlinkSync(outsidePath, canonicalPath)
+
+      expect(() => resolveEntryMarkdownPath(temporaryRoot, entry)).toThrow(
+        /symbolic link|regular file/i,
+      )
+      expect(readFileSync(outsidePath, 'utf8')).toBe('outside')
+
+      rmSync(canonicalPath)
+      mkdirSync(canonicalPath)
+      expect(() => resolveEntryMarkdownPath(temporaryRoot, entry)).toThrow(
+        /regular file/i,
+      )
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects Markdown inputs reached through a symlinked parent directory', () => {
+    const sandboxRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-parent-link-'))
+    const temporaryRoot = resolve(sandboxRoot, 'project')
+    const outsideDocs = resolve(sandboxRoot, 'outside-docs')
+    const outsideMarkdown = resolve(outsideDocs, 'guide/overview.md')
+    const entry = contentEntries[0]
+
+    try {
+      mkdirSync(temporaryRoot)
+      mkdirSync(resolve(outsideMarkdown, '..'), { recursive: true })
+      writeFileSync(outsideMarkdown, 'outside')
+      symlinkSync(outsideDocs, resolve(temporaryRoot, 'docs'))
+
+      expect(() => resolveEntryMarkdownPath(temporaryRoot, entry)).toThrow(
+        /symbolic link|outside|escape/i,
+      )
+      expect(readFileSync(outsideMarkdown, 'utf8')).toBe('outside')
+    } finally {
+      rmSync(sandboxRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects symlink and non-regular files already present in json output', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const outputPath = resolve(temporaryRoot, 'json/overview.json')
+    const outsidePath = resolve(temporaryRoot, 'outside.json')
+
+    try {
+      rmSync(outputPath)
+      writeFileSync(outsidePath, 'outside')
+      symlinkSync(outsidePath, outputPath)
+
+      expect(() => buildLegacyJson(temporaryRoot)).toThrow(
+        /symbolic link|regular file/i,
+      )
+      expect(readFileSync(outsidePath, 'utf8')).toBe('outside')
+
+      rmSync(outputPath)
+      mkdirSync(outputPath)
+      expect(() => buildLegacyJson(temporaryRoot)).toThrow(/regular file/i)
+      expect(readFileSync(outsidePath, 'utf8')).toBe('outside')
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
   test('matches all 101 active legacy JSON baselines and parses all Markdown once', () => {
     const outputs = createLegacyJsonOutputs(process.cwd())
     const outputsByFilename = new Map(
@@ -174,22 +335,32 @@ describe('legacy JSON compatibility', () => {
 
     for (const entry of contentEntries) {
       const legacyStem = basename(entry.legacySource, extname(entry.legacySource))
-      const baseline = readFileSync(
-        resolve(process.cwd(), 'json', `${legacyStem}.json`),
-        'utf8',
-      )
-
       for (const jsonName of entry.legacyJsonNames) {
-        expect(outputsByFilename.get(`${jsonName}.json`), jsonName).toBe(baseline)
+        const filename = `${jsonName}.json`
+        const committed = readFileSync(
+          resolve(process.cwd(), 'json', filename),
+          'utf8',
+        )
+        expect(committed, filename).toBe(outputsByFilename.get(filename))
+        expect(JSON.parse(committed).source, filename).toBe(
+          `..\\api\\${legacyStem}.md`,
+        )
       }
     }
 
     expect(outputsByFilename.get('all.json')).toBe(
       readFileSync(resolve(process.cwd(), 'json/all.json'), 'utf8'),
     )
-    expect(outputsByFilename.get('monkeyking.json')).toBe(
-      outputsByFilename.get('autojs.json'),
+    expect(readFileSync(resolve(process.cwd(), 'json/monkeyking.json'))).toEqual(
+      readFileSync(resolve(process.cwd(), 'json/autojs.json')),
     )
+  })
+
+  test('keeps the committed root JSON inventory exact', () => {
+    expect(readdirSync(resolve(process.cwd(), 'json')).sort()).toEqual(
+      expectedCommittedJsonFilenames,
+    )
+    expect(expectedCommittedJsonFilenames).toHaveLength(113)
   })
 
   test('rejects unexpected JSON without deleting or rewriting it', () => {
@@ -210,17 +381,94 @@ describe('legacy JSON compatibility', () => {
     }
   })
 
+  test('validates the catalog before touching existing JSON output', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const before = snapshotJsonDirectory(temporaryRoot)
+
+    try {
+      expect(() =>
+        buildLegacyJson(temporaryRoot, {
+          catalogValidator: () => ['injected invalid catalog'],
+        }),
+      ).toThrow(/injected invalid catalog/i)
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('leaves existing JSON byte-identical when staging fails midway', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const before = snapshotJsonDirectory(temporaryRoot)
+    let stagedFiles = 0
+
+    try {
+      expect(() =>
+        buildLegacyJson(temporaryRoot, {
+          afterStageFile: () => {
+            stagedFiles++
+            if (stagedFiles === 4) throw new Error('injected staging failure')
+          },
+        }),
+      ).toThrow(/injected staging failure/i)
+      expect(stagedFiles).toBe(4)
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('validates the complete staging directory before committing it', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const before = snapshotJsonDirectory(temporaryRoot)
+
+    try {
+      expect(() =>
+        buildLegacyJson(temporaryRoot, {
+          afterStageFile: (filename, stagingDirectory) => {
+            if (filename === 'overview.json') {
+              writeFileSync(resolve(stagingDirectory, filename), '{}')
+            }
+          },
+        }),
+      ).toThrow(/schema validation failed.*overview\.json/i)
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('restores existing JSON when the staging-directory commit rename fails', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const before = snapshotJsonDirectory(temporaryRoot)
+    let renameCalls = 0
+
+    try {
+      expect(() =>
+        buildLegacyJson(temporaryRoot, {
+          renameDirectory: (source, destination) => {
+            renameCalls++
+            if (renameCalls === 2) {
+              throw new Error('injected commit rename failure')
+            }
+            renameSync(source, destination)
+          },
+        }),
+      ).toThrow(/injected commit rename failure/i)
+      expect(renameCalls).toBe(3)
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
   test('builds exactly 113 schema-ready files while preserving frozen bytes', () => {
     const temporaryRoot = createTemporaryLegacyProject()
     const jsonDirectory = resolve(temporaryRoot, 'json')
-    const expectedFilenames = [
-      ...contentEntries.flatMap((entry) =>
-        entry.legacyJsonNames.map((name) => `${name}.json`),
-      ),
-      'all.json',
-      ...Object.keys(frozenJsonHashes),
-    ].sort()
-
     try {
       buildLegacyJson(temporaryRoot)
 
@@ -235,7 +483,7 @@ describe('legacy JSON compatibility', () => {
       )
 
       expect(firstInventory).toHaveLength(113)
-      expect(firstInventory).toEqual(expectedFilenames)
+      expect(firstInventory).toEqual(expectedCommittedJsonFilenames)
       expect(
         retiredJsonFilenames.every(
           (filename) => !existsSync(resolve(jsonDirectory, filename)),
@@ -291,15 +539,17 @@ describe('legacy JSON compatibility', () => {
       ),
     ) as object
     const validate = new Ajv2020({ allErrors: true }).compile(schema)
-    const documents = [
-      ...createLegacyJsonOutputs(process.cwd()),
-      ...Object.keys(frozenJsonHashes).map((filename) => ({
+    const documents = readdirSync(resolve(process.cwd(), 'json'))
+      .sort()
+      .map((filename) => ({
         filename,
         text: readFileSync(resolve(process.cwd(), 'json', filename), 'utf8'),
-      })),
-    ]
+      }))
 
     expect(documents).toHaveLength(113)
+    expect(documents.map(({ filename }) => filename)).toEqual(
+      expectedCommittedJsonFilenames,
+    )
     for (const { filename, text } of documents) {
       expect(validate(JSON.parse(text)), `${filename}: ${JSON.stringify(validate.errors)}`).toBe(
         true,
@@ -338,5 +588,41 @@ describe('legacy JSON compatibility', () => {
         ],
       }),
     ).toBe(false)
+  })
+
+  test('enforces collection-specific legacy section semantics', () => {
+    const schema = JSON.parse(
+      readFileSync(
+        resolve(process.cwd(), 'scripts/json/legacy-document.schema.json'),
+        'utf8',
+      ),
+    ) as { $id?: string }
+    const validate = new Ajv2020({ allErrors: true }).compile(schema)
+    const section = { textRaw: 'Section', name: 'section' }
+    const invalidDocuments = [
+      { source: '..\\api\\bad.md', modules: [{ ...section, type: 'method' }] },
+      { source: '..\\api\\bad.md', classes: [{ ...section, type: 'module' }] },
+      { source: '..\\api\\bad.md', methods: [{ ...section, type: 'method' }] },
+      {
+        source: '..\\api\\bad.md',
+        classMethods: [{ ...section, type: 'classMethod' }],
+      },
+      { source: '..\\api\\bad.md', ctors: [{ ...section, type: 'ctor' }] },
+      { source: '..\\api\\bad.md', events: [{ ...section, type: 'event' }] },
+      { source: '..\\api\\bad.md', miscs: [{ ...section, type: 'module' }] },
+    ]
+
+    for (const document of invalidDocuments) {
+      expect(validate(document), JSON.stringify(document)).toBe(false)
+    }
+    expect(
+      validate({
+        source: '..\\api\\property.md',
+        properties: [{ ...section, type: 'DynamicRuntimeType' }],
+      }),
+    ).toBe(true)
+    expect(schema.$id).toBe(
+      'https://docs.monkeyking.com/schemas/legacy-document.schema.json',
+    )
   })
 })

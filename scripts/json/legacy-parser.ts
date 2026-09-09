@@ -86,6 +86,9 @@ const marked = require('marked-legacy') as LegacyMarked
 const renderer = new marked.Renderer()
 
 renderer.heading = (text, level) => `<h${level}>${text}</h${level}>\n`
+// marked 0.3.19 exposes renderer configuration only through this global API.
+// The compatibility generator is synchronous, so setting it once at module load
+// preserves the legacy behavior without interleaving different renderers.
 marked.setOptions({ renderer })
 
 const eventExpr = /^Event(?::|\s)+['"]?([^"']+).*$/i
@@ -106,13 +109,6 @@ export function parseLegacyMarkdown(
   source: string,
 ): LegacyDocument {
   const preprocessed = stripLegacyComments(input)
-
-  if (/<!-- YAML/.test(preprocessed)) {
-    throw new Error(
-      `YAML metadata blocks are not supported in active Markdown: ${source}`,
-    )
-  }
-
   const root: LegacyDocument = { source }
   const stack: LegacySection[] = [root]
   let depth = 0
@@ -128,6 +124,12 @@ export function parseLegacyMarkdown(
   for (const token of lexed) {
     const type = token.type
     let text = token.text
+
+    if (type === 'html' && text?.includes('<!-- YAML')) {
+      throw new Error(
+        `YAML metadata blocks are not supported in active Markdown: ${source}`,
+      )
+    }
 
     if ((type === 'paragraph' || type === 'html') && text !== undefined) {
       const metaExpr = /<!--([^=]+)=([^-]+)-->\n*/g

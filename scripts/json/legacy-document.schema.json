@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://monkeyking.dev/schemas/legacy-document.schema.json",
+  "$id": "https://docs.monkeyking.com/schemas/legacy-document.schema.json",
   "title": "Legacy Monkey King JSON document",
   "type": "object",
   "required": ["source"],
@@ -22,19 +22,47 @@
       "type": "array",
       "items": { "$ref": "#/$defs/markedToken" }
     },
-    "modules": { "$ref": "#/$defs/sectionCollection" },
-    "classes": { "$ref": "#/$defs/sectionCollection" },
-    "methods": { "$ref": "#/$defs/sectionCollection" },
-    "classMethods": { "$ref": "#/$defs/sectionCollection" },
-    "properties": { "$ref": "#/$defs/sectionCollection" },
-    "events": { "$ref": "#/$defs/sectionCollection" },
-    "ctors": { "$ref": "#/$defs/sectionCollection" },
-    "miscs": { "$ref": "#/$defs/sectionCollection" }
+    "modules": { "$ref": "#/$defs/moduleCollection" },
+    "classes": { "$ref": "#/$defs/classCollection" },
+    "methods": { "$ref": "#/$defs/methodCollection" },
+    "classMethods": { "$ref": "#/$defs/classMethodCollection" },
+    "properties": { "$ref": "#/$defs/propertyCollection" },
+    "events": { "$ref": "#/$defs/eventCollection" },
+    "ctors": { "$ref": "#/$defs/ctorCollection" },
+    "miscs": { "$ref": "#/$defs/miscCollection" }
   },
   "$defs": {
-    "sectionCollection": {
+    "moduleCollection": {
       "type": "array",
-      "items": { "$ref": "#/$defs/section" }
+      "items": { "$ref": "#/$defs/moduleSection" }
+    },
+    "classCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/classSection" }
+    },
+    "methodCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/methodSection" }
+    },
+    "classMethodCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/classMethodSection" }
+    },
+    "propertyCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/propertySection" }
+    },
+    "eventCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/eventSection" }
+    },
+    "ctorCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ctorSection" }
+    },
+    "miscCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/miscSection" }
     },
     "section": {
       "type": "object",
@@ -62,15 +90,86 @@
         },
         "stabilityText": { "type": "string" },
         "meta": { "type": "object" },
-        "modules": { "$ref": "#/$defs/sectionCollection" },
-        "classes": { "$ref": "#/$defs/sectionCollection" },
-        "methods": { "$ref": "#/$defs/sectionCollection" },
-        "classMethods": { "$ref": "#/$defs/sectionCollection" },
-        "properties": { "$ref": "#/$defs/sectionCollection" },
-        "events": { "$ref": "#/$defs/sectionCollection" },
-        "ctors": { "$ref": "#/$defs/sectionCollection" },
-        "miscs": { "$ref": "#/$defs/sectionCollection" }
+        "modules": { "$ref": "#/$defs/moduleCollection" },
+        "classes": { "$ref": "#/$defs/classCollection" },
+        "methods": { "$ref": "#/$defs/methodCollection" },
+        "classMethods": { "$ref": "#/$defs/classMethodCollection" },
+        "properties": { "$ref": "#/$defs/propertyCollection" },
+        "events": { "$ref": "#/$defs/eventCollection" },
+        "ctors": { "$ref": "#/$defs/ctorCollection" },
+        "miscs": { "$ref": "#/$defs/miscCollection" }
       }
+    },
+    "moduleSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": { "type": { "const": "module" } }
+        }
+      ]
+    },
+    "classSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": { "type": { "const": "class" } }
+        }
+      ]
+    },
+    "methodSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type", "signatures"],
+          "properties": { "type": { "const": "method" } }
+        }
+      ]
+    },
+    "classMethodSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type", "signatures"],
+          "properties": { "type": { "const": "classMethod" } }
+        }
+      ]
+    },
+    "propertySection": { "$ref": "#/$defs/section" },
+    "eventSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type", "params"],
+          "properties": { "type": { "const": "event" } }
+        }
+      ]
+    },
+    "ctorSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type", "signatures"],
+          "properties": { "type": { "const": "ctor" } }
+        }
+      ]
+    },
+    "miscSection": {
+      "allOf": [
+        { "$ref": "#/$defs/section" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": { "type": { "const": "misc" } }
+        }
+      ]
     },
     "signature": {
       "type": "object",
