@@ -1,7 +1,5 @@
 # OcrOptions
 
-## OcrOptions
-
 OcrOptions 是一个代表 OCR 识别选项的接口.
 
 ---

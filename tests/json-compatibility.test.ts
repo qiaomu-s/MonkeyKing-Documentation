@@ -166,6 +166,29 @@ describe('legacy JSON compatibility', () => {
     expect(actual).toContain('"name": "<ins>**returns**</ins>"')
   })
 
+  test('preserves the legacy OCR options module hierarchy', () => {
+    const document = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'json/ocrOptionsType.json'), 'utf8'),
+    ) as {
+      readonly modules: readonly {
+        readonly textRaw?: string
+        readonly desc?: string
+        readonly modules?: readonly { readonly textRaw?: string }[]
+      }[]
+    }
+
+    expect(document.modules).toHaveLength(1)
+    const ocrOptions = document.modules[0]
+    expect(ocrOptions.textRaw).toBe('OcrOptions')
+    expect(ocrOptions.desc ?? '').toContain(
+      'OcrOptions 是一个代表 OCR 识别选项的接口.',
+    )
+    expect(ocrOptions.modules?.map(({ textRaw }) => textRaw)).not.toContain(
+      'OcrOptions',
+    )
+    expect(ocrOptions.modules?.[0]?.textRaw).toBe('[p?] region')
+  })
+
   test('rejects active Markdown YAML blocks without adding a YAML parser', () => {
     expect(() =>
       parseLegacyMarkdown(

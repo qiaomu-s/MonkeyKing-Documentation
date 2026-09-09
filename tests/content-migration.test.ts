@@ -368,6 +368,27 @@ describe('deterministic Markdown migration', () => {
     )
   })
 
+  test.each([
+    [
+      'legacy H2',
+      '## OcrOptions\n\nDescription.\n\n### [p?] region\n',
+    ],
+    [
+      'previous duplicate H1 and H2',
+      '# OcrOptions\n\n## OcrOptions\n\nDescription.\n\n### [p?] region\n',
+    ],
+  ])('normalizes the %s OCR title idempotently', (_label, input) => {
+    const ocrOptions = entryFor('api/ocrOptionsType.md')
+    const expected =
+      '# OcrOptions\n\nDescription.\n\n### [p?] region\n'
+    const repaired = repairKnownContentDefects(input, { current: ocrOptions })
+
+    expect(repaired).toBe(expected)
+    expect(repairKnownContentDefects(repaired, { current: ocrOptions })).toBe(
+      expected,
+    )
+  })
+
   test('rejects an audited page when neither legacy nor repaired state is present', () => {
     const canvas = entryFor('api/canvas.md')
     const source = readCatalogMarkdown(canvas)

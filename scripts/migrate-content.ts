@@ -434,17 +434,35 @@ export function repairKnownContentDefects(
     .reduce(applyAuditedRepairGroup, markdown)
 
   if (context.current.legacySource === 'api/ocrOptionsType.md') {
-    const expectedHeadingCount = countAtLineBoundary(
+    const duplicateTitle = '# OcrOptions\n\n## OcrOptions\n'
+    if (repaired.startsWith(duplicateTitle)) {
+      repaired = '# OcrOptions\n' + repaired.slice(duplicateTitle.length)
+    }
+
+    const legacyTitleCount = countAtLineBoundary(
       repaired,
-      '# OcrOptions\n',
+      '## OcrOptions\n',
+    )
+    const initialH1Count = [...repaired.matchAll(/^#\s+\S.*$/gm)].length
+    if (legacyTitleCount === 1 && initialH1Count === 0) {
+      repaired = repaired.replace('## OcrOptions\n', '# OcrOptions\n')
+    }
+
+    const expectedHeadingCount = countAtLineBoundary(repaired, '# OcrOptions\n')
+    const remainingLegacyTitleCount = countAtLineBoundary(
+      repaired,
+      '## OcrOptions\n',
     )
     const h1Count = [...repaired.matchAll(/^#\s+\S.*$/gm)].length
-    if (expectedHeadingCount === 0 && h1Count === 0) {
-      repaired = `# OcrOptions\n\n${repaired}`
-    } else if (expectedHeadingCount !== 1 || h1Count !== 1) {
+    if (
+      expectedHeadingCount !== 1 ||
+      remainingLegacyTitleCount !== 0 ||
+      h1Count !== 1
+    ) {
       throw new Error(
         `Audited repair state mismatch for api/ocrOptionsType.md (ocr-options-h1): ` +
-          `expected 1, OcrOptions=${expectedHeadingCount}, h1=${h1Count}`,
+          `expected 1, OcrOptions=${expectedHeadingCount}, ` +
+          `legacy=${remainingLegacyTitleCount}, h1=${h1Count}`,
       )
     }
   }
