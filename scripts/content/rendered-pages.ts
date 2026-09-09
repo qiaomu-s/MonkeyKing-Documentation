@@ -5,6 +5,7 @@ import {
   readdirSync,
 } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
+import ts from 'typescript'
 
 export interface RenderedPagesValidationOptions {
   readonly outputDirectory: string
@@ -35,11 +36,6 @@ interface ParsedHtml {
 interface AttributeReference {
   readonly attribute: string
   readonly kind: 'link' | 'asset'
-}
-
-interface JavaScriptToken {
-  readonly kind: 'identifier' | 'number' | 'string' | 'template' | 'punctuator'
-  readonly value: string
 }
 
 type ReferenceKind = 'link' | 'asset' | 'css' | 'js-import' | 'search'
@@ -397,291 +393,50 @@ function cssReferences(css: string): readonly string[] {
   return references
 }
 
-function isJavaScriptIdentifierStart(char: string | undefined): boolean {
-  return char !== undefined && /[A-Za-z_$]/.test(char)
-}
-
-function isJavaScriptIdentifierPart(char: string | undefined): boolean {
-  return char !== undefined && /[A-Za-z\d_$]/.test(char)
-}
-
-function decodeJavaScriptEscape(source: string, index: number): {
-  readonly value: string
-  readonly end: number
-} {
-  const char = source[index + 1]
-  if (char === undefined) return { value: '\\', end: index + 1 }
-  if (char === '\n') return { value: '', end: index + 2 }
-  if (char === '\r') {
-    return {
-      value: '',
-      end: source[index + 2] === '\n' ? index + 3 : index + 2,
-    }
+function localJavaScriptSpecifier(node: ts.Node | undefined): string | undefined {
+  if (
+    !node ||
+    (!ts.isStringLiteral(node) &&
+      !ts.isNoSubstitutionTemplateLiteral(node))
+  ) {
+    return undefined
   }
-  const simpleEscapes: Readonly<Record<string, string>> = {
-    b: '\b',
-    f: '\f',
-    n: '\n',
-    r: '\r',
-    t: '\t',
-    v: '\v',
-    '0': '\0',
-  }
-  if (char in simpleEscapes) {
-    return { value: simpleEscapes[char], end: index + 2 }
-  }
-  if (char === 'x' && /^[\da-f]{2}$/i.test(source.slice(index + 2, index + 4))) {
-    return {
-      value: String.fromCodePoint(Number.parseInt(source.slice(index + 2, index + 4), 16)),
-      end: index + 4,
-    }
-  }
-  if (char === 'u') {
-    const braced = /^\{([\da-f]{1,6})\}/i.exec(source.slice(index + 2))
-    if (braced) {
-      const codePoint = Number.parseInt(braced[1], 16)
-      if (codePoint <= 0x10ffff) {
-        return {
-          value: String.fromCodePoint(codePoint),
-          end: index + 2 + braced[0].length,
-        }
-      }
-    }
-    const fixed = source.slice(index + 2, index + 6)
-    if (/^[\da-f]{4}$/i.test(fixed)) {
-      return {
-        value: String.fromCodePoint(Number.parseInt(fixed, 16)),
-        end: index + 6,
-      }
-    }
-  }
-  return { value: char, end: index + 2 }
-}
-
-function readJavaScriptString(
-  source: string,
-  start: number,
-): { readonly value: string; readonly end: number } {
-  const quote = source[start]
-  let value = ''
-  let index = start + 1
-  while (index < source.length) {
-    const char = source[index]
-    if (char === quote) return { value, end: index + 1 }
-    if (char === '\\') {
-      const escaped = decodeJavaScriptEscape(source, index)
-      value += escaped.value
-      index = escaped.end
-      continue
-    }
-    value += char
-    index += 1
-  }
-  return { value, end: source.length }
-}
-
-function canStartRegularExpression(previous: JavaScriptToken | undefined): boolean {
-  if (!previous) return true
-  if (previous.kind === 'identifier') {
-    return new Set([
-      'await',
-      'case',
-      'delete',
-      'do',
-      'else',
-      'in',
-      'instanceof',
-      'new',
-      'of',
-      'return',
-      'throw',
-      'typeof',
-      'void',
-      'yield',
-    ]).has(previous.value)
-  }
-  return (
-    previous.kind === 'punctuator' &&
-    ![')', ']', '}'].includes(previous.value)
-  )
-}
-
-function skipRegularExpression(source: string, start: number): number {
-  let index = start + 1
-  let characterClass = false
-  while (index < source.length) {
-    const char = source[index]
-    if (char === '\\') {
-      index += 2
-      continue
-    }
-    if (char === '[') characterClass = true
-    if (char === ']') characterClass = false
-    if (char === '/' && !characterClass) {
-      index += 1
-      while (/[A-Za-z]/.test(source[index] ?? '')) index += 1
-      return index
-    }
-    if (char === '\n' || char === '\r') return start + 1
-    index += 1
-  }
-  return start + 1
-}
-
-function tokenizeJavaScript(source: string): readonly JavaScriptToken[] {
-  const tokens: JavaScriptToken[] = []
-
-  const scanCode = (
-    start: number,
-    stopAtTemplateExpressionEnd: boolean,
-  ): number => {
-    let index = start
-    let braceDepth = 0
-    while (index < source.length) {
-      const char = source[index]
-      if (/\s/.test(char)) {
-        index += 1
-        continue
-      }
-      if (source.startsWith('//', index)) {
-        const lineEnd = source.indexOf('\n', index + 2)
-        index = lineEnd < 0 ? source.length : lineEnd + 1
-        continue
-      }
-      if (source.startsWith('/*', index)) {
-        const commentEnd = source.indexOf('*/', index + 2)
-        index = commentEnd < 0 ? source.length : commentEnd + 2
-        continue
-      }
-      if (char === '"' || char === "'") {
-        const string = readJavaScriptString(source, index)
-        tokens.push({ kind: 'string', value: string.value })
-        index = string.end
-        continue
-      }
-      if (char === '`') {
-        let cursor = index + 1
-        let value = ''
-        let hasInterpolation = false
-        while (cursor < source.length) {
-          const templateChar = source[cursor]
-          if (templateChar === '\\') {
-            const escaped = decodeJavaScriptEscape(source, cursor)
-            value += escaped.value
-            cursor = escaped.end
-            continue
-          }
-          if (templateChar === '`') {
-            cursor += 1
-            break
-          }
-          if (templateChar === '$' && source[cursor + 1] === '{') {
-            hasInterpolation = true
-            cursor = scanCode(cursor + 2, true)
-            continue
-          }
-          value += templateChar
-          cursor += 1
-        }
-        if (!hasInterpolation) tokens.push({ kind: 'template', value })
-        index = cursor
-        continue
-      }
-      if (stopAtTemplateExpressionEnd && char === '}' && braceDepth === 0) {
-        return index + 1
-      }
-      if (char === '{') braceDepth += 1
-      if (char === '}' && braceDepth > 0) braceDepth -= 1
-
-      if (isJavaScriptIdentifierStart(char)) {
-        const startIndex = index
-        index += 1
-        while (isJavaScriptIdentifierPart(source[index])) index += 1
-        tokens.push({ kind: 'identifier', value: source.slice(startIndex, index) })
-        continue
-      }
-      if (/\d/.test(char) || (char === '.' && /\d/.test(source[index + 1] ?? ''))) {
-        const number = /^(?:0[xX][\da-fA-F_]+n?|0[bB][01_]+n?|0[oO][0-7_]+n?|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?[\d_]+)?n?)/.exec(
-          source.slice(index),
-        )
-        if (number) {
-          tokens.push({ kind: 'number', value: number[0] })
-          index += number[0].length
-          continue
-        }
-      }
-      if (
-        char === '/' &&
-        canStartRegularExpression(tokens[tokens.length - 1])
-      ) {
-        const afterExpression = skipRegularExpression(source, index)
-        if (afterExpression > index + 1) {
-          index = afterExpression
-          continue
-        }
-      }
-      tokens.push({ kind: 'punctuator', value: char })
-      index += 1
-    }
-    return index
-  }
-
-  scanCode(0, false)
-  return tokens
-}
-
-function isLocalJavaScriptImport(value: string): boolean {
-  return value.startsWith('/') || value.startsWith('./') || value.startsWith('../')
+  const specifier = node.text
+  return specifier.startsWith('/') ||
+    specifier.startsWith('./') ||
+    specifier.startsWith('../')
+    ? specifier
+    : undefined
 }
 
 function javascriptImports(source: string): readonly string[] {
-  const tokens = tokenizeJavaScript(source)
+  const sourceFile = ts.createSourceFile(
+    'rendered.js',
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS,
+  )
   const imports: string[] = []
-  for (let index = 0; index < tokens.length; index += 1) {
-    const token = tokens[index]
-    if (
-      token.kind !== 'identifier' ||
-      (token.value !== 'import' && token.value !== 'export') ||
-      tokens[index - 1]?.value === '.'
+  const visit = (node: ts.Node): void => {
+    let target: string | undefined
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      target = localJavaScriptSpecifier(node.moduleSpecifier)
+    } else if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference)
     ) {
-      continue
-    }
-
-    const next = tokens[index + 1]
-    if (
-      token.value === 'import' &&
-      (next?.kind === 'string' || next?.kind === 'template')
+      target = localJavaScriptSpecifier(node.moduleReference.expression)
+    } else if (
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword
     ) {
-      if (isLocalJavaScriptImport(next.value)) imports.push(next.value)
-      continue
+      target = localJavaScriptSpecifier(node.arguments[0])
     }
-    if (
-      token.value === 'import' &&
-      next?.kind === 'punctuator' &&
-      next.value === '(' &&
-      (tokens[index + 2]?.kind === 'string' ||
-        tokens[index + 2]?.kind === 'template')
-    ) {
-      const target = tokens[index + 2].value
-      if (isLocalJavaScriptImport(target)) imports.push(target)
-      continue
-    }
-    if (next?.value === '.') continue
-
-    for (let cursor = index + 1; cursor < tokens.length; cursor += 1) {
-      const candidate = tokens[cursor]
-      if (candidate.kind === 'punctuator' && candidate.value === ';') break
-      if (
-        candidate.kind === 'identifier' &&
-        candidate.value === 'from' &&
-        tokens[cursor + 1]?.kind === 'string'
-      ) {
-        const target = tokens[cursor + 1].value
-        if (isLocalJavaScriptImport(target)) imports.push(target)
-        break
-      }
-    }
+    if (target !== undefined) imports.push(target)
+    ts.forEachChild(node, visit)
   }
+  visit(sourceFile)
   return imports
 }
 

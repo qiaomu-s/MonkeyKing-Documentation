@@ -302,6 +302,28 @@ describe('rendered page validation', () => {
     ).toThrow('Missing JavaScript import')
   })
 
+  test('detects a dynamic import after postfix division and a regex literal', () => {
+    const output = createOutput()
+    write(
+      output,
+      'index.html',
+      '<!doctype html><html><head><script type="module" src="/app.js"></script></head><body id="VPContent"></body></html>',
+    )
+    write(
+      output,
+      'app.js',
+      'let x=1;x++/2;import("/missing-after-postfix.js");const r=/x/;',
+    )
+
+    expect(() =>
+      validateRenderedPages({
+        outputDirectory: output,
+        base: '/',
+        expectedHtmlFiles: ['index.html'],
+      }),
+    ).toThrow('Missing JavaScript import')
+  })
+
   test('requires every absolute Android URL to stay under the asset-loader base', () => {
     const output = createOutput()
     write(
