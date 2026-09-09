@@ -169,6 +169,89 @@ describe('content inventory', () => {
     }
   })
 
+  test('ignores image-like syntax in HTML comments and CommonMark indented code', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-image-protected-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(
+        root,
+        contentEntries[0].source,
+        '# Overview\n\n' +
+          '<!-- ![Comment](/images/missing-comment)\n' +
+          '<img src="/images/missing-comment-html.png"> -->\n\n' +
+          '    ![Indented](/images/missing-indented)\n' +
+          '\t<img src="/images/missing-tabbed.png">\n\n' +
+          '![Existing](/images/ex1.png)\n',
+      )
+
+      expect(checkContent(root).errors).toEqual([])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test('still checks real images adjacent to comments and indented code', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-image-adjacent-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(
+        root,
+        contentEntries[0].source,
+        '# Overview\n\n' +
+          '<!-- ![Ignored](/images/missing-comment) -->\n' +
+          '    ![Ignored](/images/missing-indented)\n\n' +
+          '![Missing](/images/missing-real)\n',
+      )
+
+      const errors = checkContent(root).errors.join('\n')
+      expect(errors).toMatch(/missing image reference.*missing-real/i)
+      expect(errors).not.toMatch(/missing-comment|missing-indented/i)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test('resolves blockquoted reference images with prefixed continuation lines', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-image-quote-ref-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(
+        root,
+        contentEntries[0].source,
+        '# Overview\n\n' +
+          '> ![Missing]\n' +
+          '> [quoted-ref]\n' +
+          '>\n' +
+          '> [quoted-ref]:\n' +
+          '>   /images/missing-quoted.png\n',
+      )
+
+      expect(checkContent(root).errors.join('\n')).toMatch(
+        /missing image reference.*missing-quoted\.png/i,
+      )
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects a local image target without a filename extension', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-image-extensionless-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(
+        root,
+        contentEntries[0].source,
+        '# Overview\n\n![Missing](/images/missing?v=1#hero)\n',
+      )
+
+      expect(checkContent(root).errors.join('\n')).toMatch(
+        /missing image reference.*\/images\/missing/i,
+      )
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('checks image references in the published home page', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-home-image-'))
     try {

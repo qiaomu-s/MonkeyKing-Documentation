@@ -15,6 +15,16 @@ interface DestinationParts {
   readonly destination: string
 }
 
+function blockquotePrefixLength(line: string): number {
+  let length = 0
+  while (length < line.length) {
+    const match = /^ {0,3}>[ \t]?/.exec(line.slice(length))
+    if (!match) break
+    length += match[0].length
+  }
+  return length
+}
+
 function protectedRangeAt(
   index: number,
   ranges: readonly SourceRange[],
@@ -28,6 +38,19 @@ function overlapsProtectedRange(
   ranges: readonly SourceRange[],
 ): boolean {
   return ranges.some((range) => range.start < end && range.end > start)
+}
+
+function mergedRanges(ranges: readonly SourceRange[]): readonly SourceRange[] {
+  const merged: Array<{ start: number; end: number }> = []
+  for (const range of [...ranges].sort((left, right) => left.start - right.start)) {
+    const previous = merged[merged.length - 1]
+    if (previous && range.start <= previous.end) {
+      previous.end = Math.max(previous.end, range.end)
+    } else {
+      merged.push({ start: range.start, end: range.end })
+    }
+  }
+  return merged
 }
 
 function findClosingBracket(
@@ -127,6 +150,78 @@ function sourceLineAt(source: string, start: number): SourceLine {
   }
 }
 
+function multilineHtmlImageRanges(
+  markdown: string,
+  protectedRanges: readonly SourceRange[],
+): readonly SourceRange[] {
+  const ranges: SourceRange[] = []
+  let cursor = 0
+  while (cursor < markdown.length) {
+    const opening = markdown.indexOf('<', cursor)
+    if (opening < 0) break
+    if (!/^<(?:img|source)\b/i.test(markdown.slice(opening))) {
+      cursor = opening + 1
+      continue
+    }
+    const protectedRange = protectedRangeAt(opening, protectedRanges)
+    if (protectedRange) {
+      cursor = protectedRange.end
+      continue
+    }
+    const lineStart = markdown.lastIndexOf('\n', Math.max(0, opening - 1)) + 1
+    const prefix = markdown
+      .slice(lineStart, opening)
+      .slice(blockquotePrefixLength(markdown.slice(lineStart, opening)))
+    if (/^(?: {4,}| {0,3}\t)/.test(prefix)) {
+      cursor = opening + 1
+      continue
+    }
+    const closing = findHtmlTagEnd(markdown, opening)
+    if (closing < 0) break
+    ranges.push({ start: opening, end: closing + 1 })
+    cursor = closing + 1
+  }
+  return ranges
+}
+
+function imageProtectedRanges(markdown: string): readonly SourceRange[] {
+  const baseRanges = scanMarkdownCode(markdown).protectedRanges
+  const ranges: SourceRange[] = [...baseRanges]
+  let cursor = 0
+
+  while (cursor < markdown.length) {
+    const opening = markdown.indexOf('<!--', cursor)
+    if (opening < 0) break
+    const baseRange = protectedRangeAt(opening, baseRanges)
+    if (baseRange) {
+      cursor = baseRange.end
+      continue
+    }
+    const closing = markdown.indexOf('-->', opening + 4)
+    const end = closing < 0 ? markdown.length : closing + 3
+    ranges.push({ start: opening, end })
+    cursor = end
+  }
+
+  const htmlImageRanges = multilineHtmlImageRanges(markdown, ranges)
+
+  cursor = 0
+  while (cursor < markdown.length) {
+    const line = sourceLineAt(markdown, cursor)
+    const content = line.content.slice(blockquotePrefixLength(line.content))
+    if (
+      /^(?: {4,}| {0,3}\t)/.test(content) &&
+      !overlapsProtectedRange(line.start, line.end, ranges) &&
+      !overlapsProtectedRange(line.start, line.end, htmlImageRanges)
+    ) {
+      ranges.push({ start: line.start, end: line.end })
+    }
+    cursor = line.end
+  }
+
+  return mergedRanges(ranges)
+}
+
 function normalizedReferenceLabel(label: string): string {
   return label
     .replace(/\\([\[\]\\])/g, '$1')
@@ -148,9 +243,8 @@ function referenceDefinitions(
       index = line.end
       continue
     }
-    const match = /^[ \t]{0,3}\[([^\]\r\n]+)\]:[ \t]*(.*)$/.exec(
-      line.content,
-    )
+    const content = line.content.slice(blockquotePrefixLength(line.content))
+    const match = /^[ \t]{0,3}\[([^\]\r\n]+)\]:[ \t]*(.*)$/.exec(content)
     if (!match) {
       index = line.end
       continue
@@ -159,15 +253,18 @@ function referenceDefinitions(
     let parts = destinationAndSuffix(match[2])
     if (!parts && line.end < markdown.length) {
       const continuation = sourceLineAt(markdown, line.end)
+      const continuationContent = continuation.content.slice(
+        blockquotePrefixLength(continuation.content),
+      )
       if (
         !overlapsProtectedRange(
           continuation.start,
           continuation.end,
           protectedRanges,
         ) &&
-        /^[ \t]{1,3}\S/.test(continuation.content)
+        /^[ \t]{1,3}\S/.test(continuationContent)
       ) {
-        parts = destinationAndSuffix(continuation.content)
+        parts = destinationAndSuffix(continuationContent)
       }
     }
     if (parts) {
@@ -221,12 +318,15 @@ function referenceOpeningAfter(source: string, index: number): number {
   while (source[cursor] === ' ' || source[cursor] === '\t') cursor += 1
   if (source[cursor] === '\r' && source[cursor + 1] === '\n') cursor += 2
   else if (source[cursor] === '\n') cursor += 1
+  const lineEnd = source.indexOf('\n', cursor)
+  const contentEnd = lineEnd < 0 ? source.length : lineEnd
+  cursor += blockquotePrefixLength(source.slice(cursor, contentEnd))
   while (source[cursor] === ' ' || source[cursor] === '\t') cursor += 1
   return cursor
 }
 
 export function collectMarkdownImageTargets(markdown: string): readonly string[] {
-  const { protectedRanges } = scanMarkdownCode(markdown)
+  const protectedRanges = imageProtectedRanges(markdown)
   const definitions = referenceDefinitions(markdown, protectedRanges)
   const targets: string[] = []
   let protectedIndex = 0

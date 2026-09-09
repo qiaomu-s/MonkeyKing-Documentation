@@ -440,6 +440,34 @@ describe('deterministic Markdown migration', () => {
     expect(markedLegacy(migrated)).not.toContain('<td><br></td>')
   })
 
+  test('preserves single-column pipe tables without confusing setext headings', () => {
+    const legacy =
+      '| Name |  \n' +
+      '| --- |\n' +
+      '| one |      \n\n' +
+      'Heading with | separator  \n' +
+      '---\n'
+    const expected =
+      '| Name |\n' +
+      '| --- |\n' +
+      '| one |\n\n' +
+      'Heading with | separator<br>\n' +
+      '---\n'
+    const alreadyMigrated = expected
+      .replace('| Name |\n', '| Name |<br>\n')
+      .replace('| one |\n', '| one |<br>\n')
+
+    const migrated = preprocessMarkdown(legacy, { current: fixtureCurrent })
+    const repaired = preprocessMarkdown(alreadyMigrated, {
+      current: fixtureCurrent,
+    })
+
+    expect(migrated).toBe(expected)
+    expect(repaired).toBe(expected)
+    expect(markedLegacy(migrated).match(/<td>/g)).toHaveLength(1)
+    expect(markedLegacy(migrated)).not.toContain('<td><br></td>')
+  })
+
   test('skips multiline code spans, inline HTML code, and blockquoted fences', () => {
     const input =
       'Inline HTML: `<img src="images/logo.png">`\n\n' +

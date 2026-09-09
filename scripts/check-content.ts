@@ -103,17 +103,18 @@ function inspectImageTarget(
   errors: string[],
 ): void {
   const target = normalizedImageTarget(rawTarget)
-  if (!imageExtension.test(target)) return
   if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(target)) return
 
-  if (!target.startsWith('/images/')) {
-    errors.push(`Non-canonical image reference in ${source}: ${rawTarget}`)
+  if (target.startsWith('/images/')) {
+    const imageName = target.slice('/images/'.length)
+    if (imageName.includes('/') || !expectedImages.has(imageName)) {
+      errors.push(`Missing image reference in ${source}: ${rawTarget}`)
+    }
     return
   }
 
-  const imageName = target.slice('/images/'.length)
-  if (imageName.includes('/') || !expectedImages.has(imageName)) {
-    errors.push(`Missing image reference in ${source}: ${rawTarget}`)
+  if (imageExtension.test(target)) {
+    errors.push(`Non-canonical image reference in ${source}: ${rawTarget}`)
   }
 }
 

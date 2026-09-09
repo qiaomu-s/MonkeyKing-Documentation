@@ -578,13 +578,14 @@ function markdownLines(markdown: string): readonly MarkdownLine[] {
 }
 
 function isTableDelimiter(line: string): boolean {
-  const cells = line
-    .trim()
+  const trimmed = line.trim()
+  if (!trimmed.includes('|')) return false
+  const cells = trimmed
     .replace(/^\|/, '')
     .replace(/\|$/, '')
     .split('|')
   return (
-    cells.length >= 2 &&
+    cells.length >= 1 &&
     cells.every((cell) => /^[ \t]*:?-+:?[ \t]*$/.test(cell))
   )
 }
