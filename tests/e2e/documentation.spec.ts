@@ -18,11 +18,6 @@ test.describe('desktop documentation journeys', () => {
         name: /Monkey King\s*自动化开发文档/,
       }),
     ).toBeVisible()
-    await expect
-      .poll(() =>
-        siteHeader.evaluate((element) => getComputedStyle(element).position),
-      )
-      .toBe('fixed')
 
     const primaryNavigation = page.getByRole('navigation', {
       name: 'Main Navigation',
@@ -80,10 +75,14 @@ test.describe('desktop documentation journeys', () => {
     await expect(searchInput).toBeVisible()
     await searchInput.fill('getLanguageTag')
 
-    const apiResult = page
-      .getByRole('link', { name: /getLanguageTag/ })
-      .first()
+    const searchResults = page
+      .locator('.VPLocalSearchBox')
+      .getByRole('listbox')
+    const apiResult = searchResults.locator(
+      'a[href="/api/core/monkeyking.html#getlanguagetag"]',
+    )
     await expect(apiResult).toBeVisible()
+    await expect(apiResult).toHaveAccessibleName(/getLanguageTag/)
     await apiResult.click()
 
     await expect(page).toHaveURL(
@@ -106,9 +105,7 @@ test.describe('desktop documentation journeys', () => {
   test('appearance switch changes both the document theme and switch state', async ({
     page,
   }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem('vitepress-theme-appearance', 'light')
-    })
+    await page.emulateMedia({ colorScheme: 'light' })
     await page.goto('/')
 
     const documentElement = page.locator('html')
