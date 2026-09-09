@@ -321,15 +321,19 @@ function commitStagedDirectory(
     resolveWithin(parentDirectory, '.json-backup-'),
   )
   rmSync(backupDirectory, { recursive: true })
+  let commitSucceeded = false
+  let recoveryFailed = false
 
   try {
     renameDirectory(jsonDirectory, backupDirectory)
     try {
       renameDirectory(stagingDirectory, jsonDirectory)
+      commitSucceeded = true
     } catch (commitError) {
       try {
         renameDirectory(backupDirectory, jsonDirectory)
       } catch (recoveryError) {
+        recoveryFailed = true
         throw new AggregateError(
           [commitError, recoveryError],
           `Failed to commit staged JSON and restore the original directory; backup retained at ${backupDirectory}`,
@@ -343,7 +347,12 @@ function commitStagedDirectory(
     if (existsSync(stagingDirectory)) {
       rmSync(stagingDirectory, { recursive: true, force: true })
     }
-    if (existsSync(backupDirectory) && existsSync(jsonDirectory)) {
+    if (
+      commitSucceeded &&
+      !recoveryFailed &&
+      existsSync(backupDirectory) &&
+      existsSync(jsonDirectory)
+    ) {
       rmSync(backupDirectory, { recursive: true, force: true })
     }
   }

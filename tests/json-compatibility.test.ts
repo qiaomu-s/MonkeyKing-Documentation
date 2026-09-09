@@ -91,13 +91,16 @@ function replaceEntryPaths(
 }
 
 function snapshotJsonDirectory(rootDirectory: string): Record<string, string> {
-  const jsonDirectory = resolve(rootDirectory, 'json')
+  return snapshotDirectory(resolve(rootDirectory, 'json'))
+}
+
+function snapshotDirectory(directory: string): Record<string, string> {
   return Object.fromEntries(
-    readdirSync(jsonDirectory)
+    readdirSync(directory)
       .sort()
       .map((filename) => [
         filename,
-        readFileSync(resolve(jsonDirectory, filename)).toString('base64'),
+        readFileSync(resolve(directory, filename)).toString('base64'),
       ]),
   )
 }
@@ -461,6 +464,48 @@ describe('legacy JSON compatibility', () => {
       expect(renameCalls).toBe(3)
       expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
       expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('retains the recoverable backup when commit and restore renames both fail', () => {
+    const temporaryRoot = createTemporaryLegacyProject()
+    const jsonDirectory = resolve(temporaryRoot, 'json')
+    const before = snapshotJsonDirectory(temporaryRoot)
+    let renameCalls = 0
+    let caught: unknown
+
+    try {
+      try {
+        buildLegacyJson(temporaryRoot, {
+          renameDirectory: (source, destination) => {
+            renameCalls++
+            if (renameCalls === 1) {
+              renameSync(source, destination)
+              return
+            }
+            if (renameCalls === 2) {
+              mkdirSync(destination)
+              throw new Error('injected commit rename failure')
+            }
+            throw new Error('injected restore rename failure')
+          },
+        })
+      } catch (error) {
+        caught = error
+      }
+
+      expect(caught).toBeInstanceOf(AggregateError)
+      expect(renameCalls).toBe(3)
+      expect(readdirSync(jsonDirectory)).toEqual([])
+
+      const artifacts = temporaryJsonArtifacts(temporaryRoot)
+      expect(artifacts).toHaveLength(1)
+      expect(artifacts[0]).toMatch(/^\.json-backup-/)
+      const backupDirectory = resolve(temporaryRoot, artifacts[0])
+      expect(snapshotDirectory(backupDirectory)).toEqual(before)
+      expect((caught as Error).message).toContain(backupDirectory)
     } finally {
       rmSync(temporaryRoot, { recursive: true, force: true })
     }
