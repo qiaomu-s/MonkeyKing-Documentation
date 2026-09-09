@@ -24,6 +24,7 @@ import {
   rewriteMarkdownLinksWithReport,
   UnresolvedFragmentError,
 } from '../scripts/content/markdown-links'
+import { scanMarkdownCode } from '../scripts/content/markdown-source'
 import {
   migrateContent,
   migrateMarkdown,
@@ -88,6 +89,27 @@ function readCatalogMarkdown(entry: ContentEntry): string {
   const canonicalPath = resolve(process.cwd(), entry.source)
   const legacyPath = resolve(process.cwd(), entry.legacySource)
   return readFileSync(existsSync(canonicalPath) ? canonicalPath : legacyPath, 'utf8')
+}
+
+function countOutsideMarkdownCode(markdown: string, token: string): number {
+  const { protectedRanges } = scanMarkdownCode(markdown)
+  let count = 0
+  let cursor = 0
+
+  for (const range of protectedRanges) {
+    count += markdown.slice(cursor, range.start).split(token).length - 1
+    cursor = range.end
+  }
+  return count + markdown.slice(cursor).split(token).length - 1
+}
+
+function countCatalogToken(root: string, token: string): number {
+  return contentEntries.reduce((count, entry) => {
+    const canonicalPath = resolve(root, entry.source)
+    const legacyPath = resolve(root, entry.legacySource)
+    const path = existsSync(canonicalPath) ? canonicalPath : legacyPath
+    return count + countOutsideMarkdownCode(readFileSync(path, 'utf8'), token)
+  }, 0)
 }
 
 describe('deterministic Markdown migration', () => {
@@ -467,7 +489,7 @@ describe('content migration orchestration', () => {
     writeFixture(
       root,
       first.legacySource,
-      '# AutoJs6 Guide\n\n[Target](second#second_target)\n\n![Shot](images/autojs6-notification-list.png)\n',
+      '# AutoJs6 Guide\n\n[Target](second#second_target)\n\n![Shot](images/autojs6-notification-list.png)\n\n{{ custom }}\n',
     )
     writeFixture(root, second.legacySource, '# Second target\n')
     writeFixture(root, 'api/images/autojs6-notification-list.png', 'image-a')
@@ -501,6 +523,9 @@ describe('content migration orchestration', () => {
     expect(readFileSync(resolve(root, first.source), 'utf8')).toContain(
       '![Shot](/images/monkeyking-notification-list.png)',
     )
+    expect(readFileSync(resolve(root, first.source), 'utf8')).toContain(
+      '&#123;&#123; custom &#125;&#125;',
+    )
     expect(existsSync(resolve(root, first.legacySource))).toBe(false)
     expect(existsSync(resolve(root, 'api/static'))).toBe(false)
     expect(existsSync(resolve(root, 'docs/old.html'))).toBe(false)
@@ -533,8 +558,13 @@ describe('content migration orchestration', () => {
     })
     writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
 
+    expect(countCatalogToken(root, '{{')).toBe(38)
+    expect(countCatalogToken(root, '&#123;&#123;')).toBe(0)
+
     const firstReport = await migrateContent({ rootDirectory: root })
     const firstSnapshot = snapshotFiles(root)
+    expect(countCatalogToken(root, '{{')).toBe(0)
+    expect(countCatalogToken(root, '&#123;&#123;')).toBe(38)
     const secondReport = await migrateContent({ rootDirectory: root })
     const secondSnapshot = snapshotFiles(root)
     const thirdReport = await migrateContent({ rootDirectory: root })
@@ -549,6 +579,41 @@ describe('content migration orchestration', () => {
       'keep\n',
     )
   })
+
+  test.each([
+    [
+      'mixed',
+      (source: string) =>
+        source.replace(
+          '{{ a: number }}',
+          '&#123;&#123; a: number &#125;&#125;',
+        ),
+    ],
+    ['added', (source: string) => `${source}\n{{ added: number }}\n`],
+    ['missing', (source: string) => source.replace('{{ a: number }}\n', '')],
+    [
+      'drifted',
+      (source: string) => source.replace('{{ a: number }}', '{ { a: number }}'),
+    ],
+  ])(
+    'rejects a %s default Vue interpolation state before writing',
+    async (_state, mutate) => {
+      cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
+        recursive: true,
+      })
+      const dataTypesPath = resolve(root, 'api/dataTypes.md')
+      writeFileSync(
+        dataTypesPath,
+        mutate(readFileSync(dataTypesPath, 'utf8')),
+      )
+
+      await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
+        /Audited Vue interpolation state mismatch/,
+      )
+      expect(existsSync(resolve(root, contentEntries[0].source))).toBe(false)
+      expect(existsSync(resolve(root, 'api/dataTypes.md'))).toBe(true)
+    },
+  )
 
   test('validates every final brand result before writing any page', async () => {
     const first = testEntry('first', 'docs/guide/first.md')

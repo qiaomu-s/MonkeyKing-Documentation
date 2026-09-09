@@ -355,6 +355,54 @@ export function repairKnownContentDefects(
   return repaired
 }
 
+const expectedDefaultVueInterpolationOpenings = 38
+const legacyVueInterpolationOpening = '{{'
+const migratedVueInterpolationOpening = '&#123;&#123;'
+
+function countOutsideMarkdownCode(markdown: string, token: string): number {
+  const { protectedRanges } = scanMarkdownCode(markdown)
+  let count = 0
+  let cursor = 0
+
+  for (const range of protectedRanges) {
+    count += markdown.slice(cursor, range.start).split(token).length - 1
+    cursor = range.end
+  }
+  count += markdown.slice(cursor).split(token).length - 1
+  return count
+}
+
+function assertDefaultVueInterpolationState(
+  sources: readonly { readonly markdown: string }[],
+): void {
+  const legacy = sources.reduce(
+    (count, source) =>
+      count +
+      countOutsideMarkdownCode(source.markdown, legacyVueInterpolationOpening),
+    0,
+  )
+  const migrated = sources.reduce(
+    (count, source) =>
+      count +
+      countOutsideMarkdownCode(
+        source.markdown,
+        migratedVueInterpolationOpening,
+      ),
+    0,
+  )
+  const validLegacyState =
+    legacy === expectedDefaultVueInterpolationOpenings && migrated === 0
+  const validMigratedState =
+    legacy === 0 && migrated === expectedDefaultVueInterpolationOpenings
+
+  if (!validLegacyState && !validMigratedState) {
+    throw new Error(
+      `Audited Vue interpolation state mismatch: expected ${expectedDefaultVueInterpolationOpenings} legacy or migrated openings, ` +
+        `legacy=${legacy}, migrated=${migrated}`,
+    )
+  }
+}
+
 function normalizeMarkdownSyntax(markdown: string): string {
   const { fenceOpenings } = scanMarkdownCode(markdown)
   let normalized = markdown
@@ -683,7 +731,7 @@ export async function migrateContent(
     options.entries === undefined,
   )
 
-  const preprocessedSources = entries.map((entry) => {
+  const migrationSources = entries.map((entry) => {
     const legacyPath = resolveRepoPath(rootDirectory, entry.legacySource)
     const canonicalPath = resolveRepoPath(rootDirectory, entry.source)
     const inputPath = existsSync(canonicalPath) ? canonicalPath : legacyPath
@@ -694,11 +742,20 @@ export async function migrateContent(
     }
     return {
       entry,
-      markdown: preprocessMarkdown(readFileSync(inputPath, 'utf8'), {
-        current: entry,
-      }),
+      markdown: readFileSync(inputPath, 'utf8'),
     }
   })
+
+  if (options.entries === undefined) {
+    assertDefaultVueInterpolationState(migrationSources)
+  }
+
+  const preprocessedSources = migrationSources.map((source) => ({
+    entry: source.entry,
+    markdown: preprocessMarkdown(source.markdown, {
+      current: source.entry,
+    }),
+  }))
 
   const headingIndex = await buildHeadingIndex(preprocessedSources)
   const migratedSources = preprocessedSources.map((source) => {
