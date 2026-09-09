@@ -76,7 +76,7 @@
 - Test: `tests/content-migration.test.ts`
 - Test: `tests/fixtures/content/link-cases.md`
 
-- [ ] **Step 1: Add a failing migration test covering relative `.md` links, same-page fragments, catalog aliases, image paths, Vue interpolation, pseudo-tags, malformed backticks, brand replacements, explicit dead-link removals, and a second idempotent run.**
+- [x] **Step 1: Add a failing migration test covering relative `.md` links, same-page fragments, catalog aliases, image paths, Vue interpolation, pseudo-tags, malformed backticks, brand replacements, explicit dead-link removals, and a second idempotent run.**
 
   The core assertions must include:
 
@@ -88,12 +88,12 @@
   )
   ```
 
-- [ ] **Step 2: Run `npm test -- tests/content-migration.test.ts` and confirm the missing migration functions fail.**
-- [ ] **Step 3: Implement a Markdown-aware scanner that excludes fenced and inline code before escaping literal `{{`/`}}` and rewriting links.**
-- [ ] **Step 4: Implement catalog-relative page rewrites, preserving `.md` in source files and mapping fragments through uniform and contextual override tables.**
-- [ ] **Step 5: Implement explicit content repairs: 38 interpolation blocks, 5 pseudo-tags, 5 backtick errors, 13 page dead links, 223 invalid fragments, and 4 broken image references.**
-- [ ] **Step 6: Implement context-scoped brand rules: current product/object/package/repository/domain names migrate; upstream attribution, changelog history, third-party names, and documented enum values remain allowlisted.**
-- [ ] **Step 7: Re-run the focused test and TypeScript check, then commit the migration engine.**
+- [x] **Step 2: Run `npm test -- tests/content-migration.test.ts` and confirm the missing migration functions fail.**
+- [x] **Step 3: Implement a Markdown-aware scanner that excludes fenced and inline code before escaping literal `{{`/`}}` and rewriting links.**
+- [x] **Step 4: Implement catalog-relative page rewrites, preserving `.md` in source files and mapping fragments through uniform and contextual override tables.**
+- [x] **Step 5: Implement explicit content repairs: 38 interpolation blocks, 5 pseudo-tags, 5 backtick errors, 13 page dead links, 223 invalid fragments, and 4 broken image references.**
+- [x] **Step 6: Implement context-scoped brand rules: current product/object/package/repository/domain names migrate; upstream attribution, changelog history, third-party names, and documented enum values remain allowlisted.**
+- [x] **Step 7: Re-run the focused test and TypeScript check, then commit the migration engine.**
 
 ### Task 5: Move and normalize the 101 content pages
 
@@ -109,12 +109,12 @@
 - Delete: `api/images/**`
 - Delete: legacy `docs/*.html`, `docs/assets/**`, `docs/images/**`, and `docs/plugins/**`
 
-- [ ] **Step 1: Add a failing inventory test that requires every catalog target to exist, every deleted source to be absent, exactly 37 migrated image files, and no missing referenced image.**
-- [ ] **Step 2: Run `npm run check:content` and the inventory test to record the legacy-layout failures.**
-- [ ] **Step 3: Run `npm run migrate:content` once to copy retained Markdown into catalog destinations and copy only existing images into `docs/public/images/`.**
-- [ ] **Step 4: Remove Docsify entry/config/plugin/theme files and the six retired Markdown sources: `all.md`, `sidebar.md`, `toc.md`, `coverpage.md`, `404.md`, and `util.md`.**
-- [ ] **Step 5: Run the migration a second time and require `git diff --exit-code` for the migrated content tree to prove idempotency.**
-- [ ] **Step 6: Run the inventory, migration, catalog, JSON, and TypeScript tests, then commit the migrated corpus.**
+- [x] **Step 1: Add a failing inventory test that requires every catalog target to exist, every deleted source to be absent, exactly 37 migrated image files, and no missing referenced image.**
+- [x] **Step 2: Run `npm run check:content` and the inventory test to record the legacy-layout failures.**
+- [x] **Step 3: Run `npm run migrate:content` once to copy retained Markdown into catalog destinations and copy only existing images into `docs/public/images/`.**
+- [x] **Step 4: Remove Docsify entry/config/plugin/theme files and the six retired Markdown sources: `all.md`, `sidebar.md`, `toc.md`, `coverpage.md`, `404.md`, and `util.md`.**
+- [x] **Step 5: Run the migration a second time and require `git diff --exit-code` for the migrated content tree to prove idempotency.**
+- [x] **Step 6: Run the inventory, migration, catalog, JSON, and TypeScript tests, then commit the migrated corpus.**
 
 ### Task 6: Build the VitePress site and brand theme
 
@@ -127,10 +127,10 @@
 - Create: `docs/public/logo.png`
 - Test: `tests/vitepress-config.test.ts`
 
-- [ ] **Step 1: Add failing configuration tests for `srcDir: docs`, `srcExclude: superpowers/**`, `.html` routes, local search, catalog-derived nav/sidebar, CNAME, logo, social links, and environment-selected base/outDir.**
-- [ ] **Step 2: Run the focused test and confirm the VitePress configuration modules are missing.**
-- [ ] **Step 3: Generate nav and sidebar from `contentEntriesBySection` so route and title data are never duplicated.**
-- [ ] **Step 4: Add a config factory equivalent to:**
+- [x] **Step 1: Add failing configuration tests for `srcDir: docs`, `srcExclude: superpowers/**`, `.html` routes, local search, catalog-derived nav/sidebar, CNAME, logo, social links, and environment-selected base/outDir.**
+- [x] **Step 2: Run the focused test and confirm the VitePress configuration modules are missing.**
+- [x] **Step 3: Generate nav and sidebar from `contentEntriesBySection` so route and title data are never duplicated.**
+- [x] **Step 4: Add a config factory equivalent to:**
 
   ```ts
   export function createDocsConfig(target: 'web' | 'android') {
@@ -145,8 +145,8 @@
   }
   ```
 
-- [ ] **Step 5: Add the Monkey King home layout, `#00695C` theme tokens, accessible focus styles, dark mode support, and responsive defaults without replacing the standard VitePress document layout.**
-- [ ] **Step 6: Run the config tests and TypeScript check, then commit the site shell.**
+- [x] **Step 5: Add the Monkey King home layout, `#00695C` theme tokens, accessible focus styles, dark mode support, and responsive defaults without replacing the standard VitePress document layout.**
+- [x] **Step 6: Run the config tests and TypeScript check, then commit the site shell.**
 
 ### Task 7: Add build and rendered-link verification
 
@@ -157,23 +157,23 @@
 - Test: `tests/build-contract.test.ts`
 - Test: `tests/rendered-links.test.ts`
 
-- [ ] **Step 1: Add failing tests for target validation, isolated output directories, JSON publication, generated page count, rendered heading IDs, page links, fragments, and assets.**
-- [ ] **Step 2: Run focused tests and confirm the orchestration/checker modules are missing.**
-- [ ] **Step 3: Implement target-specific VitePress builds through `DOCS_BUILD_TARGET=web|android`, removing only the resolved `dist/web` or `dist/android` directory before a build.**
-- [ ] **Step 4: Copy committed JSON to `dist/web/json/` after the web build and verify the copy byte-for-byte.**
-- [ ] **Step 5: Parse generated HTML to build the authoritative route/ID inventory, then fail on any internal URL whose page, fragment, or asset is absent.**
-- [ ] **Step 6: Assert Android HTML contains `/assets/docs/` internal pages/assets and no root-hosted internal dependency.**
-- [ ] **Step 7: Run unit tests, `npm run build:web`, `npm run check:links`, and `npm run build:android`, then commit build verification.**
+- [x] **Step 1: Add failing tests for target validation, isolated output directories, JSON publication, generated page count, rendered heading IDs, page links, fragments, and assets.**
+- [x] **Step 2: Run focused tests and confirm the orchestration/checker modules are missing.**
+- [x] **Step 3: Implement target-specific VitePress builds through `DOCS_BUILD_TARGET=web|android`, removing only the resolved `dist/web` or `dist/android` directory before a build.**
+- [x] **Step 4: Copy committed JSON to `dist/web/json/` after the web build and verify the copy byte-for-byte.**
+- [x] **Step 5: Parse generated HTML to build the authoritative route/ID inventory, then fail on any internal URL whose page, fragment, or asset is absent.**
+- [x] **Step 6: Assert Android HTML contains `/assets/docs/` internal pages/assets and no root-hosted internal dependency.**
+- [x] **Step 7: Run unit tests, `npm run build:web`, `npm run check:links`, and `npm run build:android`, then commit build verification.**
 
 ### Task 8: Cover user-facing behavior with Playwright
 
 **Files:**
 - Create: `tests/e2e/documentation.spec.ts`
 
-- [ ] **Step 1: Add tests for desktop home navigation, an API page and TOC anchor, local search, theme switching, unknown-route 404, mobile navigation, and visible Monkey King branding.**
-- [ ] **Step 2: Run `npm run test:e2e` and confirm failures identify any missing site behavior.**
-- [ ] **Step 3: Fix only the VitePress config/theme/content issues revealed by those flows.**
-- [ ] **Step 4: Re-run Playwright with zero failures and commit the browser coverage.**
+- [x] **Step 1: Add tests for desktop home navigation, an API page and TOC anchor, local search, theme switching, unknown-route 404, mobile navigation, and visible Monkey King branding.**
+- [x] **Step 2: Run `npm run test:e2e` and confirm failures identify any missing site behavior.**
+- [x] **Step 3: Fix only the VitePress config/theme/content issues revealed by those flows.**
+- [x] **Step 4: Re-run Playwright with zero failures and commit the browser coverage.**
 
 ### Task 9: Replace repository operations and publishing docs
 
@@ -183,22 +183,22 @@
 - Delete: `project.json`
 - Delete: remaining Docsify/generated HTML artifacts
 
-- [ ] **Step 1: Add tests that parse the workflow and README for Node 22, `npm ci`, tests, both build targets, Pages artifact `dist/web`, concurrency, custom domain instructions, JSON workflow, and the explicit phase-two API-audit disclaimer.**
-- [ ] **Step 2: Run the focused tests and confirm the legacy README/workflow fails the contract.**
-- [ ] **Step 3: Add the GitHub Pages workflow with least-required permissions, cancellation-safe concurrency, validation before deployment, and official Pages actions.**
-- [ ] **Step 4: Rewrite README development/deployment/Android/JSON instructions for MonkeyKing-Documentation and remove obsolete generator/project metadata.**
-- [ ] **Step 5: Run the focused tests and commit repository operations.**
+- [x] **Step 1: Add tests that parse the workflow and README for Node 22, `npm ci`, tests, both build targets, Pages artifact `dist/web`, concurrency, custom domain instructions, JSON workflow, and the explicit phase-two API-audit disclaimer.**
+- [x] **Step 2: Run the focused tests and confirm the legacy README/workflow fails the contract.**
+- [x] **Step 3: Add the GitHub Pages workflow with least-required permissions, cancellation-safe concurrency, validation before deployment, and official Pages actions.**
+- [x] **Step 4: Rewrite README development/deployment/Android/JSON instructions for MonkeyKing-Documentation and remove obsolete generator/project metadata.**
+- [x] **Step 5: Run the focused tests and commit repository operations.**
 
 ### Task 10: Final verification and integration
 
 **Files:**
 - Modify only files required by fresh verification failures.
 
-- [ ] **Step 1: Run `npm ci` from the lock file.**
-- [ ] **Step 2: Run `npx tsc --noEmit`.**
-- [ ] **Step 3: Run `npm run check:content`, `npm run json:build`, and `git diff --exit-code -- json`.**
-- [ ] **Step 4: Run `npm test` and record the test/file counts.**
-- [ ] **Step 5: Run `npm run build:web`, `npm run check:links`, and `npm run build:android`.**
-- [ ] **Step 6: Run `npm run test:e2e` and record the browser result.**
-- [ ] **Step 7: Audit `git status`, `git diff --check`, generated inventory, brand allowlist residue, and the final commit range.**
+- [x] **Step 1: Run `npm ci` from the lock file.**
+- [x] **Step 2: Run `npx tsc --noEmit`.**
+- [x] **Step 3: Run `npm run check:content`, `npm run json:build`, and `git diff --exit-code -- json`.**
+- [x] **Step 4: Run `npm test` and record the test/file counts.**
+- [x] **Step 5: Run `npm run build:web`, `npm run check:links`, and `npm run build:android`.**
+- [x] **Step 6: Run `npm run test:e2e` and record the browser result.**
+- [x] **Step 7: Audit `git status`, `git diff --check`, generated inventory, brand allowlist residue, and the final commit range.**
 - [ ] **Step 8: Merge the completed migration branch into `master` without rewriting history, preserving the approved root lock file.**
