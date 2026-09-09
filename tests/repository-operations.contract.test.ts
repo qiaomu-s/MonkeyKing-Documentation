@@ -33,7 +33,13 @@ describe('repository operations contract', () => {
     expect(workflow).toContain('node-version: 22')
     expect(workflow).toContain('uses: actions/checkout@v7')
     expect(workflow).toContain('uses: actions/setup-node@v7')
+    expect(workflow).toMatch(
+      /uses: actions\/checkout@v7\s*\n\s+with:\s*\n\s+persist-credentials: false/,
+    )
+    expect(workflow).toContain('cache: npm')
     expectInOrder(workflow, [
+      'run: npm install --global npm@11.17.0',
+      'run: test "$(npm --version)" = "11.17.0"',
       'run: npm ci',
       'run: npx tsc --noEmit',
       'run: npm run check:content',
@@ -78,6 +84,7 @@ describe('repository operations contract', () => {
     for (const command of [
       'npm ci',
       'npm run docs:dev',
+      'npm run docs:preview',
       'npm run check:content',
       'npm run json:build',
       'npm run build:web',

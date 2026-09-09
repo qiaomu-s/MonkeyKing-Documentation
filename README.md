@@ -25,6 +25,7 @@ npm ci
 | 命令 | 用途 |
 | --- | --- |
 | `npm run docs:dev` | 启动 VitePress 本地开发服务器 |
+| `npm run docs:preview` | 预览已生成的 `dist/web/` 网站产物 |
 | `npx tsc --noEmit` | 检查 TypeScript 类型 |
 | `npm run check:content` | 校验内容目录、路径和迁移约束 |
 | `npm run json:build` | 重新生成根目录兼容 JSON |
