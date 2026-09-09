@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://monkeyking.dev/schemas/legacy-document.schema.json",
+  "title": "Legacy Monkey King JSON document",
+  "type": "object",
+  "required": ["source"],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\.\\.\\\\api\\\\[^\\\\/]+\\.md$"
+        },
+        {
+          "type": "string",
+          "pattern": "^\\.\\./api/[^/]+\\.md$"
+        }
+      ]
+    },
+    "desc": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/markedToken" }
+    },
+    "modules": { "$ref": "#/$defs/sectionCollection" },
+    "classes": { "$ref": "#/$defs/sectionCollection" },
+    "methods": { "$ref": "#/$defs/sectionCollection" },
+    "classMethods": { "$ref": "#/$defs/sectionCollection" },
+    "properties": { "$ref": "#/$defs/sectionCollection" },
+    "events": { "$ref": "#/$defs/sectionCollection" },
+    "ctors": { "$ref": "#/$defs/sectionCollection" },
+    "miscs": { "$ref": "#/$defs/sectionCollection" }
+  },
+  "$defs": {
+    "sectionCollection": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/section" }
+    },
+    "section": {
+      "type": "object",
+      "required": ["textRaw", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "textRaw": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "displayName": { "type": "string" },
+        "desc": { "type": "string" },
+        "shortDesc": { "type": "string" },
+        "signatures": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/signature" }
+        },
+        "params": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parameter" }
+        },
+        "stability": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "stabilityText": { "type": "string" },
+        "meta": { "type": "object" },
+        "modules": { "$ref": "#/$defs/sectionCollection" },
+        "classes": { "$ref": "#/$defs/sectionCollection" },
+        "methods": { "$ref": "#/$defs/sectionCollection" },
+        "classMethods": { "$ref": "#/$defs/sectionCollection" },
+        "properties": { "$ref": "#/$defs/sectionCollection" },
+        "events": { "$ref": "#/$defs/sectionCollection" },
+        "ctors": { "$ref": "#/$defs/sectionCollection" },
+        "miscs": { "$ref": "#/$defs/sectionCollection" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["params"],
+      "additionalProperties": false,
+      "properties": {
+        "params": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parameter" }
+        },
+        "return": {
+          "allOf": [
+            { "$ref": "#/$defs/parameter" },
+            {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": { "const": "return" }
+              }
+            }
+          ]
+        },
+        "desc": { "type": "string" }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "textRaw": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "desc": { "type": "string" },
+        "default": { "type": "string" },
+        "optional": { "const": true },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parameter" }
+        }
+      }
+    },
+    "markedToken": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "text": { "type": "string" },
+        "pre": { "type": "boolean" },
+        "ordered": { "type": "boolean" },
+        "start": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "number" }
+          ]
+        }
+      }
+    }
+  }
+}

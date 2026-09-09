@@ -1,0 +1,185 @@
+{
+  "source": "..\\api\\fixture.md",
+  "modules": [
+    {
+      "textRaw": "Package",
+      "name": "Package",
+      "type": "module",
+      "desc": "<p>Intro &amp; <em>HTML</em>.</p>\n",
+      "methods": [
+        {
+          "textRaw": "thing.doWork(required[, optional=42])",
+          "type": "method",
+          "name": "doWork",
+          "signatures": [
+            {
+              "return": {
+                "textRaw": "Returns: {Boolean} - done ",
+                "name": "return",
+                "type": "Boolean",
+                "desc": "done"
+              },
+              "params": [
+                {
+                  "textRaw": "`required` {String} - required &amp; ready ",
+                  "name": "required",
+                  "type": "String",
+                  "desc": "required &amp; ready"
+                },
+                {
+                  "textRaw": "`optional` {Number} Optional ",
+                  "name": "optional",
+                  "type": "Number",
+                  "optional": true,
+                  "default": "42"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "required"
+                },
+                {
+                  "name": "optional",
+                  "optional": true,
+                  "default": "42"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>Method <i>description</i>.</p>\n<h3>Example</h3>\n<p>Example <strong>HTML</strong>.</p>\n\n"
+        },
+        {
+          "textRaw": "thing.first(value)",
+          "type": "method",
+          "name": "first",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`value` {Object} (default: `seed`) - cloned input ",
+                  "name": "value",
+                  "default": "seed",
+                  "type": "Object",
+                  "desc": "cloned input"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>Shared description.</p>\n"
+        },
+        {
+          "textRaw": "thing.second(value)",
+          "type": "method",
+          "name": "second",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`value` {Object} (default: `seed`) - cloned input ",
+                  "name": "value",
+                  "default": "seed",
+                  "type": "Object",
+                  "desc": "cloned input"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>Shared description.</p>\n"
+        },
+        {
+          "textRaw": "broken()",
+          "type": "method",
+          "name": "broken",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "<ins>**returns**</ins> {Boolean} - legacy bug ",
+                  "name": "<ins>**returns**</ins>",
+                  "type": "Boolean",
+                  "desc": "legacy bug"
+                }
+              ]
+            },
+            {
+              "params": []
+            }
+          ],
+          "desc": "<p>Legacy defect.</p>\n"
+        }
+      ],
+      "properties": [
+        {
+          "textRaw": "`answer` {Number} - property &amp; HTML ",
+          "type": "Number",
+          "name": "answer",
+          "desc": "<p>Property details.</p>\n",
+          "shortDesc": "property &amp; HTML"
+        }
+      ],
+      "classes": [
+        {
+          "textRaw": "Class: Widget",
+          "type": "class",
+          "name": "Widget",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`name` {String} Optional ",
+                  "name": "name",
+                  "type": "String",
+                  "optional": true
+                }
+              ],
+              "desc": "<p>Creates <b>a widget</b>.</p>\n"
+            },
+            {
+              "params": [
+                {
+                  "name": "name",
+                  "optional": true
+                }
+              ],
+              "desc": "<p>Creates <b>a widget</b>.</p>\n"
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "textRaw": "Stable",
+          "name": "stable",
+          "stability": 3,
+          "stabilityText": "Locked",
+          "desc": "<p>Stable text.</p>\n",
+          "type": "module",
+          "displayName": "Stable"
+        }
+      ]
+    }
+  ]
+}
