@@ -10,7 +10,8 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs'
-import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
+import { createHash } from 'node:crypto'
+import { basename, dirname, isAbsolute, posix, relative, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
   applyBrandPolicy,
@@ -45,6 +46,7 @@ export interface MigrateContentOptions {
   readonly entries?: readonly ContentEntry[]
   readonly imageNames?: readonly string[]
   readonly deletedSources?: readonly string[]
+  readonly legacyArtifactInventory?: LegacyArtifactInventory
 }
 
 export interface MigrateContentReport {
@@ -105,6 +107,101 @@ export const legacyImageNames = Object.freeze([
   'weighted-rgb-distance-color-detection-dark.png',
   'weighted-rgb-distance-color-detection.png',
 ] as const)
+
+export const expectedBrandLogoSha256 =
+  'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
+
+const legacyArtifactDirectories = [
+  'api/static',
+  'api/images',
+  'docs/assets',
+  'docs/images',
+  'docs/plugins',
+] as const
+
+type LegacyArtifactDirectory = (typeof legacyArtifactDirectories)[number]
+
+export type LegacyArtifactInventory = Readonly<
+  Partial<Record<LegacyArtifactDirectory, readonly string[]>>
+>
+
+const defaultApiStaticFiles = Object.freeze([
+  'docsify-config.js',
+  'docsify-copy-code@2-styles.css',
+  'docsify-copy-code@2.js',
+  'docsify-copy-code@2.min.js',
+  'docsify.js',
+  'docsify.min.js',
+  'fonts.css',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qN67lqDY.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNK7lqDY.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNa7lqDY.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7lqDY.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qO67lqDY.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7l.woff2',
+  'fonts/6xK3dSBYKcSV-LCoeQqfX1RYOo3qPK7lqDY.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwkxduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlBduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlxdu.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmBduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmhduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmxduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwkxduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlBduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlxdu.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmBduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmhduz8A.woff2',
+  'fonts/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmxduz8A.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_QOW4Ep0.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_R-W4Ep0.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_ROW4.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_S-W4Ep0.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_SeW4Ep0.woff2',
+  'fonts/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_SuW4Ep0.woff2',
+  'prism-java.js',
+  'prism-java.min.js',
+  'prism-kotlin.js',
+  'prism-kotlin.min.js',
+  'search.js',
+  'search.min.js',
+  'vue.css',
+  'zoom-image-styles.css',
+  'zoom-image.js',
+  'zoom-image.min.js',
+])
+
+const defaultDocsAssetFiles = Object.freeze([
+  'dnt_helper.js',
+  'fonts.css',
+  'fonts/S6u8w4BMUTPHjxsAUi-qJCY.woff2',
+  'fonts/S6u8w4BMUTPHjxsAXC-q.woff2',
+  'fonts/S6u9w4BMUTPHh6UVSwaPGR_p.woff2',
+  'fonts/S6u9w4BMUTPHh6UVSwiPGQ.woff2',
+  'fonts/S6uyw4BMUTPHjx4wXg.woff2',
+  'fonts/S6uyw4BMUTPHjxAwXjeu.woff2',
+  'sh.css',
+  'sh_java.js',
+  'sh_javascript.js',
+  'sh_main.js',
+  'style.css',
+])
+
+const defaultDocsPluginFiles = Object.freeze([
+  'docsify-copy-code@2-styles.css',
+  'docsify-copy-code@2.js',
+  'zoom-image-styles.css',
+  'zoom-image.js',
+])
+
+export const defaultLegacyArtifactInventory = Object.freeze({
+  'api/static': defaultApiStaticFiles,
+  'api/images': legacyImageNames,
+  'docs/assets': defaultDocsAssetFiles,
+  'docs/images': legacyImageNames,
+  'docs/plugins': defaultDocsPluginFiles,
+}) satisfies Readonly<Record<LegacyArtifactDirectory, readonly string[]>>
 
 const auditedRepairGroups: readonly AuditedRepairGroup[] = Object.freeze([
   Object.freeze({
@@ -455,21 +552,98 @@ function assertDefaultVueInterpolationState(
   }
 }
 
-function normalizeTrailingWhitespace(markdown: string): string {
+interface MarkdownLine {
+  readonly start: number
+  readonly end: number
+  readonly content: string
+}
+
+function markdownLines(markdown: string): readonly MarkdownLine[] {
+  const lines: MarkdownLine[] = []
+  let start = 0
+
+  while (start < markdown.length) {
+    const newline = markdown.indexOf('\n', start)
+    const end = newline < 0 ? markdown.length : newline + 1
+    const contentEnd =
+      newline < 0
+        ? markdown.length
+        : newline > start && markdown[newline - 1] === '\r'
+          ? newline - 1
+          : newline
+    lines.push({ start, end, content: markdown.slice(start, contentEnd) })
+    start = end
+  }
+  return lines
+}
+
+function isTableDelimiter(line: string): boolean {
+  const cells = line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+  return (
+    cells.length >= 2 &&
+    cells.every((cell) => /^[ \t]*:?-+:?[ \t]*$/.test(cell))
+  )
+}
+
+function tableLineStarts(markdown: string): ReadonlySet<number> {
+  const lines = markdownLines(markdown)
+  const starts = new Set<number>()
+  const candidates = lines.map(({ content }) =>
+    content.replace(/[ \t]+$/, '').replace(/\|<br>$/, '|'),
+  )
+
+  for (let index = 1; index < lines.length; index += 1) {
+    if (!isTableDelimiter(candidates[index])) continue
+    if (!candidates[index - 1].includes('|')) continue
+
+    starts.add(lines[index - 1].start)
+    starts.add(lines[index].start)
+    for (let row = index + 1; row < lines.length; row += 1) {
+      if (candidates[row].trim() === '' || !candidates[row].includes('|')) break
+      starts.add(lines[row].start)
+    }
+  }
+  return starts
+}
+
+function isProtectedOffset(
+  offset: number,
+  ranges: readonly { readonly start: number; readonly end: number }[],
+): boolean {
+  return ranges.some((range) => offset >= range.start && offset < range.end)
+}
+
+function repairTrailingTableBreaks(markdown: string): string {
   const { protectedRanges } = scanMarkdownCode(markdown)
-  const normalized = markdown.replace(
+  const tableStarts = tableLineStarts(markdown)
+  return markdown.replace(/\|<br>(?=\r?$)/gm, (artifact, offset: number) => {
+    const lineStart = markdown.lastIndexOf('\n', Math.max(0, offset - 1)) + 1
+    return tableStarts.has(lineStart) && !isProtectedOffset(offset, protectedRanges)
+      ? '|'
+      : artifact
+  })
+}
+
+function normalizeTrailingWhitespace(markdown: string): string {
+  const repaired = repairTrailingTableBreaks(markdown)
+  const { protectedRanges } = scanMarkdownCode(repaired)
+  const tableStarts = tableLineStarts(repaired)
+  const normalized = repaired.replace(
     /[ \t]+(?=\r?$)/gm,
     (whitespace: string, offset: number) => {
-      const insideProtectedCode = protectedRanges.some(
-        (range) => offset >= range.start && offset < range.end,
-      )
-      const lineStart = markdown.lastIndexOf('\n', Math.max(0, offset - 1)) + 1
-      const linePrefix = markdown.slice(lineStart, offset)
+      const insideProtectedCode = isProtectedOffset(offset, protectedRanges)
+      const lineStart = repaired.lastIndexOf('\n', Math.max(0, offset - 1)) + 1
+      const linePrefix = repaired.slice(lineStart, offset)
       const insideIndentedCode = /^(?: {4}|\t)/.test(linePrefix)
 
       if (
         !insideProtectedCode &&
         !insideIndentedCode &&
+        !tableStarts.has(lineStart) &&
         /^ {2,}$/.test(whitespace)
       ) {
         return '<br>'
@@ -606,20 +780,182 @@ function assertExactFileInventory(
   expected: ReadonlySet<string>,
   label: string,
 ): void {
-  const unexpected = [...actual].filter((name) => !expected.has(name))
+  const unexpected = [...actual]
+    .filter((name) => !expected.has(name))
+    .sort()
   if (unexpected.length > 0) {
     throw new Error(`Unknown ${label} artifact: ${unexpected.join(', ')}`)
   }
-  const missing = [...expected].filter((name) => !actual.has(name))
+  const missing = [...expected]
+    .filter((name) => !actual.has(name))
+    .sort()
   if (missing.length > 0) {
     throw new Error(`Missing ${label} artifact: ${missing.join(', ')}`)
   }
 }
 
+function lstatIfPresent(path: string): ReturnType<typeof lstatSync> | undefined {
+  try {
+    return lstatSync(path)
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as NodeJS.ErrnoException).code === 'ENOENT'
+    ) {
+      return undefined
+    }
+    throw error
+  }
+}
+
+function normalizeLegacyArtifactName(
+  directory: LegacyArtifactDirectory,
+  name: string,
+): string {
+  const normalized = normalizedRepositoryPath(name)
+  if (
+    normalized === '' ||
+    normalized.startsWith('/') ||
+    normalized !== posix.normalize(normalized) ||
+    normalized === '..' ||
+    normalized.startsWith('../')
+  ) {
+    throw new Error(
+      `Invalid legacy artifact inventory entry for ${directory}: ${name}`,
+    )
+  }
+  return normalized
+}
+
+function resolvedLegacyArtifactInventory(
+  defaultEntries: boolean,
+  imageNames: readonly string[],
+  overrides: LegacyArtifactInventory | undefined,
+): Readonly<Record<LegacyArtifactDirectory, readonly string[]>> {
+  const base: Record<LegacyArtifactDirectory, readonly string[]> = defaultEntries
+    ? { ...defaultLegacyArtifactInventory }
+    : {
+        'api/static': [],
+        'api/images': imageNames,
+        'docs/assets': [],
+        'docs/images': [],
+        'docs/plugins': [],
+      }
+
+  for (const directory of legacyArtifactDirectories) {
+    const override = overrides?.[directory]
+    if (override !== undefined) base[directory] = override
+    base[directory] = Object.freeze(
+      base[directory].map((name) => normalizeLegacyArtifactName(directory, name)),
+    )
+  }
+  return Object.freeze(base)
+}
+
+function inspectLegacyArtifactDirectory(
+  rootDirectory: string,
+  repositoryDirectory: LegacyArtifactDirectory,
+  expectedNames: readonly string[],
+  required: boolean,
+): void {
+  const absoluteDirectory = resolve(rootDirectory, repositoryDirectory)
+  const rootStats = lstatIfPresent(absoluteDirectory)
+  if (!rootStats) {
+    if (required) {
+      throw new Error(`Missing legacy artifact directory: ${repositoryDirectory}`)
+    }
+    return
+  }
+  if (rootStats.isSymbolicLink()) {
+    throw new Error(`Symbolic link legacy artifact: ${repositoryDirectory}`)
+  }
+  if (!rootStats.isDirectory()) {
+    throw new Error(`Expected legacy artifact directory: ${repositoryDirectory}`)
+  }
+
+  const expected = new Set(expectedNames)
+  const actual = new Set<string>()
+  const visit = (directory: string, relativeDirectory = ''): void => {
+    for (const artifact of readdirSync(directory, { withFileTypes: true })) {
+      const relativeName = relativeDirectory
+        ? `${relativeDirectory}/${artifact.name}`
+        : artifact.name
+      const repositoryPath = `${repositoryDirectory}/${relativeName}`
+      const absolutePath = resolve(directory, artifact.name)
+      const stats = lstatSync(absolutePath)
+
+      if (stats.isSymbolicLink()) {
+        throw new Error(`Symbolic link legacy artifact: ${repositoryPath}`)
+      }
+      if (stats.isDirectory()) {
+        if (![...expected].some((name) => name.startsWith(`${relativeName}/`))) {
+          throw new Error(`Unknown legacy artifact: ${repositoryPath}`)
+        }
+        visit(absolutePath, relativeName)
+        continue
+      }
+      if (!stats.isFile()) {
+        throw new Error(`Unsupported legacy artifact: ${repositoryPath}`)
+      }
+      actual.add(relativeName)
+    }
+  }
+  visit(absoluteDirectory)
+
+  assertExactFileInventory(
+    actual,
+    expected,
+    `legacy ${repositoryDirectory}`,
+  )
+}
+
+function validateLegacyArtifactInventory(
+  rootDirectory: string,
+  inventory: Readonly<Record<LegacyArtifactDirectory, readonly string[]>>,
+  requireDefaultRoots: boolean,
+  legacyLayoutExists: boolean,
+  explicitInventory: LegacyArtifactInventory | undefined,
+): void {
+  const explicit = explicitInventory ?? {}
+  for (const directory of legacyArtifactDirectories) {
+    const explicitlyRequired = Object.prototype.hasOwnProperty.call(
+      explicit,
+      directory,
+    )
+    inspectLegacyArtifactDirectory(
+      rootDirectory,
+      directory,
+      inventory[directory],
+      requireDefaultRoots || (legacyLayoutExists && explicitlyRequired),
+    )
+  }
+}
+
+function fileSha256(path: string): string {
+  return createHash('sha256').update(readFileSync(path)).digest('hex')
+}
+
+function validateDefaultBrandLogo(rootDirectory: string): string {
+  const repositoryPath = 'docs/public/logo.png'
+  const path = resolve(rootDirectory, repositoryPath)
+  const stats = lstatIfPresent(path)
+  if (!stats) throw new Error(`Missing committed brand logo: ${repositoryPath}`)
+  if (stats.isSymbolicLink() || !stats.isFile()) {
+    throw new Error(`Expected regular committed brand logo: ${repositoryPath}`)
+  }
+  const actualSha256 = fileSha256(path)
+  if (actualSha256 !== expectedBrandLogoSha256) {
+    throw new Error(
+      `Invalid committed brand logo SHA-256: expected ${expectedBrandLogoSha256}, got ${actualSha256}`,
+    )
+  }
+  return path
+}
+
 function validateApiLayout(
   rootDirectory: string,
   entries: readonly ContentEntry[],
-  imageNames: readonly string[],
   retiredSources: readonly string[],
   requireLegacyRuntimeArtifacts: boolean,
 ): void {
@@ -670,24 +1006,6 @@ function validateApiLayout(
         throw new Error(`Missing api artifact: api/${required}`)
       }
     }
-  }
-
-  const imagesDirectory = resolveRepoPath(rootDirectory, 'api/images')
-  if (existsSync(imagesDirectory)) {
-    const actualImages = new Set<string>()
-    for (const image of readdirSync(imagesDirectory, { withFileTypes: true })) {
-      if (!image.isFile()) {
-        throw new Error(`Unknown image artifact: api/images/${image.name}`)
-      }
-      actualImages.add(image.name)
-    }
-    assertExactFileInventory(
-      actualImages,
-      new Set(imageNames),
-      'image',
-    )
-  } else if (imageNames.length > 0) {
-    throw new Error('Missing image artifact: api/images')
   }
 }
 
@@ -756,11 +1074,22 @@ function validateMigrationLayout(
   imageNames: readonly string[],
   retiredSources: readonly string[],
   requireLegacyRuntimeArtifacts: boolean,
+  legacyArtifactInventory: Readonly<
+    Record<LegacyArtifactDirectory, readonly string[]>
+  >,
+  explicitLegacyArtifactInventory: LegacyArtifactInventory | undefined,
 ): void {
+  const legacyLayoutExists = existsSync(resolve(rootDirectory, 'api'))
+  validateLegacyArtifactInventory(
+    rootDirectory,
+    legacyArtifactInventory,
+    requireLegacyRuntimeArtifacts,
+    legacyLayoutExists,
+    explicitLegacyArtifactInventory,
+  )
   validateApiLayout(
     rootDirectory,
     entries,
-    imageNames,
     retiredSources,
     requireLegacyRuntimeArtifacts,
   )
@@ -810,13 +1139,24 @@ export async function migrateContent(
   const entries = options.entries ?? contentEntries
   const imageNames = options.imageNames ?? legacyImageNames
   const retiredSources = options.deletedSources ?? deletedLegacySources
+  const defaultEntries = options.entries === undefined
+  const legacyArtifactInventory = resolvedLegacyArtifactInventory(
+    defaultEntries,
+    imageNames,
+    options.legacyArtifactInventory,
+  )
   validateMigrationLayout(
     rootDirectory,
     entries,
     imageNames,
     retiredSources,
-    options.entries === undefined,
+    defaultEntries && existsSync(resolve(rootDirectory, 'api')),
+    legacyArtifactInventory,
+    options.legacyArtifactInventory,
   )
+  const defaultBrandLogo = defaultEntries
+    ? validateDefaultBrandLogo(rootDirectory)
+    : undefined
 
   const migrationSources = entries.map((entry) => {
     const legacyPath = resolveRepoPath(rootDirectory, entry.legacySource)
@@ -863,7 +1203,14 @@ export async function migrateContent(
 
   let imagesCopied = 0
   for (const imageName of imageNames) {
-    const source = resolveRepoPath(rootDirectory, `api/images/${imageName}`)
+    const legacySource = resolveRepoPath(
+      rootDirectory,
+      `api/images/${imageName}`,
+    )
+    const source =
+      imageName === 'logo.png' && defaultBrandLogo
+        ? defaultBrandLogo
+        : legacySource
     const destination = resolveRepoPath(
       rootDirectory,
       `docs/public/images/${migratedImageName(imageName)}`,

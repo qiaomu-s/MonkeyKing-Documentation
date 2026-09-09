@@ -4,6 +4,7 @@ import {
   readFileSync,
   readdirSync,
 } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { dirname, relative, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { assertAllowedLegacyBrands } from './content/brand-policy'
@@ -15,8 +16,11 @@ import {
   legacyAllEntryIds,
   validateContentCatalog,
 } from './content/catalog'
-import { transformOutsideMarkdownCode } from './content/markdown-source'
-import { migratedImageNames } from './migrate-content'
+import { collectMarkdownImageTargets } from './content/markdown-images'
+import {
+  expectedBrandLogoSha256,
+  migratedImageNames,
+} from './migrate-content'
 
 export type ContentLayoutPhase = 'legacy' | 'canonical' | 'mixed' | 'missing'
 
@@ -30,6 +34,17 @@ export interface ContentCheckReport {
 
 const expectedPublicCname = 'docs.monkeyking.com\n'
 const optionalPublishedMarkdown = new Set(['docs/index.md'])
+const optionalSiteShellFiles = new Set([
+  'docs/index.md',
+  'docs/.vitepress/config.mts',
+  'docs/.vitepress/navigation.ts',
+  'docs/.vitepress/theme/Layout.vue',
+  'docs/.vitepress/theme/components/HomeApiSearch.vue',
+  'docs/.vitepress/theme/custom.css',
+  'docs/.vitepress/theme/env.d.ts',
+  'docs/.vitepress/theme/index.ts',
+  'docs/.vitepress/theme/search-focus.ts',
+])
 const retiredArtifactPaths = [
   'docs/assets',
   'docs/images',
@@ -108,32 +123,31 @@ function inspectMarkdownImages(
   expectedImages: ReadonlySet<string>,
   errors: string[],
 ): void {
-  transformOutsideMarkdownCode(markdown, (prose) => {
-    for (const match of prose.matchAll(/!\[[^\]]*\]\(\s*(<?[^\s)>]+>?)/g)) {
-      inspectImageTarget(match[1], source, expectedImages, errors)
-    }
+  for (const target of collectMarkdownImageTargets(markdown)) {
+    inspectImageTarget(target, source, expectedImages, errors)
+  }
+}
 
-    for (const tag of prose.matchAll(/<(?:img|source)\b[^>]*>/gi)) {
-      for (const attribute of tag[0].matchAll(/\b(src|srcset)=(['"])(.*?)\2/gi)) {
-        const targets =
-          attribute[1].toLowerCase() === 'srcset'
-            ? attribute[3]
-                .split(',')
-                .map((candidate) => candidate.trim().split(/\s+/, 1)[0])
-            : [attribute[3]]
-        for (const target of targets) {
-          inspectImageTarget(target, source, expectedImages, errors)
-        }
-      }
-    }
+function fileSha256(path: string): string {
+  return createHash('sha256').update(readFileSync(path)).digest('hex')
+}
 
-    for (const definition of prose.matchAll(
-      /^[ \t]{0,3}\[[^\]\r\n]+\]:[ \t]*(<?[^\s>]+>?)/gm,
-    )) {
-      inspectImageTarget(definition[1], source, expectedImages, errors)
-    }
-    return prose
-  })
+function inspectExpectedLogo(
+  path: string,
+  label: string,
+  errors: string[],
+): void {
+  const error = regularFileError(path, label)
+  if (error) {
+    errors.push(error)
+    return
+  }
+  const actual = fileSha256(path)
+  if (actual !== expectedBrandLogoSha256) {
+    errors.push(
+      `Invalid ${label} SHA-256: expected ${expectedBrandLogoSha256}, got ${actual}`,
+    )
+  }
 }
 
 function inspectCanonicalLayout(
@@ -158,11 +172,36 @@ function inspectCanonicalLayout(
     canonicalMarkdownCount += 1
   }
 
-  const publishedMarkdown = walkFiles(
+  const publishedFiles = walkFiles(
     rootDirectory,
     resolve(rootDirectory, 'docs'),
     ['docs/superpowers'],
-  ).filter((path) => path.endsWith('.md'))
+  )
+  const allowedCanonicalFiles = new Set([
+    ...expectedSources,
+    ...optionalSiteShellFiles,
+    'docs/public/CNAME',
+    'docs/public/logo.png',
+    ...migratedImageNames.map((name) => `docs/public/images/${name}`),
+  ])
+  const unexpectedFiles = publishedFiles.filter(
+    (path) => !allowedCanonicalFiles.has(path),
+  )
+  if (unexpectedFiles.length > 0) {
+    errors.push(`Unexpected canonical artifact: ${unexpectedFiles.join(', ')}`)
+  }
+  for (const path of publishedFiles) {
+    if (!allowedCanonicalFiles.has(path)) continue
+    const error = regularFileError(
+      resolve(rootDirectory, path),
+      `canonical artifact ${path}`,
+    )
+    if (error) errors.push(error)
+  }
+
+  const publishedMarkdown = publishedFiles.filter((path) =>
+    path.endsWith('.md'),
+  )
   const unexpectedMarkdown = publishedMarkdown.filter(
     (path) => !expectedSources.has(path) && !optionalPublishedMarkdown.has(path),
   )
@@ -216,11 +255,32 @@ function inspectCanonicalLayout(
     errors.push(`Invalid public CNAME bytes: ${cnamePath}`)
   }
 
+  inspectExpectedLogo(
+    resolve(rootDirectory, 'docs/public/logo.png'),
+    'public logo',
+    errors,
+  )
+  inspectExpectedLogo(
+    resolve(rootDirectory, 'docs/public/images/logo.png'),
+    'migrated logo',
+    errors,
+  )
+
+  for (const source of publishedMarkdown) {
+    const path = resolve(rootDirectory, source)
+    if (!existsSync(path) || !lstatSync(path).isFile()) continue
+    inspectMarkdownImages(
+      readFileSync(path, 'utf8'),
+      source,
+      expectedImages,
+      errors,
+    )
+  }
+
   for (const entry of contentEntries) {
     const path = resolve(rootDirectory, entry.source)
     if (!existsSync(path) || !lstatSync(path).isFile()) continue
     const markdown = readFileSync(path, 'utf8')
-    inspectMarkdownImages(markdown, entry.source, expectedImages, errors)
     try {
       assertAllowedLegacyBrands(markdown, { current: entry })
     } catch (error) {

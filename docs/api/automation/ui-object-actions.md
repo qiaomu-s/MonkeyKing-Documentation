@@ -1179,7 +1179,7 @@ function nextHtmlElement(progress) {
 下表列出了控件行为方法对应的绑定源.<br>
 其中 AUTO 代表 SimpleActionAutomator, SEL 代表 UiSelector.
 
-| Global Actions                | AUTO | SEL |<br>
+| Global Actions                | AUTO | SEL |
 |-------------------------------|:----:|:---:|
 | accessibilityFocus            |      |  √  |
 | clearAccessibilityFocus       |      |  √  |

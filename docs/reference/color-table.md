@@ -485,7 +485,7 @@ colors.material.ORANGE;
 
 |                      颜色                      | 变量名                                                                   | 颜色译名                                              | Hex 代码  | RGB         | HSV         |
 |:--------------------------------------------:|-----------------------------------------------------------------------|---------------------------------------------------|---------|-------------|-------------|
-| <p style="background-color: #FFEBEE">　　　</p> | RED_50                                                                | <span style="white-space:nowrap">红 (50)</span>    | #FFEBEE | 255,235,238 | 351,8,100   |<br>
+| <p style="background-color: #FFEBEE">　　　</p> | RED_50                                                                | <span style="white-space:nowrap">红 (50)</span>    | #FFEBEE | 255,235,238 | 351,8,100   |
 | <p style="background-color: #FFCDD2">　　　</p> | RED_100                                                               | <span style="white-space:nowrap">红 (100)</span>   | #FFCDD2 | 255,205,210 | 354,20,100  |
 | <p style="background-color: #EF9A9A">　　　</p> | RED_200                                                               | <span style="white-space:nowrap">红 (200)</span>   | #EF9A9A | 239,154,154 | 0,36,94     |
 | <p style="background-color: #E57373">　　　</p> | RED_300                                                               | <span style="white-space:nowrap">红 (300)</span>   | #E57373 | 229,115,115 | 0,50,90     |

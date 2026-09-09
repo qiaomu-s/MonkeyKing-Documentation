@@ -1,14 +1,17 @@
 import {
   cpSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { createHash } from 'node:crypto'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import {
@@ -27,6 +30,7 @@ import {
 } from '../scripts/content/markdown-links'
 import { scanMarkdownCode } from '../scripts/content/markdown-source'
 import {
+  defaultLegacyArtifactInventory,
   migrateContent,
   migrateMarkdown,
   preprocessMarkdown,
@@ -39,6 +43,10 @@ const fixturePath = resolve(
   'tests/fixtures/content/link-cases.md',
 )
 const expectedPublicCname = 'docs.monkeyking.com\n'
+const expectedLogoSha256 =
+  'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
+const require = createRequire(import.meta.url)
+const markedLegacy = require('marked-legacy') as (markdown: string) => string
 
 function entryFor(legacySource: string) {
   const entry = contentEntries.find(
@@ -125,6 +133,19 @@ function copyCurrentContentCorpus(root: string): boolean {
   const legacyDirectory = resolve(process.cwd(), 'api')
   if (existsSync(legacyDirectory)) {
     cpSync(legacyDirectory, resolve(root, 'api'), { recursive: true })
+    for (const legacyDocsDirectory of ['assets', 'images', 'plugins']) {
+      const source = resolve(process.cwd(), 'docs', legacyDocsDirectory)
+      if (existsSync(source)) {
+        cpSync(source, resolve(root, 'docs', legacyDocsDirectory), {
+          recursive: true,
+        })
+      }
+    }
+    mkdirSync(resolve(root, 'docs/public'), { recursive: true })
+    cpSync(
+      resolve(process.cwd(), 'docs/public/logo.png'),
+      resolve(root, 'docs/public/logo.png'),
+    )
     return true
   }
 
@@ -395,6 +416,30 @@ describe('deterministic Markdown migration', () => {
     )
   })
 
+  test('preserves legacy table cell semantics and repairs prior table break artifacts', () => {
+    const legacy =
+      '| Name | Value |  \n' +
+      '|------|-------|\n' +
+      '| one  | two   |      \n'
+    const expected =
+      '| Name | Value |\n' +
+      '|------|-------|\n' +
+      '| one  | two   |\n'
+    const migrated = preprocessMarkdown(legacy, { current: fixtureCurrent })
+    const repaired = preprocessMarkdown(
+      expected.replace('| one  | two   |', '| one  | two   |<br>'),
+      { current: fixtureCurrent },
+    )
+    const legacyHtml = markedLegacy(legacy)
+
+    expect(migrated).toBe(expected)
+    expect(repaired).toBe(expected)
+    expect(markedLegacy(migrated)).toBe(legacyHtml)
+    expect(markedLegacy(repaired)).toBe(legacyHtml)
+    expect(legacyHtml.match(/<td>/g)).toHaveLength(2)
+    expect(markedLegacy(migrated)).not.toContain('<td><br></td>')
+  })
+
   test('skips multiline code spans, inline HTML code, and blockquoted fences', () => {
     const input =
       'Inline HTML: `<img src="images/logo.png">`\n\n' +
@@ -556,6 +601,23 @@ describe('content migration orchestration', () => {
     )
   })
 
+  test('encodes the complete default legacy artifact inventory', () => {
+    expect(
+      Object.fromEntries(
+        Object.entries(defaultLegacyArtifactInventory).map(([path, files]) => [
+          path,
+          files.length,
+        ]),
+      ),
+    ).toEqual({
+      'api/static': 44,
+      'api/images': 37,
+      'docs/assets': 13,
+      'docs/images': 37,
+      'docs/plugins': 4,
+    })
+  })
+
   test('runs two passes in a temporary repository and is idempotent', async () => {
     const first = testEntry('first', 'docs/guide/first.md')
     const second = testEntry('second', 'docs/api/core/second.md')
@@ -580,6 +642,10 @@ describe('content migration orchestration', () => {
       entries: [first, second],
       imageNames: ['autojs6-notification-list.png', 'logo.png'],
       deletedSources: ['api/retired.md'],
+      legacyArtifactInventory: {
+        'api/static': ['legacy.js'],
+        'docs/assets': ['legacy.js'],
+      },
     } as const
     const firstReport = await migrateContent(options)
     const snapshot = snapshotFiles(root)
@@ -700,6 +766,12 @@ describe('content migration orchestration', () => {
     const startedLegacy = copyCurrentContentCorpus(root)
     writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
 
+    expect(
+      createHash('sha256')
+        .update(readFileSync(resolve(root, 'docs/public/logo.png')))
+        .digest('hex'),
+    ).toBe(expectedLogoSha256)
+
     expect(countCatalogToken(root, '{{')).toBe(startedLegacy ? 38 : 0)
     expect(countCatalogToken(root, '}}')).toBe(startedLegacy ? 39 : 0)
     expect(countCatalogToken(root, '&#123;&#123;')).toBe(startedLegacy ? 0 : 38)
@@ -735,6 +807,30 @@ describe('content migration orchestration', () => {
     expect(readFileSync(resolve(root, 'docs/superpowers/keep.md'), 'utf8')).toBe(
       'keep\n',
     )
+    expect(
+      createHash('sha256')
+        .update(readFileSync(resolve(root, 'docs/public/images/logo.png')))
+        .digest('hex'),
+    ).toBe(expectedLogoSha256)
+  })
+
+  test('repairs a drifted migrated logo from the committed brand source', async () => {
+    copyCurrentContentCorpus(root)
+    writeFileSync(resolve(root, 'docs/public/images/logo.png'), 'drifted-logo')
+
+    const report = await migrateContent({ rootDirectory: root })
+
+    expect(report.imagesCopied).toBe(1)
+    expect(
+      createHash('sha256')
+        .update(readFileSync(resolve(root, 'docs/public/logo.png')))
+        .digest('hex'),
+    ).toBe(expectedLogoSha256)
+    expect(
+      createHash('sha256')
+        .update(readFileSync(resolve(root, 'docs/public/images/logo.png')))
+        .digest('hex'),
+    ).toBe(expectedLogoSha256)
   })
 
   test.each([
@@ -896,8 +992,13 @@ describe('content migration orchestration', () => {
   test.each([
     ['api top-level', 'api/rogue.bin'],
     ['image', 'api/images/rogue.png'],
+    ['static file', 'api/static/rogue.bin'],
+    ['nested static font', 'api/static/fonts/rogue.woff2'],
     ['docs', 'docs/rogue.txt'],
     ['public', 'docs/public/rogue.png'],
+    ['legacy asset', 'docs/assets/rogue.bin'],
+    ['legacy image', 'docs/images/rogue.png'],
+    ['legacy plugin', 'docs/plugins/rogue.js'],
     ['nested docs', 'docs/unplanned/rogue.md'],
     ['unplanned 404', 'docs/404.md'],
     ['lookalike VitePress', 'docs/.vitepress-rogue/config.mts'],
@@ -917,4 +1018,68 @@ describe('content migration orchestration', () => {
     expect(existsSync(resolve(root, only.source))).toBe(false)
     expect(readFileSync(resolve(root, artifact), 'utf8')).toBe('rogue\n')
   })
+
+  test('rejects a missing declared legacy artifact before mutation', async () => {
+    const only = testEntry('only', 'docs/guide/only.md')
+    writeFixture(root, only.legacySource, '# Only\n')
+    writeFixture(root, 'api/static/legacy.js', 'legacy\n')
+
+    await expect(
+      migrateContent({
+        rootDirectory: root,
+        entries: [only],
+        imageNames: [],
+        deletedSources: [],
+        legacyArtifactInventory: {
+          'api/static': ['legacy.js', 'missing.js'],
+        },
+      }),
+    ).rejects.toThrow(/Missing .*artifact.*missing\.js/i)
+    expect(existsSync(resolve(root, only.source))).toBe(false)
+    expect(existsSync(resolve(root, 'api/static/legacy.js'))).toBe(true)
+  })
+
+  test('rejects a legacy artifact symlink before mutation', async () => {
+    const only = testEntry('only', 'docs/guide/only.md')
+    writeFixture(root, only.legacySource, '# Only\n')
+    writeFixture(root, 'outside.bin', 'outside\n')
+    mkdirSync(resolve(root, 'api/static'), { recursive: true })
+    symlinkSync(resolve(root, 'outside.bin'), resolve(root, 'api/static/legacy.js'))
+
+    await expect(
+      migrateContent({
+        rootDirectory: root,
+        entries: [only],
+        imageNames: [],
+        deletedSources: [],
+        legacyArtifactInventory: {
+          'api/static': ['legacy.js'],
+        },
+      }),
+    ).rejects.toThrow(/symbolic link.*api\/static\/legacy\.js/i)
+    expect(existsSync(resolve(root, only.source))).toBe(false)
+    expect(lstatSync(resolve(root, 'api/static/legacy.js')).isSymbolicLink()).toBe(
+      true,
+    )
+  })
+
+  test.each([
+    'docs/assets/rogue.bin',
+    'docs/images/rogue.png',
+    'docs/plugins/rogue.js',
+  ])(
+    'rejects a rogue default legacy artifact before mutating the real canonical tree: %s',
+    async (artifact) => {
+      copyCurrentContentCorpus(root)
+      writeFixture(root, artifact, 'rogue\n')
+      const protectedSource = resolve(root, contentEntries[0].source)
+      const before = readFileSync(protectedSource)
+
+      await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
+        /Unknown .*artifact/i,
+      )
+      expect(readFileSync(protectedSource)).toEqual(before)
+      expect(readFileSync(resolve(root, artifact), 'utf8')).toBe('rogue\n')
+    },
+  )
 })
