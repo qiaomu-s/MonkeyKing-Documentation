@@ -24,6 +24,12 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
       reason: 'The formal third-party Auto.js application enum row.',
     }),
     Object.freeze({
+      legacySource: 'api/appType.md',
+      context:
+        /^\| AUTOJSPRO\s+\| AutoJsPro\s+\| ~\s+\| org\.autojs\.autojspro\s+\| autojspro\s+\|$/,
+      reason: 'The formal third-party AutoJsPro application enum row.',
+    }),
+    Object.freeze({
       legacySource: 'api/app.md',
       context: /^\s*(?:packageName|className): "org\.autojs\.autojs(?:\.[^"]+)?",?$/,
       reason: 'An example that explicitly launches the third-party Auto.js app.',
@@ -44,6 +50,8 @@ const forbiddenLegacyBrandPatterns: readonly RegExp[] = Object.freeze([
 ])
 
 const forbiddenLegacyUrlPatterns: readonly RegExp[] = Object.freeze([
+  /AutoJs6|autojs6/,
+  /org(?:\.|\/)autojs(?:\.|\/)autojs(?!pro)/,
   /docs\.autojs6\.com/i,
   /SuperMonster003\/AutoJs6-Documentation/i,
 ])
@@ -84,6 +92,7 @@ function protectExternalUrls(line: string): {
 
 function replaceKnownBrandUrls(line: string): string {
   return line
+    .replace(/data:text\/plain,AutoJs6/g, 'data:text/plain,Monkey%20King')
     .replace(
       /https?:\/\/github\.com\/SuperMonster003\/AutoJs6-Documentation/gi,
       'https://github.com/qiaomu-s/MonkeyKing-Documentation',

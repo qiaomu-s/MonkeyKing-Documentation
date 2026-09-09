@@ -10,9 +10,12 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs'
-import { dirname, isAbsolute, relative, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { applyBrandPolicy } from './content/brand-policy'
+import {
+  applyBrandPolicy,
+  assertAllowedLegacyBrands,
+} from './content/brand-policy'
 import {
   contentEntries,
   deletedLegacySources,
@@ -26,6 +29,10 @@ import type {
   HeadingIndex,
   MarkdownLinkContext,
 } from './content/markdown-links'
+import {
+  scanMarkdownCode,
+  transformOutsideMarkdownCode,
+} from './content/markdown-source'
 
 export interface MigrationContext {
   readonly current: ContentEntry
@@ -46,11 +53,17 @@ export interface MigrateContentReport {
   readonly pathsDeleted: number
 }
 
-interface ExactRepair {
-  readonly legacySource: string
+interface RepairVariant {
   readonly oldText: string
   readonly newText: string
+}
+
+interface AuditedRepairGroup {
+  readonly id: string
+  readonly legacySource: string
   readonly expectedOccurrences: number
+  readonly variants: readonly RepairVariant[]
+  readonly additionalRepairedTexts?: readonly string[]
 }
 
 export const legacyImageNames = Object.freeze([
@@ -93,233 +106,276 @@ export const legacyImageNames = Object.freeze([
   'weighted-rgb-distance-color-detection.png',
 ] as const)
 
-const exactRepairs: readonly ExactRepair[] = Object.freeze([
+const auditedRepairGroups: readonly AuditedRepairGroup[] = Object.freeze([
   Object.freeze({
+    id: 'canvas-array-number',
     legacySource: 'api/canvas.md',
-    oldText: 'Array<number>',
-    newText: 'Array&lt;number&gt;',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '* `pts` {Array<number>} 点坐标数组 [x0, y0, x1, y1, x2, y2, ...]\n',
+        newText:
+          '* `pts` {Array&lt;number&gt;} 点坐标数组 [x0, y0, x1, y1, x2, y2, ...]\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'data-types-generic-array',
     legacySource: 'api/dataTypes.md',
-    oldText: '例如 Array<T>.',
-    newText: '例如 `Array<T>`.',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText: '例如 Array<T>.\n',
+        newText: '例如 `Array<T>`.\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'http-cookie-placeholders',
     legacySource: 'api/httpRequestHeadersType.md',
-    oldText: '<cookie-name>=<cookie-value>',
-    newText: '&lt;cookie-name&gt;=&lt;cookie-value&gt;',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '| &lt;cookie-list&gt; | 一系列的名值对, 形式为 <cookie-name>=<cookie-value>, 以分号和空格分隔 |\n',
+        newText:
+          '| &lt;cookie-list&gt; | 一系列的名值对, 形式为 &lt;cookie-name&gt;=&lt;cookie-value&gt;, 以分号和空格分隔 |\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'keys-string-placeholder',
     legacySource: 'api/keys.md',
-    oldText: '<String>',
-    newText: '&lt;String&gt;',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '* code {number} | <String> 要按下的按键的数字代码或名称. 参见下表.\n',
+        newText:
+          '* code {number} | &lt;String&gt; 要按下的按键的数字代码或名称. 参见下表.\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'color-yellow-backtick',
     legacySource: 'api/color.md',
-    oldText: "'yellow'`.",
-    newText: "'yellow'.",
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          "> 'purple', 'red', 'silver', 'teal', 'white', 'yellow'`.\n",
+        newText:
+          "> 'purple', 'red', 'silver', 'teal', 'white', 'yellow'.\n",
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'events-exit-heading',
     legacySource: 'api/events.md',
-    oldText: "## 事件: 'exit`",
-    newText: "## 事件: 'exit'",
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText: "## 事件: 'exit`\n",
+        newText: "## 事件: 'exit'\n",
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'image-empty-code-item',
     legacySource: 'api/image.md',
-    oldText: '    * ``\n',
-    newText: '',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '    * `BGR2HSV ` BGR转换为HSV\n    * ``\n* `dstCn` {number} 目标图像的颜色通道数量, 如果不填写则根据其他参数自动决定.\n',
+        newText:
+          '    * `BGR2HSV ` BGR转换为HSV\n* `dstCn` {number} 目标图像的颜色通道数量, 如果不填写则根据其他参数自动决定.\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'ui-bold-inline-code',
     legacySource: 'api/ui.md',
-    oldText:
-      '例如, 粗体：`<text textStyle="bold" textSize="18sp" text="这是粗体"/>',
-    newText:
-      '例如, 粗体：`<text textStyle="bold" textSize="18sp" text="这是粗体"/>`',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '例如, 粗体：`<text textStyle="bold" textSize="18sp" text="这是粗体"/>\n',
+        newText:
+          '例如, 粗体：`<text textStyle="bold" textSize="18sp" text="这是粗体"/>`\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'ui-ems-inline-code',
     legacySource: 'api/ui.md',
-    oldText:
-      '例如, 限制文本最长为5em: `<text ems="5" ellipsize="end" text="很长很长很长很长很长很长很长的文本"/>',
-    newText:
-      '例如, 限制文本最长为5em: `<text ems="5" ellipsize="end" text="很长很长很长很长很长很长很长的文本"/>`',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '例如, 限制文本最长为5em: `<text ems="5" ellipsize="end" text="很长很长很长很长很长很长很长的文本"/>\n',
+        newText:
+          '例如, 限制文本最长为5em: `<text ems="5" ellipsize="end" text="很长很长很长很长很长很长很长的文本"/>`\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'ui-properties-image',
     legacySource: 'api/ui.md',
-    oldText: 'images/ex1-properties.png',
-    newText: 'images/ex-properties.png',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText: '![ex-properties](images/ex1-properties.png)\n',
+        newText: '![ex-properties](images/ex-properties.png)\n',
+      }),
+    ]),
+    additionalRepairedTexts: Object.freeze([
+      '![ex-properties](/images/ex-properties.png)\n',
+    ]),
   }),
   Object.freeze({
+    id: 'ui-missing-input-image',
     legacySource: 'api/ui.md',
-    oldText: '效果如图：\n\n![ex-input](ex-input.png)\n',
-    newText: '效果如下：\n',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '效果如图：\n\n![ex-input](ex-input.png)\n\n除此之外, 输入框控件有另外一些主要属性(虽然这些属性对于文本控件也是可用的但一般只用于输入框控件)：\n',
+        newText:
+          '效果如下：\n\n除此之外, 输入框控件有另外一些主要属性(虽然这些属性对于文本控件也是可用的但一般只用于输入框控件)：\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'ui-missing-hint-image',
     legacySource: 'api/ui.md',
-    oldText:
-      '输入提示. 这个提示会在输入框为空的时候显示出来. 如图所示:\n\n![ex-hint](images/ex-hint.png)\n\n上面图片效果的代码为：',
-    newText:
-      '输入提示. 这个提示会在输入框为空的时候显示出来.\n\n示例代码如下：',
     expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '输入提示. 这个提示会在输入框为空的时候显示出来. 如图所示:\n\n![ex-hint](images/ex-hint.png)\n\n上面图片效果的代码为：\n',
+        newText:
+          '输入提示. 这个提示会在输入框为空的时候显示出来.\n\n示例代码如下：\n',
+      }),
+    ]),
   }),
   Object.freeze({
+    id: 'sensors-axis-image',
     legacySource: 'api/sensors.md',
-    oldText:
-      '      这里的x轴, y轴, z轴所属的坐标系统如下图(其中z轴垂直于设备屏幕表面):\n\n  !![axis_device](#images/axis_device.png)\n',
-    newText:
-      'x 轴和 y 轴位于设备屏幕平面内，z 轴垂直于设备屏幕表面。\n',
     expectedOccurrences: 1,
-  }),
-  Object.freeze({
-    legacySource: 'api/sensors.md',
-    oldText:
-      '这里的x轴, y轴, z轴所属的坐标系统如下图(其中z轴垂直于设备屏幕表面):\n\n  !![axis_device](#images/axis_device.png)\n',
-    newText:
-      'x 轴和 y 轴位于设备屏幕平面内，z 轴垂直于设备屏幕表面。\n',
-    expectedOccurrences: 1,
+    variants: Object.freeze([
+      Object.freeze({
+        oldText:
+          '      这里的x轴, y轴, z轴所属的坐标系统如下图(其中z轴垂直于设备屏幕表面):\n\n  !![axis_device](#images/axis_device.png)\n',
+        newText:
+          'x 轴和 y 轴位于设备屏幕平面内，z 轴垂直于设备屏幕表面。\n',
+      }),
+      Object.freeze({
+        oldText:
+          '这里的x轴, y轴, z轴所属的坐标系统如下图(其中z轴垂直于设备屏幕表面):\n\n  !![axis_device](#images/axis_device.png)\n',
+        newText:
+          'x 轴和 y 轴位于设备屏幕平面内，z 轴垂直于设备屏幕表面。\n',
+      }),
+    ]),
   }),
 ])
 
-function countOccurrences(value: string, search: string): number {
-  if (!search) return 0
+function countAtLineBoundary(value: string, search: string): number {
   let count = 0
   let fromIndex = 0
   while (true) {
     const index = value.indexOf(search, fromIndex)
     if (index < 0) return count
-    count += 1
+    if (index === 0 || value[index - 1] === '\n') count += 1
     fromIndex = index + search.length
   }
 }
 
-function replaceAuditedOccurrence(
+function applyAuditedRepairGroup(
   markdown: string,
-  repair: ExactRepair,
+  group: AuditedRepairGroup,
 ): string {
-  const count = countOccurrences(markdown, repair.oldText)
-  if (count === 0) return markdown
-  if (count !== repair.expectedOccurrences) {
-    throw new Error(
-      `Expected ${repair.expectedOccurrences} occurrence(s) of audited fragment in ${repair.legacySource}, found ${count}`,
+  const oldCount = group.variants.reduce(
+    (count, variant) => count + countAtLineBoundary(markdown, variant.oldText),
+    0,
+  )
+  const repairedTexts = [
+    ...new Set([
+      ...group.variants.map(({ newText }) => newText),
+      ...(group.additionalRepairedTexts ?? []),
+    ]),
+  ]
+  const repairedCount = repairedTexts.reduce(
+    (count, repairedText) =>
+      count + countAtLineBoundary(markdown, repairedText),
+    0,
+  )
+
+  if (oldCount === group.expectedOccurrences && repairedCount === 0) {
+    return group.variants.reduce(
+      (value, variant) => value.replaceAll(variant.oldText, variant.newText),
+      markdown,
     )
   }
-  return markdown.replaceAll(repair.oldText, repair.newText)
+  if (oldCount === 0 && repairedCount === group.expectedOccurrences) {
+    return markdown
+  }
+
+  throw new Error(
+    `Audited repair state mismatch for ${group.legacySource} (${group.id}): ` +
+      `expected ${group.expectedOccurrences}, legacy=${oldCount}, repaired=${repairedCount}`,
+  )
 }
 
 export function repairKnownContentDefects(
   markdown: string,
   context: Pick<MigrationContext, 'current'>,
 ): string {
-  let repaired = exactRepairs
-    .filter((repair) => repair.legacySource === context.current.legacySource)
-    .reduce(replaceAuditedOccurrence, markdown)
+  let repaired = auditedRepairGroups
+    .filter((group) => group.legacySource === context.current.legacySource)
+    .reduce(applyAuditedRepairGroup, markdown)
 
-  if (
-    context.current.legacySource === 'api/ocrOptionsType.md' &&
-    !/^#\s+\S/m.test(repaired)
-  ) {
-    repaired = `# OcrOptions\n\n${repaired}`
+  if (context.current.legacySource === 'api/ocrOptionsType.md') {
+    const expectedHeadingCount = countAtLineBoundary(
+      repaired,
+      '# OcrOptions\n',
+    )
+    const h1Count = [...repaired.matchAll(/^#\s+\S.*$/gm)].length
+    if (expectedHeadingCount === 0 && h1Count === 0) {
+      repaired = `# OcrOptions\n\n${repaired}`
+    } else if (expectedHeadingCount !== 1 || h1Count !== 1) {
+      throw new Error(
+        `Audited repair state mismatch for api/ocrOptionsType.md (ocr-options-h1): ` +
+          `expected 1, OcrOptions=${expectedHeadingCount}, h1=${h1Count}`,
+      )
+    }
   }
 
   return repaired
 }
 
-function inlineCodeRanges(line: string): readonly (readonly [number, number])[] {
-  const ranges: Array<readonly [number, number]> = []
-  let index = 0
-  while (index < line.length) {
-    if (line[index] !== '`' || line[index - 1] === '\\') {
-      index += 1
-      continue
-    }
-    let length = 1
-    while (line[index + length] === '`') length += 1
-    const delimiter = '`'.repeat(length)
-    const closing = line.indexOf(delimiter, index + length)
-    if (closing < 0) {
-      index += length
-      continue
-    }
-    ranges.push([index, closing + length])
-    index = closing + length
-  }
-  return ranges
-}
-
-function escapeVueLiterals(line: string): string {
-  const ranges = inlineCodeRanges(line)
-  let output = ''
-  let index = 0
-  while (index < line.length) {
-    const protectedCode = ranges.some(
-      ([start, end]) => index >= start && index < end,
-    )
-    if (!protectedCode && line.startsWith('{{', index)) {
-      output += '&#123;&#123;'
-      index += 2
-      continue
-    }
-    if (!protectedCode && line.startsWith('}}', index)) {
-      output += '&#125;&#125;'
-      index += 2
-      continue
-    }
-    output += line[index]
-    index += 1
-  }
-  return output
-}
-
 function normalizeMarkdownSyntax(markdown: string): string {
-  let fence: { readonly marker: string; readonly length: number } | undefined
+  const { fenceOpenings } = scanMarkdownCode(markdown)
+  let normalized = markdown
 
-  return markdown
-    .split(/(?<=\n)/)
-    .map((lineWithEnding) => {
-      const hasNewline = lineWithEnding.endsWith('\n')
-      const line = hasNewline ? lineWithEnding.slice(0, -1) : lineWithEnding
-      const fenceMatch = /^(\s{0,3})(`{3,}|~{3,})(.*)$/.exec(line)
+  for (const opening of [...fenceOpenings].reverse()) {
+    const info = markdown.slice(opening.infoStart, opening.infoEnd)
+    const normalizedInfo = info.replace(
+      /^(\s*)(?:badjs|e4x)(?=\s|$)/i,
+      '$1js',
+    )
+    normalized =
+      normalized.slice(0, opening.infoStart) +
+      normalizedInfo +
+      normalized.slice(opening.infoEnd)
+  }
 
-      if (fence) {
-        if (
-          fenceMatch &&
-          fenceMatch[2][0] === fence.marker &&
-          fenceMatch[2].length >= fence.length &&
-          fenceMatch[3].trim() === ''
-        ) {
-          fence = undefined
-        }
-        return lineWithEnding
-      }
-
-      if (fenceMatch) {
-        fence = { marker: fenceMatch[2][0], length: fenceMatch[2].length }
-        const info = fenceMatch[3]
-        const normalizedInfo = info.replace(
-          /^(\s*)(?:badjs|e4x)(?=\s|$)/i,
-          '$1js',
-        )
-        return (
-          fenceMatch[1] +
-          fenceMatch[2] +
-          normalizedInfo +
-          (hasNewline ? '\n' : '')
-        )
-      }
-
-      return escapeVueLiterals(line) + (hasNewline ? '\n' : '')
-    })
-    .join('')
+  return transformOutsideMarkdownCode(normalized, (source) =>
+    source
+      .replaceAll('{{', '&#123;&#123;')
+      .replaceAll('}}', '&#125;&#125;'),
+  )
 }
 
 export function preprocessMarkdown(
@@ -409,6 +465,173 @@ function migratedImageName(name: string): string {
   return name.replace(/^autojs6-notification-/i, 'monkeyking-notification-')
 }
 
+function normalizedRepositoryPath(path: string): string {
+  return path.replaceAll('\\', '/')
+}
+
+function assertExactFileInventory(
+  actual: ReadonlySet<string>,
+  expected: ReadonlySet<string>,
+  label: string,
+): void {
+  const unexpected = [...actual].filter((name) => !expected.has(name))
+  if (unexpected.length > 0) {
+    throw new Error(`Unknown ${label} artifact: ${unexpected.join(', ')}`)
+  }
+  const missing = [...expected].filter((name) => !actual.has(name))
+  if (missing.length > 0) {
+    throw new Error(`Missing ${label} artifact: ${missing.join(', ')}`)
+  }
+}
+
+function validateApiLayout(
+  rootDirectory: string,
+  entries: readonly ContentEntry[],
+  imageNames: readonly string[],
+  retiredSources: readonly string[],
+  requireLegacyRuntimeArtifacts: boolean,
+): void {
+  const apiDirectory = resolveRepoPath(rootDirectory, 'api')
+  if (!existsSync(apiDirectory)) return
+
+  const expectedMarkdownNames = new Set(
+    [...entries.map(({ legacySource }) => legacySource), ...retiredSources].map(
+      (path) => basename(path),
+    ),
+  )
+  const allowedFiles = new Set([
+    ...expectedMarkdownNames,
+    '.gitignore',
+    'index.html',
+    'CNAME',
+  ])
+  const allowedDirectories = new Set(['images', 'static'])
+  const actualMarkdownNames = new Set<string>()
+  const topLevel = readdirSync(apiDirectory, { withFileTypes: true })
+
+  for (const artifact of topLevel) {
+    if (artifact.isFile() && allowedFiles.has(artifact.name)) {
+      if (artifact.name.endsWith('.md')) actualMarkdownNames.add(artifact.name)
+      continue
+    }
+    if (artifact.isDirectory() && allowedDirectories.has(artifact.name)) {
+      continue
+    }
+    throw new Error(`Unknown api artifact: api/${artifact.name}`)
+  }
+
+  assertExactFileInventory(
+    actualMarkdownNames,
+    expectedMarkdownNames,
+    'api Markdown',
+  )
+
+  if (requireLegacyRuntimeArtifacts) {
+    for (const required of [
+      '.gitignore',
+      'images',
+      'static',
+      'index.html',
+      'CNAME',
+    ]) {
+      if (!topLevel.some(({ name }) => name === required)) {
+        throw new Error(`Missing api artifact: api/${required}`)
+      }
+    }
+  }
+
+  const imagesDirectory = resolveRepoPath(rootDirectory, 'api/images')
+  if (existsSync(imagesDirectory)) {
+    const actualImages = new Set<string>()
+    for (const image of readdirSync(imagesDirectory, { withFileTypes: true })) {
+      if (!image.isFile()) {
+        throw new Error(`Unknown image artifact: api/images/${image.name}`)
+      }
+      actualImages.add(image.name)
+    }
+    assertExactFileInventory(
+      actualImages,
+      new Set(imageNames),
+      'image',
+    )
+  } else if (imageNames.length > 0) {
+    throw new Error('Missing image artifact: api/images')
+  }
+}
+
+function isWithinFreeDocsArea(repositoryPath: string): boolean {
+  return [
+    'docs/assets',
+    'docs/images',
+    'docs/plugins',
+    'docs/superpowers',
+  ].some(
+    (prefix) =>
+      repositoryPath === prefix || repositoryPath.startsWith(`${prefix}/`),
+  )
+}
+
+function validateDocsLayout(
+  rootDirectory: string,
+  entries: readonly ContentEntry[],
+  imageNames: readonly string[],
+): void {
+  const docsDirectory = resolveRepoPath(rootDirectory, 'docs')
+  if (!existsSync(docsDirectory)) return
+
+  const allowedFiles = new Set([
+    ...entries.map(({ source }) => source),
+    'docs/public/CNAME',
+    ...imageNames.map(
+      (name) => `docs/public/images/${migratedImageName(name)}`,
+    ),
+  ])
+
+  const visit = (directory: string): void => {
+    for (const artifact of readdirSync(directory, { withFileTypes: true })) {
+      const absolutePath = resolve(directory, artifact.name)
+      const repositoryPath = normalizedRepositoryPath(
+        relative(rootDirectory, absolutePath),
+      )
+      const directLegacyHtml =
+        dirname(repositoryPath) === 'docs' && repositoryPath.endsWith('.html')
+      const allowedDirectory = [...allowedFiles].some((path) =>
+        path.startsWith(`${repositoryPath}/`),
+      )
+
+      if (isWithinFreeDocsArea(repositoryPath) || directLegacyHtml) {
+        if (artifact.isDirectory()) visit(absolutePath)
+        continue
+      }
+      if (artifact.isFile() && allowedFiles.has(repositoryPath)) continue
+      if (artifact.isDirectory() && allowedDirectory) {
+        visit(absolutePath)
+        continue
+      }
+      throw new Error(`Unknown docs artifact: ${repositoryPath}`)
+    }
+  }
+
+  visit(docsDirectory)
+}
+
+function validateMigrationLayout(
+  rootDirectory: string,
+  entries: readonly ContentEntry[],
+  imageNames: readonly string[],
+  retiredSources: readonly string[],
+  requireLegacyRuntimeArtifacts: boolean,
+): void {
+  validateApiLayout(
+    rootDirectory,
+    entries,
+    imageNames,
+    retiredSources,
+    requireLegacyRuntimeArtifacts,
+  )
+  validateDocsLayout(rootDirectory, entries, imageNames)
+}
+
 function removeIfPresent(path: string): boolean {
   if (!existsSync(path)) return false
   rmSync(path, { recursive: statSync(path).isDirectory(), force: true })
@@ -418,10 +641,7 @@ function removeIfPresent(path: string): boolean {
 function removeLegacyArtifacts(rootDirectory: string): number {
   let deleted = 0
   for (const repositoryPath of [
-    'api/static',
-    'api/index.html',
-    'api/CNAME',
-    'api/images',
+    'api',
     'docs/assets',
     'docs/images',
     'docs/plugins',
@@ -455,11 +675,18 @@ export async function migrateContent(
   const entries = options.entries ?? contentEntries
   const imageNames = options.imageNames ?? legacyImageNames
   const retiredSources = options.deletedSources ?? deletedLegacySources
+  validateMigrationLayout(
+    rootDirectory,
+    entries,
+    imageNames,
+    retiredSources,
+    options.entries === undefined,
+  )
 
   const preprocessedSources = entries.map((entry) => {
     const legacyPath = resolveRepoPath(rootDirectory, entry.legacySource)
     const canonicalPath = resolveRepoPath(rootDirectory, entry.source)
-    const inputPath = existsSync(legacyPath) ? legacyPath : canonicalPath
+    const inputPath = existsSync(canonicalPath) ? canonicalPath : legacyPath
     if (!existsSync(inputPath) || !statSync(inputPath).isFile()) {
       throw new Error(
         `Missing migration input for ${entry.id}: ${entry.legacySource} or ${entry.source}`,
@@ -474,15 +701,20 @@ export async function migrateContent(
   })
 
   const headingIndex = await buildHeadingIndex(preprocessedSources)
-  let entriesWritten = 0
-  for (const source of preprocessedSources) {
-    const migrated = rewriteMarkdownLinks(source.markdown, {
+  const migratedSources = preprocessedSources.map((source) => {
+    const markdown = rewriteMarkdownLinks(source.markdown, {
       current: source.entry,
       entries,
       headingIndex,
     })
+    assertAllowedLegacyBrands(markdown, { current: source.entry })
+    return { entry: source.entry, markdown }
+  })
+
+  let entriesWritten = 0
+  for (const source of migratedSources) {
     const destination = resolveRepoPath(rootDirectory, source.entry.source)
-    if (writeIfChanged(destination, migrated)) entriesWritten += 1
+    if (writeIfChanged(destination, source.markdown)) entriesWritten += 1
   }
 
   let imagesCopied = 0
@@ -507,16 +739,7 @@ export async function migrateContent(
     throw new Error('Missing api/CNAME and docs/public/CNAME')
   }
 
-  let pathsDeleted = 0
-  for (const repositoryPath of [
-    ...entries.map((entry) => entry.legacySource),
-    ...retiredSources,
-  ]) {
-    if (removeIfPresent(resolveRepoPath(rootDirectory, repositoryPath))) {
-      pathsDeleted += 1
-    }
-  }
-  pathsDeleted += removeLegacyArtifacts(rootDirectory)
+  const pathsDeleted = removeLegacyArtifacts(rootDirectory)
 
   return Object.freeze({ entriesWritten, imagesCopied, pathsDeleted })
 }

@@ -3,6 +3,11 @@ import { createMarkdownRenderer } from 'vitepress'
 import { contentEntries } from './catalog'
 import type { ContentEntry } from './catalog'
 import { resolveFragmentOverride } from './fragment-overrides'
+import {
+  isBackslashEscaped,
+  scanMarkdownCode,
+} from './markdown-source'
+import type { SourceRange } from './markdown-source'
 
 export type HeadingIndex = ReadonlyMap<string, readonly string[]>
 
@@ -381,6 +386,15 @@ function resolveLink(
   }
 
   if (override?.kind === 'link') {
+    if (
+      context.headingIndex &&
+      override.fragment &&
+      !(context.headingIndex.get(targetEntry.id) ?? []).includes(
+        override.fragment,
+      )
+    ) {
+      throw new UnresolvedFragmentError(targetEntry, override.fragment)
+    }
     return {
       kind: 'link',
       target: relativeCatalogTarget(
@@ -427,103 +441,169 @@ export function resolveCatalogLink(
   return resolved.target
 }
 
-function inlineCodeRanges(line: string): readonly (readonly [number, number])[] {
-  const ranges: Array<readonly [number, number]> = []
-  let index = 0
-
-  while (index < line.length) {
-    if (line[index] !== '`' || line[index - 1] === '\\') {
-      index += 1
-      continue
-    }
-
-    let runLength = 1
-    while (line[index + runLength] === '`') {
-      runLength += 1
-    }
-    const delimiter = '`'.repeat(runLength)
-    const closing = line.indexOf(delimiter, index + runLength)
-    if (closing < 0) {
-      index += runLength
-      continue
-    }
-
-    ranges.push([index, closing + runLength])
-    index = closing + runLength
-  }
-
-  return ranges
-}
-
-function isProtected(
+function protectedRangeAt(
   index: number,
-  ranges: readonly (readonly [number, number])[],
-): boolean {
-  return ranges.some(([start, end]) => index >= start && index < end)
+  ranges: readonly SourceRange[],
+): SourceRange | undefined {
+  return ranges.find((range) => index >= range.start && index < range.end)
 }
 
-function findClosingBracket(line: string, opening: number): number {
+function overlapsProtectedRange(
+  start: number,
+  end: number,
+  ranges: readonly SourceRange[],
+): boolean {
+  return ranges.some((range) => range.start < end && range.end > start)
+}
+
+function findClosingBracket(
+  source: string,
+  opening: number,
+  protectedRanges: readonly SourceRange[],
+): number {
   let depth = 1
-  for (let index = opening + 1; index < line.length; index += 1) {
-    if (line[index - 1] === '\\') continue
-    if (line[index] === '[') depth += 1
-    if (line[index] === ']') depth -= 1
+  for (let index = opening + 1; index < source.length; index += 1) {
+    const protectedRange = protectedRangeAt(index, protectedRanges)
+    if (protectedRange) {
+      index = protectedRange.end - 1
+      continue
+    }
+    if (isBackslashEscaped(source, index)) continue
+    if (source[index] === '[') depth += 1
+    if (source[index] === ']') depth -= 1
     if (depth === 0) return index
   }
   return -1
 }
 
-function findClosingParenthesis(line: string, opening: number): number {
+function findClosingParenthesis(
+  source: string,
+  opening: number,
+  protectedRanges: readonly SourceRange[],
+): number {
   let depth = 1
   let angleDestination = false
-  for (let index = opening + 1; index < line.length; index += 1) {
-    if (line[index - 1] === '\\') continue
-    if (line[index] === '<' && depth === 1) angleDestination = true
-    if (line[index] === '>' && angleDestination) angleDestination = false
+  let destinationStarted = false
+  let destinationFinished = false
+  let quotedTitle: '"' | "'" | undefined
+
+  for (let index = opening + 1; index < source.length; index += 1) {
+    const protectedRange = protectedRangeAt(index, protectedRanges)
+    if (protectedRange) {
+      index = protectedRange.end - 1
+      continue
+    }
+    if (isBackslashEscaped(source, index)) continue
+
+    const character = source[index]
+    if (quotedTitle) {
+      if (character === quotedTitle) quotedTitle = undefined
+      continue
+    }
+    if (!destinationStarted && /\s/.test(character)) continue
+    if (!destinationStarted) {
+      destinationStarted = true
+      if (character === '<') angleDestination = true
+    }
+    if (character === '>' && angleDestination) angleDestination = false
     if (angleDestination) continue
-    if (line[index] === '(') depth += 1
-    if (line[index] === ')') depth -= 1
+
+    if (depth === 1 && destinationStarted && /\s/.test(character)) {
+      destinationFinished = true
+      continue
+    }
+    if (
+      depth === 1 &&
+      destinationFinished &&
+      (character === '"' || character === "'")
+    ) {
+      quotedTitle = character
+      continue
+    }
+    if (character === '(') depth += 1
+    if (character === ')') depth -= 1
     if (depth === 0) return index
   }
   return -1
 }
 
-function destinationAndSuffix(content: string): {
+interface DestinationParts {
+  readonly prefix: string
   readonly destination: string
   readonly suffix: string
-} {
+  readonly angleWrapped: boolean
+}
+
+function destinationAndSuffix(content: string): DestinationParts | undefined {
   const trimmedStart = content.trimStart()
-  const leading = content.slice(0, content.length - trimmedStart.length)
+  const prefix = content.slice(0, content.length - trimmedStart.length)
+  if (trimmedStart === '') return undefined
+
   if (trimmedStart.startsWith('<')) {
     const closing = trimmedStart.indexOf('>')
     if (closing >= 0) {
       return {
+        prefix,
         destination: trimmedStart.slice(1, closing),
-        suffix: leading + trimmedStart.slice(closing + 1),
+        suffix: trimmedStart.slice(closing + 1),
+        angleWrapped: true,
       }
     }
   }
 
   const match = /^(\S+)([\s\S]*)$/.exec(trimmedStart)
   return match
-    ? { destination: match[1], suffix: leading + match[2] }
-    : { destination: content, suffix: '' }
+    ? {
+        prefix,
+        destination: match[1],
+        suffix: match[2],
+        angleWrapped: false,
+      }
+    : undefined
+}
+
+function formatDestination(parts: DestinationParts, target: string): string {
+  return (
+    parts.prefix +
+    (parts.angleWrapped ? `<${target}>` : target) +
+    parts.suffix
+  )
 }
 
 function normalizeImageName(name: string): string {
   return name.replace(/^autojs6-notification-/i, 'monkeyking-notification-')
 }
 
+function splitImageTarget(target: string): {
+  readonly path: string
+  readonly suffix: string
+} {
+  const queryIndex = target.indexOf('?')
+  const fragmentIndex = target.indexOf('#')
+  const delimiterIndexes = [queryIndex, fragmentIndex].filter(
+    (index) => index >= 0,
+  )
+  const delimiterIndex =
+    delimiterIndexes.length === 0 ? -1 : Math.min(...delimiterIndexes)
+
+  return delimiterIndex < 0
+    ? { path: target, suffix: '' }
+    : {
+        path: target.slice(0, delimiterIndex),
+        suffix: target.slice(delimiterIndex),
+      }
+}
+
 function normalizeImageTarget(target: string): string {
   if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(target)) {
     return target
   }
-  const { path, fragment } = splitTarget(target)
+  const { path, suffix } = splitImageTarget(target)
   if (!/\.(?:png|jpe?g|gif|svg|webp|avif)$/i.test(path)) {
     return target
   }
   const name = normalizeImageName(posix.basename(path))
-  return `/images/${name}${fragment ? `#${fragment}` : ''}`
+  return `/images/${name}${suffix}`
 }
 
 function recordResolution(
@@ -537,80 +617,138 @@ function recordResolution(
   if (unlinked) report.unlinked += 1
 }
 
-function rewriteReferenceDefinition(
-  line: string,
+interface SourceLine {
+  readonly start: number
+  readonly contentEnd: number
+  readonly end: number
+  readonly content: string
+}
+
+function sourceLineAt(source: string, start: number): SourceLine {
+  const newline = source.indexOf('\n', start)
+  const end = newline < 0 ? source.length : newline + 1
+  let contentEnd = newline < 0 ? source.length : newline
+  if (contentEnd > start && source[contentEnd - 1] === '\r') {
+    contentEnd -= 1
+  }
+  return {
+    start,
+    contentEnd,
+    end,
+    content: source.slice(start, contentEnd),
+  }
+}
+
+function rewrittenDestination(
+  parts: DestinationParts,
+  label: string,
+  lineContext: string,
   context: MarkdownLinkContext,
   report: MutableLinkRewriteReport,
 ): string | undefined {
-  const match = /^(\s{0,3}\[([^\]]+)\]:\s*)(<?[^\s>]+>?)(.*)$/.exec(line)
-  if (!match) return undefined
-
-  const rawTarget = match[3].replace(/^<(.*)>$/, '$1')
-  if (match[2] === '//' || rawTarget === '<>') return line
+  const rawTarget = parts.destination
+  if (label === '//' || (parts.angleWrapped && rawTarget === '')) {
+    return formatDestination(parts, rawTarget)
+  }
   const imageTarget = normalizeImageTarget(rawTarget)
   if (imageTarget !== rawTarget) {
-    return `${match[1]}${imageTarget}${match[4]}`
+    return formatDestination(parts, imageTarget)
   }
 
-  const resolved = resolveLink(rawTarget, match[2], line, context)
+  const resolved = resolveLink(rawTarget, label, lineContext, context)
   recordResolution(resolved.resolution, report, resolved.kind === 'unlink')
-  if (resolved.kind === 'unlink') return ''
-  return `${match[1]}${resolved.target}${match[4]}`
+  return resolved.kind === 'unlink'
+    ? undefined
+    : formatDestination(parts, resolved.target ?? rawTarget)
 }
 
-function rewriteInlineLinks(
-  line: string,
+function rewriteReferenceDefinitions(
+  markdown: string,
   context: MarkdownLinkContext,
   report: MutableLinkRewriteReport,
 ): string {
-  const codeRanges = inlineCodeRanges(line)
+  const { protectedRanges } = scanMarkdownCode(markdown)
   let output = ''
   let index = 0
 
-  while (index < line.length) {
-    const isImage = line[index] === '!' && line[index + 1] === '['
-    const openingBracket = isImage ? index + 1 : index
-    if (
-      line[openingBracket] !== '[' ||
-      isProtected(openingBracket, codeRanges)
-    ) {
-      output += line[index]
-      index += 1
+  while (index < markdown.length) {
+    const line = sourceLineAt(markdown, index)
+    if (overlapsProtectedRange(line.start, line.end, protectedRanges)) {
+      output += markdown.slice(line.start, line.end)
+      index = line.end
       continue
     }
 
-    const closingBracket = findClosingBracket(line, openingBracket)
-    if (closingBracket < 0 || line[closingBracket + 1] !== '(') {
-      output += line[index]
-      index += 1
-      continue
-    }
-    const closingParenthesis = findClosingParenthesis(line, closingBracket + 1)
-    if (closingParenthesis < 0) {
-      output += line[index]
-      index += 1
+    const match = /^([ \t]{0,3}\[([^\]\r\n]+)\]:)([ \t]*)(.*)$/.exec(
+      line.content,
+    )
+    if (!match) {
+      output += markdown.slice(line.start, line.end)
+      index = line.end
       continue
     }
 
-    const label = line.slice(openingBracket + 1, closingBracket)
-    const content = line.slice(closingBracket + 2, closingParenthesis)
-    const { destination, suffix } = destinationAndSuffix(content)
+    const sameLineParts = destinationAndSuffix(match[3] + match[4])
+    if (sameLineParts) {
+      const rewritten = rewrittenDestination(
+        sameLineParts,
+        match[2],
+        line.content,
+        context,
+        report,
+      )
+      if (rewritten !== undefined) {
+        output +=
+          match[1] +
+          rewritten +
+          markdown.slice(line.contentEnd, line.end)
+      }
+      index = line.end
+      continue
+    }
 
-    if (isImage) {
-      const target = normalizeImageTarget(destination)
-      output += `![${label}](${target}${suffix})`
-    } else {
-      const resolved = resolveLink(destination, label, line, context)
-      recordResolution(resolved.resolution, report, resolved.kind === 'unlink')
+    const nextLine =
+      line.end < markdown.length ? sourceLineAt(markdown, line.end) : undefined
+    const continuation =
+      nextLine &&
+      !overlapsProtectedRange(
+        nextLine.start,
+        nextLine.end,
+        protectedRanges,
+      ) &&
+      /^[ \t]{1,3}\S/.test(nextLine.content)
+        ? destinationAndSuffix(nextLine.content)
+        : undefined
+
+    if (!nextLine || !continuation) {
+      output += markdown.slice(line.start, line.end)
+      index = line.end
+      continue
+    }
+
+    const rewritten = rewrittenDestination(
+      continuation,
+      match[2],
+      line.content + '\n' + nextLine.content,
+      context,
+      report,
+    )
+    if (rewritten !== undefined) {
+      output += markdown.slice(line.start, line.end)
       output +=
-        resolved.kind === 'unlink'
-          ? (resolved.label ?? label)
-          : `[${resolved.label ?? label}](${resolved.target}${suffix})`
+        rewritten + markdown.slice(nextLine.contentEnd, nextLine.end)
     }
-    index = closingParenthesis + 1
+    index = nextLine.end
   }
 
   return output
+}
+
+function lineContextAt(source: string, index: number): string {
+  const start = source.lastIndexOf('\n', Math.max(0, index - 1)) + 1
+  const newline = source.indexOf('\n', index)
+  const end = newline < 0 ? source.length : newline
+  return source.slice(start, end).replace(/\r$/, '')
 }
 
 function rewriteSrcset(value: string): string {
@@ -641,39 +779,132 @@ function rewriteHtmlImages(line: string): string {
   )
 }
 
-function rewriteOutsideFences(
+function findHtmlTagEnd(source: string, opening: number): number {
+  let quote: '"' | "'" | undefined
+  for (let index = opening + 1; index < source.length; index += 1) {
+    const character = source[index]
+    if (quote) {
+      if (character === quote && !isBackslashEscaped(source, index)) {
+        quote = undefined
+      }
+      continue
+    }
+    if (character === '"' || character === "'") {
+      quote = character
+      continue
+    }
+    if (character === '>') return index
+  }
+  return -1
+}
+
+function rewriteInlineLinksAndHtml(
   markdown: string,
-  transform: (line: string) => string,
+  context: MarkdownLinkContext,
+  report: MutableLinkRewriteReport,
 ): string {
-  let fence: { readonly marker: string; readonly length: number } | undefined
+  const { protectedRanges } = scanMarkdownCode(markdown)
+  let protectedIndex = 0
+  let output = ''
+  let index = 0
 
-  return markdown
-    .split(/(?<=\n)/)
-    .map((lineWithEnding) => {
-      const hasNewline = lineWithEnding.endsWith('\n')
-      const line = hasNewline ? lineWithEnding.slice(0, -1) : lineWithEnding
-      const fenceMatch = /^\s{0,3}(`{3,}|~{3,})(.*)$/.exec(line)
+  while (index < markdown.length) {
+    while (
+      protectedIndex < protectedRanges.length &&
+      protectedRanges[protectedIndex].end <= index
+    ) {
+      protectedIndex += 1
+    }
+    const protectedRange = protectedRanges[protectedIndex]
+    if (protectedRange && protectedRange.start <= index) {
+      output += markdown.slice(index, protectedRange.end)
+      index = protectedRange.end
+      continue
+    }
 
-      if (fence) {
-        if (
-          fenceMatch &&
-          fenceMatch[1][0] === fence.marker &&
-          fenceMatch[1].length >= fence.length &&
-          fenceMatch[2].trim() === ''
-        ) {
-          fence = undefined
-        }
-        return lineWithEnding
+    if (
+      markdown[index] === '<' &&
+      /^<(?:img|source)\b/i.test(markdown.slice(index))
+    ) {
+      const closing = findHtmlTagEnd(markdown, index)
+      if (
+        closing >= 0 &&
+        !overlapsProtectedRange(index, closing + 1, protectedRanges)
+      ) {
+        output += rewriteHtmlImages(markdown.slice(index, closing + 1))
+        index = closing + 1
+        continue
       }
+    }
 
-      if (fenceMatch) {
-        fence = { marker: fenceMatch[1][0], length: fenceMatch[1].length }
-        return lineWithEnding
-      }
+    const image =
+      markdown[index] === '!' &&
+      markdown[index + 1] === '[' &&
+      !isBackslashEscaped(markdown, index) &&
+      !isBackslashEscaped(markdown, index + 1)
+    const openingBracket = image ? index + 1 : index
+    if (
+      markdown[openingBracket] !== '[' ||
+      isBackslashEscaped(markdown, openingBracket)
+    ) {
+      output += markdown[index]
+      index += 1
+      continue
+    }
 
-      return transform(line) + (hasNewline ? '\n' : '')
-    })
-    .join('')
+    const closingBracket = findClosingBracket(
+      markdown,
+      openingBracket,
+      protectedRanges,
+    )
+    if (closingBracket < 0 || markdown[closingBracket + 1] !== '(') {
+      output += markdown[index]
+      index += 1
+      continue
+    }
+    const closingParenthesis = findClosingParenthesis(
+      markdown,
+      closingBracket + 1,
+      protectedRanges,
+    )
+    if (closingParenthesis < 0) {
+      output += markdown[index]
+      index += 1
+      continue
+    }
+
+    const label = markdown.slice(openingBracket + 1, closingBracket)
+    const content = markdown.slice(closingBracket + 2, closingParenthesis)
+    const parts = destinationAndSuffix(content)
+    if (!parts) {
+      output += markdown[index]
+      index += 1
+      continue
+    }
+
+    if (image) {
+      const target = normalizeImageTarget(parts.destination)
+      output += `![${label}](${formatDestination(parts, target)})`
+    } else {
+      const resolved = resolveLink(
+        parts.destination,
+        label,
+        lineContextAt(markdown, index),
+        context,
+      )
+      recordResolution(resolved.resolution, report, resolved.kind === 'unlink')
+      output +=
+        resolved.kind === 'unlink'
+          ? (resolved.label ?? label)
+          : `[${resolved.label ?? label}](${formatDestination(
+              parts,
+              resolved.target ?? parts.destination,
+            )})`
+    }
+    index = closingParenthesis + 1
+  }
+
+  return output
 }
 
 export function rewriteMarkdownLinksWithReport(
@@ -687,13 +918,16 @@ export function rewriteMarkdownLinksWithReport(
     unlinked: 0,
   }
 
-  const rewritten = rewriteOutsideFences(markdown, (line) => {
-    const definition = rewriteReferenceDefinition(line, context, mutableReport)
-    if (definition !== undefined) return definition
-    return rewriteHtmlImages(
-      rewriteInlineLinks(line, context, mutableReport),
-    )
-  })
+  const definitionsRewritten = rewriteReferenceDefinitions(
+    markdown,
+    context,
+    mutableReport,
+  )
+  const rewritten = rewriteInlineLinksAndHtml(
+    definitionsRewritten,
+    context,
+    mutableReport,
+  )
 
   return {
     markdown: rewritten,
