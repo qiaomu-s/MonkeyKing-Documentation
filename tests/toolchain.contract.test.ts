@@ -63,8 +63,7 @@ describe('root toolchain contract', () => {
 
   test('exposes the documented project commands', () => {
     const { scripts } = readPackageJson()
-
-    expect(scripts).toEqual({
+    const requiredPublicScripts = {
       'docs:dev': 'vitepress dev .',
       'docs:preview': 'vitepress preview . --outDir dist/web',
       'json:build': 'tsx scripts/json/build.ts',
@@ -74,7 +73,11 @@ describe('root toolchain contract', () => {
       'build:android': 'tsx scripts/build.ts android',
       test: 'vitest run',
       'test:e2e': 'playwright test',
-    })
+    }
+
+    expect(Object.keys(requiredPublicScripts)).toHaveLength(9)
+    expect(scripts).toMatchObject(requiredPublicScripts)
+    expect(scripts?.['migrate:content']).toBe('tsx scripts/migrate-content.ts')
   })
 
   test('builds the web output before starting the Playwright preview server', () => {

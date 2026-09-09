@@ -10,6 +10,7 @@
   "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:preview": "vitepress preview . --outDir dist/web",
+    "migrate:content": "tsx scripts/migrate-content.ts",
     "json:build": "tsx scripts/json/build.ts",
     "check:content": "tsx scripts/check-content.ts",
     "check:links": "tsx scripts/check-links.ts",
