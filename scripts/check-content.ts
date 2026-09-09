@@ -50,7 +50,6 @@ const retiredArtifactPaths = [
   'docs/images',
   'docs/plugins',
 ] as const
-const imageExtension = /\.(?:png|jpe?g|gif|svg|webp|avif)$/i
 
 function repositoryPath(rootDirectory: string, absolutePath: string): string {
   return relative(rootDirectory, absolutePath).replaceAll('\\', '/')
@@ -92,8 +91,8 @@ function regularFileError(path: string, label: string): string | undefined {
   return undefined
 }
 
-function normalizedImageTarget(target: string): string {
-  return target.trim().replace(/^<(.*)>$/, '$1').split(/[?#]/, 1)[0]
+function unwrappedImageTarget(target: string): string {
+  return target.trim().replace(/^<(.*)>$/, '$1')
 }
 
 function inspectImageTarget(
@@ -102,8 +101,10 @@ function inspectImageTarget(
   expectedImages: ReadonlySet<string>,
   errors: string[],
 ): void {
-  const target = normalizedImageTarget(rawTarget)
-  if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(target)) return
+  const unwrappedTarget = unwrappedImageTarget(rawTarget)
+  if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(unwrappedTarget)) return
+
+  const target = unwrappedTarget.split(/[?#]/, 1)[0]
 
   if (target.startsWith('/images/')) {
     const imageName = target.slice('/images/'.length)
@@ -113,9 +114,7 @@ function inspectImageTarget(
     return
   }
 
-  if (imageExtension.test(target)) {
-    errors.push(`Non-canonical image reference in ${source}: ${rawTarget}`)
-  }
+  errors.push(`Non-canonical image reference in ${source}: ${rawTarget}`)
 }
 
 function inspectMarkdownImages(

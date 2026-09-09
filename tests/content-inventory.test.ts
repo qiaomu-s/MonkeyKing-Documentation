@@ -252,6 +252,29 @@ describe('content inventory', () => {
     }
   })
 
+  test.each(['images/missing', '#images/missing'])(
+    'rejects a non-canonical extensionless local image target: %s',
+    (target) => {
+      const root = mkdtempSync(
+        resolve(tmpdir(), 'monkeyking-image-noncanonical-'),
+      )
+      try {
+        writeCanonicalFixture(root)
+        writeFixture(
+          root,
+          contentEntries[0].source,
+          `# Overview\n\n![Missing](${target})\n`,
+        )
+
+        expect(checkContent(root).errors.join('\n')).toMatch(
+          /non-canonical image reference/i,
+        )
+      } finally {
+        rmSync(root, { recursive: true, force: true })
+      }
+    },
+  )
+
   test('checks image references in the published home page', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-home-image-'))
     try {
