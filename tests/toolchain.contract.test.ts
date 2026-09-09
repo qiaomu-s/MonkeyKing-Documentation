@@ -64,8 +64,8 @@ describe('root toolchain contract', () => {
   test('exposes the documented project commands', () => {
     const { scripts } = readPackageJson()
     const requiredPublicScripts = {
-      'docs:dev': 'vitepress dev .',
-      'docs:preview': 'vitepress preview . --outDir dist/web',
+      'docs:dev': 'vitepress dev docs',
+      'docs:preview': 'vitepress preview docs --outDir dist/web',
       'json:build': 'tsx scripts/json/build.ts',
       'check:content': 'tsx scripts/check-content.ts',
       'check:links': 'tsx scripts/check-links.ts',
@@ -78,6 +78,20 @@ describe('root toolchain contract', () => {
     expect(Object.keys(requiredPublicScripts)).toHaveLength(9)
     expect(scripts).toMatchObject(requiredPublicScripts)
     expect(scripts?.['migrate:content']).toBe('tsx scripts/migrate-content.ts')
+  })
+
+  test('type-checks the VitePress configuration and custom theme sources', () => {
+    const tsconfig = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'tsconfig.json'), 'utf8'),
+    ) as { include?: string[]; exclude?: string[] }
+
+    expect(tsconfig.include).toEqual(
+      expect.arrayContaining([
+        'docs/.vitepress/**/*.ts',
+        'docs/.vitepress/**/*.mts',
+      ]),
+    )
+    expect(tsconfig.exclude).not.toContain('docs')
   })
 
   test('builds the web output before starting the Playwright preview server', () => {
