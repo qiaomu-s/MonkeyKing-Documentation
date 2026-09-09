@@ -173,14 +173,14 @@
             {
               "textRaw": "start [options] intent",
               "name": "start_[options]_intent",
-              "desc": "<p>启动 intent 指定的 Activity(应用程序活动).<br>请参阅 <a href=\"#shell_intent\">intent 参数的规范</a>.</p>\n<p>选项包括：</p>\n<ul>\n<li>-D：启用调试.</li>\n<li>-W：等待启动完成.</li>\n<li>--start-profiler file：启动分析器并将结果发送到 file.</li>\n<li>-P file：类似于 --start-profiler, 但当应用进入空闲状态时分析停止.</li>\n<li>-R count：重复 Activity 启动 count 次数. 在每次重复前, 将完成顶部 Activity.</li>\n<li>-S：启动 Activity 前强行停止目标应用.</li>\n<li>--opengl-trace：启用 OpenGL 函数的跟踪.</li>\n<li>--user user_id | current：指定要作为哪个用户运行；如果未指定, 则作为当前用户运行.</li>\n</ul>\n",
+              "desc": "<p>启动 intent 指定的 Activity(应用程序活动).<br>\n请参阅 <a href=\"#intent参数的规范\">intent 参数的规范</a>.</p>\n<p>选项包括：</p>\n<ul>\n<li>-D：启用调试.</li>\n<li>-W：等待启动完成.</li>\n<li>--start-profiler file：启动分析器并将结果发送到 file.</li>\n<li>-P file：类似于 --start-profiler, 但当应用进入空闲状态时分析停止.</li>\n<li>-R count：重复 Activity 启动 count 次数. 在每次重复前, 将完成顶部 Activity.</li>\n<li>-S：启动 Activity 前强行停止目标应用.</li>\n<li>--opengl-trace：启用 OpenGL 函数的跟踪.</li>\n<li>--user user_id | current：指定要作为哪个用户运行；如果未指定, 则作为当前用户运行.</li>\n</ul>\n",
               "type": "module",
               "displayName": "start [options] intent"
             },
             {
               "textRaw": "startservice [options] intent",
               "name": "startservice_[options]_intent",
-              "desc": "<p>启动 intent 指定的 Service(服务).<br>请参阅 <a href=\"#shell_intent\">intent 参数的规范</a>.<br>选项包括：</p>\n<ul>\n<li>--user user_id | current：指定要作为哪个用户运行；如果未指定, 则作为当前用户运行.</li>\n</ul>\n",
+              "desc": "<p>启动 intent 指定的 Service(服务).<br>\n请参阅 <a href=\"#intent参数的规范\">intent 参数的规范</a>.<br>\n选项包括：</p>\n<ul>\n<li>--user user_id | current：指定要作为哪个用户运行；如果未指定, 则作为当前用户运行.</li>\n</ul>\n",
               "type": "module",
               "displayName": "startservice [options] intent"
             },
@@ -194,7 +194,7 @@
             {
               "textRaw": "kill [options] package",
               "name": "kill_[options]_package",
-              "desc": "<p>终止与 package（<a href=\"#应用包名\">应用包名</a>）关联的所有进程. 此命令仅终止可安全终止且不会影响用户体验的进程.<br>选项包括：</p>\n<ul>\n<li>--user user_id | all | current：指定将终止其进程的用户；如果未指定, 则终止所有用户的进程.</li>\n</ul>\n",
+              "desc": "<p>终止与 package（<a href=\"#应用包名\">应用包名</a>）关联的所有进程. 此命令仅终止可安全终止且不会影响用户体验的进程.<br>\n选项包括：</p>\n<ul>\n<li>--user user_id | all | current：指定将终止其进程的用户；如果未指定, 则终止所有用户的进程.</li>\n</ul>\n",
               "type": "module",
               "displayName": "kill [options] package"
             },
@@ -208,14 +208,14 @@
             {
               "textRaw": "broadcast [options] intent",
               "name": "broadcast_[options]_intent",
-              "desc": "<p>发出广播 intent.\n请参阅 <a href=\"#shell_intent\">intent 参数的规范</a>.</p>\n<p>选项包括：</p>\n<ul>\n<li>[--user user_id | all | current]：指定要发送到的用户；如果未指定, 则发送到所有用户.</li>\n</ul>\n",
+              "desc": "<p>发出广播 intent.\n请参阅 <a href=\"#intent参数的规范\">intent 参数的规范</a>.</p>\n<p>选项包括：</p>\n<ul>\n<li>[--user user_id | all | current]：指定要发送到的用户；如果未指定, 则发送到所有用户.</li>\n</ul>\n",
               "type": "module",
               "displayName": "broadcast [options] intent"
             },
             {
               "textRaw": "instrument [options] component",
               "name": "instrument_[options]_component",
-              "desc": "<p>使用 Instrumentation 实例启动监控. 通常, 目标 component 是表单 test_package/runner_class.<br>选项包括：</p>\n<ul>\n<li>-r：输出原始结果（否则对 report_key_streamresult 进行解码）. 与 [-e perf true] 结合使用以生成性能测量的原始输出.</li>\n<li>-e name value：将参数 name 设为 value. 对于测试运行器, 通用表单为 -e testrunner_flag value[,value...].</li>\n<li>-p file：将分析数据写入 file.</li>\n<li>-w：先等待仪器完成, 然后再返回. 测试运行器需要使用此选项.</li>\n<li>--no-window-animation：运行时关闭窗口动画.</li>\n<li>--user user_id | current：指定仪器在哪个用户中运行；如果未指定, 则在当前用户中运行.</li>\n<li>profile start process file 启动 process 的分析器, 将结果写入 file.</li>\n<li>profile stop process 停止 process 的分析器.</li>\n</ul>\n",
+              "desc": "<p>使用 Instrumentation 实例启动监控. 通常, 目标 component 是表单 test_package/runner_class.<br>\n选项包括：</p>\n<ul>\n<li>-r：输出原始结果（否则对 report_key_streamresult 进行解码）. 与 [-e perf true] 结合使用以生成性能测量的原始输出.</li>\n<li>-e name value：将参数 name 设为 value. 对于测试运行器, 通用表单为 -e testrunner_flag value[,value...].</li>\n<li>-p file：将分析数据写入 file.</li>\n<li>-w：先等待仪器完成, 然后再返回. 测试运行器需要使用此选项.</li>\n<li>--no-window-animation：运行时关闭窗口动画.</li>\n<li>--user user_id | current：指定仪器在哪个用户中运行；如果未指定, 则在当前用户中运行.</li>\n<li>profile start process file 启动 process 的分析器, 将结果写入 file.</li>\n<li>profile stop process 停止 process 的分析器.</li>\n</ul>\n",
               "type": "module",
               "displayName": "instrument [options] component"
             },
@@ -243,14 +243,14 @@
             {
               "textRaw": "display-density dpi",
               "name": "display-density_dpi",
-              "desc": "<p>替换模拟器/设备显示密度. 此命令对于在不同密度的屏幕上测试您的应用非常有用, 它支持使用低密度屏幕在高密度环境环境上进行测试（反之亦然）.<br>示例：</p>\n<pre><code>shell(&quot;am display-density 480&quot;, true);\n</code></pre>",
+              "desc": "<p>替换模拟器/设备显示密度. 此命令对于在不同密度的屏幕上测试您的应用非常有用, 它支持使用低密度屏幕在高密度环境环境上进行测试（反之亦然）.<br>\n示例：</p>\n<pre><code>shell(&quot;am display-density 480&quot;, true);\n</code></pre>",
               "type": "module",
               "displayName": "display-density dpi"
             },
             {
               "textRaw": "to-uri intent",
               "name": "to-uri_intent",
-              "desc": "<p>将给定的 intent 规范以 URI 的形式输出.\n请参阅  <a href=\"#shell_intent\">intent 参数的规范</a>.</p>\n",
+              "desc": "<p>将给定的 intent 规范以 URI 的形式输出.\n请参阅  <a href=\"#intent参数的规范\">intent 参数的规范</a>.</p>\n",
               "type": "module",
               "displayName": "to-uri intent"
             },
@@ -264,7 +264,7 @@
             {
               "textRaw": "intent参数的规范",
               "name": "intent参数的规范",
-              "desc": "<p>对于采用 intent 参数的 am 命令, 您可以使用以下选项指定 intent：</p>\n<ul>\n<li>-a action<br>指定 intent 操作, 如“android.intent.action.VIEW”. 此指定只能声明一次.</li>\n<li>-d data_uri<br>指定 intent 数据 URI, 如“content://contacts/people/1”. 此指定只能声明一次.</li>\n<li>-t mime_type<br>指定 intent MIME 类型, 如“image/png”. 此指定只能声明一次.</li>\n<li>-c category<br>指定 intent 类别, 如“android.intent.category.APP_CONTACTS”.</li>\n<li>-n component<br>指定带有软件包名称前缀的组件名称以创建显式 intent, 如“com.example.app/.ExampleActivity”.</li>\n<li>-f flags<br>将标志添加到 setFlags() 支持的 intent.</li>\n<li>--esn extra_key<br>添加一个 null extra. URI intent 不支持此选项.</li>\n<li>-e|--es extra_key extra_string_value<br>添加字符串数据作为键值对.</li>\n<li>--ez extra_key extra_boolean_value<br>添加布尔型数据作为键值对.</li>\n<li>--ei extra_key extra_int_value<br>添加整数型数据作为键值对.</li>\n<li>--el extra_key extra_long_value<br>添加长整型数据作为键值对.</li>\n<li>--ef extra_key extra_float_value<br>添加浮点型数据作为键值对.</li>\n<li>--eu extra_key extra_uri_value<br>添加 URI 数据作为键值对.</li>\n<li>--ecn extra_key extra_component_name_value<br>添加组件名称, 将其作为 ComponentName 对象进行转换和传递.</li>\n<li>--eia extra_key extra_int_value[,extra_int_value...]<br>添加整数数组.</li>\n<li>--ela extra_key extra_long_value[,extra_long_value...]<br>添加长整型数组.</li>\n<li>--efa extra_key extra_float_value[,extra_float_value...]<br>添加浮点型数组.</li>\n<li>--grant-read-uri-permission<br>包含标志 FLAG_GRANT_READ_URI_PERMISSION.</li>\n<li>--grant-write-uri-permission<br>包含标志 FLAG_GRANT_WRITE_URI_PERMISSION.</li>\n<li>--debug-log-resolution<br>包含标志 FLAG_DEBUG_LOG_RESOLUTION.</li>\n<li>--exclude-stopped-packages<br>包含标志 FLAG_EXCLUDE_STOPPED_PACKAGES.</li>\n<li>--include-stopped-packages<br>包含标志 FLAG_INCLUDE_STOPPED_PACKAGES.</li>\n<li>--activity-brought-to-front<br>包含标志 FLAG_ACTIVITY_BROUGHT_TO_FRONT.</li>\n<li>--activity-clear-top<br>包含标志 FLAG_ACTIVITY_CLEAR_TOP.</li>\n<li>--activity-clear-when-task-reset<br>包含标志 FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET.</li>\n<li>--activity-exclude-from-recents<br>包含标志 FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS.</li>\n<li>--activity-launched-from-history<br>包含标志 FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY.</li>\n<li>--activity-multiple-task<br>包含标志 FLAG_ACTIVITY_MULTIPLE_TASK.</li>\n<li>--activity-no-animation<br>包含标志 FLAG_ACTIVITY_NO_ANIMATION.</li>\n<li>--activity-no-history<br>包含标志 FLAG_ACTIVITY_NO_HISTORY.</li>\n<li>--activity-no-user-action<br>包含标志 FLAG_ACTIVITY_NO_USER_ACTION.</li>\n<li>--activity-previous-is-top<br>包含标志 FLAG_ACTIVITY_PREVIOUS_IS_TOP.</li>\n<li>--activity-reorder-to-front<br>包含标志 FLAG_ACTIVITY_REORDER_TO_FRONT.</li>\n<li>--activity-reset-task-if-needed<br>包含标志 FLAG_ACTIVITY_RESET_TASK_IF_NEEDED.</li>\n<li>--activity-single-top<br>包含标志 FLAG_ACTIVITY_SINGLE_TOP.</li>\n<li>--activity-clear-task<br>包含标志 FLAG_ACTIVITY_CLEAR_TASK.</li>\n<li>--activity-task-on-home<br>包含标志 FLAG_ACTIVITY_TASK_ON_HOME.</li>\n<li>--receiver-registered-only<br>包含标志 FLAG_RECEIVER_REGISTERED_ONLY.</li>\n<li>--receiver-replace-pending<br>包含标志 FLAG_RECEIVER_REPLACE_PENDING.</li>\n<li>--selector<br>需要使用 -d 和 -t 选项以设置 intent 数据和类型.</li>\n</ul>\n",
+              "desc": "<p>对于采用 intent 参数的 am 命令, 您可以使用以下选项指定 intent：</p>\n<ul>\n<li>-a action<br>\n指定 intent 操作, 如“android.intent.action.VIEW”. 此指定只能声明一次.</li>\n<li>-d data_uri<br>\n指定 intent 数据 URI, 如“content://contacts/people/1”. 此指定只能声明一次.</li>\n<li>-t mime_type<br>\n指定 intent MIME 类型, 如“image/png”. 此指定只能声明一次.</li>\n<li>-c category<br>\n指定 intent 类别, 如“android.intent.category.APP_CONTACTS”.</li>\n<li>-n component<br>\n指定带有软件包名称前缀的组件名称以创建显式 intent, 如“com.example.app/.ExampleActivity”.</li>\n<li>-f flags<br>\n将标志添加到 setFlags() 支持的 intent.</li>\n<li>--esn extra_key<br>\n添加一个 null extra. URI intent 不支持此选项.</li>\n<li>-e|--es extra_key extra_string_value<br>\n添加字符串数据作为键值对.</li>\n<li>--ez extra_key extra_boolean_value<br>\n添加布尔型数据作为键值对.</li>\n<li>--ei extra_key extra_int_value<br>\n添加整数型数据作为键值对.</li>\n<li>--el extra_key extra_long_value<br>\n添加长整型数据作为键值对.</li>\n<li>--ef extra_key extra_float_value<br>\n添加浮点型数据作为键值对.</li>\n<li>--eu extra_key extra_uri_value<br>\n添加 URI 数据作为键值对.</li>\n<li>--ecn extra_key extra_component_name_value<br>\n添加组件名称, 将其作为 ComponentName 对象进行转换和传递.</li>\n<li>--eia extra_key extra_int_value[,extra_int_value...]<br>\n添加整数数组.</li>\n<li>--ela extra_key extra_long_value[,extra_long_value...]<br>\n添加长整型数组.</li>\n<li>--efa extra_key extra_float_value[,extra_float_value...]<br>\n添加浮点型数组.</li>\n<li>--grant-read-uri-permission<br>\n包含标志 FLAG_GRANT_READ_URI_PERMISSION.</li>\n<li>--grant-write-uri-permission<br>\n包含标志 FLAG_GRANT_WRITE_URI_PERMISSION.</li>\n<li>--debug-log-resolution<br>\n包含标志 FLAG_DEBUG_LOG_RESOLUTION.</li>\n<li>--exclude-stopped-packages<br>\n包含标志 FLAG_EXCLUDE_STOPPED_PACKAGES.</li>\n<li>--include-stopped-packages<br>\n包含标志 FLAG_INCLUDE_STOPPED_PACKAGES.</li>\n<li>--activity-brought-to-front<br>\n包含标志 FLAG_ACTIVITY_BROUGHT_TO_FRONT.</li>\n<li>--activity-clear-top<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TOP.</li>\n<li>--activity-clear-when-task-reset<br>\n包含标志 FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET.</li>\n<li>--activity-exclude-from-recents<br>\n包含标志 FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS.</li>\n<li>--activity-launched-from-history<br>\n包含标志 FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY.</li>\n<li>--activity-multiple-task<br>\n包含标志 FLAG_ACTIVITY_MULTIPLE_TASK.</li>\n<li>--activity-no-animation<br>\n包含标志 FLAG_ACTIVITY_NO_ANIMATION.</li>\n<li>--activity-no-history<br>\n包含标志 FLAG_ACTIVITY_NO_HISTORY.</li>\n<li>--activity-no-user-action<br>\n包含标志 FLAG_ACTIVITY_NO_USER_ACTION.</li>\n<li>--activity-previous-is-top<br>\n包含标志 FLAG_ACTIVITY_PREVIOUS_IS_TOP.</li>\n<li>--activity-reorder-to-front<br>\n包含标志 FLAG_ACTIVITY_REORDER_TO_FRONT.</li>\n<li>--activity-reset-task-if-needed<br>\n包含标志 FLAG_ACTIVITY_RESET_TASK_IF_NEEDED.</li>\n<li>--activity-single-top<br>\n包含标志 FLAG_ACTIVITY_SINGLE_TOP.</li>\n<li>--activity-clear-task<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TASK.</li>\n<li>--activity-task-on-home<br>\n包含标志 FLAG_ACTIVITY_TASK_ON_HOME.</li>\n<li>--receiver-registered-only<br>\n包含标志 FLAG_RECEIVER_REGISTERED_ONLY.</li>\n<li>--receiver-replace-pending<br>\n包含标志 FLAG_RECEIVER_REPLACE_PENDING.</li>\n<li>--selector<br>\n需要使用 -d 和 -t 选项以设置 intent 数据和类型.</li>\n</ul>\n",
               "modules": [
                 {
                   "textRaw": "URI component package",
@@ -282,7 +282,7 @@
             {
               "textRaw": "display-size [reset|widthxheight]",
               "name": "[reset|widthxheight]",
-              "desc": "<p>替换模拟器/设备显示尺寸. 此命令对于在不同尺寸的屏幕上测试您的应用非常有用, 它支持使用大屏设备模仿小屏幕分辨率（反之亦然）.<br>示例：</p>\n<pre><code>shell(&quot;am display-size 1280x800&quot;, true);\n\n</code></pre>"
+              "desc": "<p>替换模拟器/设备显示尺寸. 此命令对于在不同尺寸的屏幕上测试您的应用非常有用, 它支持使用大屏设备模仿小屏幕分辨率（反之亦然）.<br>\n示例：</p>\n<pre><code>shell(&quot;am display-size 1280x800&quot;, true);\n\n</code></pre>"
             }
           ],
           "type": "module",
@@ -291,19 +291,19 @@
         {
           "textRaw": "应用包名",
           "name": "应用包名",
-          "desc": "<p>所谓应用包名, 是唯一确定应用的标识. 例如微信的包名是&quot;com.tencent.mm&quot;, QQ的包名是&quot;com.tencent.mobileqq&quot;.<br>要获取一个应用的包名, 可以通过函数<code>getPackageName(appName)</code>获取. 参见帮助-&gt;其他一般函数.</p>\n",
+          "desc": "<p>所谓应用包名, 是唯一确定应用的标识. 例如微信的包名是&quot;com.tencent.mm&quot;, QQ的包名是&quot;com.tencent.mobileqq&quot;.<br>\n要获取一个应用的包名, 可以通过函数<code>getPackageName(appName)</code>获取. 参见帮助-&gt;其他一般函数.</p>\n",
           "type": "module",
           "displayName": "应用包名"
         },
         {
           "textRaw": "pm命令",
           "name": "pm命令",
-          "desc": "<p>pm命令用于管理应用程序, 例如卸载应用、冻结应用等.<br><strong>以下命令均以&quot;pm &quot;开头, 例如&quot;shell(\\&quot;pm disable com.tencent.mm\\&quot;);&quot;(冻结微信)</strong></p>\n",
+          "desc": "<p>pm命令用于管理应用程序, 例如卸载应用、冻结应用等.<br>\n<strong>以下命令均以&quot;pm &quot;开头, 例如&quot;shell(\\&quot;pm disable com.tencent.mm\\&quot;);&quot;(冻结微信)</strong></p>\n",
           "modules": [
             {
               "textRaw": "list packages [options] filter",
               "name": "list_packages_[options]_filter",
-              "desc": "<p>输出所有软件包, 或者, 仅输出包名称包含 filter 中的文本的软件包.<br>选项：</p>\n<ul>\n<li>-f：查看它们的关联文件.</li>\n<li>-d：进行过滤以仅显示已停用的软件包.</li>\n<li>-e：进行过滤以仅显示已启用的软件包.</li>\n<li>-s：进行过滤以仅显示系统软件包.</li>\n<li>-3：进行过滤以仅显示第三方软件包.</li>\n<li>-i：查看软件包的安装程序.</li>\n<li>-u：也包括卸载的软件包.</li>\n<li>--user user_id：要查询的用户空间.</li>\n</ul>\n",
+              "desc": "<p>输出所有软件包, 或者, 仅输出包名称包含 filter 中的文本的软件包.<br>\n选项：</p>\n<ul>\n<li>-f：查看它们的关联文件.</li>\n<li>-d：进行过滤以仅显示已停用的软件包.</li>\n<li>-e：进行过滤以仅显示已启用的软件包.</li>\n<li>-s：进行过滤以仅显示系统软件包.</li>\n<li>-3：进行过滤以仅显示第三方软件包.</li>\n<li>-i：查看软件包的安装程序.</li>\n<li>-u：也包括卸载的软件包.</li>\n<li>--user user_id：要查询的用户空间.</li>\n</ul>\n",
               "type": "module",
               "displayName": "list packages [options] filter"
             },
@@ -317,7 +317,7 @@
             {
               "textRaw": "list permissions [options] group",
               "name": "list_permissions_[options]_group",
-              "desc": "<p>输出所有已知权限, 或者, 仅输出 group 中的权限.<br>选项：</p>\n<ul>\n<li>-g：按组加以组织.</li>\n<li>-f：输出所有信息.</li>\n<li>-s：简短摘要.</li>\n<li>-d：仅列出危险权限.</li>\n<li>-u：仅列出用户将看到的权限.</li>\n</ul>\n",
+              "desc": "<p>输出所有已知权限, 或者, 仅输出 group 中的权限.<br>\n选项：</p>\n<ul>\n<li>-g：按组加以组织.</li>\n<li>-f：输出所有信息.</li>\n<li>-s：简短摘要.</li>\n<li>-d：仅列出危险权限.</li>\n<li>-u：仅列出用户将看到的权限.</li>\n</ul>\n",
               "type": "module",
               "displayName": "list permissions [options] group"
             },
@@ -352,14 +352,14 @@
             {
               "textRaw": "install [options] path",
               "name": "install_[options]_path",
-              "desc": "<p>将软件包（通过 path 指定）安装到系统.<br>选项：</p>\n<ul>\n<li>-l：安装具有转发锁定功能的软件包.</li>\n<li>-r：重新安装现有应用, 保留其数据.</li>\n<li>-t：允许安装测试 APK.</li>\n<li>-i installer_package_name：指定安装程序软件包名称.</li>\n<li>-s：在共享的大容量存储（如 sdcard）上安装软件包.</li>\n<li>-f：在内部系统内存上安装软件包.</li>\n<li>-d：允许版本代码降级.</li>\n<li>-g：授予应用清单文件中列出的所有权限.</li>\n</ul>\n",
+              "desc": "<p>将软件包（通过 path 指定）安装到系统.<br>\n选项：</p>\n<ul>\n<li>-l：安装具有转发锁定功能的软件包.</li>\n<li>-r：重新安装现有应用, 保留其数据.</li>\n<li>-t：允许安装测试 APK.</li>\n<li>-i installer_package_name：指定安装程序软件包名称.</li>\n<li>-s：在共享的大容量存储（如 sdcard）上安装软件包.</li>\n<li>-f：在内部系统内存上安装软件包.</li>\n<li>-d：允许版本代码降级.</li>\n<li>-g：授予应用清单文件中列出的所有权限.</li>\n</ul>\n",
               "type": "module",
               "displayName": "install [options] path"
             },
             {
               "textRaw": "uninstall [options] package",
               "name": "uninstall_[options]_package",
-              "desc": "<p>从系统中卸载软件包.<br>选项：</p>\n<ul>\n<li>-k：移除软件包后保留数据和缓存目录.</li>\n</ul>\n",
+              "desc": "<p>从系统中卸载软件包.<br>\n选项：</p>\n<ul>\n<li>-k：移除软件包后保留数据和缓存目录.</li>\n</ul>\n",
               "type": "module",
               "displayName": "uninstall [options] package"
             },
@@ -452,7 +452,7 @@
             {
               "textRaw": "list instrumentation [options]",
               "name": "[options]",
-              "desc": "<p>列出所有测试软件包.<br>选项：</p>\n<ul>\n<li>-f：列出用于测试软件包的 APK 文件.</li>\n<li>target_package：列出仅用于此应用的测试软件包.</li>\n</ul>\n"
+              "desc": "<p>列出所有测试软件包.<br>\n选项：</p>\n<ul>\n<li>-f：列出用于测试软件包的 APK 文件.</li>\n<li>target_package：列出仅用于此应用的测试软件包.</li>\n</ul>\n"
             },
             {
               "textRaw": "set-permission-enforced permission [true|false]",

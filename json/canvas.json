@@ -276,9 +276,9 @@
             {
               "params": [
                 {
-                  "textRaw": "`pts` {Array<number>} 点坐标数组 [x0, y0, x1, y1, x2, y2, ...] ",
+                  "textRaw": "`pts` {Array&lt;number&gt;} 点坐标数组 [x0, y0, x1, y1, x2, y2, ...] ",
                   "name": "pts",
-                  "type": "Array<number>",
+                  "type": "Array&lt;number&gt;",
                   "desc": "点坐标数组 [x0, y0, x1, y1, x2, y2, ...]"
                 },
                 {

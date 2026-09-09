@@ -12,7 +12,7 @@ import {
 } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
-import { basename, extname, resolve } from 'node:path'
+import { basename, dirname, extname, resolve } from 'node:path'
 import Ajv2020 from 'ajv/dist/2020.js'
 import {
   contentEntries,
@@ -54,16 +54,18 @@ function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
 }
 
-function createTemporaryLegacyProject(): string {
+function createTemporaryJsonProject(): string {
   const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-build-'))
-  mkdirSync(resolve(temporaryRoot, 'api'), { recursive: true })
   mkdirSync(resolve(temporaryRoot, 'json'), { recursive: true })
 
   for (const entry of contentEntries) {
-    copyFileSync(
-      resolve(process.cwd(), entry.legacySource),
-      resolve(temporaryRoot, entry.legacySource),
-    )
+    const source = resolveEntryMarkdownPath(process.cwd(), entry)
+    const repositoryPath = source === resolve(process.cwd(), entry.source)
+      ? entry.source
+      : entry.legacySource
+    const destination = resolve(temporaryRoot, repositoryPath)
+    mkdirSync(dirname(destination), { recursive: true })
+    copyFileSync(source, destination)
   }
 
   for (const filename of readdirSync(resolve(process.cwd(), 'json'))) {
@@ -303,7 +305,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('rejects symlink and non-regular files already present in json output', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const outputPath = resolve(temporaryRoot, 'json/overview.json')
     const outsidePath = resolve(temporaryRoot, 'outside.json')
 
@@ -367,7 +369,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('rejects unexpected JSON without deleting or rewriting it', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const roguePath = resolve(temporaryRoot, 'json/rogue.json')
     const retiredPath = resolve(temporaryRoot, 'json/404.json')
 
@@ -385,7 +387,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('validates the catalog before touching existing JSON output', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const before = snapshotJsonDirectory(temporaryRoot)
 
     try {
@@ -402,7 +404,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('leaves existing JSON byte-identical when staging fails midway', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const before = snapshotJsonDirectory(temporaryRoot)
     let stagedFiles = 0
 
@@ -424,7 +426,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('validates the complete staging directory before committing it', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const before = snapshotJsonDirectory(temporaryRoot)
 
     try {
@@ -445,7 +447,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('restores existing JSON when the staging-directory commit rename fails', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const before = snapshotJsonDirectory(temporaryRoot)
     let renameCalls = 0
 
@@ -470,7 +472,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('retains the recoverable backup when commit and restore renames both fail', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const jsonDirectory = resolve(temporaryRoot, 'json')
     const before = snapshotJsonDirectory(temporaryRoot)
     let renameCalls = 0
@@ -512,7 +514,7 @@ describe('legacy JSON compatibility', () => {
   })
 
   test('builds exactly 113 schema-ready files while preserving frozen bytes', () => {
-    const temporaryRoot = createTemporaryLegacyProject()
+    const temporaryRoot = createTemporaryJsonProject()
     const jsonDirectory = resolve(temporaryRoot, 'json')
     try {
       buildLegacyJson(temporaryRoot)

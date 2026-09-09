@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import {
   contentEntries,
@@ -16,6 +16,54 @@ import type {
 } from '../scripts/content/catalog'
 
 const kebabCaseSegment = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const expectedLegacyMarkdownSources = [
+  ...contentEntries.map(({ legacySource }) => legacySource),
+  ...deletedLegacySources,
+].sort()
+const expectedLegacyAllEntryIds = [
+  'guide.overview',
+  'project.about',
+  'guide.troubleshooting',
+  'api.core.global',
+  'api.automation.automator',
+  'api.core.monkeyking',
+  'api.core.app',
+  'api.media.color',
+  'api.media.image',
+  'api.media.ocr',
+  'api.media.barcode',
+  'api.media.qr-code',
+  'api.automation.keys',
+  'api.system.device',
+  'api.system.storages',
+  'api.system.files',
+  'api.system.engines',
+  'api.system.tasks',
+  'api.core.modules',
+  'api.core.plugins',
+  'api.system.toast',
+  'api.system.notice',
+  'api.system.console',
+  'api.system.shell',
+  'api.media.media',
+  'api.system.sensors',
+  'api.media.recorder',
+  'api.system.timers',
+  'api.system.threads',
+  'api.system.continuation',
+  'api.system.events',
+  'api.automation.dialogs',
+  'api.automation.floaty',
+  'api.media.canvas',
+  'api.automation.ui',
+  'api.network.web',
+  'api.network.http',
+  'api.utilities.base64',
+  'api.utilities.crypto',
+  'api.utilities.opencc',
+  'api.utilities.i18n',
+  'api.utilities.e4x',
+] as const
 
 function valuesFor(key: 'id' | 'legacySource' | 'source' | 'route'): string[] {
   return contentEntries.map((entry) => entry[key])
@@ -26,7 +74,10 @@ function expectUnique(values: readonly string[]): void {
 }
 
 function readLegacyMarkdownSources(): string[] {
-  return readdirSync(resolve(process.cwd(), 'api'), {
+  const apiDirectory = resolve(process.cwd(), 'api')
+  if (!existsSync(apiDirectory)) return []
+
+  return readdirSync(apiDirectory, {
     withFileTypes: true,
   })
     .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
@@ -168,24 +219,12 @@ describe('content catalog contract', () => {
   })
 
   test('preserves the 42-entry legacy all-document include order by canonical id', () => {
-    const legacyAllStems = [
-      ...readFileSync(resolve(process.cwd(), 'api/all.md'), 'utf8').matchAll(
-        /^@include (\S+)$/gm,
-      ),
-    ].map((match) => match[1])
-    const expectedEntryIds = legacyAllStems.map(
-      (legacyStem) =>
-        contentEntries.find(
-          ({ legacySource }) => legacySource === `api/${legacyStem}.md`,
-        )?.id,
-    )
-
     expect(legacyAllEntryIds).toHaveLength(42)
     expectUnique(legacyAllEntryIds)
     expect(legacyAllEntryIds.every((id) => contentEntries.some((entry) => entry.id === id))).toBe(
       true,
     )
-    expect(legacyAllEntryIds).toEqual(expectedEntryIds)
+    expect(legacyAllEntryIds).toEqual(expectedLegacyAllEntryIds)
   })
 
   test('freezes the exported catalog and every nested collection at runtime', () => {
@@ -208,21 +247,29 @@ describe('content catalog contract', () => {
     expect(Object.isFrozen(legacyAllEntryIds)).toBe(true)
   })
 
-  test('covers all 107 current api Markdown files with entries or deletions', () => {
+  test('covers either the complete legacy inventory or all canonical targets', () => {
     const actualLegacySources = readLegacyMarkdownSources()
-    const catalogedLegacySources = [
-      ...contentEntries.map(({ legacySource }) => legacySource),
-      ...deletedLegacySources,
-    ].sort()
+    const actualCanonicalSources = contentEntries
+      .map(({ source }) => source)
+      .filter((source) => existsSync(resolve(process.cwd(), source)))
+      .sort()
 
-    expect(actualLegacySources).toHaveLength(107)
-    expect(catalogedLegacySources).toEqual(actualLegacySources)
-    expect(
-      validateContentCatalog({ legacyMarkdownSources: actualLegacySources }),
-    ).toEqual([])
+    if (actualLegacySources.length > 0) {
+      expect(actualLegacySources).toHaveLength(107)
+      expect(actualLegacySources).toEqual(expectedLegacyMarkdownSources)
+      expect(actualCanonicalSources).toEqual([])
+      expect(
+        validateContentCatalog({ legacyMarkdownSources: actualLegacySources }),
+      ).toEqual([])
+    } else {
+      expect(actualCanonicalSources).toEqual(
+        contentEntries.map(({ source }) => source).sort(),
+      )
+      expect(validateContentCatalog()).toEqual([])
+    }
   })
 
-  const actualLegacySources = readLegacyMarkdownSources()
+  const actualLegacySources = expectedLegacyMarkdownSources
   const mutationCases: Array<{
     name: string
     options: ContentCatalogValidationOptions

@@ -4,7 +4,7 @@
     {
       "textRaw": "异常 (Exceptions)",
       "name": "异常_(exceptions)",
-      "desc": "<p>当运行时发生错误, 新创建的 Error 对象会被抛出.<br>除通用的 Error 构造器外, JavaScript 还有其它类型的错误构造器, 详见下述 <a href=\"#javascript\">JavaScript 错误类型</a> 小节.</p>\n<blockquote>\n<p>注: Java 有 Error (错误) 和 Exception (异常) 之分, 它们都扩展自 Throwable 类.<br>JavaScript 有 Error (错误) 全局对象, 以及一系列细分 Error 对象 (如 TypeError 等).<br>虽然 JavaScript 没有 Exception (异常) 对象, 但章节标题依然采用 &quot;异常&quot; (而非 &quot;错误&quot;).</p>\n</blockquote>\n<p>用 <code>try...catch</code> 语句可以捕获并处理异常, 详见下述 <a href=\"#trycatch-语句\">异常处理</a> 小节.</p>\n<p>在 <code>catch {}</code> (即 <code>catch 块</code>) 中, <code>e</code> 对象可用于获取异常相关信息,<br>而 Rhino 引擎重新包装了 <code>e</code> 对象, 通过 <a href=\"#p-javaexception\"><code>e.javaException</code></a> 和 <a href=\"#p-rhinoexception\"><code>e.rhinoException</code></a> 可获取更多异常信息,<br>详见下述 <a href=\"#catch-块\">catch 块</a> 小节.</p>\n",
+      "desc": "<p>当运行时发生错误, 新创建的 Error 对象会被抛出.<br>\n除通用的 Error 构造器外, JavaScript 还有其它类型的错误构造器, 详见下述 <a href=\"#javascript\">JavaScript 错误类型</a> 小节.</p>\n<blockquote>\n<p>注: Java 有 Error (错误) 和 Exception (异常) 之分, 它们都扩展自 Throwable 类.<br>\nJavaScript 有 Error (错误) 全局对象, 以及一系列细分 Error 对象 (如 TypeError 等).<br>\n虽然 JavaScript 没有 Exception (异常) 对象, 但章节标题依然采用 &quot;异常&quot; (而非 &quot;错误&quot;).</p>\n</blockquote>\n<p>用 <code>try...catch</code> 语句可以捕获并处理异常, 详见下述 <a href=\"#异常处理\">异常处理</a> 小节.</p>\n<p>在 <code>catch {}</code> (即 <code>catch 块</code>) 中, <code>e</code> 对象可用于获取异常相关信息,<br>\n而 Rhino 引擎重新包装了 <code>e</code> 对象, 通过 <a href=\"#p-javaexception\"><code>e.javaException</code></a> 和 <a href=\"#p-rhinoexception\"><code>e.rhinoException</code></a> 可获取更多异常信息,<br>\n详见下述 <a href=\"#catch-块\">catch 块</a> 小节.</p>\n",
       "type": "module",
       "displayName": "异常 (Exceptions)"
     },
@@ -15,19 +15,19 @@
         {
           "textRaw": "JavaScript",
           "name": "javascript",
-          "desc": "<p>以下内置错误类型在 Rhino 引擎中均得以实现, 在 AutoJs6 支持全局调用.<br>如需创建自定义错误类型, 参阅下述 <a href=\"#自定义\">自定义错误类型</a> 小节.</p>\n",
+          "desc": "<p>以下内置错误类型在 Rhino 引擎中均得以实现, 在 Monkey King 支持全局调用.<br>\n如需创建自定义错误类型, 参阅下述 <a href=\"#自定义\">自定义错误类型</a> 小节.</p>\n",
           "modules": [
             {
               "textRaw": "Error",
               "name": "error",
-              "desc": "<p>通用 Error 构造器.</p>\n<p>内置错误类型 TypeError, RangeError 等均扩展自 Error 构造器.<br>例如, 如果一个对象是 TypeError 的实例, 则也一定是 Error 的实例.</p>\n<p>Error 实例的属性及方法可参阅 <a href=\"#error-对象\">Error 对象</a> 章节.</p>\n<pre><code class=\"lang-js\">try {\n    android();\n} catch (e) {\n    console.log(e instanceof TypeError); // true\n    console.log(e instanceof Error); // true\n}\n</code></pre>\n",
+              "desc": "<p>通用 Error 构造器.</p>\n<p>内置错误类型 TypeError, RangeError 等均扩展自 Error 构造器.<br>\n例如, 如果一个对象是 TypeError 的实例, 则也一定是 Error 的实例.</p>\n<p>Error 实例的属性及方法可参阅 <a href=\"#error-对象\">Error 对象</a> 章节.</p>\n<pre><code class=\"lang-js\">try {\n    android();\n} catch (e) {\n    console.log(e instanceof TypeError); // true\n    console.log(e instanceof Error); // true\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "Error"
             },
             {
               "textRaw": "RangeError",
               "name": "rangeerror",
-              "desc": "<p>越界错误.</p>\n<p>RangeError 实例代表了当一个值不在其所允许的范围或者集合中的错误.</p>\n<pre><code class=\"lang-js\">/* 创建或应用. */\n\nconst check = function (num) {\n    const MIN = 1;\n    const MAX = 500;\n    if (num &lt; MIN || num &gt; MAX) {\n        throw new RangeError(`Number ${num} must be between ${MIN} and ${MAX}.`);\n    }\n};\n\ntry {\n    check(523);\n} catch (e) {\n    if (e instanceof RangeError) {\n        console.error(&quot;发生越界错误.&quot;);\n        throw e;\n    }\n}\n\n/* 复现 (Array 构造器参数不合法). */\n\n// RangeError: Inappropriate array length.\nlet a = Array(-1);\n\n/* 复现 (Number 部分实例方法参数不合法). */\n\n// RangeError: Precision -1 out of range. \nlet n = (23).toExponential(-1);\n// RangeError: Precision -2 out of range. \nlet n = (23).toFixed(-2);\n// RangeError: Precision -3 out of range.\nlet n = (23).toPrecision(-3);\n\n</code></pre>\n",
+              "desc": "<p>越界错误.</p>\n<p>RangeError 实例代表了当一个值不在其所允许的范围或者集合中的错误.</p>\n<pre><code class=\"lang-js\">/* 创建或应用. */\n\nconst check = function (num) {\n    const MIN = 1;\n    const MAX = 500;\n    if (num &lt; MIN || num &gt; MAX) {\n        throw new RangeError(`Number ${num} must be between ${MIN} and ${MAX}.`);\n    }\n};\n\ntry {\n    check(523);\n} catch (e) {\n    if (e instanceof RangeError) {\n        console.error(&quot;发生越界错误.&quot;);\n        throw e;\n    }\n}\n\n/* 复现 (Array 构造器参数不合法). */\n\n// RangeError: Inappropriate array length.\nlet a = Array(-1);\n\n/* 复现 (Number 部分实例方法参数不合法). */\n\n// RangeError: Precision -1 out of range.\nlet n = (23).toExponential(-1);\n// RangeError: Precision -2 out of range.\nlet n = (23).toFixed(-2);\n// RangeError: Precision -3 out of range.\nlet n = (23).toPrecision(-3);\n\n</code></pre>\n",
               "type": "module",
               "displayName": "RangeError"
             },
@@ -41,7 +41,7 @@
             {
               "textRaw": "SyntaxError",
               "name": "syntaxerror",
-              "desc": "<p>语法错误.</p>\n<p>SyntaxError 实例代表了当 Javascript 引擎发现 tokens 不合法或 token 顺序不合法时抛出的错误.</p>\n<pre><code class=\"lang-badjs\">/* 创建或应用. */\n\ntry {\n    eval(&quot;...&quot;);\n} catch (e) {\n    if (e instanceof SyntaxError) {\n        console.error(&quot;发生语法错误, 位于 eval.&quot;);\n        throw e;\n    }\n}\n\n/* 复现. */\n\n// Firefox 103.0 - SyntaxError: expected expression, got &#39;??&#39;.\n// Node.js 17.3.0 - SyntaxError: Unexpected token &#39;??&#39;.\n// AutoJs6 - syntax error.\n??\n</code></pre>\n<blockquote>\n<p>注: Rhino 内置了 token 解析器,<br>因此多数语法错误会被重新解析后再抛出,<br>而其他多数 JavaScript 引擎则直接抛出 SyntaxError.</p>\n</blockquote>\n<blockquote>\n<p>Rhino 相关类或文件:<br><a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/Parser.java\">org.mozilla.javascript.Parser</a><br><a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/TokenStream.java\">org.mozilla.javascript.TokenStream</a><br><a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/resources/Messages.properties\">Messages.properties</a></p>\n</blockquote>\n",
+              "desc": "<p>语法错误.</p>\n<p>SyntaxError 实例代表了当 Javascript 引擎发现 tokens 不合法或 token 顺序不合法时抛出的错误.</p>\n<pre><code class=\"lang-js\">/* 创建或应用. */\n\ntry {\n    eval(&quot;...&quot;);\n} catch (e) {\n    if (e instanceof SyntaxError) {\n        console.error(&quot;发生语法错误, 位于 eval.&quot;);\n        throw e;\n    }\n}\n\n/* 复现. */\n\n// Firefox 103.0 - SyntaxError: expected expression, got &#39;??&#39;.\n// Node.js 17.3.0 - SyntaxError: Unexpected token &#39;??&#39;.\n// Monkey King - syntax error.\n??\n</code></pre>\n<blockquote>\n<p>注: Rhino 内置了 token 解析器,<br>\n因此多数语法错误会被重新解析后再抛出,<br>\n而其他多数 JavaScript 引擎则直接抛出 SyntaxError.</p>\n</blockquote>\n<blockquote>\n<p>Rhino 相关类或文件:<br>\n<a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/Parser.java\">org.mozilla.javascript.Parser</a><br>\n<a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/TokenStream.java\">org.mozilla.javascript.TokenStream</a><br>\n<a href=\"https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/resources/Messages.properties\">Messages.properties</a></p>\n</blockquote>\n",
               "type": "module",
               "displayName": "SyntaxError"
             },
@@ -69,7 +69,7 @@
             {
               "textRaw": "EvalError",
               "name": "evalerror",
-              "desc": "<p>Eval 错误.</p>\n<p>EvalError 实例代表了一个关于 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/eval\">eval</a> 方法的错误.</p>\n<pre><code class=\"lang-js\">/* 创建或应用. */\n\ntry {\n    throw new EvalError(&#39;Hello&#39;, &#39;someFile.js&#39;, 10);\n} catch (e) {\n    console.log(e instanceof EvalError); // true\n    console.log(e.message); // &quot;Hello&quot;\n    console.log(e.name); // &quot;EvalError&quot;\n    console.log(e.fileName); // &quot;someFile.js&quot;\n    console.log(e.lineNumber); // 10\n}\n\n/* 复现. */\n\n/* eval 抛出具体类型的错误, 而非 EvalError, 因此基本无法复现. */\n\n// ReferenceError: &quot;hello&quot; is not defined.\neval(&quot;hello()&quot;);\n\n/* 除非像上述 &quot;创建 EvalError&quot; 示例一样抛出错误, */\n/* 或在 eval 中显式抛出 EvalError, */\n/* 但这样做通常没有意义. */\n\n// EvalError: test\neval(&quot;throw EvalError(&#39;test&#39;)&quot;);\n</code></pre>\n<blockquote>\n<p>注: EvalError 不在当前 (2022/07) ECMAScript 规范中使用, 因此不会被运行时抛出.<br>但是对象本身仍然与规范的早期版本向后兼容.</p>\n</blockquote>\n",
+              "desc": "<p>Eval 错误.</p>\n<p>EvalError 实例代表了一个关于 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/eval\">eval</a> 方法的错误.</p>\n<pre><code class=\"lang-js\">/* 创建或应用. */\n\ntry {\n    throw new EvalError(&#39;Hello&#39;, &#39;someFile.js&#39;, 10);\n} catch (e) {\n    console.log(e instanceof EvalError); // true\n    console.log(e.message); // &quot;Hello&quot;\n    console.log(e.name); // &quot;EvalError&quot;\n    console.log(e.fileName); // &quot;someFile.js&quot;\n    console.log(e.lineNumber); // 10\n}\n\n/* 复现. */\n\n/* eval 抛出具体类型的错误, 而非 EvalError, 因此基本无法复现. */\n\n// ReferenceError: &quot;hello&quot; is not defined.\neval(&quot;hello()&quot;);\n\n/* 除非像上述 &quot;创建 EvalError&quot; 示例一样抛出错误, */\n/* 或在 eval 中显式抛出 EvalError, */\n/* 但这样做通常没有意义. */\n\n// EvalError: test\neval(&quot;throw EvalError(&#39;test&#39;)&quot;);\n</code></pre>\n<blockquote>\n<p>注: EvalError 不在当前 (2022/07) ECMAScript 规范中使用, 因此不会被运行时抛出.<br>\n但是对象本身仍然与规范的早期版本向后兼容.</p>\n</blockquote>\n",
               "type": "module",
               "displayName": "EvalError"
             }
@@ -87,14 +87,14 @@
         {
           "textRaw": "Java",
           "name": "java",
-          "desc": "<p>Java 异常 (Exception) 类扩展自 Throwable 类, Exception 实例可使用 <a href=\"#throw-语句\">throw 关键字</a> 抛出.</p>\n<p>Exception 可以被 <a href=\"#trycatch-语句\">try...catch 语句</a> 捕获并处理.</p>\n<p>Error 类也扩展自 Throwable 类, 与 Exception 稍有不同, Error 往往是 Java 程序运行中不可预料且无法恢复的异常情况, 如 [ OutOfMemoryError / NoClassDefFoundError / StackOverflowError ] 等.</p>\n<p>由 Java 方法抛出的原始异常, 指向 catch 块中异常对象的 <a href=\"#p-javaexception\">javaException</a> 属性.</p>\n<p>常见的 Java 异常:</p>\n<pre><code class=\"lang-text\">Exception\n│\n├─ RuntimeException\n│  │\n│  ├─ NullPointerException\n│  │\n│  ├─ IndexOutOfBoundsException\n│  │\n│  ├─ SecurityException\n│  │\n│  └─ IllegalArgumentException\n│     │\n│     └─ NumberFormatException\n│\n├─ IOException\n│  │\n│  ├─ UnsupportedCharsetException\n│  │\n│  ├─ FileNotFoundException\n│  │\n│  └─ SocketException\n│\n├─ ParseException\n│\n├─ GeneralSecurityException\n│\n├─ SQLException\n│\n└─ TimeoutException\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://www.liaoxuefeng.com/wiki/1252599548343744/1264737765214592\">廖雪峰</a> / <a href=\"https://www.geeksforgeeks.org/errors-v-s-exceptions-in-java/\">GeeksForGeeks </a></p>\n</blockquote>\n",
+          "desc": "<p>Java 异常 (Exception) 类扩展自 Throwable 类, Exception 实例可使用 <a href=\"#throw-语句\">throw 关键字</a> 抛出.</p>\n<p>Exception 可以被 <a href=\"#try-catch-语句\">try...catch 语句</a> 捕获并处理.</p>\n<p>Error 类也扩展自 Throwable 类, 与 Exception 稍有不同, Error 往往是 Java 程序运行中不可预料且无法恢复的异常情况, 如 [ OutOfMemoryError / NoClassDefFoundError / StackOverflowError ] 等.</p>\n<p>由 Java 方法抛出的原始异常, 指向 catch 块中异常对象的 <a href=\"#p-javaexception\">javaException</a> 属性.</p>\n<p>常见的 Java 异常:</p>\n<pre><code class=\"lang-text\">Exception\n│\n├─ RuntimeException\n│  │\n│  ├─ NullPointerException\n│  │\n│  ├─ IndexOutOfBoundsException\n│  │\n│  ├─ SecurityException\n│  │\n│  └─ IllegalArgumentException\n│     │\n│     └─ NumberFormatException\n│\n├─ IOException\n│  │\n│  ├─ UnsupportedCharsetException\n│  │\n│  ├─ FileNotFoundException\n│  │\n│  └─ SocketException\n│\n├─ ParseException\n│\n├─ GeneralSecurityException\n│\n├─ SQLException\n│\n└─ TimeoutException\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://www.liaoxuefeng.com/wiki/1252599548343744/1264737765214592\">廖雪峰</a> / <a href=\"https://www.geeksforgeeks.org/errors-v-s-exceptions-in-java/\">GeeksForGeeks </a></p>\n</blockquote>\n",
           "type": "module",
           "displayName": "Java"
         },
         {
           "textRaw": "Rhino",
           "name": "rhino",
-          "desc": "<p>Rhino 异常可以视为特殊的 <a href=\"#java\">Java 异常</a>, 由 Rhino <a href=\"runtime\">运行时 (Runtime)</a> 包装为对象, 指向 catch 块中异常对象的 <a href=\"#p-rhinoexception\">rhinoException</a> 属性. </p>\n",
+          "desc": "<p>Rhino 异常可以视为特殊的 <a href=\"#java\">Java 异常</a>, 由 Rhino <a href=\"runtime.md\">运行时 (Runtime)</a> 包装为对象, 指向 catch 块中异常对象的 <a href=\"#p-rhinoexception\">rhinoException</a> 属性.</p>\n",
           "type": "module",
           "displayName": "Rhino"
         },
@@ -116,7 +116,7 @@
         {
           "textRaw": "throw 语句",
           "name": "throw_语句",
-          "desc": "<p>使用 throw 语句抛出一个异常.<br>此异常可以是一个含有值的表达式, 包括 [ 数字 / 字符串 / 布尔 / 对象 ] 等多种类型.</p>\n<p>不同语言的语法存在差异:</p>\n<pre><code class=\"lang-java\">/* Java. */\n\n/* new 不可省略. */\nthrow new Exception(&quot;foo&quot;);\n</code></pre>\n<pre><code class=\"lang-kotlin\">/* Kotlin. */\n\n/* Kotlin 语言无 new 关键字. */\nthrow Exception(&quot;foo&quot;);\n</code></pre>\n<pre><code class=\"lang-js\">/* JavaScript. */\n\n/* Error 实例. */\nthrow new Error(&quot;foo&quot;);\n\n/* Error 实例 (new 关键字省略). */\nthrow Error(&quot;foo&quot;);\n\n/* 数字或字符串等表达式. */\nthrow &quot;foo&quot;; /* 合法. */\nthrow 23; /* 合法. */\nthrow true; /* 合法. */\n\n/* 对象. */\nthrow {\n    name: &quot;CustomError&quot;,\n    message: &quot;test&quot;,\n    __proto__: Error.prototype,\n};\n\n/* 自定义 &quot;类&quot; 的实例. */\nfunction TestError(msg) {\n    this.message = msg;\n    this.name = this.constructor.name;\n    this.toString = () =&gt; `${this.name}: ${this.message}`;\n}\n\nthrow new TestError(&quot;foo&quot;); /* new 关键字不可省略. */\n\n</code></pre>\n",
+          "desc": "<p>使用 throw 语句抛出一个异常.<br>\n此异常可以是一个含有值的表达式, 包括 [ 数字 / 字符串 / 布尔 / 对象 ] 等多种类型.</p>\n<p>不同语言的语法存在差异:</p>\n<pre><code class=\"lang-java\">/* Java. */\n\n/* new 不可省略. */\nthrow new Exception(&quot;foo&quot;);\n</code></pre>\n<pre><code class=\"lang-kotlin\">/* Kotlin. */\n\n/* Kotlin 语言无 new 关键字. */\nthrow Exception(&quot;foo&quot;);\n</code></pre>\n<pre><code class=\"lang-js\">/* JavaScript. */\n\n/* Error 实例. */\nthrow new Error(&quot;foo&quot;);\n\n/* Error 实例 (new 关键字省略). */\nthrow Error(&quot;foo&quot;);\n\n/* 数字或字符串等表达式. */\nthrow &quot;foo&quot;; /* 合法. */\nthrow 23; /* 合法. */\nthrow true; /* 合法. */\n\n/* 对象. */\nthrow {\n    name: &quot;CustomError&quot;,\n    message: &quot;test&quot;,\n    __proto__: Error.prototype,\n};\n\n/* 自定义 &quot;类&quot; 的实例. */\nfunction TestError(msg) {\n    this.message = msg;\n    this.name = this.constructor.name;\n    this.toString = () =&gt; `${this.name}: ${this.message}`;\n}\n\nthrow new TestError(&quot;foo&quot;); /* new 关键字不可省略. */\n\n</code></pre>\n",
           "type": "module",
           "displayName": "throw 语句"
         },
@@ -130,7 +130,7 @@
         {
           "textRaw": "catch 块",
           "name": "catch_块",
-          "desc": "<p>又名 &quot;捕捉块&quot;.</p>\n<p>使用 catch 块处理在 try 代码块中产生的异常.<br>catch 块中的语句只有 try 代码块中抛出异常时才会执行.</p>\n<pre><code class=\"lang-js\">try {\n    0 === 1;\n} catch (e) {\n    /* 不会执行, 因为 try 块中无异常. */\n    console.log(e.message);\n}\n</code></pre>\n<p>catch 块中的异常信息对象 (通常用 e 或 ex 表示) 包含了异常的基本信息, 如 [ message / name / javaException / stack ] 等, 详见 <a href=\"#error 对象\">Error 对象</a> 章节.</p>\n<p>Rhino 内置的 token 解析器可以解析像 Java 语言一样的多 catch 语句:</p>\n<pre><code class=\"lang-badjs\">function classForName(name) {\n    try {\n        return java.lang.Class.forName(name);\n    } catch (e if e.javaException instanceof java.lang.ClassNotFoundException) {\n        print(`Class ${name} not found`);\n    } catch (e if e.javaException instanceof java.lang.NullPointerException) {\n        print(&quot;Class name is null&quot;);\n    }\n}\n\nclassForName(&quot;NonExistingClass&quot;); // Class NonExistingClass not found\nclassForName(null); // Class name is null\n</code></pre>\n<p>上述示例代码在 AutoJs6 可正常运行并返回预期结果, 但不符合 ECMAScript 语法, 且暂未发现任何可以解析此语法的 IDE, 使用后会造成 IDE 报错并在格式化代码时出现排版异常.</p>\n<p>使用传统的单 catch 块语句可能会是更好的选择:</p>\n<pre><code class=\"lang-js\">try {\n    return java.lang.Class.forName(name);\n} catch (e) {\n    if (e.javaException instanceof java.lang.ClassNotFoundException) {\n        print(`Class ${name} not found`);\n    } else if (e.javaException instanceof java.lang.NullPointerException) {\n        print(&quot;Class name is null&quot;);\n    }\n}\n</code></pre>\n",
+          "desc": "<p>又名 &quot;捕捉块&quot;.</p>\n<p>使用 catch 块处理在 try 代码块中产生的异常.<br>\ncatch 块中的语句只有 try 代码块中抛出异常时才会执行.</p>\n<pre><code class=\"lang-js\">try {\n    0 === 1;\n} catch (e) {\n    /* 不会执行, 因为 try 块中无异常. */\n    console.log(e.message);\n}\n</code></pre>\n<p>catch 块中的异常信息对象 (通常用 e 或 ex 表示) 包含了异常的基本信息, 如 [ message / name / javaException / stack ] 等, 详见 <a href=\"#error 对象\">Error 对象</a> 章节.</p>\n<p>Rhino 内置的 token 解析器可以解析像 Java 语言一样的多 catch 语句:</p>\n<pre><code class=\"lang-js\">function classForName(name) {\n    try {\n        return java.lang.Class.forName(name);\n    } catch (e if e.javaException instanceof java.lang.ClassNotFoundException) {\n        print(`Class ${name} not found`);\n    } catch (e if e.javaException instanceof java.lang.NullPointerException) {\n        print(&quot;Class name is null&quot;);\n    }\n}\n\nclassForName(&quot;NonExistingClass&quot;); // Class NonExistingClass not found\nclassForName(null); // Class name is null\n</code></pre>\n<p>上述示例代码在 Monkey King 可正常运行并返回预期结果, 但不符合 ECMAScript 语法, 且暂未发现任何可以解析此语法的 IDE, 使用后会造成 IDE 报错并在格式化代码时出现排版异常.</p>\n<p>使用传统的单 catch 块语句可能会是更好的选择:</p>\n<pre><code class=\"lang-js\">try {\n    return java.lang.Class.forName(name);\n} catch (e) {\n    if (e.javaException instanceof java.lang.ClassNotFoundException) {\n        print(`Class ${name} not found`);\n    } else if (e.javaException instanceof java.lang.NullPointerException) {\n        print(&quot;Class name is null&quot;);\n    }\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "catch 块"
         },
@@ -148,47 +148,47 @@
     {
       "textRaw": "Error 对象",
       "name": "error_对象",
-      "desc": "<p>Error 对象是一个 JavaScript 构造函数, 它的实例通常由 <a href=\"#catch-块\">catch 块</a> 中的参数引用, 或通过 new 关键字产生相应的 Error 实例对象:</p>\n<pre><code class=\"lang-js\">try {\n    let err = new Error(&quot;test&quot;);\n    console.log(err instanceof Error); // true\n    throw err;\n} catch (e) {\n    console.log(e instanceof Error); // true\n}\n</code></pre>\n<p>对于 AutoJs6, catch 块中的引用对象 (通常用 e 或 ex 表示) 还由 Rhino 引擎额外封装了 <a href=\"#p-javaexception\">javaException</a> 和 <a href=\"#p-rhinoexception\">rhinoException</a> 两个对象.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">Error</p>\n\n<hr>\n",
+      "desc": "<p>Error 对象是一个 JavaScript 构造函数, 它的实例通常由 <a href=\"#catch-块\">catch 块</a> 中的参数引用, 或通过 new 关键字产生相应的 Error 实例对象:</p>\n<pre><code class=\"lang-js\">try {\n    let err = new Error(&quot;test&quot;);\n    console.log(err instanceof Error); // true\n    throw err;\n} catch (e) {\n    console.log(e instanceof Error); // true\n}\n</code></pre>\n<p>对于 Monkey King, catch 块中的引用对象 (通常用 e 或 ex 表示) 还由 Rhino 引擎额外封装了 <a href=\"#p-javaexception\">javaException</a> 和 <a href=\"#p-rhinoexception\">rhinoException</a> 两个对象.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">Error</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[@] Error",
           "name": "[@] Error",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#string\">string</a> }</li>\n</ul>\n<p>表示 Error 类型的名称, 初始值为 &quot;Error&quot;.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;SyntaxError&quot;\n\ntry {\n    throw TypeError(&#39;world&#39;);\n} catch (e) {\n    console.log(e.name); // &quot;TypeError&quot;\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>表示 Error 类型的名称, 初始值为 &quot;Error&quot;.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;SyntaxError&quot;\n\ntry {\n    throw TypeError(&#39;world&#39;);\n} catch (e) {\n    console.log(e.name); // &quot;TypeError&quot;\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] name"
         },
         {
           "textRaw": "[p#] name",
           "name": "[p#]_name",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#string\">string</a> }</li>\n</ul>\n<p>表示 Error 类型的名称, 初始值为 &quot;Error&quot;.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;SyntaxError&quot;\n\ntry {\n    throw TypeError(&#39;world&#39;);\n} catch (e) {\n    console.log(e.name); // &quot;TypeError&quot;\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>表示 Error 类型的名称, 初始值为 &quot;Error&quot;.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;SyntaxError&quot;\n\ntry {\n    throw TypeError(&#39;world&#39;);\n} catch (e) {\n    console.log(e.name); // &quot;TypeError&quot;\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] name"
         },
         {
           "textRaw": "[p#] message",
           "name": "[p#]_message",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#string\">string</a> }</li>\n</ul>\n<p>错误相关信息的描述.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;hello&quot;\n\ntry {\n    Math.random().toFixed(-1);\n} catch (e) {\n    console.log(e.message); // &quot;精度 -1 超出范围.&quot;\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>错误相关信息的描述.</p>\n<pre><code class=\"lang-js\">console.log(new SyntaxError(&#39;hello&#39;).name); // &quot;hello&quot;\n\ntry {\n    Math.random().toFixed(-1);\n} catch (e) {\n    console.log(e.message); // &quot;精度 -1 超出范围.&quot;\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] message"
         },
         {
           "textRaw": "[p#] stack",
           "name": "[p#]_stack",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#string\">string</a> | <a href=\"dataTypes#any\">any</a> }</li>\n</ul>\n<p>stack 属性描述了 Error 对象的 <a href=\"https://zh.wikipedia.org/wiki/%E6%A0%88%E8%BF%BD%E8%B8%AA\">栈追踪 (Stack Trace)</a> 信息.</p>\n<p>栈追踪描述了程序运行过程中某个时间点上的活跃栈帧信息.<br>用户在日志中可以查看程序出错时的栈追踪信息, 用以自行排查代码异常或将栈追踪信息反馈给开发者.</p>\n<pre><code class=\"lang-js\">try {\n    !function test() {\n        throw Error(&#39;hello&#39;);\n    }();\n} catch (e) {\n    /* 打印栈追踪信息. */\n    console.log(e.stack);\n}\n</code></pre>\n<p>一个已格式化的栈追踪信息示例:</p>\n<pre><code class=\"lang-text\">ReferenceError: FAIL is not defined\n   at Constraint.execute (deltablue.js:525:2)\n   at Constraint.recalculate (deltablue.js:424:21)\n   at Planner.addPropagate (deltablue.js:701:6)\n   at Constraint.satisfy (deltablue.js:184:15)\n   at Planner.incrementalAdd (deltablue.js:591:21)\n   at Constraint.addConstraint (deltablue.js:162:10)\n   at Constraint.BinaryConstraint (deltablue.js:346:7)\n   at Constraint.EqualityConstraint (deltablue.js:515:38)\n   at chainTest (deltablue.js:807:6)\n   at deltaBlue (deltablue.js:879:2)\n</code></pre>\n<p>栈追踪的信息量由栈帧数量体现, 通过 <a href=\"#p-stacktracelimit\">Error.stackTraceLimit</a> 可设置栈帧数量.<br>栈追踪信息可通过 <a href=\"#m-capturestacktrace\">Error.captureStackTrace</a> 附加到一个 JavaScript 对象 (如 obj) 上, 通过访问 obj.stack 可随时查看栈追踪信息.<br><a href=\"#m-preparestacktrace\">Error.prepareStackTrace</a> 还可以自定义栈追踪信息的输出格式.</p>\n<p>stack 属性默认返回 string 类型, 如果设置了 prepareStackTrace 格式函数, 则 stack 类型将与格式函数的返回值类型一致:</p>\n<pre><code class=\"lang-js\">Error.prepareStackTrace = function (e, frames) {\n    return frames.reduce((a, b) =&gt; a.concat([ b.getFunctionName() ]), []);\n};\ntry {\n    !function test() {\n        throw Error(&#39;hello&#39;);\n    }();\n} catch (e) {\n    /* 此时 stack 是一个数组. */\n    console.log(Array.isArray(e.stack)); // true\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> | <a href=\"../../api/types/data-types.md#any\">any</a> }</li>\n</ul>\n<p>stack 属性描述了 Error 对象的 <a href=\"https://zh.wikipedia.org/wiki/%E6%A0%88%E8%BF%BD%E8%B8%AA\">栈追踪 (Stack Trace)</a> 信息.</p>\n<p>栈追踪描述了程序运行过程中某个时间点上的活跃栈帧信息.<br>\n用户在日志中可以查看程序出错时的栈追踪信息, 用以自行排查代码异常或将栈追踪信息反馈给开发者.</p>\n<pre><code class=\"lang-js\">try {\n    !function test() {\n        throw Error(&#39;hello&#39;);\n    }();\n} catch (e) {\n    /* 打印栈追踪信息. */\n    console.log(e.stack);\n}\n</code></pre>\n<p>一个已格式化的栈追踪信息示例:</p>\n<pre><code class=\"lang-text\">ReferenceError: FAIL is not defined\n   at Constraint.execute (deltablue.js:525:2)\n   at Constraint.recalculate (deltablue.js:424:21)\n   at Planner.addPropagate (deltablue.js:701:6)\n   at Constraint.satisfy (deltablue.js:184:15)\n   at Planner.incrementalAdd (deltablue.js:591:21)\n   at Constraint.addConstraint (deltablue.js:162:10)\n   at Constraint.BinaryConstraint (deltablue.js:346:7)\n   at Constraint.EqualityConstraint (deltablue.js:515:38)\n   at chainTest (deltablue.js:807:6)\n   at deltaBlue (deltablue.js:879:2)\n</code></pre>\n<p>栈追踪的信息量由栈帧数量体现, 通过 <a href=\"#p-stacktracelimit\">Error.stackTraceLimit</a> 可设置栈帧数量.<br>\n栈追踪信息可通过 <a href=\"#m-capturestacktrace\">Error.captureStackTrace</a> 附加到一个 JavaScript 对象 (如 obj) 上, 通过访问 obj.stack 可随时查看栈追踪信息.<br>\n<a href=\"#m-preparestacktrace\">Error.prepareStackTrace</a> 还可以自定义栈追踪信息的输出格式.</p>\n<p>stack 属性默认返回 string 类型, 如果设置了 prepareStackTrace 格式函数, 则 stack 类型将与格式函数的返回值类型一致:</p>\n<pre><code class=\"lang-js\">Error.prepareStackTrace = function (e, frames) {\n    return frames.reduce((a, b) =&gt; a.concat([ b.getFunctionName() ]), []);\n};\ntry {\n    !function test() {\n        throw Error(&#39;hello&#39;);\n    }();\n} catch (e) {\n    /* 此时 stack 是一个数组. */\n    console.log(Array.isArray(e.stack)); // true\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] stack"
         },
         {
           "textRaw": "[p#] lineNumber",
           "name": "[p#]_linenumber",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#number\">number</a> }</li>\n</ul>\n<p>表示抛出异常的代码在源文件中的行号.</p>\n<pre><code class=\"lang-js\">try {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    console.log(e.lineNumber); /* e.g. 5 */\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>表示抛出异常的代码在源文件中的行号.</p>\n<pre><code class=\"lang-js\">try {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    console.log(e.lineNumber); /* e.g. 5 */\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] lineNumber"
         },
         {
           "textRaw": "[p#] fileName",
           "name": "[p#]_filename",
-          "desc": "<ul>\n<li>{ <a href=\"dataTypes#string\">string</a> }</li>\n</ul>\n<p>表示抛出异常的代码所在源文件的文件路径.</p>\n<pre><code class=\"lang-js\">try {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    console.log(e.fileName); /* e.g. &quot;/storage/emulated/0/Scripts/test.js&quot; */\n}\n</code></pre>\n",
+          "desc": "<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>表示抛出异常的代码所在源文件的文件路径.</p>\n<pre><code class=\"lang-js\">try {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    console.log(e.fileName); /* e.g. &quot;/storage/emulated/0/Scripts/test.js&quot; */\n}\n</code></pre>\n",
           "type": "module",
           "displayName": "[p#] fileName"
         },
@@ -218,9 +218,9 @@
                 {
                   "params": [
                     {
-                      "textRaw": "<ins>**returns**</ins> { [string](dataTypes#string) } ",
+                      "textRaw": "<ins>**returns**</ins> { [string](../../api/types/data-types.md#string) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](../../api/types/data-types.md#string) "
                     }
                   ]
                 },
@@ -246,9 +246,9 @@
                 {
                   "params": [
                     {
-                      "textRaw": "<ins>**returns**</ins> { [string](dataTypes#string) } ",
+                      "textRaw": "<ins>**returns**</ins> { [string](../../api/types/data-types.md#string) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](../../api/types/data-types.md#string) "
                     }
                   ]
                 },
@@ -265,7 +265,7 @@
         {
           "textRaw": "[p] stackTraceLimit",
           "name": "[p]_stacktracelimit",
-          "desc": "<ul>\n<li>[ <code>Infinity</code> ] { <a href=\"dataTypes#number\">number</a> }</li>\n</ul>\n<p>设置或读取收集的栈追踪信息的栈帧数量.</p>\n<blockquote>\n<p>注: 该属性虽以 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#%E6%8F%8F%E8%BF%B0\">数据描述符</a> 描述, 但通常以 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#%E6%8F%8F%E8%BF%B0\">存取描述符</a> 方式使用, 且 setter 更具有实际意义.</p>\n</blockquote>\n<p>栈帧默认值为 Infinity, 即无数量限制:</p>\n<pre><code class=\"lang-js\">console.log(Error.stackTraceLimit); // Infinity\n</code></pre>\n<p>设置一个数量限制:</p>\n<pre><code class=\"lang-js\">Error.stackTraceLimit = 23;\nconsole.log(Error.stackTraceLimit); // 23\n</code></pre>\n<p>恢复默认的数量限制值 (Infinity) 有多种方式:</p>\n<pre><code class=\"lang-js\">/* 直接设置 Infinity. */\nError.stackTraceLimit = Infinity;\n\n/* 设置 NaN. */\nError.stackTraceLimit = NaN;\n\n/* 设置负数. */\nError.stackTraceLimit = -1;\n\n/* 设置无法转换为非 NaN 的 number 类型. */\nError.stackTraceLimit = &quot;hello&quot;;\n</code></pre>\n<p>注意与 0 的区分, 将数量限制设置为 0 表示不显示栈追踪信息, 即禁用栈追踪收集.</p>\n<pre><code class=\"lang-js\">let infoA = {};\nlet infoB = {};\n\ntry {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    Error.captureStackTrace(infoA);\n\n    Error.stackTraceLimit = 0;\n    Error.captureStackTrace(infoB);\n\n    console.log(infoA.stack); /* 打印栈追踪信息. */\n    console.log(infoB.stack); /* 打印空字符串. */\n\n    Error.stackTraceLimit = Infinity;\n    Error.captureStackTrace(infoB);\n    console.log(infoB.stack); /* 打印栈追踪信息. */\n}\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://v8.dev/docs/stack-trace-api\">V8 Dev</a></p>\n</blockquote>\n",
+          "desc": "<ul>\n<li>[ <code>Infinity</code> ] { <a href=\"../../api/types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>设置或读取收集的栈追踪信息的栈帧数量.</p>\n<blockquote>\n<p>注: 该属性虽以 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#%E6%8F%8F%E8%BF%B0\">数据描述符</a> 描述, 但通常以 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#%E6%8F%8F%E8%BF%B0\">存取描述符</a> 方式使用, 且 setter 更具有实际意义.</p>\n</blockquote>\n<p>栈帧默认值为 Infinity, 即无数量限制:</p>\n<pre><code class=\"lang-js\">console.log(Error.stackTraceLimit); // Infinity\n</code></pre>\n<p>设置一个数量限制:</p>\n<pre><code class=\"lang-js\">Error.stackTraceLimit = 23;\nconsole.log(Error.stackTraceLimit); // 23\n</code></pre>\n<p>恢复默认的数量限制值 (Infinity) 有多种方式:</p>\n<pre><code class=\"lang-js\">/* 直接设置 Infinity. */\nError.stackTraceLimit = Infinity;\n\n/* 设置 NaN. */\nError.stackTraceLimit = NaN;\n\n/* 设置负数. */\nError.stackTraceLimit = -1;\n\n/* 设置无法转换为非 NaN 的 number 类型. */\nError.stackTraceLimit = &quot;hello&quot;;\n</code></pre>\n<p>注意与 0 的区分, 将数量限制设置为 0 表示不显示栈追踪信息, 即禁用栈追踪收集.</p>\n<pre><code class=\"lang-js\">let infoA = {};\nlet infoB = {};\n\ntry {\n    throw Error(&quot;hello&quot;);\n} catch (e) {\n    Error.captureStackTrace(infoA);\n\n    Error.stackTraceLimit = 0;\n    Error.captureStackTrace(infoB);\n\n    console.log(infoA.stack); /* 打印栈追踪信息. */\n    console.log(infoB.stack); /* 打印空字符串. */\n\n    Error.stackTraceLimit = Infinity;\n    Error.captureStackTrace(infoB);\n    console.log(infoB.stack); /* 打印栈追踪信息. */\n}\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://v8.dev/docs/stack-trace-api\">V8 Dev</a></p>\n</blockquote>\n",
           "type": "module",
           "displayName": "[p] stackTraceLimit"
         },
@@ -288,15 +288,15 @@
                       "desc": "异常对象的引用"
                     },
                     {
-                      "textRaw": "**stackTraces** { [NodeJS.CallSite](https://microsoft.github.io/PowerBI-JavaScript/interfaces/_node_modules__types_node_globals_d_.nodejs.callsite.html)[[]](dataTypes#array) } - 栈追踪数组 (栈帧组) ",
+                      "textRaw": "**stackTraces** { [NodeJS.CallSite](https://microsoft.github.io/PowerBI-JavaScript/interfaces/_node_modules__types_node_globals_d_.nodejs.callsite.html)[[]](../../api/types/data-types.md#array) } - 栈追踪数组 (栈帧组) ",
                       "name": "**stackTraces**",
-                      "type": " [NodeJS.CallSite](https://microsoft.github.io/PowerBI-JavaScript/interfaces/_node_modules__types_node_globals_d_.nodejs.callsite.html)[[]](dataTypes#array) ",
+                      "type": " [NodeJS.CallSite](https://microsoft.github.io/PowerBI-JavaScript/interfaces/_node_modules__types_node_globals_d_.nodejs.callsite.html)[[]](../../api/types/data-types.md#array) ",
                       "desc": "栈追踪数组 (栈帧组)"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [any](dataTypes#any) } ",
+                      "textRaw": "<ins>**returns**</ins> { [any](../../api/types/data-types.md#any) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [any](dataTypes#any) "
+                      "type": " [any](../../api/types/data-types.md#any) "
                     }
                   ]
                 },
@@ -330,21 +330,21 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**errorObj** { [object](dataTypes#object) } - 用于附加 stack 属性的任意对象 ",
+                      "textRaw": "**errorObj** { [object](../../api/types/data-types.md#object) } - 用于附加 stack 属性的任意对象 ",
                       "name": "**errorObj**",
-                      "type": " [object](dataTypes#object) ",
+                      "type": " [object](../../api/types/data-types.md#object) ",
                       "desc": "用于附加 stack 属性的任意对象"
                     },
                     {
-                      "textRaw": "**constructorOpt** { [Function](dataTypes#function) } - 用于在栈追踪信息中触发隐藏的函数 ",
+                      "textRaw": "**constructorOpt** { [Function](../../api/types/data-types.md#function) } - 用于在栈追踪信息中触发隐藏的函数 ",
                       "name": "**constructorOpt**",
-                      "type": " [Function](dataTypes#function) ",
+                      "type": " [Function](../../api/types/data-types.md#function) ",
                       "desc": "用于在栈追踪信息中触发隐藏的函数"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [void](dataTypes#void) } ",
+                      "textRaw": "<ins>**returns**</ins> { [void](../../api/types/data-types.md#void) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [void](dataTypes#void) "
+                      "type": " [void](../../api/types/data-types.md#void) "
                     }
                   ]
                 },

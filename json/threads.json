@@ -20,9 +20,9 @@
                   "desc": "要在新线程执行的函数"
                 },
                 {
-                  "textRaw": "返回 [Thread](#threads_thread) ",
+                  "textRaw": "返回 [Thread](#thread) ",
                   "name": "返回",
-                  "desc": "[Thread](#threads_thread)"
+                  "desc": "[Thread](#thread)"
                 }
               ]
             },
@@ -34,7 +34,7 @@
               ]
             }
           ],
-          "desc": "<p>启动一个新线程并执行action.</p>\n<p>例如:</p>\n<pre><code>threads.start(function(){\n    //在新线程执行的代码\n    while(true){\n        log(&quot;子线程&quot;);\n    }\n});\nwhile(true){\n    log(&quot;脚本主线程&quot;);\n}\n</code></pre><p>通过该函数返回的<a href=\"#threads_thread\">Thread</a>对象可以获取该线程的状态, 控制该线程的运行中. 例如:</p>\n<pre><code>var thread = threads.start(function(){\n    while(true){\n        log(&quot;子线程&quot;);\n    }\n});\n//停止线程执行\nthread.interrupt();\n</code></pre><p>更多信息参见<a href=\"#threads_thread\">Thread</a>.</p>\n"
+          "desc": "<p>启动一个新线程并执行action.</p>\n<p>例如:</p>\n<pre><code>threads.start(function(){\n    //在新线程执行的代码\n    while(true){\n        log(&quot;子线程&quot;);\n    }\n});\nwhile(true){\n    log(&quot;脚本主线程&quot;);\n}\n</code></pre><p>通过该函数返回的<a href=\"#thread\">Thread</a>对象可以获取该线程的状态, 控制该线程的运行中. 例如:</p>\n<pre><code>var thread = threads.start(function(){\n    while(true){\n        log(&quot;子线程&quot;);\n    }\n});\n//停止线程执行\nthread.interrupt();\n</code></pre><p>更多信息参见<a href=\"#thread\">Thread</a>.</p>\n"
         },
         {
           "textRaw": "threads.shutDownAll()",
@@ -55,9 +55,9 @@
             {
               "params": [
                 {
-                  "textRaw": "返回 [Thread](#threads_thread) ",
+                  "textRaw": "返回 [Thread](#thread) ",
                   "name": "返回",
-                  "desc": "[Thread](#threads_thread)"
+                  "desc": "[Thread](#thread)"
                 }
               ]
             },
@@ -75,9 +75,9 @@
             {
               "params": [
                 {
-                  "textRaw": "返回 [Disposable](#threads_disposable) ",
+                  "textRaw": "返回 [Disposable](#threads-disposable) ",
                   "name": "返回",
-                  "desc": "[Disposable](#threads_disposable)"
+                  "desc": "[Disposable](#threads-disposable)"
                 }
               ]
             },
@@ -85,7 +85,7 @@
               "params": []
             }
           ],
-          "desc": "<p>新建一个Disposable对象, 用于等待另一个线程的某个一次性结果. 更多信息参见<a href=\"#threads_线程通信\">线程通信</a>以及<a href=\"#threads_disposable\">Disposable</a>.</p>\n"
+          "desc": "<p>新建一个Disposable对象, 用于等待另一个线程的某个一次性结果. 更多信息参见<a href=\"#线程通信\">线程通信</a>以及<a href=\"#threads-disposable\">Disposable</a>.</p>\n"
         },
         {
           "textRaw": "threads.atomic([initialValue])",
@@ -117,7 +117,7 @@
               ]
             }
           ],
-          "desc": "<p>新建一个整数原子变量. 更多信息参见<a href=\"#threads_线程安全\">线程安全</a>以及<a href=\"https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicLong.html\">AtomicLong</a>.</p>\n"
+          "desc": "<p>新建一个整数原子变量. 更多信息参见<a href=\"#线程安全\">线程安全</a>以及<a href=\"https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicLong.html\">AtomicLong</a>.</p>\n"
         },
         {
           "textRaw": "threads.lock()",
@@ -137,7 +137,7 @@
               "params": []
             }
           ],
-          "desc": "<p>新建一个可重入锁. 更多信息参见<a href=\"#threads_线程安全\">线程安全</a>以及<a href=\"https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReentrantLock.html\">ReentrantLock</a>.</p>\n"
+          "desc": "<p>新建一个可重入锁. 更多信息参见<a href=\"#线程安全\">线程安全</a>以及<a href=\"https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReentrantLock.html\">ReentrantLock</a>.</p>\n"
         }
       ],
       "type": "module",
@@ -221,7 +221,7 @@
           "textRaw": "Thread.setTimeout(callback, delay\\[, ...args\\])",
           "type": "method",
           "name": "setTimeout",
-          "desc": "<p>参见<a href=\"timers.html#timers_settimeout_callback_delay_args\">timers.setTimeout()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n<pre><code>log(&quot;当前线程(主线程):&quot; + threads.currentThread());\n\nvar thread = threads.start(function(){\n    //设置一个空的定时来保持线程的运行状态\n    setInterval(function(){}, 1000);\n});\n\nsleep(1000);\nthread.setTimeout(function(){\n    log(&quot;当前线程(子线程):&quot; + threads.currentThread());\n    exit();\n}, 1000);\n</code></pre>",
+          "desc": "<p>参见<a href=\"timers.md#settimeout-callback-delay-args\">timers.setTimeout()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n<pre><code>log(&quot;当前线程(主线程):&quot; + threads.currentThread());\n\nvar thread = threads.start(function(){\n    //设置一个空的定时来保持线程的运行状态\n    setInterval(function(){}, 1000);\n});\n\nsleep(1000);\nthread.setTimeout(function(){\n    log(&quot;当前线程(子线程):&quot; + threads.currentThread());\n    exit();\n}, 1000);\n</code></pre>",
           "signatures": [
             {
               "params": [
@@ -243,7 +243,7 @@
           "textRaw": "Thread.setInterval(callback, delay\\[, ...args\\])",
           "type": "method",
           "name": "setInterval",
-          "desc": "<p>参见<a href=\"timers.html#timers_setinterval_callback_delay_args\">timers.setInterval()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
+          "desc": "<p>参见<a href=\"timers.md#setinterval-callback-delay-args\">timers.setInterval()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
           "signatures": [
             {
               "params": [
@@ -265,7 +265,7 @@
           "textRaw": "Thread.setImmediate(callback[, ...args])",
           "type": "method",
           "name": "setImmediate",
-          "desc": "<p>参见<a href=\"timers.html#timers_setimmediate_callback_delay_args\">timers.setImmediate()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
+          "desc": "<p>参见<a href=\"timers.md#setimmediate-callback-args\">timers.setImmediate()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
           "signatures": [
             {
               "params": [
@@ -284,7 +284,7 @@
           "textRaw": "Thread.clearInterval(id)",
           "type": "method",
           "name": "clearInterval",
-          "desc": "<p>参见<a href=\"timers.html#timers_clearinterval_id\">timers.clearInterval()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
+          "desc": "<p>参见<a href=\"timers.md#clearinterval-id\">timers.clearInterval()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
           "signatures": [
             {
               "params": [
@@ -299,7 +299,7 @@
           "textRaw": "Thread.clearTimeout(id)",
           "type": "method",
           "name": "clearTimeout",
-          "desc": "<p>参见<a href=\"timers.html#timers_cleartimeout_id\">timers.clearTimeout()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
+          "desc": "<p>参见<a href=\"timers.md#cleartimeout-id\">timers.clearTimeout()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
           "signatures": [
             {
               "params": [
@@ -314,7 +314,7 @@
           "textRaw": "Thread.clearImmediate(id)",
           "type": "method",
           "name": "clearImmediate",
-          "desc": "<p>参见<a href=\"timers.html#timers_clearimmediate_id\">timers.clearImmediate()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
+          "desc": "<p>参见<a href=\"timers.md#clearimmediate-id\">timers.clearImmediate()</a>.</p>\n<p>区别在于, 该定时器会在该线程执行. 如果当前线程仍未开始执行或已经执行结束, 则抛出<code>IllegalStateException</code>.</p>\n",
           "signatures": [
             {
               "params": [

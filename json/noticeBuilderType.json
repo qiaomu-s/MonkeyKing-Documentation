@@ -4,7 +4,7 @@
     {
       "textRaw": "NoticeBuilder",
       "name": "noticebuilder",
-      "desc": "<p><a href=\"https://developer.android.com/reference/android/app/Notification.Builder\">androidx.core.app.NotificationCompat.Builder</a> 别名.</p>\n<p>NoticeBuilder 表示一个通知构建器.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"notice#m-getbuilder\">notice.getBuilder</a></li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出部分属性或方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">androidx.core.app.NotificationCompat.Builder</p>\n\n<hr>\n",
+      "desc": "<p><a href=\"https://developer.android.com/reference/android/app/Notification.Builder\">androidx.core.app.NotificationCompat.Builder</a> 别名.</p>\n<p>NoticeBuilder 表示一个通知构建器.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../system/notice.md#m-getbuilder\">notice.getBuilder</a></li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出部分属性或方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">androidx.core.app.NotificationCompat.Builder</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[m] setAutoCancel",
@@ -18,14 +18,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**autoCancel** { [boolean](dataTypes#boolean) } ",
+                      "textRaw": "**autoCancel** { [boolean](data-types.md#boolean) } ",
                       "name": "**autoCancel**",
-                      "type": " [boolean](dataTypes#boolean) "
+                      "type": " [boolean](data-types.md#boolean) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -55,14 +55,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**channelId** { [string](dataTypes#string) } ",
+                      "textRaw": "**channelId** { [string](data-types.md#string) } ",
                       "name": "**channelId**",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](data-types.md#string) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -92,14 +92,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**argb** { [ColorInt](dataTypes#colorint) } ",
+                      "textRaw": "**argb** { [ColorInt](data-types.md#colorint) } ",
                       "name": "**argb**",
-                      "type": " [ColorInt](dataTypes#colorint) "
+                      "type": " [ColorInt](data-types.md#colorint) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -129,14 +129,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**title** { [string](dataTypes#string) } ",
+                      "textRaw": "**title** { [string](data-types.md#string) } ",
                       "name": "**title**",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](data-types.md#string) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -166,14 +166,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**text** { [string](dataTypes#string) } ",
+                      "textRaw": "**text** { [string](data-types.md#string) } ",
                       "name": "**text**",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](data-types.md#string) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -203,14 +203,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**ongoing** { [boolean](dataTypes#boolean) } ",
+                      "textRaw": "**ongoing** { [boolean](data-types.md#boolean) } ",
                       "name": "**ongoing**",
-                      "type": " [boolean](dataTypes#boolean) "
+                      "type": " [boolean](data-types.md#boolean) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -222,7 +222,7 @@
                   ]
                 }
               ],
-              "desc": "<p>设定通知为 &quot;正在进行中&quot; 状态.</p>\n<p>正在进行中, 意味着通知关联着一个用户正在参与的后台任务, 如 [ 播放音乐 / 下载任务 / 文件同步操作 / 网络连接激活 ] 等.<br>这样的通知不能被用户消除 (如左右滑动), 只能通过 <a href=\"notice#m-cancel\">notice.cancel</a> 或 <a href=\"noticeBuilderType#m-setautocancel\">NoticeBuilder#setAutoCancel</a> 等方式消除.</p>\n"
+              "desc": "<p>设定通知为 &quot;正在进行中&quot; 状态.</p>\n<p>正在进行中, 意味着通知关联着一个用户正在参与的后台任务, 如 [ 播放音乐 / 下载任务 / 文件同步操作 / 网络连接激活 ] 等.<br>\n这样的通知不能被用户消除 (如左右滑动), 只能通过 <a href=\"../system/notice.md#m-cancel\">notice.cancel</a> 或 <a href=\"#m-setautocancel\">NoticeBuilder#setAutoCancel</a> 等方式消除.</p>\n"
             }
           ],
           "type": "module",
@@ -240,27 +240,27 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**max** { [number](dataTypes#number) } - 进度最大值 ",
+                      "textRaw": "**max** { [number](data-types.md#number) } - 进度最大值 ",
                       "name": "**max**",
-                      "type": " [number](dataTypes#number) ",
+                      "type": " [number](data-types.md#number) ",
                       "desc": "进度最大值"
                     },
                     {
-                      "textRaw": "**progress** { [number](dataTypes#number) } - 当前进度值 ",
+                      "textRaw": "**progress** { [number](data-types.md#number) } - 当前进度值 ",
                       "name": "**progress**",
-                      "type": " [number](dataTypes#number) ",
+                      "type": " [number](data-types.md#number) ",
                       "desc": "当前进度值"
                     },
                     {
-                      "textRaw": "**indeterminate** { [boolean](dataTypes#boolean) } - 是否为不确定进度条 ",
+                      "textRaw": "**indeterminate** { [boolean](data-types.md#boolean) } - 是否为不确定进度条 ",
                       "name": "**indeterminate**",
-                      "type": " [boolean](dataTypes#boolean) ",
+                      "type": " [boolean](data-types.md#boolean) ",
                       "desc": "是否为不确定进度条"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -292,7 +292,7 @@
               "textRaw": "setSmallIcon(icon)",
               "type": "method",
               "name": "setSmallIcon",
-              "desc": "<p><strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>icon</strong> { <a href=\"dataTypes#number\">number</a> } - Drawable (可绘制) <a href=\"glossaries#资源-ID\">资源 ID</a></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"noticeBuilderType\">NoticeBuilder</a> }</li>\n</ul>\n<p>设定通知的小图标.</p>\n<p><code>icon</code> 参数需对应内置的 Drawable 资源, 使用 <a href=\"global#p-drawable\">R.drawable</a> 可获取 AutoJs6 的 Drawable (可绘制) 资源 ID:</p>\n<pre><code class=\"lang-js\">/* 设定通知的小图标为闹钟图标. */\nnotice(notice.getBuilder()\n    .setSmallIcon(R.drawable.ic_access_alarm_black_48dp)\n    .setContentTitle(&#39;小图标测试&#39;)\n    .setContentText(&#39;闹钟图标&#39;));\n</code></pre>\n",
+              "desc": "<p><strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>icon</strong> { <a href=\"data-types.md#number\">number</a> } - Drawable (可绘制) <a href=\"../../reference/glossaries/glossary.md#资源-id\">资源 ID</a></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"notice-builder.md\">NoticeBuilder</a> }</li>\n</ul>\n<p>设定通知的小图标.</p>\n<p><code>icon</code> 参数需对应内置的 Drawable 资源, 使用 <a href=\"../core/global.md#p-drawable\">R.drawable</a> 可获取 Monkey King 的 Drawable (可绘制) 资源 ID:</p>\n<pre><code class=\"lang-js\">/* 设定通知的小图标为闹钟图标. */\nnotice(notice.getBuilder()\n    .setSmallIcon(R.drawable.ic_access_alarm_black_48dp)\n    .setContentTitle(&#39;小图标测试&#39;)\n    .setContentText(&#39;闹钟图标&#39;));\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -307,7 +307,7 @@
               "textRaw": "setSmallIcon(iconCompat)",
               "type": "method",
               "name": "setSmallIcon",
-              "desc": "<p><strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>iconCompat</strong> { <a href=\"https://developer.android.com/reference/androidx/core/graphics/drawable/IconCompat\">IconCompat</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"noticeBuilderType\">NoticeBuilder</a> }</li>\n</ul>\n<p>设定通知的小图标.</p>\n<p><code>iconCompat</code> 参数为 <a href=\"https://developer.android.com/reference/androidx/core/graphics/drawable/IconCompat\">IconCompat</a> 类型, 是对 <a href=\"https://developer.android.com/reference/android/graphics/drawable/Icon.html\">Icon</a> 类型的浅层封装, 支持 <code>createFromIcon</code> / <code>createWithBitmap</code> / <code>createWithContentUri</code> 等静态方法直接创建 <code>IconCompat</code> 实例.</p>\n<pre><code class=\"lang-js\">const IconCompat = androidx.core.graphics.drawable.IconCompat;\nlet img = images.read(&#39;./test.png&#39;).oneShot();\nnotice(notice.getBuilder()\n    .setSmallIcon(IconCompat.createWithBitmap(img.bitmap))\n    .setContentTitle(&#39;小图标测试&#39;)\n    .setContentText(&#39;从本地文件加载图标&#39;));\nimg.shoot();\n</code></pre>\n",
+              "desc": "<p><strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>iconCompat</strong> { <a href=\"https://developer.android.com/reference/androidx/core/graphics/drawable/IconCompat\">IconCompat</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"notice-builder.md\">NoticeBuilder</a> }</li>\n</ul>\n<p>设定通知的小图标.</p>\n<p><code>iconCompat</code> 参数为 <a href=\"https://developer.android.com/reference/androidx/core/graphics/drawable/IconCompat\">IconCompat</a> 类型, 是对 <a href=\"https://developer.android.com/reference/android/graphics/drawable/Icon.html\">Icon</a> 类型的浅层封装, 支持 <code>createFromIcon</code> / <code>createWithBitmap</code> / <code>createWithContentUri</code> 等静态方法直接创建 <code>IconCompat</code> 实例.</p>\n<pre><code class=\"lang-js\">const IconCompat = androidx.core.graphics.drawable.IconCompat;\nlet img = images.read(&#39;./test.png&#39;).oneShot();\nnotice(notice.getBuilder()\n    .setSmallIcon(IconCompat.createWithBitmap(img.bitmap))\n    .setContentTitle(&#39;小图标测试&#39;)\n    .setContentText(&#39;从本地文件加载图标&#39;));\nimg.shoot();\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -340,9 +340,9 @@
                       "desc": "通知样式类型对象"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -359,7 +359,7 @@
                 {
                   "textRaw": "BigTextStyle",
                   "name": "bigtextstyle",
-                  "desc": "<p>大量文本内容通知样式.</p>\n<pre><code class=\"lang-js\">let builder = notice.getBuilder();\nlet text = Array(6).fill(&#39;This is a long text for test.&#39;).join(&#39;\\n&#39;);\nlet bigTextStyle = new NotificationCompat.BigTextStyle().bigText(text);\nnotice(builder.setStyle(bigTextStyle));\n</code></pre>\n<p><a href=\"noticeOptionsType#p-bigcontent\">NoticeOptions#bigContent</a> 接口属性, 其内部实现就使用了 BigTextStyle 样式模板类.</p>\n<blockquote>\n<p>参阅: <a href=\"https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle\">Android Docs</a></p>\n</blockquote>\n",
+                  "desc": "<p>大量文本内容通知样式.</p>\n<pre><code class=\"lang-js\">let builder = notice.getBuilder();\nlet text = Array(6).fill(&#39;This is a long text for test.&#39;).join(&#39;\\n&#39;);\nlet bigTextStyle = new NotificationCompat.BigTextStyle().bigText(text);\nnotice(builder.setStyle(bigTextStyle));\n</code></pre>\n<p><a href=\"notice-options.md#p-bigcontent\">NoticeOptions#bigContent</a> 接口属性, 其内部实现就使用了 BigTextStyle 样式模板类.</p>\n<blockquote>\n<p>参阅: <a href=\"https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle\">Android Docs</a></p>\n</blockquote>\n",
                   "type": "module",
                   "displayName": "BigTextStyle"
                 },
@@ -373,7 +373,7 @@
                 {
                   "textRaw": "BigPictureStyle",
                   "name": "bigpicturestyle",
-                  "desc": "<p>大尺寸图片通知样式.</p>\n<pre><code class=\"lang-js\">const FileProvider = androidx.core.content.FileProvider;\nconst AppFileProvider = org.autojs.autojs.external.fileprovider.AppFileProvider;\nconst MimeTypesUtils = org.autojs.autojs.util.MimeTypesUtils;\n\nlet notificationId = 17;\nlet builder = notice.getBuilder();\nlet imagePath = files.path(&#39;./test.png&#39;);\nlet albumArtImg = images.read(imagePath).oneShot();\n\nlet bigPictureStyle = new NotificationCompat.BigPictureStyle()\n    .bigPicture(albumArtImg.bitmap)\n    .setBigContentTitle(&#39;Title&#39;)\n    .setSummaryText(&#39;This is a big picture for test&#39;)\n    .showBigPictureWhenCollapsed(true);\n\nlet pendingIntent = (/* @IIFE */ () =&gt; {\n    let fileUri = FileProvider.getUriForFile(context, AppFileProvider.AUTHORITY, new File(imagePath));\n\n    let mimeType = MimeTypesUtils.fromFileOr(imagePath, &quot;*/*&quot;);\n\n    let intent = new Intent(Intent.ACTION_VIEW)\n        .setDataAndType(fileUri, mimeType)\n        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)\n        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)\n        .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);\n\n    return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);\n})();\n\nbuilder\n    .setContentText(&#39;A big picture&#39;)\n    .setStyle(bigPictureStyle)\n    .setContentIntent(pendingIntent)\n    .setAutoCancel(true);\n\nnotice(builder, { notificationId });\n\nalbumArtImg.shoot();\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigPictureStyle\">Android Docs</a></p>\n</blockquote>\n",
+                  "desc": "<p>大尺寸图片通知样式.</p>\n<pre><code class=\"lang-js\">const FileProvider = androidx.core.content.FileProvider;\nconst AppFileProvider = com.qiaomu.monkeyking.external.fileprovider.AppFileProvider;\nconst MimeTypesUtils = com.qiaomu.monkeyking.util.MimeTypesUtils;\n\nlet notificationId = 17;\nlet builder = notice.getBuilder();\nlet imagePath = files.path(&#39;./test.png&#39;);\nlet albumArtImg = images.read(imagePath).oneShot();\n\nlet bigPictureStyle = new NotificationCompat.BigPictureStyle()\n    .bigPicture(albumArtImg.bitmap)\n    .setBigContentTitle(&#39;Title&#39;)\n    .setSummaryText(&#39;This is a big picture for test&#39;)\n    .showBigPictureWhenCollapsed(true);\n\nlet pendingIntent = (/* @IIFE */ () =&gt; {\n    let fileUri = FileProvider.getUriForFile(context, AppFileProvider.AUTHORITY, new File(imagePath));\n\n    let mimeType = MimeTypesUtils.fromFileOr(imagePath, &quot;*/*&quot;);\n\n    let intent = new Intent(Intent.ACTION_VIEW)\n        .setDataAndType(fileUri, mimeType)\n        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)\n        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)\n        .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);\n\n    return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);\n})();\n\nbuilder\n    .setContentText(&#39;A big picture&#39;)\n    .setStyle(bigPictureStyle)\n    .setContentIntent(pendingIntent)\n    .setAutoCancel(true);\n\nnotice(builder, { notificationId });\n\nalbumArtImg.shoot();\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigPictureStyle\">Android Docs</a></p>\n</blockquote>\n",
                   "type": "module",
                   "displayName": "BigPictureStyle"
                 },
@@ -402,15 +402,15 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**duration** { [number](dataTypes#number) } - 超时时间 (毫秒) ",
+                      "textRaw": "**duration** { [number](data-types.md#number) } - 超时时间 (毫秒) ",
                       "name": "**duration**",
-                      "type": " [number](dataTypes#number) ",
+                      "type": " [number](data-types.md#number) ",
                       "desc": "超时时间 (毫秒)"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -440,15 +440,15 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**b** { [boolean](dataTypes#boolean) } - 是否使用通知计时秒表 ",
+                      "textRaw": "**b** { [boolean](data-types.md#boolean) } - 是否使用通知计时秒表 ",
                       "name": "**b**",
-                      "type": " [boolean](dataTypes#boolean) ",
+                      "type": " [boolean](data-types.md#boolean) ",
                       "desc": "是否使用通知计时秒表"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -460,7 +460,7 @@
                   ]
                 }
               ],
-              "desc": "<p>设置是否使用通知计时秒表.</p>\n<p>参数 <code>b</code> 设为 <code>true</code> 时, 通知时间区域将显示为自动刷新的计时秒表, 每秒钟自动刷新时间.</p>\n<p>计时秒表通常用于表明通知的持续显示时间, 可应用于通话计时等场景:</p>\n<pre><code class=\"lang-js\">notice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知计时测试&#39;)\n    .setUsesChronometer(true));\n</code></pre>\n<blockquote>\n<p>注:<br>chronometer [krəˈnɒmɪtə(r)]<br>_n._ 精密记时表; 高度精确的钟表.</p>\n</blockquote>\n"
+              "desc": "<p>设置是否使用通知计时秒表.</p>\n<p>参数 <code>b</code> 设为 <code>true</code> 时, 通知时间区域将显示为自动刷新的计时秒表, 每秒钟自动刷新时间.</p>\n<p>计时秒表通常用于表明通知的持续显示时间, 可应用于通话计时等场景:</p>\n<pre><code class=\"lang-js\">notice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知计时测试&#39;)\n    .setUsesChronometer(true));\n</code></pre>\n<blockquote>\n<p>注:<br>\nchronometer [krəˈnɒmɪtə(r)]<br>\n_n._ 精密记时表; 高度精确的钟表.</p>\n</blockquote>\n"
             }
           ],
           "type": "module",
@@ -478,14 +478,14 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**countDown** { [boolean](dataTypes#boolean) } ",
+                      "textRaw": "**countDown** { [boolean](data-types.md#boolean) } ",
                       "name": "**countDown**",
-                      "type": " [boolean](dataTypes#boolean) "
+                      "type": " [boolean](data-types.md#boolean) "
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -497,7 +497,7 @@
                   ]
                 }
               ],
-              "desc": "<p>设置通知计时区域的时间为倒计时而非正计时.</p>\n<p><code>setChronometerCountDown</code> 仅在 <a href=\"#m-setuseschronometer\">setUsesChronometer</a> 设置为 <code>true</code> 时才有效.</p>\n<pre><code class=\"lang-js\">/* 在通知的计时区域显示 10 秒钟倒计时. */\nnotice(notice.getBuilder()\n    .setUsesChronometer(true)\n    .setChronometerCountDown(true)\n    .setShowWhen(true)\n    .setWhen(Date.now() + 10e3)\n);\n</code></pre>\n<blockquote>\n<p>注:<br>chronometer [krəˈnɒmɪtə(r)]<br>_n._ 精密记时表; 高度精确的钟表.</p>\n</blockquote>\n"
+              "desc": "<p>设置通知计时区域的时间为倒计时而非正计时.</p>\n<p><code>setChronometerCountDown</code> 仅在 <a href=\"#m-setuseschronometer\">setUsesChronometer</a> 设置为 <code>true</code> 时才有效.</p>\n<pre><code class=\"lang-js\">/* 在通知的计时区域显示 10 秒钟倒计时. */\nnotice(notice.getBuilder()\n    .setUsesChronometer(true)\n    .setChronometerCountDown(true)\n    .setShowWhen(true)\n    .setWhen(Date.now() + 10e3)\n);\n</code></pre>\n<blockquote>\n<p>注:<br>\nchronometer [krəˈnɒmɪtə(r)]<br>\n_n._ 精密记时表; 高度精确的钟表.</p>\n</blockquote>\n"
             }
           ],
           "type": "module",
@@ -515,15 +515,15 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**when** { [number](dataTypes#number) } - 时间戳 (毫秒) ",
+                      "textRaw": "**when** { [number](data-types.md#number) } - 时间戳 (毫秒) ",
                       "name": "**when**",
-                      "type": " [number](dataTypes#number) ",
+                      "type": " [number](data-types.md#number) ",
                       "desc": "时间戳 (毫秒)"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },
@@ -535,7 +535,7 @@
                   ]
                 }
               ],
-              "desc": "<p>添加一个通知时间戳 (毫秒), 用以表示通知发生 (或即将发生) 的具体时间.</p>\n<p>使用 <code>setWhen</code> 时, 需要设置 <a href=\"#m-setshowwhen\">setShowWhen</a> 为 <code>true</code>, 否则将无法显示时间消息. </p>\n<pre><code class=\"lang-js\">notice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知时间测试 (过去 5 分钟)&#39;)\n    .setWhen(Date.now() - 5 * 60e3)\n    .setShowWhen(true));\n\nnotice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知时间测试 (未来 2 分钟)&#39;)\n    .setWhen(Date.now() + 128e3)\n    .setShowWhen(true));\n</code></pre>\n"
+              "desc": "<p>添加一个通知时间戳 (毫秒), 用以表示通知发生 (或即将发生) 的具体时间.</p>\n<p>使用 <code>setWhen</code> 时, 需要设置 <a href=\"#m-setshowwhen\">setShowWhen</a> 为 <code>true</code>, 否则将无法显示时间消息.</p>\n<pre><code class=\"lang-js\">notice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知时间测试 (过去 5 分钟)&#39;)\n    .setWhen(Date.now() - 5 * 60e3)\n    .setShowWhen(true));\n\nnotice(notice.getBuilder()\n    .setContentTitle(&#39;通知测试&#39;)\n    .setContentText(&#39;通知时间测试 (未来 2 分钟)&#39;)\n    .setWhen(Date.now() + 128e3)\n    .setShowWhen(true));\n</code></pre>\n"
             }
           ],
           "type": "module",
@@ -553,15 +553,15 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**show** { [boolean](dataTypes#boolean) } - 是否显示时间戳信息 ",
+                      "textRaw": "**show** { [boolean](data-types.md#boolean) } - 是否显示时间戳信息 ",
                       "name": "**show**",
-                      "type": " [boolean](dataTypes#boolean) ",
+                      "type": " [boolean](data-types.md#boolean) ",
                       "desc": "是否显示时间戳信息"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](noticeBuilderType) } ",
+                      "textRaw": "<ins>**returns**</ins> { [NoticeBuilder](notice-builder.md) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [NoticeBuilder](noticeBuilderType) "
+                      "type": " [NoticeBuilder](notice-builder.md) "
                     }
                   ]
                 },

@@ -4,7 +4,7 @@
     {
       "textRaw": "图像 (Images)",
       "name": "图像_(images)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>images模块提供了一些手机设备中常见的图片处理函数, 包括截图、读写图片、图片剪裁、旋转、二值化、找色找图等.</p>\n<p>该模块分为两个部分, 找图找色部分和图片处理部分.</p>\n<p>需要注意的是, image对象创建后尽量在不使用时进行回收, 同时避免循环创建大量图片. 因为图片是一种占用内存比较大的资源, 尽管Auto.js通过各种方式（比如图片缓存机制、垃圾回收时回收图片、脚本结束时回收所有图片）尽量降低图片资源的泄漏和内存占用, 但是糟糕的代码仍然可以占用大量内存.</p>\n<p>Image对象通过调用<code>recycle()</code>函数来回收. 例如：</p>\n<pre><code>// 读取图片\nvar img = images.read(&quot;./1.png&quot;);\n//对图片进行操作\n... \n// 回收图片\nimg.recycle();\n</code></pre><p>例外的是, <code>captureScreen()</code> 返回的图片不需要回收.</p>\n",
+      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>images模块提供了一些手机设备中常见的图片处理函数, 包括截图、读写图片、图片剪裁、旋转、二值化、找色找图等.</p>\n<p>该模块分为两个部分, 找图找色部分和图片处理部分.</p>\n<p>需要注意的是, image对象创建后尽量在不使用时进行回收, 同时避免循环创建大量图片. 因为图片是一种占用内存比较大的资源, 尽管Auto.js通过各种方式（比如图片缓存机制、垃圾回收时回收图片、脚本结束时回收所有图片）尽量降低图片资源的泄漏和内存占用, 但是糟糕的代码仍然可以占用大量内存.</p>\n<p>Image对象通过调用<code>recycle()</code>函数来回收. 例如：</p>\n<pre><code>// 读取图片\nvar img = images.read(&quot;./1.png&quot;);\n//对图片进行操作\n...\n// 回收图片\nimg.recycle();\n</code></pre><p>例外的是, <code>captureScreen()</code> 返回的图片不需要回收.</p>\n",
       "methods": [
         {
           "textRaw": "图片处理",
@@ -621,7 +621,7 @@
           "textRaw": "images.cvtColor(img, code[, dstCn])",
           "type": "method",
           "name": "cvtColor",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>img</code> {Image} 图片</li>\n<li><code>code</code> {string} 颜色空间转换的类型, 可选的值有一共有205个（参见<a href=\"https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga4e0972be5de079fed4e3a10e24ef5ef0/\">ColorConversionCodes</a>）, 这里只列出几个：<ul>\n<li><code>BGR2GRAY</code> BGR转换为灰度</li>\n<li><code>BGR2HSV</code> BGR转换为HSV</li>\n<li><code></code></li>\n</ul>\n</li>\n<li><code>dstCn</code> {number} 目标图像的颜色通道数量, 如果不填写则根据其他参数自动决定.</li>\n<li>返回 {Image}</li>\n</ul>\n<p>对图像进行颜色空间转换, 并返回转换后的图像.</p>\n<p>可以参考有关博客（比如<a href=\"https://blog.csdn.net/u011574296/article/details/70896811?locationNum=14&amp;fps=1\">颜色空间转换</a>）或者OpenCV文档<a href=\"https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab/\">cvtColor</a>.</p>\n",
+          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>img</code> {Image} 图片</li>\n<li><code>code</code> {string} 颜色空间转换的类型, 可选的值有一共有205个（参见<a href=\"https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga4e0972be5de079fed4e3a10e24ef5ef0/\">ColorConversionCodes</a>）, 这里只列出几个：<ul>\n<li><code>BGR2GRAY</code> BGR转换为灰度</li>\n<li><code>BGR2HSV</code> BGR转换为HSV</li>\n</ul>\n</li>\n<li><code>dstCn</code> {number} 目标图像的颜色通道数量, 如果不填写则根据其他参数自动决定.</li>\n<li>返回 {Image}</li>\n</ul>\n<p>对图像进行颜色空间转换, 并返回转换后的图像.</p>\n<p>可以参考有关博客（比如<a href=\"https://blog.csdn.net/u011574296/article/details/70896811?locationNum=14&amp;fps=1\">颜色空间转换</a>）或者OpenCV文档<a href=\"https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab/\">cvtColor</a>.</p>\n",
           "signatures": [
             {
               "params": [

@@ -455,6 +455,32 @@ function assertDefaultVueInterpolationState(
   }
 }
 
+function normalizeTrailingWhitespace(markdown: string): string {
+  const { protectedRanges } = scanMarkdownCode(markdown)
+  const normalized = markdown.replace(
+    /[ \t]+(?=\r?$)/gm,
+    (whitespace: string, offset: number) => {
+      const insideProtectedCode = protectedRanges.some(
+        (range) => offset >= range.start && offset < range.end,
+      )
+      const lineStart = markdown.lastIndexOf('\n', Math.max(0, offset - 1)) + 1
+      const linePrefix = markdown.slice(lineStart, offset)
+      const insideIndentedCode = /^(?: {4}|\t)/.test(linePrefix)
+
+      if (
+        !insideProtectedCode &&
+        !insideIndentedCode &&
+        /^ {2,}$/.test(whitespace)
+      ) {
+        return '<br>'
+      }
+      return ''
+    },
+  )
+  if (normalized === '') return normalized
+  return normalized.replace(/(?:\r?\n)+$/, '') + '\n'
+}
+
 function normalizeMarkdownSyntax(markdown: string): string {
   const { fenceOpenings } = scanMarkdownCode(markdown)
   let normalized = markdown
@@ -483,7 +509,9 @@ export function preprocessMarkdown(
   context: Pick<MigrationContext, 'current'>,
 ): string {
   return normalizeMarkdownSyntax(
-    applyBrandPolicy(repairKnownContentDefects(markdown, context), context),
+    normalizeTrailingWhitespace(
+      applyBrandPolicy(repairKnownContentDefects(markdown, context), context),
+    ),
   )
 }
 
@@ -561,9 +589,13 @@ function copyIfChanged(source: string, destination: string): boolean {
   return true
 }
 
-function migratedImageName(name: string): string {
+export function migratedImageName(name: string): string {
   return name.replace(/^autojs6-notification-/i, 'monkeyking-notification-')
 }
+
+export const migratedImageNames: readonly string[] = Object.freeze(
+  legacyImageNames.map(migratedImageName),
+)
 
 function normalizedRepositoryPath(path: string): string {
   return path.replaceAll('\\', '/')

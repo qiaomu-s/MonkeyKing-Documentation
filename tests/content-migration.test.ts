@@ -8,6 +8,7 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import {
@@ -68,10 +69,29 @@ function testEntry(legacyStem: string, target: string): ContentEntry {
   }
 }
 
-function writeFixture(root: string, path: string, content: string): void {
+function writeFixture(root: string, path: string, content: string | Buffer): void {
   const absolutePath = resolve(root, path)
   mkdirSync(dirname(absolutePath), { recursive: true })
   writeFileSync(absolutePath, content)
+}
+
+function snapshotDirectoryHashes(
+  root: string,
+  directory: string,
+): Readonly<Record<string, string>> {
+  const absoluteDirectory = resolve(root, directory)
+  if (!existsSync(absoluteDirectory)) return Object.freeze({})
+
+  const entries = snapshotFiles(absoluteDirectory).map((entry) => {
+    const separator = entry.indexOf('\0')
+    const path = entry.slice(0, separator)
+    const absolutePath = resolve(absoluteDirectory, path)
+    return [
+      path,
+      createHash('sha256').update(readFileSync(absolutePath)).digest('hex'),
+    ] as const
+  })
+  return Object.freeze(Object.fromEntries(entries))
 }
 
 function snapshotFiles(root: string, directory = root): readonly string[] {
@@ -90,6 +110,28 @@ function readCatalogMarkdown(entry: ContentEntry): string {
   const canonicalPath = resolve(process.cwd(), entry.source)
   const legacyPath = resolve(process.cwd(), entry.legacySource)
   return readFileSync(existsSync(canonicalPath) ? canonicalPath : legacyPath, 'utf8')
+}
+
+function currentEntryPath(
+  root: string,
+  entry: ContentEntry,
+): { readonly path: string; readonly migrated: boolean } {
+  const canonicalPath = resolve(root, entry.source)
+  if (existsSync(canonicalPath)) return { path: canonicalPath, migrated: true }
+  return { path: resolve(root, entry.legacySource), migrated: false }
+}
+
+function copyCurrentContentCorpus(root: string): boolean {
+  const legacyDirectory = resolve(process.cwd(), 'api')
+  if (existsSync(legacyDirectory)) {
+    cpSync(legacyDirectory, resolve(root, 'api'), { recursive: true })
+    return true
+  }
+
+  cpSync(resolve(process.cwd(), 'docs'), resolve(root, 'docs'), {
+    recursive: true,
+  })
+  return false
 }
 
 function countOutsideMarkdownCode(markdown: string, token: string): number {
@@ -208,7 +250,7 @@ describe('deterministic Markdown migration', () => {
   test('preserves the exact third-party Auto.js and AutoJsPro enum rows', () => {
     const appType = entryFor('api/appType.md')
     const output = applyBrandPolicy(
-      readFileSync(appType.legacySource, 'utf8'),
+      readCatalogMarkdown(appType),
       { current: appType },
     )
 
@@ -238,7 +280,7 @@ describe('deterministic Markdown migration', () => {
     ]) {
       const entry = entryFor(legacySource)
       const repaired = repairKnownContentDefects(
-        readFileSync(legacySource, 'utf8'),
+        readCatalogMarkdown(entry),
         { current: entry },
       )
       expect(repairKnownContentDefects(repaired, { current: entry })).toBe(
@@ -260,8 +302,8 @@ describe('deterministic Markdown migration', () => {
     expect(repairedBySource.get('api/color.md')).not.toContain("'yellow'`.")
     expect(repairedBySource.get('api/events.md')).toContain("## 事件: 'exit'")
     expect(repairedBySource.get('api/image.md')).not.toContain('    * ``\n')
-    expect(repairedBySource.get('api/ui.md')).toContain(
-      '![ex-properties](images/ex-properties.png)',
+    expect(repairedBySource.get('api/ui.md')).toMatch(
+      /!\[ex-properties\]\((?:\/)?images\/ex-properties\.png\)/,
     )
     expect(repairedBySource.get('api/ui.md')).not.toContain('ex-input.png')
     expect(repairedBySource.get('api/ui.md')).not.toContain('ex-hint.png')
@@ -272,10 +314,10 @@ describe('deterministic Markdown migration', () => {
 
   test('rejects an audited page when neither legacy nor repaired state is present', () => {
     const canvas = entryFor('api/canvas.md')
-    const drifted = readFileSync(canvas.legacySource, 'utf8').replace(
-      'Array<number>',
-      'Array<Number>',
-    )
+    const source = readCatalogMarkdown(canvas)
+    const drifted = source.includes('Array&lt;number&gt;')
+      ? source.replace('Array&lt;number&gt;', 'Array&lt;Number&gt;')
+      : source.replace('Array<number>', 'Array<Number>')
 
     expect(() =>
       repairKnownContentDefects(drifted, { current: canvas }),
@@ -333,6 +375,23 @@ describe('deterministic Markdown migration', () => {
 
     expect(output).toBe(
       '```js\n{{ value }}\n```\n\n```js\n<tag />\n```\n',
+    )
+  })
+
+  test('normalizes trailing whitespace while preserving prose hard breaks', () => {
+    const input =
+      'Hard break.  \n' +
+      'Single trailing space. \n\n' +
+      '```js\n' +
+      'const value = 1  \n' +
+      '```\n\n'
+
+    expect(preprocessMarkdown(input, { current: fixtureCurrent })).toBe(
+      'Hard break.<br>\n' +
+        'Single trailing space.\n\n' +
+        '```js\n' +
+        'const value = 1\n' +
+        '```\n',
     )
   })
 
@@ -430,7 +489,8 @@ describe('deterministic Markdown migration', () => {
     expect(report.overrides).toBe(2)
   })
 
-  test('dry-runs all 101 retained pages against the final heading index', async () => {
+  test('dry-runs all 101 retained pages in either migration phase', async () => {
+    const legacyLayout = existsSync(resolve(process.cwd(), 'api'))
     const sources = contentEntries.map((entry) => ({
       entry,
       markdown: preprocessMarkdown(readCatalogMarkdown(entry), {
@@ -443,6 +503,7 @@ describe('deterministic Markdown migration', () => {
       overrides: 0,
       unlinked: 0,
     }
+    let changedSources = 0
 
     for (const source of sources) {
       const result = rewriteMarkdownLinksWithReport(source.markdown, {
@@ -453,14 +514,25 @@ describe('deterministic Markdown migration', () => {
       totals.automaticFragments += result.report.automaticFragments
       totals.overrides += result.report.overrides
       totals.unlinked += result.report.unlinked
+      if (result.markdown !== source.markdown) changedSources += 1
     }
 
     expect(sources).toHaveLength(101)
-    expect(totals).toEqual({
-      automaticFragments: 169,
-      overrides: 64,
-      unlinked: 20,
-    })
+    if (legacyLayout) {
+      expect(totals).toEqual({
+        automaticFragments: 169,
+        overrides: 64,
+        unlinked: 20,
+      })
+      expect(changedSources).toBeGreaterThan(0)
+    } else {
+      expect(totals).toEqual({
+        automaticFragments: 0,
+        overrides: 12,
+        unlinked: 0,
+      })
+      expect(changedSources).toBe(0)
+    }
   })
 })
 
@@ -595,9 +667,15 @@ describe('content migration orchestration', () => {
       ['docs/public/logo.png', 'logo-bytes'],
       ['docs/.vitepress/config.ts', 'export default {}\n'],
       ['docs/.vitepress/theme/index.ts', 'export default {}\n'],
-      ['docs/superpowers/keep.md', 'keep\n'],
     ])
     for (const [path, content] of shellFiles) writeFixture(root, path, content)
+    writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
+    writeFixture(
+      root,
+      'docs/superpowers/nested/bytes.bin',
+      Buffer.from([0, 1, 2, 10, 13, 255]),
+    )
+    const superpowersBefore = snapshotDirectoryHashes(root, 'docs/superpowers')
     const options = {
       rootDirectory: root,
       entries: [only],
@@ -610,24 +688,22 @@ describe('content migration orchestration', () => {
     await migrateContent(options)
 
     expect(snapshotFiles(root)).toEqual(snapshot)
+    expect(snapshotDirectoryHashes(root, 'docs/superpowers')).toEqual(
+      superpowersBefore,
+    )
     for (const [path, content] of shellFiles) {
       expect(readFileSync(resolve(root, path), 'utf8')).toBe(content)
     }
   })
 
   test('runs the default 101-page migration three times without changing the second pass', async () => {
-    cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
-      recursive: true,
-    })
+    const startedLegacy = copyCurrentContentCorpus(root)
     writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
 
-    expect(countCatalogToken(root, '{{')).toBe(38)
-    expect(countCatalogToken(root, '}}')).toBe(39)
-    expect(countCatalogToken(root, '&#123;&#123;')).toBe(0)
-    expect(countCatalogToken(root, '&#125;&#125;')).toBe(0)
-    expect(readFileSync(resolve(root, 'api/crypto.md'), 'utf8')).toContain(
-      '- }} - 选项参数',
-    )
+    expect(countCatalogToken(root, '{{')).toBe(startedLegacy ? 38 : 0)
+    expect(countCatalogToken(root, '}}')).toBe(startedLegacy ? 39 : 0)
+    expect(countCatalogToken(root, '&#123;&#123;')).toBe(startedLegacy ? 0 : 38)
+    expect(countCatalogToken(root, '&#125;&#125;')).toBe(startedLegacy ? 0 : 39)
 
     const firstReport = await migrateContent({ rootDirectory: root })
     const firstSnapshot = snapshotFiles(root)
@@ -642,10 +718,18 @@ describe('content migration orchestration', () => {
     const secondSnapshot = snapshotFiles(root)
     const thirdReport = await migrateContent({ rootDirectory: root })
 
-    expect(firstReport.entriesWritten).toBe(101)
-    expect(firstReport.imagesCopied).toBe(37)
-    expect(secondReport.entriesWritten).toBe(0)
-    expect(thirdReport.entriesWritten).toBe(0)
+    expect(firstReport.entriesWritten).toBe(startedLegacy ? 101 : 0)
+    expect(firstReport.imagesCopied).toBe(startedLegacy ? 37 : 0)
+    expect(secondReport).toEqual({
+      entriesWritten: 0,
+      imagesCopied: 0,
+      pathsDeleted: 0,
+    })
+    expect(thirdReport).toEqual({
+      entriesWritten: 0,
+      imagesCopied: 0,
+      pathsDeleted: 0,
+    })
     expect(secondSnapshot).toEqual(firstSnapshot)
     expect(snapshotFiles(root)).toEqual(firstSnapshot)
     expect(readFileSync(resolve(root, 'docs/superpowers/keep.md'), 'utf8')).toBe(
@@ -656,35 +740,53 @@ describe('content migration orchestration', () => {
   test.each([
     [
       'mixed',
-      (source: string) =>
+      (source: string, migrated: boolean) =>
         source.replace(
-          '{{ a: number }}',
-          '&#123;&#123; a: number &#125;&#125;',
+          migrated
+            ? '&#123;&#123; a: number &#125;&#125;'
+            : '{{ a: number }}',
+          migrated
+            ? '{{ a: number }}'
+            : '&#123;&#123; a: number &#125;&#125;',
         ),
     ],
     ['added', (source: string) => `${source}\n{{ added: number }}\n`],
-    ['missing', (source: string) => source.replace('{{ a: number }}\n', '')],
+    [
+      'missing',
+      (source: string, migrated: boolean) =>
+        source.replace(
+          `${migrated ? '&#123;&#123; a: number &#125;&#125;' : '{{ a: number }}'}\n`,
+          '',
+        ),
+    ],
     [
       'drifted',
-      (source: string) => source.replace('{{ a: number }}', '{ { a: number }}'),
+      (source: string, migrated: boolean) =>
+        source.replace(
+          migrated
+            ? '&#123;&#123; a: number &#125;&#125;'
+            : '{{ a: number }}',
+          '{ { a: number } }',
+        ),
     ],
   ])(
     'rejects a %s default Vue interpolation state before writing',
     async (_state, mutate) => {
-      cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
-        recursive: true,
-      })
-      const dataTypesPath = resolve(root, 'api/dataTypes.md')
+      copyCurrentContentCorpus(root)
+      const { path: dataTypesPath, migrated } = currentEntryPath(
+        root,
+        entryFor('api/dataTypes.md'),
+      )
       writeFileSync(
         dataTypesPath,
-        mutate(readFileSync(dataTypesPath, 'utf8')),
+        mutate(readFileSync(dataTypesPath, 'utf8'), migrated),
       )
+      const snapshot = snapshotFiles(root)
 
       await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
         /Audited Vue interpolation state mismatch/,
       )
-      expect(existsSync(resolve(root, contentEntries[0].source))).toBe(false)
-      expect(existsSync(resolve(root, 'api/dataTypes.md'))).toBe(true)
+      expect(snapshotFiles(root)).toEqual(snapshot)
     },
   )
 
@@ -692,47 +794,66 @@ describe('content migration orchestration', () => {
     [
       'missing paired closing',
       'api/dataTypes.md',
-      (source: string) => source.replace('{{ a: number }}', '{{ a: number }'),
+      (source: string, migrated: boolean) =>
+        source.replace(
+          migrated
+            ? '&#123;&#123; a: number &#125;&#125;'
+            : '{{ a: number }}',
+          migrated ? '&#123;&#123; a: number &#125;' : '{{ a: number }',
+        ),
     ],
     [
       'extra paired closing',
       'api/dataTypes.md',
-      (source: string) => `${source}\n}}\n`,
+      (source: string, migrated: boolean) =>
+        `${source}\n${migrated ? '&#125;&#125;' : '}}'}\n`,
     ],
     [
       'mixed paired closing',
       'api/dataTypes.md',
-      (source: string) =>
-        source.replace('{{ a: number }}', '{{ a: number &#125;&#125;'),
+      (source: string, migrated: boolean) =>
+        source.replace(
+          migrated
+            ? '&#123;&#123; a: number &#125;&#125;'
+            : '{{ a: number }}',
+          migrated
+            ? '&#123;&#123; a: number }}'
+            : '{{ a: number &#125;&#125;',
+        ),
     ],
     [
       'drifted nested-type closing literal',
       'api/crypto.md',
-      (source: string) =>
-        source.replace('- }} - 选项参数', '- } } - 选项参数'),
+      (source: string, migrated: boolean) =>
+        source.replace(
+          migrated ? '- &#125;&#125; - 选项参数' : '- }} - 选项参数',
+          '- } } - 选项参数',
+        ),
     ],
   ])(
     'rejects a %s before writing',
     async (_state, legacySource, mutate) => {
-      cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
-        recursive: true,
-      })
-      const sourcePath = resolve(root, legacySource)
-      writeFileSync(sourcePath, mutate(readFileSync(sourcePath, 'utf8')))
+      copyCurrentContentCorpus(root)
+      const { path: sourcePath, migrated } = currentEntryPath(
+        root,
+        entryFor(legacySource),
+      )
+      writeFileSync(
+        sourcePath,
+        mutate(readFileSync(sourcePath, 'utf8'), migrated),
+      )
+      const snapshot = snapshotFiles(root)
 
       await expect(migrateContent({ rootDirectory: root })).rejects.toThrow(
         /Audited Vue interpolation state mismatch/,
       )
-      expect(existsSync(resolve(root, contentEntries[0].source))).toBe(false)
-      expect(existsSync(sourcePath)).toBe(true)
+      expect(snapshotFiles(root)).toEqual(snapshot)
     },
   )
 
   test('rejects migrated closing-token drift before writing', async () => {
-    cpSync(resolve(process.cwd(), 'api'), resolve(root, 'api'), {
-      recursive: true,
-    })
-    await migrateContent({ rootDirectory: root })
+    const startedLegacy = copyCurrentContentCorpus(root)
+    if (startedLegacy) await migrateContent({ rootDirectory: root })
     const dataTypesPath = resolve(root, entryFor('api/dataTypes.md').source)
     writeFileSync(
       dataTypesPath,

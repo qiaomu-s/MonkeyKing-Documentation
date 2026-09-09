@@ -30,28 +30,28 @@
         {
           "textRaw": "选择器 (UiSelector)",
           "name": "选择器_(uiselector)",
-          "desc": "<p>UiSelector (选择器), 亦可看作是 <a href=\"uiObjectType\">控件节点</a> 的条件筛选器, 用于通过附加不同的条件, 筛选出一个或一组活动窗口中的 <code>控件节点</code>, 并做进一步处理, 如 [ 执行 <a href=\"uiObjectActionsType\">控件行为</a> (点击, 长按, 设置文本等) / 判断位置 / 获取文本内容 / 获取控件特定状态 / 在 <a href=\"glossaries#控件层级\">控件层级</a> 中进行 <a href=\"uiObjectType#m-compass\">罗盘</a> 导航 ] 等.</p>\n<p>详情参阅 <a href=\"uiSelectorType\">选择器 (UiSelector)</a> 章节.</p>\n",
+          "desc": "<p>UiSelector (选择器), 亦可看作是 <a href=\"ui-object.md\">控件节点</a> 的条件筛选器, 用于通过附加不同的条件, 筛选出一个或一组活动窗口中的 <code>控件节点</code>, 并做进一步处理, 如 [ 执行 <a href=\"ui-object-actions.md\">控件行为</a> (点击, 长按, 设置文本等) / 判断位置 / 获取文本内容 / 获取控件特定状态 / 在 <a href=\"../../reference/glossaries/glossary.md#控件层级\">控件层级</a> 中进行 <a href=\"ui-object.md#m-compass\">罗盘</a> 导航 ] 等.</p>\n<p>详情参阅 <a href=\"ui-selector.md\">选择器 (UiSelector)</a> 章节.</p>\n",
           "type": "module",
           "displayName": "选择器 (UiSelector)"
         },
         {
           "textRaw": "控件节点 (UiObject)",
           "name": "控件节点_(uiobject)",
-          "desc": "<p>UiObject 通常被称为 [ 控件 / 节点 / 控件节点 ], 可看做是一个通过安卓无障碍服务包装的 <a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo\">AccessibilityNodeInfo</a> 对象, 代表一个当前活动窗口中的节点, 通过此节点可收集控件信息或执行控件行为, 进而实现一系列自动化操作.</p>\n<p>详情参阅 <a href=\"uiObjectType\">控件节点 (UiObject)</a> 章节.</p>\n",
+          "desc": "<p>UiObject 通常被称为 [ 控件 / 节点 / 控件节点 ], 可看做是一个通过安卓无障碍服务包装的 <a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo\">AccessibilityNodeInfo</a> 对象, 代表一个当前活动窗口中的节点, 通过此节点可收集控件信息或执行控件行为, 进而实现一系列自动化操作.</p>\n<p>详情参阅 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 章节.</p>\n",
           "type": "module",
           "displayName": "控件节点 (UiObject)"
         },
         {
           "textRaw": "控件集合 (UiObjectCollection)",
           "name": "控件集合_(uiobjectcollection)",
-          "desc": "<p>UiObjectCollection 代表 <a href=\"uiObjectType\">控件节点 (UiObject)</a> 的对象集合.</p>\n<p>详情参阅 <a href=\"uiObjectCollectionType\">控件集合 (UiObjectCollection)</a> 章节.</p>\n",
+          "desc": "<p>UiObjectCollection 代表 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 的对象集合.</p>\n<p>详情参阅 <a href=\"ui-object-collection.md\">控件集合 (UiObjectCollection)</a> 章节.</p>\n",
           "type": "module",
           "displayName": "控件集合 (UiObjectCollection)"
         },
         {
           "textRaw": "控件节点行为 (UiObjectActions)",
           "name": "控件节点行为_(uiobjectactions)",
-          "desc": "<p>UiObjectActions 是一个 Java 接口, 代表 <a href=\"uiObjectType\">控件节点 (UiObject)</a> 的行为集合.</p>\n<p>详情参阅 <a href=\"uiObjectActionsType\">控件节点行为 (UiObjectActions)</a> 章节.</p>\n<hr>\n",
+          "desc": "<p>UiObjectActions 是一个 Java 接口, 代表 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 的行为集合.</p>\n<p>详情参阅 <a href=\"ui-object-actions.md\">控件节点行为 (UiObjectActions)</a> 章节.</p>\n<hr>\n",
           "type": "module",
           "displayName": "控件节点行为 (UiObjectActions)"
         }
@@ -710,7 +710,7 @@
               ]
             }
           ],
-          "desc": "<p>返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.</p>\n<p>该函数可以点击大部分包含文字的按钮. 例如微信主界面下方的&quot;微信&quot;, &quot;联系人&quot;, &quot;发现&quot;, &quot;我&quot;的按钮.<br>通常与while同时使用以便点击按钮直至成功. 例如:</p>\n<pre><code>while(!click(&quot;扫一扫&quot;));\n</code></pre><p>当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部点击成功.</p>\n<p>i是从0开始计算的, 也就是, <code>click(&quot;啦啦啦&quot;, 0)</code>表示点击屏幕上第一个&quot;啦啦啦&quot;, <code>click(&quot;啦啦啦&quot;, 1)</code>表示点击屏幕上第二个&quot;啦啦啦&quot;.</p>\n<blockquote>\n<p>文本所在区域指的是, 从文本处向其父视图寻找, 直至发现一个可点击的部件为止.</p>\n</blockquote>\n"
+          "desc": "<p>返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.</p>\n<p>该函数可以点击大部分包含文字的按钮. 例如微信主界面下方的&quot;微信&quot;, &quot;联系人&quot;, &quot;发现&quot;, &quot;我&quot;的按钮.<br>\n通常与while同时使用以便点击按钮直至成功. 例如:</p>\n<pre><code>while(!click(&quot;扫一扫&quot;));\n</code></pre><p>当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部点击成功.</p>\n<p>i是从0开始计算的, 也就是, <code>click(&quot;啦啦啦&quot;, 0)</code>表示点击屏幕上第一个&quot;啦啦啦&quot;, <code>click(&quot;啦啦啦&quot;, 1)</code>表示点击屏幕上第二个&quot;啦啦啦&quot;.</p>\n<blockquote>\n<p>文本所在区域指的是, 从文本处向其父视图寻找, 直至发现一个可点击的部件为止.</p>\n</blockquote>\n"
         },
         {
           "textRaw": "click(left, top, bottom, right)",

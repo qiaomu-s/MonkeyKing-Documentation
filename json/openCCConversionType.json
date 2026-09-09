@@ -4,7 +4,7 @@
     {
       "textRaw": "OpenCCConversion",
       "name": "openccconversion",
-      "desc": "<p>用于 <a href=\"opencc\">opencc</a> 模块的 &quot;字符转换类型&quot; 类型.</p>\n<p><code>OpenCCConversion</code> 为字符串, 作为参数使用时不区分大小写.</p>\n<p>将繁体中文 &quot;這裏&quot; 转换为简体中文 &quot;这里&quot; 的简单示例:</p>\n<pre><code class=\"lang-ts\">opencc(&#39;這裏&#39;, &#39;S2T&#39;);\n</code></pre>\n<p>其中 <code>&#39;S2T&#39;</code> 即为 <code>OpenCCConversion</code> 类型.</p>\n",
+      "desc": "<p>用于 <a href=\"../utilities/opencc.md\">opencc</a> 模块的 &quot;字符转换类型&quot; 类型.</p>\n<p><code>OpenCCConversion</code> 为字符串, 作为参数使用时不区分大小写.</p>\n<p>将繁体中文 &quot;這裏&quot; 转换为简体中文 &quot;这里&quot; 的简单示例:</p>\n<pre><code class=\"lang-ts\">opencc(&#39;這裏&#39;, &#39;S2T&#39;);\n</code></pre>\n<p>其中 <code>&#39;S2T&#39;</code> 即为 <code>OpenCCConversion</code> 类型.</p>\n",
       "modules": [
         {
           "textRaw": "JP2TW",

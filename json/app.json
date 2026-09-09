@@ -21,18 +21,18 @@
       ],
       "modules": [
         {
-          "textRaw": "app.autojs.versionCode",
-          "name": "app.autojs.versioncode",
+          "textRaw": "app.monkeyking.versionCode",
+          "name": "app.monkeyking.versioncode",
           "desc": "<ul>\n<li>{number}</li>\n</ul>\n<p>Auto.js版本号, 整数值. 例如160, 256等.</p>\n",
           "type": "module",
-          "displayName": "app.autojs.versionCode"
+          "displayName": "app.monkeyking.versionCode"
         },
         {
-          "textRaw": "app.autojs.versionName",
-          "name": "app.autojs.versionname",
+          "textRaw": "app.monkeyking.versionName",
+          "name": "app.monkeyking.versionname",
           "desc": "<ul>\n<li>{string}</li>\n</ul>\n<p>Auto.js版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n",
           "type": "module",
-          "displayName": "app.autojs.versionName"
+          "displayName": "app.monkeyking.versionName"
         }
       ],
       "methods": [

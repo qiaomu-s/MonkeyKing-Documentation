@@ -4,7 +4,7 @@
     {
       "textRaw": "Base64",
       "name": "base64",
-      "desc": "<p>Base64 是一种编码方式, 同时可作为一种数据的存储格式, 并非严格意义上的加密与解密.</p>\n<p>base64 模块主要用于对数据进行 Base64 编码及解码.</p>\n<blockquote>\n<p>注: 与 <a href=\"crypto\">crypto</a> 模块不同, crypto 模块主要用于信息的加密与解密.</p>\n</blockquote>\n<blockquote>\n<p>参阅:<br><a href=\"https://en.wikipedia.org/wiki/Base64\">Wikipedia (英)</a> / <a href=\"https://zh.wikipedia.org/wiki/Base64\">Wikipedia (中)</a><br><a href=\"http://www.ruanyifeng.com/blog/2008/06/base64.html\">Base64 笔记 (from 阮一峰的网络日志)</a><br><a href=\"https://juejin.cn/post/6887498543494660109\">Base64 是加密算法吗 (from 稀土掘金)</a></p>\n</blockquote>\n",
+      "desc": "<p>Base64 是一种编码方式, 同时可作为一种数据的存储格式, 并非严格意义上的加密与解密.</p>\n<p>base64 模块主要用于对数据进行 Base64 编码及解码.</p>\n<blockquote>\n<p>注: 与 <a href=\"crypto.md\">crypto</a> 模块不同, crypto 模块主要用于信息的加密与解密.</p>\n</blockquote>\n<blockquote>\n<p>参阅:<br>\n<a href=\"https://en.wikipedia.org/wiki/Base64\">Wikipedia (英)</a> / <a href=\"https://zh.wikipedia.org/wiki/Base64\">Wikipedia (中)</a><br>\n<a href=\"http://www.ruanyifeng.com/blog/2008/06/base64.html\">Base64 笔记 (from 阮一峰的网络日志)</a><br>\n<a href=\"https://juejin.cn/post/6887498543494660109\">Base64 是加密算法吗 (from 稀土掘金)</a></p>\n</blockquote>\n",
       "modules": [
         {
           "textRaw": "可逆性",
@@ -25,20 +25,20 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**o** { [string](dataTypes#string) | [JsByteArray](dataTypes#jsbytearray) | [ByteArray](dataTypes#bytearray) } - 待编码数据 ",
+                      "textRaw": "**o** { [string](../types/data-types.md#string) | [JsByteArray](../types/data-types.md#jsbytearray) | [ByteArray](../types/data-types.md#bytearray) } - 待编码数据 ",
                       "name": "**o**",
-                      "type": " [string](dataTypes#string) | [JsByteArray](dataTypes#jsbytearray) | [ByteArray](dataTypes#bytearray) ",
+                      "type": " [string](../types/data-types.md#string) | [JsByteArray](../types/data-types.md#jsbytearray) | [ByteArray](../types/data-types.md#bytearray) ",
                       "desc": "待编码数据"
                     },
                     {
-                      "textRaw": "**[ encoding = `'UTF_8'` ]** { [StandardCharset](dataTypes#standardcharset) } - 字符编码 ",
+                      "textRaw": "**[ encoding = `'UTF_8'` ]** { [StandardCharset](../types/data-types.md#standardcharset) } - 字符编码 ",
                       "name": "**[",
-                      "desc": "encoding = `'UTF_8'` ]** { [StandardCharset](dataTypes#standardcharset) } - 字符编码"
+                      "desc": "encoding = `'UTF_8'` ]** { [StandardCharset](../types/data-types.md#standardcharset) } - 字符编码"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [string](dataTypes#string) } ",
+                      "textRaw": "<ins>**returns**</ins> { [string](../types/data-types.md#string) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](../types/data-types.md#string) "
                     }
                   ]
                 },
@@ -71,20 +71,20 @@
                 {
                   "params": [
                     {
-                      "textRaw": "**o** { [string](dataTypes#string) | [JsByteArray](dataTypes#jsbytearray) | [ByteArray](dataTypes#bytearray) } - 待解码数据 ",
+                      "textRaw": "**o** { [string](../types/data-types.md#string) | [JsByteArray](../types/data-types.md#jsbytearray) | [ByteArray](../types/data-types.md#bytearray) } - 待解码数据 ",
                       "name": "**o**",
-                      "type": " [string](dataTypes#string) | [JsByteArray](dataTypes#jsbytearray) | [ByteArray](dataTypes#bytearray) ",
+                      "type": " [string](../types/data-types.md#string) | [JsByteArray](../types/data-types.md#jsbytearray) | [ByteArray](../types/data-types.md#bytearray) ",
                       "desc": "待解码数据"
                     },
                     {
-                      "textRaw": "**[ encoding = `'UTF_8'` ]** { [StandardCharset](dataTypes#standardcharset) } - 字符编码 ",
+                      "textRaw": "**[ encoding = `'UTF_8'` ]** { [StandardCharset](../types/data-types.md#standardcharset) } - 字符编码 ",
                       "name": "**[",
-                      "desc": "encoding = `'UTF_8'` ]** { [StandardCharset](dataTypes#standardcharset) } - 字符编码"
+                      "desc": "encoding = `'UTF_8'` ]** { [StandardCharset](../types/data-types.md#standardcharset) } - 字符编码"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [string](dataTypes#string) } ",
+                      "textRaw": "<ins>**returns**</ins> { [string](../types/data-types.md#string) } ",
                       "name": "<ins>**returns**</ins>",
-                      "type": " [string](dataTypes#string) "
+                      "type": " [string](../types/data-types.md#string) "
                     }
                   ]
                 },
