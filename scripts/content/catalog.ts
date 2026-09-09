@@ -1,607 +1,242 @@
+export const contentSections = Object.freeze([
+  Object.freeze({ id: 'guide', title: 'Guide' }),
+  Object.freeze({ id: 'project', title: 'Project' }),
+  Object.freeze({ id: 'api/core', title: 'Core API' }),
+  Object.freeze({ id: 'api/automation', title: 'Automation API' }),
+  Object.freeze({ id: 'api/system', title: 'System API' }),
+  Object.freeze({ id: 'api/media', title: 'Media API' }),
+  Object.freeze({ id: 'api/network', title: 'Network API' }),
+  Object.freeze({ id: 'api/utilities', title: 'Utility API' }),
+  Object.freeze({ id: 'api/types', title: 'API Types' }),
+  Object.freeze({ id: 'reference/android', title: 'Android Reference' }),
+  Object.freeze({ id: 'reference/runtime', title: 'Runtime Reference' }),
+  Object.freeze({ id: 'reference/glossaries', title: 'Glossaries' }),
+  Object.freeze({ id: 'reference', title: 'Reference' }),
+] as const)
+
+export type ContentSectionId = (typeof contentSections)[number]['id']
+
 export interface ContentEntry {
-  id: string
-  legacySource: string
-  source: string
-  route: string
-  title: string
-  section: string
-  legacyJsonNames: string[]
+  readonly id: string
+  readonly legacySource: string
+  readonly source: string
+  readonly route: string
+  readonly title: string
+  readonly section: ContentSectionId
+  readonly legacyJsonNames: readonly string[]
 }
 
-export interface ContentSectionMetadata {
-  id: string
-  title: string
-}
-
+type ContentTargetPath = `${ContentSectionId}/${string}`
 type ContentEntryDefinition = readonly [
   legacyStem: string,
-  targetPathUnderDocs: string,
-  id: string,
+  targetPathUnderDocs: ContentTargetPath,
   title: string,
-  legacyJsonStem: string,
+  legacyJsonNames?: readonly [string, ...string[]],
 ]
+
+type DottedPath<Path extends string> =
+  Path extends `${infer Head}/${infer Tail}`
+    ? `${Head}.${DottedPath<Tail>}`
+    : Path
+
+type DirectoryPath<Path extends string> =
+  Path extends `${infer Head}/${infer Tail}`
+    ? Tail extends `${string}/${string}`
+      ? `${Head}/${DirectoryPath<Tail>}`
+      : Head
+    : never
+
+type DefinitionJsonNames<Definition extends ContentEntryDefinition> =
+  Definition extends readonly [
+    string,
+    ContentTargetPath,
+    string,
+    infer Names extends readonly [string, ...string[]],
+  ]
+    ? Names
+    : readonly [Definition[0]]
+
+type ContentEntryFromDefinition<
+  Definition extends ContentEntryDefinition,
+> = Definition extends ContentEntryDefinition
+  ? Readonly<{
+      id: DottedPath<Definition[1]>
+      legacySource: `api/${Definition[0]}.md`
+      source: `docs/${Definition[1]}.md`
+      route: `/${Definition[1]}.html`
+      title: Definition[2]
+      section: Extract<DirectoryPath<Definition[1]>, ContentSectionId>
+      legacyJsonNames: DefinitionJsonNames<Definition>
+    }>
+  : never
 
 const EXPECTED_CONTENT_ENTRY_COUNT = 101
 const EXPECTED_LEGACY_ALL_ENTRY_COUNT = 42
 const KEBAB_CASE_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const SAFE_LEGACY_JSON_STEM = /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/
 
-function defineSectionEntries(
-  section: string,
-  definitions: readonly ContentEntryDefinition[],
-): ContentEntry[] {
-  return definitions.map(
-    ([legacyStem, targetPathUnderDocs, id, title, legacyJsonStem]) => ({
-      id,
-      legacySource: 'api/' + legacyStem + '.md',
-      source: 'docs/' + targetPathUnderDocs + '.md',
-      route: '/' + targetPathUnderDocs + '.html',
-      title,
-      section,
-      legacyJsonNames:
-        id === 'api.core.monkeyking'
-          ? ['monkeyking', 'autojs']
-          : [legacyJsonStem],
-    }),
+const contentDefinitions = [
+  ['overview', 'guide/overview', 'Overview - 综述'],
+  ['manual', 'guide/manual', 'Manual - Monkey King 使用手册'],
+  ['qa', 'guide/troubleshooting', 'Troubleshooting - 疑难解答'],
+  ['documentation', 'project/about', 'About - 关于文档'],
+  ['progress', 'project/progress', 'Progress - 文档部署进度'],
+  ['changelog', 'project/changelog', 'Changelog - 文档更新日志'],
+  ['global', 'api/core/global', 'Global - 全局对象'],
+  ['autojs', 'api/core/monkeyking', 'Monkey King - 本体应用', ['monkeyking', 'autojs']],
+  ['app', 'api/core/app', 'App - 通用应用'],
+  ['modules', 'api/core/modules', 'Modules - 模块'],
+  ['plugins', 'api/core/plugins', 'Plugins - 插件'],
+  ['automator', 'api/automation/automator', 'Automator - 自动化'],
+  ['keys', 'api/automation/keys', 'Keys - 按键'],
+  ['dialogs', 'api/automation/dialogs', 'Dialogs - 对话框'],
+  ['floaty', 'api/automation/floaty', 'Floaty - 悬浮窗'],
+  ['ui', 'api/automation/ui', 'UI - 用户界面'],
+  ['uiSelectorType', 'api/automation/ui-selector', 'UiSelector - 选择器'],
+  ['uiObjectType', 'api/automation/ui-object', 'UiObject - 控件节点'],
+  ['uiObjectCollectionType', 'api/automation/ui-object-collection', 'UiObjectCollection - 控件集合'],
+  ['uiObjectActionsType', 'api/automation/ui-object-actions', 'UiObjectActions - 控件节点行为'],
+  ['console', 'api/system/console', 'Console - 控制台'],
+  ['device', 'api/system/device', 'Device - 设备'],
+  ['storages', 'api/system/storages', 'Storages - 存储'],
+  ['files', 'api/system/files', 'Files - 文件'],
+  ['engines', 'api/system/engines', 'Engines - 引擎'],
+  ['tasks', 'api/system/tasks', 'Tasks - 任务'],
+  ['toast', 'api/system/toast', 'Toast - 消息浮动框'],
+  ['notice', 'api/system/notice', 'Notice - 消息通知'],
+  ['shell', 'api/system/shell', 'Shell'],
+  ['shizuku', 'api/system/shizuku', 'Shizuku'],
+  ['sensors', 'api/system/sensors', 'Sensors - 传感器'],
+  ['timers', 'api/system/timers', 'Timers - 定时器'],
+  ['threads', 'api/system/threads', 'Threads - 线程'],
+  ['continuation', 'api/system/continuation', 'Continuation - 协程'],
+  ['events', 'api/system/events', 'Events - 事件监听'],
+  ['color', 'api/media/color', 'Color - 颜色'],
+  ['image', 'api/media/image', 'Images - 图像'],
+  ['ocr', 'api/media/ocr', 'OCR - 光学字符识别'],
+  ['barcode', 'api/media/barcode', 'Barcode - 条码'],
+  ['qrcode', 'api/media/qr-code', 'QR Code - 二维码'],
+  ['media', 'api/media/media', 'Media - 多媒体'],
+  ['recorder', 'api/media/recorder', 'Recorder - 记录器'],
+  ['canvas', 'api/media/canvas', 'Canvas - 画布'],
+  ['web', 'api/network/web', 'Web - 万维网'],
+  ['http', 'api/network/http', 'HTTP'],
+  ['webSocketType', 'api/network/web-socket', 'WebSocket'],
+  ['base64', 'api/utilities/base64', 'Base64'],
+  ['crypto', 'api/utilities/crypto', 'Crypto - 密文'],
+  ['opencc', 'api/utilities/opencc', 'OpenCC - 中文转换'],
+  ['i18n', 'api/utilities/i18n', 'Internationalization - 国际化'],
+  ['s13n', 'api/utilities/s13n', 'Standardization - 标准化'],
+  ['e4x', 'api/utilities/e4x', 'E4X'],
+  ['polyfill', 'api/utilities/polyfill', 'Polyfill - 代码填泥'],
+  ['arrayx', 'api/utilities/arrayx', 'Arrayx - Array 扩展'],
+  ['numberx', 'api/utilities/numberx', 'Numberx - Number 扩展'],
+  ['mathx', 'api/utilities/mathx', 'Mathx - Math 扩展'],
+  ['versionType', 'api/utilities/version', 'Version - 版本工具类'],
+  ['androidBundleType', 'api/types/android-bundle', 'AndroidBundle'],
+  ['androidRectType', 'api/types/android-rect', 'AndroidRect'],
+  ['appType', 'api/types/app', 'App - 应用枚举类'],
+  ['colorType', 'api/types/color', 'Color - 颜色类'],
+  ['consoleBuildOptionsType', 'api/types/console-build-options', 'ConsoleBuildOptions'],
+  ['cryptoCipherOptionsType', 'api/types/crypto-cipher-options', 'CryptoCipherOptions'],
+  ['cryptoKeyPairType', 'api/types/crypto-key-pair', 'CryptoKeyPair'],
+  ['cryptoKeyType', 'api/types/crypto-key', 'CryptoKey'],
+  ['dataTypes', 'api/types/data-types', 'Data Types - 数据类型'],
+  ['eventEmitterType', 'api/types/event-emitter', 'EventEmitter - 事件发射器'],
+  ['httpRequestBuilderOptionsType', 'api/types/http-request-builder-options', 'HttpRequestBuilderOptions'],
+  ['httpRequestHeadersType', 'api/types/http-request-headers', 'HttpRequestHeaders'],
+  ['httpResponseBodyType', 'api/types/http-response-body', 'HttpResponseBody'],
+  ['httpResponseHeadersType', 'api/types/http-response-headers', 'HttpResponseHeaders'],
+  ['httpResponseType', 'api/types/http-response', 'HttpResponse'],
+  ['imageWrapperType', 'api/types/image-wrapper', 'ImageWrapper - 包装图像类'],
+  ['injectableWebClientType', 'api/types/injectable-web-client', 'InjectableWebClient'],
+  ['injectableWebViewType', 'api/types/injectable-web-view', 'InjectableWebView'],
+  ['noticeBuilderType', 'api/types/notice-builder', 'NoticeBuilder'],
+  ['noticeChannelOptionsType', 'api/types/notice-channel-options', 'NoticeChannelOptions'],
+  ['noticeOptionsType', 'api/types/notice-options', 'NoticeOptions'],
+  ['noticePresetConfigurationType', 'api/types/notice-preset-configuration', 'NoticePresetConfiguration'],
+  ['ocrOptionsType', 'api/types/ocr-options', 'OcrOptions'],
+  ['okhttp3HttpUrlType', 'api/types/okhttp3-http-url', 'OkHttp3 HttpUrl'],
+  ['okhttp3RequestType', 'api/types/okhttp3-request', 'OkHttp3 Request'],
+  ['omniTypes', 'api/types/omni-types', 'Omnipotent Types - 全能类型'],
+  ['openCCConversionType', 'api/types/opencc-conversion', 'OpenCCConversion'],
+  ['opencvPointType', 'api/types/opencv-point', 'OpenCVPoint'],
+  ['opencvRectType', 'api/types/opencv-rect', 'OpenCVRect'],
+  ['opencvSizeType', 'api/types/opencv-size', 'OpenCVSize'],
+  ['storageType', 'api/types/storage', 'Storage - 存储类'],
+  ['activity', 'reference/android/activity', 'Activity - 活动'],
+  ['context', 'reference/android/context', 'Context - 上下文'],
+  ['apiLevel', 'reference/android/api-level', 'Android API Level - 安卓 API 级别'],
+  ['scriptingJava', 'reference/android/scripting-java', 'Scripting Java - 脚本化 Java'],
+  ['runtime', 'reference/runtime/runtime', 'Runtime - 运行时'],
+  ['intentType', 'reference/runtime/intent', 'Intent - 意图'],
+  ['exceptions', 'reference/runtime/exceptions', 'Exceptions - 异常'],
+  ['glossaries', 'reference/glossaries/glossary', 'Glossary - 术语'],
+  ['httpHeaderGlossary', 'reference/glossaries/http-headers', 'HTTP Headers - HTTP 标头'],
+  ['httpRequestMethodsGlossary', 'reference/glossaries/http-request-methods', 'HTTP Request Methods - HTTP 请求方法'],
+  ['mimeTypeGlossary', 'reference/glossaries/mime-types', 'MIME Types - MIME 类型'],
+  ['notificationChannelGlossary', 'reference/glossaries/notification-channels', 'Notification Channels - 通知渠道'],
+  ['colorTable', 'reference/color-table', 'Color Table - 颜色列表'],
+] as const satisfies readonly ContentEntryDefinition[]
+
+function createContentEntry<
+  const Definition extends ContentEntryDefinition,
+>(definition: Definition): ContentEntryFromDefinition<Definition> {
+  const [legacyStem, targetPathUnderDocs, title, explicitJsonNames] = definition
+  const legacyJsonNames = Object.freeze(
+    explicitJsonNames ? [...explicitJsonNames] : [legacyStem],
   )
+
+  return Object.freeze({
+    id: targetPathUnderDocs.replaceAll('/', '.'),
+    legacySource: 'api/' + legacyStem + '.md',
+    source: 'docs/' + targetPathUnderDocs + '.md',
+    route: '/' + targetPathUnderDocs + '.html',
+    title,
+    section: targetPathUnderDocs.slice(
+      0,
+      targetPathUnderDocs.lastIndexOf('/'),
+    ),
+    legacyJsonNames,
+  }) as unknown as ContentEntryFromDefinition<Definition>
 }
 
-export const contentSections = [
-  { id: 'guide', title: 'Guide' },
-  { id: 'project', title: 'Project' },
-  { id: 'api/core', title: 'Core API' },
-  { id: 'api/automation', title: 'Automation API' },
-  { id: 'api/system', title: 'System API' },
-  { id: 'api/media', title: 'Media API' },
-  { id: 'api/network', title: 'Network API' },
-  { id: 'api/utilities', title: 'Utility API' },
-  { id: 'api/types', title: 'API Types' },
-  { id: 'reference/android', title: 'Android Reference' },
-  { id: 'reference/runtime', title: 'Runtime Reference' },
-  { id: 'reference/glossaries', title: 'Glossaries' },
-  { id: 'reference', title: 'Reference' },
-] as const satisfies readonly ContentSectionMetadata[]
+type CatalogDefinition = (typeof contentDefinitions)[number]
 
-export const contentSectionOrder: readonly string[] = contentSections.map(
-  ({ id }) => id,
+export const contentEntries: readonly ContentEntryFromDefinition<CatalogDefinition>[] =
+  Object.freeze(
+    contentDefinitions.map((definition) => createContentEntry(definition)),
+  )
+
+export type ContentEntryId = (typeof contentEntries)[number]['id']
+
+export const contentSectionOrder: readonly ContentSectionId[] = Object.freeze(
+  contentSections.map(({ id }) => id),
 )
 
-export const contentEntries: readonly ContentEntry[] = [
-  ...defineSectionEntries('guide', [
-    ['overview', 'guide/overview', 'guide.overview', 'Overview - 综述', 'overview'],
-    [
-      'manual',
-      'guide/manual',
-      'guide.manual',
-      'Manual - Monkey King 使用手册',
-      'manual',
-    ],
-    [
-      'qa',
-      'guide/troubleshooting',
-      'guide.troubleshooting',
-      'Troubleshooting - 疑难解答',
-      'qa',
-    ],
-  ]),
-  ...defineSectionEntries('project', [
-    [
-      'documentation',
-      'project/about',
-      'project.about',
-      'About - 关于文档',
-      'documentation',
-    ],
-    [
-      'progress',
-      'project/progress',
-      'project.progress',
-      'Progress - 文档部署进度',
-      'progress',
-    ],
-    [
-      'changelog',
-      'project/changelog',
-      'project.changelog',
-      'Changelog - 文档更新日志',
-      'changelog',
-    ],
-  ]),
-  ...defineSectionEntries('api/core', [
-    ['global', 'api/core/global', 'api.core.global', 'Global - 全局对象', 'global'],
-    [
-      'autojs',
-      'api/core/monkeyking',
-      'api.core.monkeyking',
-      'Monkey King - 本体应用',
-      'autojs',
-    ],
-    ['app', 'api/core/app', 'api.core.app', 'App - 通用应用', 'app'],
-    ['modules', 'api/core/modules', 'api.core.modules', 'Modules - 模块', 'modules'],
-    ['plugins', 'api/core/plugins', 'api.core.plugins', 'Plugins - 插件', 'plugins'],
-  ]),
-  ...defineSectionEntries('api/automation', [
-    [
-      'automator',
-      'api/automation/automator',
-      'api.automation.automator',
-      'Automator - 自动化',
-      'automator',
-    ],
-    ['keys', 'api/automation/keys', 'api.automation.keys', 'Keys - 按键', 'keys'],
-    [
-      'dialogs',
-      'api/automation/dialogs',
-      'api.automation.dialogs',
-      'Dialogs - 对话框',
-      'dialogs',
-    ],
-    [
-      'floaty',
-      'api/automation/floaty',
-      'api.automation.floaty',
-      'Floaty - 悬浮窗',
-      'floaty',
-    ],
-    ['ui', 'api/automation/ui', 'api.automation.ui', 'UI - 用户界面', 'ui'],
-    [
-      'uiSelectorType',
-      'api/automation/ui-selector',
-      'api.automation.ui-selector',
-      'UiSelector - 选择器',
-      'uiSelectorType',
-    ],
-    [
-      'uiObjectType',
-      'api/automation/ui-object',
-      'api.automation.ui-object',
-      'UiObject - 控件节点',
-      'uiObjectType',
-    ],
-    [
-      'uiObjectCollectionType',
-      'api/automation/ui-object-collection',
-      'api.automation.ui-object-collection',
-      'UiObjectCollection - 控件集合',
-      'uiObjectCollectionType',
-    ],
-    [
-      'uiObjectActionsType',
-      'api/automation/ui-object-actions',
-      'api.automation.ui-object-actions',
-      'UiObjectActions - 控件节点行为',
-      'uiObjectActionsType',
-    ],
-  ]),
-  ...defineSectionEntries('api/system', [
-    ['console', 'api/system/console', 'api.system.console', 'Console - 控制台', 'console'],
-    ['device', 'api/system/device', 'api.system.device', 'Device - 设备', 'device'],
-    [
-      'storages',
-      'api/system/storages',
-      'api.system.storages',
-      'Storages - 存储',
-      'storages',
-    ],
-    ['files', 'api/system/files', 'api.system.files', 'Files - 文件', 'files'],
-    ['engines', 'api/system/engines', 'api.system.engines', 'Engines - 引擎', 'engines'],
-    ['tasks', 'api/system/tasks', 'api.system.tasks', 'Tasks - 任务', 'tasks'],
-    ['toast', 'api/system/toast', 'api.system.toast', 'Toast - 消息浮动框', 'toast'],
-    ['notice', 'api/system/notice', 'api.system.notice', 'Notice - 消息通知', 'notice'],
-    ['shell', 'api/system/shell', 'api.system.shell', 'Shell', 'shell'],
-    ['shizuku', 'api/system/shizuku', 'api.system.shizuku', 'Shizuku', 'shizuku'],
-    ['sensors', 'api/system/sensors', 'api.system.sensors', 'Sensors - 传感器', 'sensors'],
-    ['timers', 'api/system/timers', 'api.system.timers', 'Timers - 定时器', 'timers'],
-    ['threads', 'api/system/threads', 'api.system.threads', 'Threads - 线程', 'threads'],
-    [
-      'continuation',
-      'api/system/continuation',
-      'api.system.continuation',
-      'Continuation - 协程',
-      'continuation',
-    ],
-    ['events', 'api/system/events', 'api.system.events', 'Events - 事件监听', 'events'],
-  ]),
-  ...defineSectionEntries('api/media', [
-    ['color', 'api/media/color', 'api.media.color', 'Color - 颜色', 'color'],
-    ['image', 'api/media/image', 'api.media.image', 'Images - 图像', 'image'],
-    ['ocr', 'api/media/ocr', 'api.media.ocr', 'OCR - 光学字符识别', 'ocr'],
-    ['barcode', 'api/media/barcode', 'api.media.barcode', 'Barcode - 条码', 'barcode'],
-    ['qrcode', 'api/media/qr-code', 'api.media.qr-code', 'QR Code - 二维码', 'qrcode'],
-    ['media', 'api/media/media', 'api.media.media', 'Media - 多媒体', 'media'],
-    [
-      'recorder',
-      'api/media/recorder',
-      'api.media.recorder',
-      'Recorder - 记录器',
-      'recorder',
-    ],
-    ['canvas', 'api/media/canvas', 'api.media.canvas', 'Canvas - 画布', 'canvas'],
-  ]),
-  ...defineSectionEntries('api/network', [
-    ['web', 'api/network/web', 'api.network.web', 'Web - 万维网', 'web'],
-    ['http', 'api/network/http', 'api.network.http', 'HTTP', 'http'],
-    [
-      'webSocketType',
-      'api/network/web-socket',
-      'api.network.web-socket',
-      'WebSocket',
-      'webSocketType',
-    ],
-  ]),
-  ...defineSectionEntries('api/utilities', [
-    ['base64', 'api/utilities/base64', 'api.utilities.base64', 'Base64', 'base64'],
-    ['crypto', 'api/utilities/crypto', 'api.utilities.crypto', 'Crypto - 密文', 'crypto'],
-    ['opencc', 'api/utilities/opencc', 'api.utilities.opencc', 'OpenCC - 中文转换', 'opencc'],
-    [
-      'i18n',
-      'api/utilities/i18n',
-      'api.utilities.i18n',
-      'Internationalization - 国际化',
-      'i18n',
-    ],
-    [
-      's13n',
-      'api/utilities/s13n',
-      'api.utilities.s13n',
-      'Standardization - 标准化',
-      's13n',
-    ],
-    ['e4x', 'api/utilities/e4x', 'api.utilities.e4x', 'E4X', 'e4x'],
-    [
-      'polyfill',
-      'api/utilities/polyfill',
-      'api.utilities.polyfill',
-      'Polyfill - 代码填泥',
-      'polyfill',
-    ],
-    ['arrayx', 'api/utilities/arrayx', 'api.utilities.arrayx', 'Arrayx - Array 扩展', 'arrayx'],
-    [
-      'numberx',
-      'api/utilities/numberx',
-      'api.utilities.numberx',
-      'Numberx - Number 扩展',
-      'numberx',
-    ],
-    ['mathx', 'api/utilities/mathx', 'api.utilities.mathx', 'Mathx - Math 扩展', 'mathx'],
-    [
-      'versionType',
-      'api/utilities/version',
-      'api.utilities.version',
-      'Version - 版本工具类',
-      'versionType',
-    ],
-  ]),
-  ...defineSectionEntries('api/types', [
-    [
-      'androidBundleType',
-      'api/types/android-bundle',
-      'api.types.android-bundle',
-      'AndroidBundle',
-      'androidBundleType',
-    ],
-    [
-      'androidRectType',
-      'api/types/android-rect',
-      'api.types.android-rect',
-      'AndroidRect',
-      'androidRectType',
-    ],
-    ['appType', 'api/types/app', 'api.types.app', 'App - 应用枚举类', 'appType'],
-    ['colorType', 'api/types/color', 'api.types.color', 'Color - 颜色类', 'colorType'],
-    [
-      'consoleBuildOptionsType',
-      'api/types/console-build-options',
-      'api.types.console-build-options',
-      'ConsoleBuildOptions',
-      'consoleBuildOptionsType',
-    ],
-    [
-      'cryptoCipherOptionsType',
-      'api/types/crypto-cipher-options',
-      'api.types.crypto-cipher-options',
-      'CryptoCipherOptions',
-      'cryptoCipherOptionsType',
-    ],
-    [
-      'cryptoKeyPairType',
-      'api/types/crypto-key-pair',
-      'api.types.crypto-key-pair',
-      'CryptoKeyPair',
-      'cryptoKeyPairType',
-    ],
-    [
-      'cryptoKeyType',
-      'api/types/crypto-key',
-      'api.types.crypto-key',
-      'CryptoKey',
-      'cryptoKeyType',
-    ],
-    [
-      'dataTypes',
-      'api/types/data-types',
-      'api.types.data-types',
-      'Data Types - 数据类型',
-      'dataTypes',
-    ],
-    [
-      'eventEmitterType',
-      'api/types/event-emitter',
-      'api.types.event-emitter',
-      'EventEmitter - 事件发射器',
-      'eventEmitterType',
-    ],
-    [
-      'httpRequestBuilderOptionsType',
-      'api/types/http-request-builder-options',
-      'api.types.http-request-builder-options',
-      'HttpRequestBuilderOptions',
-      'httpRequestBuilderOptionsType',
-    ],
-    [
-      'httpRequestHeadersType',
-      'api/types/http-request-headers',
-      'api.types.http-request-headers',
-      'HttpRequestHeaders',
-      'httpRequestHeadersType',
-    ],
-    [
-      'httpResponseBodyType',
-      'api/types/http-response-body',
-      'api.types.http-response-body',
-      'HttpResponseBody',
-      'httpResponseBodyType',
-    ],
-    [
-      'httpResponseHeadersType',
-      'api/types/http-response-headers',
-      'api.types.http-response-headers',
-      'HttpResponseHeaders',
-      'httpResponseHeadersType',
-    ],
-    [
-      'httpResponseType',
-      'api/types/http-response',
-      'api.types.http-response',
-      'HttpResponse',
-      'httpResponseType',
-    ],
-    [
-      'imageWrapperType',
-      'api/types/image-wrapper',
-      'api.types.image-wrapper',
-      'ImageWrapper - 包装图像类',
-      'imageWrapperType',
-    ],
-    [
-      'injectableWebClientType',
-      'api/types/injectable-web-client',
-      'api.types.injectable-web-client',
-      'InjectableWebClient',
-      'injectableWebClientType',
-    ],
-    [
-      'injectableWebViewType',
-      'api/types/injectable-web-view',
-      'api.types.injectable-web-view',
-      'InjectableWebView',
-      'injectableWebViewType',
-    ],
-    [
-      'noticeBuilderType',
-      'api/types/notice-builder',
-      'api.types.notice-builder',
-      'NoticeBuilder',
-      'noticeBuilderType',
-    ],
-    [
-      'noticeChannelOptionsType',
-      'api/types/notice-channel-options',
-      'api.types.notice-channel-options',
-      'NoticeChannelOptions',
-      'noticeChannelOptionsType',
-    ],
-    [
-      'noticeOptionsType',
-      'api/types/notice-options',
-      'api.types.notice-options',
-      'NoticeOptions',
-      'noticeOptionsType',
-    ],
-    [
-      'noticePresetConfigurationType',
-      'api/types/notice-preset-configuration',
-      'api.types.notice-preset-configuration',
-      'NoticePresetConfiguration',
-      'noticePresetConfigurationType',
-    ],
-    [
-      'ocrOptionsType',
-      'api/types/ocr-options',
-      'api.types.ocr-options',
-      'OcrOptions',
-      'ocrOptionsType',
-    ],
-    [
-      'okhttp3HttpUrlType',
-      'api/types/okhttp3-http-url',
-      'api.types.okhttp3-http-url',
-      'OkHttp3 HttpUrl',
-      'okhttp3HttpUrlType',
-    ],
-    [
-      'okhttp3RequestType',
-      'api/types/okhttp3-request',
-      'api.types.okhttp3-request',
-      'OkHttp3 Request',
-      'okhttp3RequestType',
-    ],
-    [
-      'omniTypes',
-      'api/types/omni-types',
-      'api.types.omni-types',
-      'Omnipotent Types - 全能类型',
-      'omniTypes',
-    ],
-    [
-      'openCCConversionType',
-      'api/types/opencc-conversion',
-      'api.types.opencc-conversion',
-      'OpenCCConversion',
-      'openCCConversionType',
-    ],
-    [
-      'opencvPointType',
-      'api/types/opencv-point',
-      'api.types.opencv-point',
-      'OpenCVPoint',
-      'opencvPointType',
-    ],
-    [
-      'opencvRectType',
-      'api/types/opencv-rect',
-      'api.types.opencv-rect',
-      'OpenCVRect',
-      'opencvRectType',
-    ],
-    [
-      'opencvSizeType',
-      'api/types/opencv-size',
-      'api.types.opencv-size',
-      'OpenCVSize',
-      'opencvSizeType',
-    ],
-    [
-      'storageType',
-      'api/types/storage',
-      'api.types.storage',
-      'Storage - 存储类',
-      'storageType',
-    ],
-  ]),
-  ...defineSectionEntries('reference/android', [
-    [
-      'activity',
-      'reference/android/activity',
-      'reference.android.activity',
-      'Activity - 活动',
-      'activity',
-    ],
-    [
-      'context',
-      'reference/android/context',
-      'reference.android.context',
-      'Context - 上下文',
-      'context',
-    ],
-    [
-      'apiLevel',
-      'reference/android/api-level',
-      'reference.android.api-level',
-      'Android API Level - 安卓 API 级别',
-      'apiLevel',
-    ],
-    [
-      'scriptingJava',
-      'reference/android/scripting-java',
-      'reference.android.scripting-java',
-      'Scripting Java - 脚本化 Java',
-      'scriptingJava',
-    ],
-  ]),
-  ...defineSectionEntries('reference/runtime', [
-    [
-      'runtime',
-      'reference/runtime/runtime',
-      'reference.runtime.runtime',
-      'Runtime - 运行时',
-      'runtime',
-    ],
-    [
-      'intentType',
-      'reference/runtime/intent',
-      'reference.runtime.intent',
-      'Intent - 意图',
-      'intentType',
-    ],
-    [
-      'exceptions',
-      'reference/runtime/exceptions',
-      'reference.runtime.exceptions',
-      'Exceptions - 异常',
-      'exceptions',
-    ],
-  ]),
-  ...defineSectionEntries('reference/glossaries', [
-    [
-      'glossaries',
-      'reference/glossaries/glossary',
-      'reference.glossaries.glossary',
-      'Glossary - 术语',
-      'glossaries',
-    ],
-    [
-      'httpHeaderGlossary',
-      'reference/glossaries/http-headers',
-      'reference.glossaries.http-headers',
-      'HTTP Headers - HTTP 标头',
-      'httpHeaderGlossary',
-    ],
-    [
-      'httpRequestMethodsGlossary',
-      'reference/glossaries/http-request-methods',
-      'reference.glossaries.http-request-methods',
-      'HTTP Request Methods - HTTP 请求方法',
-      'httpRequestMethodsGlossary',
-    ],
-    [
-      'mimeTypeGlossary',
-      'reference/glossaries/mime-types',
-      'reference.glossaries.mime-types',
-      'MIME Types - MIME 类型',
-      'mimeTypeGlossary',
-    ],
-    [
-      'notificationChannelGlossary',
-      'reference/glossaries/notification-channels',
-      'reference.glossaries.notification-channels',
-      'Notification Channels - 通知渠道',
-      'notificationChannelGlossary',
-    ],
-  ]),
-  ...defineSectionEntries('reference', [
-    [
-      'colorTable',
-      'reference/color-table',
-      'reference.color-table',
-      'Color Table - 颜色列表',
-      'colorTable',
-    ],
-  ]),
-]
+export const contentEntriesBySection = Object.freeze(
+  Object.fromEntries(
+    contentSectionOrder.map((section) => [
+      section,
+      Object.freeze(
+        contentEntries.filter((entry) => entry.section === section),
+      ),
+    ]),
+  ),
+) as unknown as Readonly<
+  Record<ContentSectionId, readonly ContentEntry[]>
+>
 
-export const contentEntriesBySection: Readonly<
-  Record<string, readonly ContentEntry[]>
-> = Object.fromEntries(
-  contentSectionOrder.map((section) => [
-    section,
-    contentEntries.filter((entry) => entry.section === section),
-  ]),
-)
-
-const REQUIRED_DELETED_LEGACY_SOURCES = [
+export const deletedLegacySources = Object.freeze([
   'api/all.md',
   'api/sidebar.md',
   'api/toc.md',
   'api/coverpage.md',
   'api/404.md',
   'api/util.md',
-] as const
+] as const)
 
-export const deletedLegacySources: readonly string[] = [
-  ...REQUIRED_DELETED_LEGACY_SOURCES,
-]
-
-const REQUIRED_FROZEN_LEGACY_JSON_STEMS = [
+export const frozenLegacyJsonStems = Object.freeze([
   'accessibilityActionsType',
   'coordinates-based-automation',
   'coordinatesBasedAutomation',
@@ -612,13 +247,9 @@ const REQUIRED_FROZEN_LEGACY_JSON_STEMS = [
   'intrinsicTypes',
   'widgets-based-automation',
   'widgetsBasedAutomation',
-] as const
+] as const)
 
-export const frozenLegacyJsonStems: readonly string[] = [
-  ...REQUIRED_FROZEN_LEGACY_JSON_STEMS,
-]
-
-const REQUIRED_LEGACY_ALL_ENTRY_IDS = [
+export const legacyAllEntryIds = Object.freeze([
   'guide.overview',
   'project.about',
   'guide.troubleshooting',
@@ -661,18 +292,14 @@ const REQUIRED_LEGACY_ALL_ENTRY_IDS = [
   'api.utilities.opencc',
   'api.utilities.i18n',
   'api.utilities.e4x',
-] as const
-
-export const legacyAllEntryIds: readonly string[] = [
-  ...REQUIRED_LEGACY_ALL_ENTRY_IDS,
-]
+] as const satisfies readonly ContentEntryId[])
 
 export interface ContentCatalogValidationOptions {
-  entries?: readonly ContentEntry[]
-  deletedSources?: readonly string[]
-  frozenJsonStems?: readonly string[]
-  allEntryIds?: readonly string[]
-  legacyMarkdownSources?: readonly string[]
+  readonly entries?: readonly ContentEntry[]
+  readonly deletedSources?: readonly string[]
+  readonly frozenJsonStems?: readonly string[]
+  readonly allEntryIds?: readonly string[]
+  readonly legacyMarkdownSources?: readonly string[]
 }
 
 function sameOrderedValues(
@@ -733,6 +360,26 @@ function validateSpecialMapping(
   }
 }
 
+function addUnsafeJsonStemErrors(
+  errors: string[],
+  kind: 'generated' | 'frozen',
+  stems: readonly string[],
+  entryId?: string,
+): void {
+  for (const stem of stems) {
+    if (!SAFE_LEGACY_JSON_STEM.test(stem)) {
+      errors.push(
+        'Invalid ' +
+          kind +
+          ' legacy JSON stem' +
+          (entryId ? ' for ' + entryId : '') +
+          ': ' +
+          JSON.stringify(stem),
+      )
+    }
+  }
+}
+
 export function validateContentCatalog(
   options: ContentCatalogValidationOptions = {},
 ): string[] {
@@ -769,6 +416,13 @@ export function validateContentCatalog(
     if (!entry.title.trim()) {
       errors.push('Missing title for ' + (entry.id || entry.legacySource))
     }
+
+    addUnsafeJsonStemErrors(
+      errors,
+      'generated',
+      entry.legacyJsonNames,
+      entry.id,
+    )
 
     if (!/^api\/[^/]+\.md$/.test(entry.legacySource)) {
       errors.push(
@@ -876,17 +530,13 @@ export function validateContentCatalog(
     legacyJsonNames: ['documentation'],
   })
 
-  if (!sameOrderedValues(deletedSources, REQUIRED_DELETED_LEGACY_SOURCES)) {
+  if (!sameOrderedValues(deletedSources, deletedLegacySources)) {
     errors.push('Deleted legacy source list does not match the required six paths')
   }
-  if (
-    !sameOrderedValues(
-      frozenJsonStems,
-      REQUIRED_FROZEN_LEGACY_JSON_STEMS,
-    )
-  ) {
+  if (!sameOrderedValues(frozenJsonStems, frozenLegacyJsonStems)) {
     errors.push('Frozen legacy JSON stem list does not match the required ten stems')
   }
+  addUnsafeJsonStemErrors(errors, 'frozen', frozenJsonStems)
 
   if (allEntryIds.length !== EXPECTED_LEGACY_ALL_ENTRY_COUNT) {
     errors.push(
@@ -897,7 +547,7 @@ export function validateContentCatalog(
     )
   }
   addDuplicateErrors(errors, 'legacy all-document id', allEntryIds)
-  if (!sameOrderedValues(allEntryIds, REQUIRED_LEGACY_ALL_ENTRY_IDS)) {
+  if (!sameOrderedValues(allEntryIds, legacyAllEntryIds)) {
     errors.push('Legacy all-document entry order does not match the required order')
   }
 

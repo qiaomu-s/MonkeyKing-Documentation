@@ -1,12 +1,18 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
-import * as contentCatalog from '../scripts/content/catalog'
 import {
   contentEntries,
+  contentEntriesBySection,
   contentSectionOrder,
+  contentSections,
   deletedLegacySources,
   frozenLegacyJsonStems,
+  legacyAllEntryIds,
   validateContentCatalog,
+} from '../scripts/content/catalog'
+import type {
+  ContentCatalogValidationOptions,
+  ContentEntry,
 } from '../scripts/content/catalog'
 
 const kebabCaseSegment = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -17,6 +23,24 @@ function valuesFor(key: 'id' | 'legacySource' | 'source' | 'route'): string[] {
 
 function expectUnique(values: readonly string[]): void {
   expect(new Set(values).size).toBe(values.length)
+}
+
+function readLegacyMarkdownSources(): string[] {
+  return readdirSync(resolve(process.cwd(), 'api'), {
+    withFileTypes: true,
+  })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+    .map((entry) => `api/${entry.name}`)
+    .sort()
+}
+
+function replaceEntry(
+  index: number,
+  replacement: Partial<ContentEntry>,
+): readonly ContentEntry[] {
+  return contentEntries.map((entry, entryIndex) =>
+    entryIndex === index ? { ...entry, ...replacement } : entry,
+  )
 }
 
 describe('content catalog contract', () => {
@@ -144,9 +168,6 @@ describe('content catalog contract', () => {
   })
 
   test('preserves the 42-entry legacy all-document include order by canonical id', () => {
-    const legacyAllEntryIds = Reflect.get(contentCatalog, 'legacyAllEntryIds') as
-      | readonly string[]
-      | undefined
     const legacyAllStems = [
       ...readFileSync(resolve(process.cwd(), 'api/all.md'), 'utf8').matchAll(
         /^@include (\S+)$/gm,
@@ -160,20 +181,35 @@ describe('content catalog contract', () => {
     )
 
     expect(legacyAllEntryIds).toHaveLength(42)
-    expectUnique(legacyAllEntryIds ?? [])
-    expect(legacyAllEntryIds?.every((id) => contentEntries.some((entry) => entry.id === id))).toBe(
+    expectUnique(legacyAllEntryIds)
+    expect(legacyAllEntryIds.every((id) => contentEntries.some((entry) => entry.id === id))).toBe(
       true,
     )
     expect(legacyAllEntryIds).toEqual(expectedEntryIds)
   })
 
+  test('freezes the exported catalog and every nested collection at runtime', () => {
+    expect(Object.isFrozen(contentSections)).toBe(true)
+    expect(contentSections.every((section) => Object.isFrozen(section))).toBe(true)
+    expect(Object.isFrozen(contentSectionOrder)).toBe(true)
+    expect(Object.isFrozen(contentEntries)).toBe(true)
+    expect(contentEntries.every((entry) => Object.isFrozen(entry))).toBe(true)
+    expect(
+      contentEntries.every(({ legacyJsonNames }) => Object.isFrozen(legacyJsonNames)),
+    ).toBe(true)
+    expect(Object.isFrozen(contentEntriesBySection)).toBe(true)
+    expect(
+      Object.values(contentEntriesBySection).every((entries) =>
+        Object.isFrozen(entries),
+      ),
+    ).toBe(true)
+    expect(Object.isFrozen(deletedLegacySources)).toBe(true)
+    expect(Object.isFrozen(frozenLegacyJsonStems)).toBe(true)
+    expect(Object.isFrozen(legacyAllEntryIds)).toBe(true)
+  })
+
   test('covers all 107 current api Markdown files with entries or deletions', () => {
-    const actualLegacySources = readdirSync(resolve(process.cwd(), 'api'), {
-      withFileTypes: true,
-    })
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
-      .map((entry) => `api/${entry.name}`)
-      .sort()
+    const actualLegacySources = readLegacyMarkdownSources()
     const catalogedLegacySources = [
       ...contentEntries.map(({ legacySource }) => legacySource),
       ...deletedLegacySources,
@@ -185,4 +221,125 @@ describe('content catalog contract', () => {
       validateContentCatalog({ legacyMarkdownSources: actualLegacySources }),
     ).toEqual([])
   })
+
+  const actualLegacySources = readLegacyMarkdownSources()
+  const mutationCases: Array<{
+    name: string
+    options: ContentCatalogValidationOptions
+    expectedError: RegExp
+  }> = [
+    {
+      name: 'duplicate content identity',
+      options: {
+        entries: replaceEntry(1, { id: contentEntries[0].id }),
+      },
+      expectedError: /Duplicate content id/,
+    },
+    {
+      name: 'route mismatch',
+      options: {
+        entries: replaceEntry(0, { route: '/wrong.html' }),
+      },
+      expectedError: /Route mismatch/,
+    },
+    {
+      name: 'non-kebab source path',
+      options: {
+        entries: replaceEntry(0, { source: 'docs/guide/not_kebab.md' }),
+      },
+      expectedError: /Source path must be kebab-case/,
+    },
+    {
+      name: 'unknown legacy all-document id',
+      options: {
+        allEntryIds: [...legacyAllEntryIds.slice(0, -1), 'unknown.content'],
+      },
+      expectedError: /Unknown legacy all-document content ids/,
+    },
+    {
+      name: 'generated and frozen JSON collision',
+      options: {
+        frozenJsonStems: [
+          ...frozenLegacyJsonStems,
+          contentEntries[0].legacyJsonNames[0],
+        ],
+      },
+      expectedError: /Frozen JSON stems collide with generated names/,
+    },
+    {
+      name: 'unsafe generated JSON stem',
+      options: {
+        entries: replaceEntry(8, { legacyJsonNames: ['nested/name'] }),
+      },
+      expectedError: /Invalid generated legacy JSON stem/,
+    },
+    {
+      name: 'missing legacy Markdown source',
+      options: {
+        legacyMarkdownSources: actualLegacySources.slice(1),
+      },
+      expectedError: /Missing legacy Markdown sources/,
+    },
+    {
+      name: 'extra legacy Markdown source',
+      options: {
+        legacyMarkdownSources: [...actualLegacySources, 'api/unexpected.md'],
+      },
+      expectedError: /Unexpected legacy Markdown sources/,
+    },
+  ]
+
+  test.each(mutationCases)(
+    'reports $name',
+    ({ options, expectedError }) => {
+      expect(validateContentCatalog(options).join('\n')).toMatch(expectedError)
+    },
+  )
+
+  test.each([
+    '',
+    'has space',
+    'nested/name',
+    'nested\\name',
+    '.',
+    '..',
+    '../escape',
+    'name.json',
+    'control\u0000character',
+  ])('rejects unsafe generated JSON stem %j', (stem) => {
+    const errors = validateContentCatalog({
+      entries: replaceEntry(8, { legacyJsonNames: [stem] }),
+    })
+
+    expect(errors.join('\n')).toMatch(/Invalid generated legacy JSON stem/)
+  })
+
+  test.each([
+    '',
+    'has space',
+    'nested/name',
+    'nested\\name',
+    '.',
+    '..',
+    '../escape',
+    'name.json',
+    'control\u0000character',
+  ])('rejects unsafe frozen JSON stem %j', (stem) => {
+    const errors = validateContentCatalog({
+      frozenJsonStems: [...frozenLegacyJsonStems.slice(0, -1), stem],
+    })
+
+    expect(errors.join('\n')).toMatch(/Invalid frozen legacy JSON stem/)
+  })
+
+  test.each(['404', 'camelCase9', 'kebab-case9'])(
+    'accepts safe numeric, camelCase, and kebab-case JSON stem %s',
+    (stem) => {
+      const errors = validateContentCatalog({
+        entries: replaceEntry(8, { legacyJsonNames: [stem] }),
+      })
+
+      expect(errors.filter((error) => error.includes('legacy JSON stem'))).toEqual([])
+    },
+  )
 })
