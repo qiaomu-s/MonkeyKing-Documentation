@@ -47,7 +47,6 @@ export function createSiteConfig(
     ],
     themeConfig: {
       logo: { src: '/logo.png', alt: 'Monkey King 标志' },
-      logoLink: '/',
       siteTitle: 'Monkey King',
       nav: topNav,
       sidebar,

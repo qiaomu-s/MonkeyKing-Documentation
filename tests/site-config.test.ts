@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import { sidebar, topNav } from '../docs/.vitepress/navigation'
 
@@ -30,6 +30,7 @@ describe('VitePress site configuration', () => {
       srcExclude: ['superpowers/**'],
     })
     expect(config.srcDir).toBeUndefined()
+    expect(theme?.logoLink).toBeUndefined()
     expect(theme?.nav).toEqual(topNav)
     expect(theme?.sidebar).toEqual(sidebar)
     expect(theme?.search).toMatchObject({
@@ -97,5 +98,13 @@ describe('VitePress site configuration', () => {
     expect(() => configModule.createSiteConfig('mobile')).toThrow(
       'Unsupported DOCS_BUILD_TARGET: mobile',
     )
+  })
+
+  test('publishes the custom domain through the VitePress public directory', () => {
+    const cnamePath = resolve(process.cwd(), 'docs/public/CNAME')
+
+    expect(existsSync(cnamePath), 'docs/public/CNAME must exist').toBe(true)
+    if (!existsSync(cnamePath)) return
+    expect(readFileSync(cnamePath, 'utf8')).toBe('docs.monkeyking.com\n')
   })
 })

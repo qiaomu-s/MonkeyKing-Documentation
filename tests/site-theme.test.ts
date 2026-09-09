@@ -1,10 +1,11 @@
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const docsRoot = resolve(process.cwd(), 'docs')
 const themeRoot = resolve(docsRoot, '.vitepress/theme')
-const appLogoPath =
-  '/Users/muqiao/Desktop/Github/MonkeyKing/app/src/main/res/drawable/monkeyking_classic_material.png'
+const expectedLogoSha256 =
+  'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
 
 function readThemeFile(relativePath: string): string {
   const path = resolve(themeRoot, relativePath)
@@ -53,18 +54,28 @@ describe('Monkey King VitePress theme', () => {
     expect(search).toContain('aria-keyshortcuts="Control+K Meta+K"')
     expect(search).toContain('搜索 API')
     expect(search).toContain("new KeyboardEvent('keydown'")
+    expect(search).toContain('watchForSearchDismissal')
+    expect(search).toContain("document.querySelector('.VPLocalSearchBox')")
+    expect(search).toContain('new MutationObserver')
+    expect(search).toContain('requestAnimationFrame')
+    expect(search).toContain('trigger.isConnected')
+    expect(search).toContain('trigger.focus({ preventScroll: true })')
+    expect(search).toContain('onBeforeUnmount')
   })
 
   test('uses the app logo and WCAG-aware responsive interaction styles', () => {
     const logoPath = resolve(docsRoot, 'public/logo.png')
     const css = readThemeFile('custom.css')
 
-    expect(existsSync(appLogoPath), 'Monkey King app logo source must exist').toBe(
-      true,
-    )
     expect(existsSync(logoPath), 'docs/public/logo.png must exist').toBe(true)
-    if (existsSync(appLogoPath) && existsSync(logoPath)) {
-      expect(readFileSync(logoPath)).toEqual(readFileSync(appLogoPath))
+    if (existsSync(logoPath)) {
+      const logo = readFileSync(logoPath)
+      expect(createHash('sha256').update(logo).digest('hex')).toBe(
+        expectedLogoSha256,
+      )
+      expect(logo.subarray(1, 4).toString('ascii')).toBe('PNG')
+      expect(logo.readUInt32BE(16)).toBe(256)
+      expect(logo.readUInt32BE(20)).toBe(256)
     }
 
     expect(css).toContain('--vp-c-brand-1: #00695C;')
