@@ -4,3 +4,16 @@
 *.zip
 
 sync.ffs_db
+
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+.vitepress/cache/
+.vitepress/temp/
+.vitepress/dist/
+
+playwright-report/
+test-results/
+blob-report/

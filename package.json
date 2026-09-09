@@ -1,0 +1,33 @@
+{
+  "name": "monkeyking-documentation",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "packageManager": "npm@11.17.0",
+  "scripts": {
+    "docs:dev": "vitepress dev .",
+    "docs:preview": "vitepress preview . --outDir dist/web",
+    "json:build": "tsx scripts/json/build.ts",
+    "check:content": "tsx scripts/check-content.ts",
+    "check:links": "tsx scripts/check-links.ts",
+    "build:web": "tsx scripts/build.ts web",
+    "build:android": "tsx scripts/build.ts android",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "marked-legacy": "npm:marked@0.3.19",
+    "vitepress": "1.6.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.1",
+    "ajv": "8.20.0",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
