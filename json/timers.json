@@ -4,7 +4,7 @@
     {
       "textRaw": "定时器 (Timers)",
       "name": "定时器_(timers)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>timers 模块暴露了一个全局的 API, 用于在某个未来时间段调用调度函数.  因为定时器函数是全局的, 所以使用该 API 无需调用 timers.***</p>\n<p>Auto.js 中的计时器函数实现了与 Web 浏览器提供的定时器类似的 API, 除了它使用了一个不同的内部实现, 它是基于 Android Looper-Handler消息循环机制构建的. 其实现机制与Node.js比较相似.</p>\n<p>例如, 要在5秒后发出消息&quot;hello&quot;:</p>\n<pre><code>setTimeout(function(){\n    toast(&quot;hello&quot;)\n}, 5000);\n</code></pre><p>需要注意的是, 这些定时器仍然是单线程的. 如果脚本主体有耗时操作或死循环, 则设定的定时器不能被及时执行, 例如：</p>\n<pre><code>setTimeout(function(){\n    //这里的语句会在15秒后执行而不是5秒后\n    toast(&quot;hello&quot;)\n}, 5000);\n//暂停10秒\nsleep(10000);\n</code></pre><p>再如：</p>\n<pre><code>setTimeout(function(){\n    //这里的语句永远不会被执行\n    toast(&quot;hello&quot;)\n}, 5000);\n//死循环\nwhile(true);\n</code></pre>",
+      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>timers 模块暴露了一个全局的 API, 用于在某个未来时间段调用调度函数.  因为定时器函数是全局的, 所以使用该 API 无需调用 timers.***</p>\n<p>Monkey King 中的计时器函数实现了与 Web 浏览器提供的定时器类似的 API, 除了它使用了一个不同的内部实现, 它是基于 Android Looper-Handler消息循环机制构建的. 其实现机制与Node.js比较相似.</p>\n<p>例如, 要在5秒后发出消息&quot;hello&quot;:</p>\n<pre><code>setTimeout(function(){\n    toast(&quot;hello&quot;)\n}, 5000);\n</code></pre><p>需要注意的是, 这些定时器仍然是单线程的. 如果脚本主体有耗时操作或死循环, 则设定的定时器不能被及时执行, 例如：</p>\n<pre><code>setTimeout(function(){\n    //这里的语句会在15秒后执行而不是5秒后\n    toast(&quot;hello&quot;)\n}, 5000);\n//暂停10秒\nsleep(10000);\n</code></pre><p>再如：</p>\n<pre><code>setTimeout(function(){\n    //这里的语句永远不会被执行\n    toast(&quot;hello&quot;)\n}, 5000);\n//死循环\nwhile(true);\n</code></pre>",
       "methods": [
         {
           "textRaw": "setInterval(callback, delay\\[, ...args\\])",
@@ -94,7 +94,7 @@
               ]
             }
           ],
-          "desc": "<p>预定在 delay 毫秒之后执行的单次 callback.  返回一个用于 clearTimeout() 的 id.</p>\n<p>callback 可能不会精确地在 delay 毫秒被调用.  Auto.js 不能保证回调被触发的确切时间, 也不能保证它们的顺序.  回调会在尽可能接近所指定的时间上调用.</p>\n<p>当 delay 小于 0 时, delay 会被设为 0.</p>\n"
+          "desc": "<p>预定在 delay 毫秒之后执行的单次 callback.  返回一个用于 clearTimeout() 的 id.</p>\n<p>callback 可能不会精确地在 delay 毫秒被调用.  Monkey King 不能保证回调被触发的确切时间, 也不能保证它们的顺序.  回调会在尽可能接近所指定的时间上调用.</p>\n<p>当 delay 小于 0 时, delay 会被设为 0.</p>\n"
         },
         {
           "textRaw": "setImmediate(callback[, ...args])",

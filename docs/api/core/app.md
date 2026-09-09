@@ -17,7 +17,7 @@ app模块提供一系列函数, 用于使用其他应用、与其他应用交互
 
 当前软件版本号, 整数值. 例如160, 256等.
 
-如果在Auto.js中运行则为Auto.js的版本号；在打包的软件中则为打包软件的版本号.
+如果在Monkey King中运行则为Monkey King的版本号；在打包的软件中则为打包软件的版本号.
 
 ```
 toastLog(app.versionCode);
@@ -29,7 +29,7 @@ toastLog(app.versionCode);
 
 当前软件的版本名称, 例如"3.0.0 Beta".
 
-如果在Auto.js中运行则为Auto.js的版本名称；在打包的软件中则为打包软件的版本名称.
+如果在Monkey King中运行则为Monkey King的版本名称；在打包的软件中则为打包软件的版本名称.
 
 ```
 toastLog(app.verionName);
@@ -39,13 +39,13 @@ toastLog(app.verionName);
 
 * {number}
 
-Auto.js版本号, 整数值. 例如160, 256等.
+Monkey King版本号, 整数值. 例如160, 256等.
 
 ## app.monkeyking.versionName
 
 * {string}
 
-Auto.js版本名称, 例如"3.0.0 Beta".
+Monkey King版本名称, 例如"3.0.0 Beta".
 
 ## app.launchApp(appName)
 
@@ -56,7 +56,7 @@ Auto.js版本名称, 例如"3.0.0 Beta".
 该函数也可以作为全局函数使用.
 
 ```
-launchApp("Auto.js");
+launchApp("Monkey King");
 ```
 
 ## app.launch(packageName)
@@ -184,7 +184,7 @@ app.sendEmail({
     * `console` 日志界面
     * `settings` 设置界面
 
-启动Auto.js的特定界面. 该函数在Auto.js内运行则会打开Auto.js内的界面, 在打包应用中运行则会打开打包应用的相应界面.
+启动Monkey King的特定界面. 该函数在Monkey King内运行则会打开Monkey King内的界面, 在打包应用中运行则会打开打包应用的相应界面.
 
 ```
 app.startActivity("console");
@@ -279,7 +279,7 @@ app.startActivity({
     * `inspect_layout_hierarchy` 布局层次分析
     * `inspect_layout_bounds` 布局范围
 
-发送以上特定名称的广播可以触发Auto.js的布局分析, 方便脚本调试. 这些广播在Auto.js发送才有效, 在打包的脚本上运行将没有任何效果.
+发送以上特定名称的广播可以触发Monkey King的布局分析, 方便脚本调试. 这些广播在Monkey King发送才有效, 在打包的脚本上运行将没有任何效果.
 
 ```
 app.sendBroadcast("inspect_layout_bounds");

@@ -416,7 +416,7 @@ auto.setWindowFilter(function(window){
 });
 ```
 
-又例如, 当前使用了分屏功能, 屏幕上有Auto.js和QQ两个应用, 但我们只想选择器对QQ界面进行搜索, 则：
+又例如, 当前使用了分屏功能, 屏幕上有Monkey King和QQ两个应用, 但我们只想选择器对QQ界面进行搜索, 则：
 
 ```
 auto.setWindowFilter(function(window){

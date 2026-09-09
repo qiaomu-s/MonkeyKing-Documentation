@@ -10,27 +10,27 @@
           "textRaw": "`versionCode` {number} ",
           "type": "number",
           "name": "versionCode",
-          "desc": "<p>当前软件版本号, 整数值. 例如160, 256等.</p>\n<p>如果在Auto.js中运行则为Auto.js的版本号；在打包的软件中则为打包软件的版本号.</p>\n<pre><code>toastLog(app.versionCode);\n</code></pre>"
+          "desc": "<p>当前软件版本号, 整数值. 例如160, 256等.</p>\n<p>如果在Monkey King中运行则为Monkey King的版本号；在打包的软件中则为打包软件的版本号.</p>\n<pre><code>toastLog(app.versionCode);\n</code></pre>"
         },
         {
           "textRaw": "`versionName` {string} ",
           "type": "string",
           "name": "versionName",
-          "desc": "<p>当前软件的版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n<p>如果在Auto.js中运行则为Auto.js的版本名称；在打包的软件中则为打包软件的版本名称.</p>\n<pre><code>toastLog(app.verionName);\n</code></pre>"
+          "desc": "<p>当前软件的版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n<p>如果在Monkey King中运行则为Monkey King的版本名称；在打包的软件中则为打包软件的版本名称.</p>\n<pre><code>toastLog(app.verionName);\n</code></pre>"
         }
       ],
       "modules": [
         {
           "textRaw": "app.monkeyking.versionCode",
           "name": "app.monkeyking.versioncode",
-          "desc": "<ul>\n<li>{number}</li>\n</ul>\n<p>Auto.js版本号, 整数值. 例如160, 256等.</p>\n",
+          "desc": "<ul>\n<li>{number}</li>\n</ul>\n<p>Monkey King版本号, 整数值. 例如160, 256等.</p>\n",
           "type": "module",
           "displayName": "app.monkeyking.versionCode"
         },
         {
           "textRaw": "app.monkeyking.versionName",
           "name": "app.monkeyking.versionname",
-          "desc": "<ul>\n<li>{string}</li>\n</ul>\n<p>Auto.js版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n",
+          "desc": "<ul>\n<li>{string}</li>\n</ul>\n<p>Monkey King版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n",
           "type": "module",
           "displayName": "app.monkeyking.versionName"
         }
@@ -59,7 +59,7 @@
               ]
             }
           ],
-          "desc": "<p>通过应用名称启动应用. 如果该名称对应的应用不存在, 则返回false; 否则返回true. 如果该名称对应多个应用, 则只启动其中某一个.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>launchApp(&quot;Auto.js&quot;);\n</code></pre>"
+          "desc": "<p>通过应用名称启动应用. 如果该名称对应的应用不存在, 则返回false; 否则返回true. 如果该名称对应多个应用, 则只启动其中某一个.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>launchApp(&quot;Monkey King&quot;);\n</code></pre>"
         },
         {
           "textRaw": "app.launch(packageName)",
@@ -382,7 +382,7 @@
               ]
             }
           ],
-          "desc": "<p>启动Auto.js的特定界面. 该函数在Auto.js内运行则会打开Auto.js内的界面, 在打包应用中运行则会打开打包应用的相应界面.</p>\n<pre><code>app.startActivity(&quot;console&quot;);\n</code></pre>"
+          "desc": "<p>启动Monkey King的特定界面. 该函数在Monkey King内运行则会打开Monkey King内的界面, 在打包应用中运行则会打开打包应用的相应界面.</p>\n<pre><code>app.startActivity(&quot;console&quot;);\n</code></pre>"
         },
         {
           "textRaw": "app.intent(options)",
@@ -544,7 +544,7 @@
           "textRaw": "app.sendBroadcast(name)",
           "type": "method",
           "name": "sendBroadcast",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>name</code> {string} 特定的广播名称, 包括：<ul>\n<li><code>inspect_layout_hierarchy</code> 布局层次分析</li>\n<li><code>inspect_layout_bounds</code> 布局范围</li>\n</ul>\n</li>\n</ul>\n<p>发送以上特定名称的广播可以触发Auto.js的布局分析, 方便脚本调试. 这些广播在Auto.js发送才有效, 在打包的脚本上运行将没有任何效果.</p>\n<pre><code>app.sendBroadcast(&quot;inspect_layout_bounds&quot;);\n</code></pre>",
+          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>name</code> {string} 特定的广播名称, 包括：<ul>\n<li><code>inspect_layout_hierarchy</code> 布局层次分析</li>\n<li><code>inspect_layout_bounds</code> 布局范围</li>\n</ul>\n</li>\n</ul>\n<p>发送以上特定名称的广播可以触发Monkey King的布局分析, 方便脚本调试. 这些广播在Monkey King发送才有效, 在打包的脚本上运行将没有任何效果.</p>\n<pre><code>app.sendBroadcast(&quot;inspect_layout_bounds&quot;);\n</code></pre>",
           "signatures": [
             {
               "params": [

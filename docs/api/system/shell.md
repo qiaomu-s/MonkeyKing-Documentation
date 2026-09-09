@@ -11,7 +11,7 @@ shell即Unix Shell, 在类Unix系统提供与操作系统交互的一系列命�
 
 很多程序可以用来执行shell命令, 例如终端模拟器.
 
-在Auto.js大致等同于用adb执行命令"adb shell". 其实现包括两种方式：
+在Monkey King大致等同于用adb执行命令"adb shell". 其实现包括两种方式：
 
 * 通过`java.lang.Runtime.exec`执行(shell, Tap, Home等函数)
 * 通过内嵌终端模拟器执行(RootAutomator, Shell等对象)

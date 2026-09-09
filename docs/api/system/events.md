@@ -290,7 +290,7 @@ Toast监听依赖于无障碍服务, 因此此函数会确保无障碍服务运�
     * `getText()` 获取Toast的文本内容
     * `getPackageName()` 获取发出Toast的应用包名
 
-当有应用发出toast(气泡消息)时会触发该事件. 但Auto.js软件本身的toast除外.
+当有应用发出toast(气泡消息)时会触发该事件. 但Monkey King软件本身的toast除外.
 
 例如, 要记录发出所有toast的应用：
 

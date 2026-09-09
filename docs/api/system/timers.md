@@ -9,7 +9,7 @@
 
 timers 模块暴露了一个全局的 API, 用于在某个未来时间段调用调度函数.  因为定时器函数是全局的, 所以使用该 API 无需调用 timers.***
 
-Auto.js 中的计时器函数实现了与 Web 浏览器提供的定时器类似的 API, 除了它使用了一个不同的内部实现, 它是基于 Android Looper-Handler消息循环机制构建的. 其实现机制与Node.js比较相似.
+Monkey King 中的计时器函数实现了与 Web 浏览器提供的定时器类似的 API, 除了它使用了一个不同的内部实现, 它是基于 Android Looper-Handler消息循环机制构建的. 其实现机制与Node.js比较相似.
 
 例如, 要在5秒后发出消息"hello":
 
@@ -59,7 +59,7 @@ while(true);
 
 预定在 delay 毫秒之后执行的单次 callback.  返回一个用于 clearTimeout() 的 id.
 
-callback 可能不会精确地在 delay 毫秒被调用.  Auto.js 不能保证回调被触发的确切时间, 也不能保证它们的顺序.  回调会在尽可能接近所指定的时间上调用.
+callback 可能不会精确地在 delay 毫秒被调用.  Monkey King 不能保证回调被触发的确切时间, 也不能保证它们的顺序.  回调会在尽可能接近所指定的时间上调用.
 
 当 delay 小于 0 时, delay 会被设为 0.
 

@@ -387,7 +387,7 @@
         {
           "textRaw": "事件: 'toast'",
           "name": "事件:_'toast'",
-          "desc": "<ul>\n<li><code>toast</code> {Object}<ul>\n<li><code>getText()</code> 获取Toast的文本内容</li>\n<li><code>getPackageName()</code> 获取发出Toast的应用包名</li>\n</ul>\n</li>\n</ul>\n<p>当有应用发出toast(气泡消息)时会触发该事件. 但Auto.js软件本身的toast除外.</p>\n<p>例如, 要记录发出所有toast的应用：</p>\n<pre><code>events.observeToast();\nevents.onToast(function(toast){\n    log(&quot;Toast内容: &quot; + toast.getText() + &quot; 包名: &quot; + toast.getPackageName());\n});\n</code></pre>",
+          "desc": "<ul>\n<li><code>toast</code> {Object}<ul>\n<li><code>getText()</code> 获取Toast的文本内容</li>\n<li><code>getPackageName()</code> 获取发出Toast的应用包名</li>\n</ul>\n</li>\n</ul>\n<p>当有应用发出toast(气泡消息)时会触发该事件. 但Monkey King软件本身的toast除外.</p>\n<p>例如, 要记录发出所有toast的应用：</p>\n<pre><code>events.observeToast();\nevents.onToast(function(toast){\n    log(&quot;Toast内容: &quot; + toast.getText() + &quot; 包名: &quot; + toast.getPackageName());\n});\n</code></pre>",
           "type": "module",
           "displayName": "事件: 'toast'"
         },

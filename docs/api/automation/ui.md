@@ -9,7 +9,7 @@
 
 ui模块提供了编写用户界面的支持.
 
-    给Android开发者或者高阶用户的提醒, Auto.js的UI系统来自于Android, 所有属性和方法都能在Android源码中找到. 如果某些代码或属性没有出现在Auto.js的文档中, 可以参考Android的文档.
+    给Android开发者或者高阶用户的提醒, Monkey King的UI系统来自于Android, 所有属性和方法都能在Android源码中找到. 如果某些代码或属性没有出现在Monkey King的文档中, 可以参考Android的文档.
     View: https://developer.android.google.cn/reference/android/view/View?hl=cn
     Widget: https://developer.android.google.cn/reference/android/widget/package-summary?hl=cn
 
@@ -103,7 +103,7 @@ $ui.layout(
 // 5秒后执行
 $ui.post(() => {
     // 修改文本
-    $ui.example.attr("text", "Hello, Auto.js UI");
+    $ui.example.attr("text", "Hello, Monkey King UI");
     // 修改背景
     $ui.example.attr("bg", "#ff00ff");
     // 修改高度
@@ -666,7 +666,7 @@ ui.layout(
 
 使用一个Uri指定图片的来源. 可以是图片的地址(http://....), 本地路径(file://....)或者base64数据("data:image/png;base64,...").
 
-如果使用图片地址或本地路径, Auto.js会自动使用适当的缓存来储存这些图片, 减少下次加载的时间.
+如果使用图片地址或本地路径, Monkey King会自动使用适当的缓存来储存这些图片, 减少下次加载的时间.
 
 例如, 显示百度的logo:
 

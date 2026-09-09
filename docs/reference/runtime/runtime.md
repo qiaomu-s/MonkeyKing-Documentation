@@ -18,12 +18,12 @@
 runtime.requestPermissions(["access_fine_location"]);
 ```
 
-尽管安卓有很多权限, 但必须写入Manifest才能动态申请, 为了防止权限的滥用, 目前Auto.js只能额外申请两个权限：
+尽管安卓有很多权限, 但必须写入Manifest才能动态申请, 为了防止权限的滥用, 目前Monkey King只能额外申请两个权限：
 
 * `access_fine_location` GPS权限
 * `record_audio` 录音权限
 
-您可以通过APK编辑器来增加Auto.js以及Auto.js打包的应用的权限.
+您可以通过APK编辑器来增加Monkey King以及Monkey King打包的应用的权限.
 
 安卓所有的权限列表参见[Permissions Overview](https://developer.android.com/guide/topics/permissions/overview/). （并没有用）
 
