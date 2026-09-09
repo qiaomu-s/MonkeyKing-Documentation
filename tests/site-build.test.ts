@@ -5,6 +5,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  renameSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -128,7 +129,7 @@ describe('safe build output handling', () => {
     expect(readFileSync(androidFile, 'utf8')).toBe('keep')
   })
 
-  test('rejects a tampered plan before deleting anything', async () => {
+  test('rejects a shallow-copied plan before deleting anything', async () => {
     const root = createFixtureRoot()
     const outside = mkdtempSync(join(tmpdir(), 'monkeyking-outside-'))
     temporaryDirectories.push(outside)
@@ -142,7 +143,54 @@ describe('safe build output handling', () => {
     const plan = buildScript.createBuildPlan('web', root)
     expect(() =>
       buildScript.cleanBuildOutput({ ...plan, outDir: outside }),
-    ).toThrow('Build plan outDir does not match the selected target')
+    ).toThrow('Untrusted build plan')
+    expect(readFileSync(sentinel, 'utf8')).toBe('keep')
+  })
+
+  test('rejects a forged plan with matching projectRoot and outDir', async () => {
+    const root = createFixtureRoot()
+    const outside = mkdtempSync(join(tmpdir(), 'monkeyking-outside-'))
+    temporaryDirectories.push(outside)
+    const sentinel = resolve(outside, 'dist/web/sentinel.txt')
+    mkdirSync(resolve(sentinel, '..'), { recursive: true })
+    writeFileSync(sentinel, 'keep')
+
+    const buildScript = await loadBuildScript()
+    expect(buildScript).toBeDefined()
+    if (!buildScript) return
+
+    const plan = buildScript.createBuildPlan('web', root)
+    expect(() =>
+      buildScript.cleanBuildOutput({
+        ...plan,
+        projectRoot: outside,
+        docsRoot: resolve(outside, 'docs'),
+        outDir: resolve(outside, 'dist/web'),
+      }),
+    ).toThrow('Untrusted build plan')
+    expect(readFileSync(sentinel, 'utf8')).toBe('keep')
+  })
+
+  test('rejects a replaced project root and preserves the symlink target', async () => {
+    const root = createFixtureRoot()
+    const relocatedRoot = `${root}-relocated`
+    const outside = mkdtempSync(join(tmpdir(), 'monkeyking-outside-'))
+    temporaryDirectories.push(relocatedRoot, outside)
+    const sentinel = resolve(outside, 'dist/web/sentinel.txt')
+    mkdirSync(resolve(sentinel, '..'), { recursive: true })
+    writeFileSync(sentinel, 'keep')
+
+    const buildScript = await loadBuildScript()
+    expect(buildScript).toBeDefined()
+    if (!buildScript) return
+
+    const plan = buildScript.createBuildPlan('web', root)
+    renameSync(root, relocatedRoot)
+    symlinkSync(outside, root, 'dir')
+
+    expect(() => buildScript.cleanBuildOutput(plan)).toThrow(
+      'Refusing replaced project root',
+    )
     expect(readFileSync(sentinel, 'utf8')).toBe('keep')
   })
 
@@ -165,6 +213,24 @@ describe('safe build output handling', () => {
     writeFileSync(resolve(root, 'dist/web'), 'not a directory')
     expect(() => buildScript.createBuildPlan('web', root)).toThrow(
       'Expected directory for build output',
+    )
+  })
+
+  test('rejects a dangling symbolic-link output path', async () => {
+    const root = createFixtureRoot()
+    mkdirSync(resolve(root, 'dist'), { recursive: true })
+    symlinkSync(
+      resolve(root, 'missing-output-target'),
+      resolve(root, 'dist/web'),
+      'dir',
+    )
+
+    const buildScript = await loadBuildScript()
+    expect(buildScript).toBeDefined()
+    if (!buildScript) return
+
+    expect(() => buildScript.createBuildPlan('web', root)).toThrow(
+      'Refusing symbolic link for build output',
     )
   })
 

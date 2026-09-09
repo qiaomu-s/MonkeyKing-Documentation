@@ -132,6 +132,139 @@ describe('rendered page validation', () => {
     expect(() => validateWeb(output)).toThrow('Missing JavaScript import')
   })
 
+  test.each([
+    [
+      'an inline style URL',
+      '<div style="background-image: url(/missing-inline-style.png)"></div>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'an inline style-block import',
+      '<style>@import "/missing-inline-import.css";</style>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'an external stylesheet import',
+      '<link rel="stylesheet" href="/assets/style.css">',
+      '@import "/missing-external-import.css";',
+      'Missing rendered asset',
+    ],
+    [
+      'a video poster',
+      '<video poster="/missing-poster.jpg"></video>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'object data',
+      '<object data="/missing-object.svg"></object>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'a form action',
+      '<form action="/missing-form.html"></form>',
+      undefined,
+      'Missing rendered page',
+    ],
+    [
+      'a button form action',
+      '<button formaction="/missing-button.html">Submit</button>',
+      undefined,
+      'Missing rendered page',
+    ],
+    [
+      'an input form action',
+      '<input type="submit" formaction="/missing-input.html">',
+      undefined,
+      'Missing rendered page',
+    ],
+    [
+      'an inline module static import',
+      '<script type="module">import "/missing-inline-static.js"</script>',
+      undefined,
+      'Missing JavaScript import',
+    ],
+    [
+      'an inline module dynamic import',
+      '<script type="module">import("/missing-inline-dynamic.js")</script>',
+      undefined,
+      'Missing JavaScript import',
+    ],
+  ])('reports missing dependency from %s', (_label, body, css, message) => {
+    const output = createOutput()
+    write(
+      output,
+      'index.html',
+      `<!doctype html><html><body id="VPContent">${body}</body></html>`,
+    )
+    if (css !== undefined) write(output, 'assets/style.css', css)
+
+    expect(() =>
+      validateRenderedPages({
+        outputDirectory: output,
+        base: '/',
+        expectedHtmlFiles: ['index.html'],
+      }),
+    ).toThrow(message)
+  })
+
+  test('ignores CSS dependencies written only in comments or strings', () => {
+    const output = createOutput()
+    write(
+      output,
+      'index.html',
+      '<!doctype html><html><head><link rel="stylesheet" href="/style.css"></head><body id="VPContent"></body></html>',
+    )
+    write(
+      output,
+      'style.css',
+      [
+        '/* url("/missing-comment.png"); @import "/missing-comment.css"; */',
+        '.single::before { content: \'url("/missing-single-string.png")\'; }',
+        '.double::before { content: "@import \'/missing-double-string.css\'"; }',
+      ].join('\n'),
+    )
+
+    expect(() =>
+      validateRenderedPages({
+        outputDirectory: output,
+        base: '/',
+        expectedHtmlFiles: ['index.html'],
+      }),
+    ).not.toThrow()
+  })
+
+  test('ignores JavaScript imports written only in comments or strings', () => {
+    const output = createOutput()
+    write(
+      output,
+      'index.html',
+      '<!doctype html><html><head><script type="module" src="/app.js"></script></head><body id="VPContent"></body></html>',
+    )
+    write(
+      output,
+      'app.js',
+      [
+        '// import "/missing-line-comment.js"',
+        '/* import("/missing-block-comment.js") */',
+        'const single = \'import "/missing-single-string.js"\'',
+        'const double = "import(\'/missing-double-string.js\')"',
+        'const template = `import("/missing-template-text.js")`',
+      ].join('\n'),
+    )
+
+    expect(() =>
+      validateRenderedPages({
+        outputDirectory: output,
+        base: '/',
+        expectedHtmlFiles: ['index.html'],
+      }),
+    ).not.toThrow()
+  })
+
   test('requires every absolute Android URL to stay under the asset-loader base', () => {
     const output = createOutput()
     write(

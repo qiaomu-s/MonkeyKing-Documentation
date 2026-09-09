@@ -4,10 +4,11 @@ import {
   lstatSync,
   mkdirSync,
   readFileSync,
+  realpathSync,
   readdirSync,
   rmSync,
 } from 'node:fs'
-import { resolve } from 'node:path'
+import { parse, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { build } from 'vitepress'
 import { contentEntries } from './content/catalog'
@@ -26,11 +27,53 @@ export interface DocsBuildPlan {
   readonly outDir: string
 }
 
+interface TrustedBuildPlan extends DocsBuildPlan {
+  readonly rootDevice: bigint
+  readonly rootInode: bigint
+}
+
 const repositoryRoot = fileURLToPath(new URL('..', import.meta.url))
+const trustedBuildPlans = new WeakMap<DocsBuildPlan, TrustedBuildPlan>()
+
+function lstatIfPresent(path: string): ReturnType<typeof lstatSync> | undefined {
+  try {
+    return lstatSync(path)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined
+    throw error
+  }
+}
+
+function assertNoSymbolicLinkComponents(path: string, label: string): void {
+  const absolutePath = resolve(path)
+  const root = parse(absolutePath).root
+  let currentPath = root
+  for (const segment of relative(root, absolutePath).split(sep).filter(Boolean)) {
+    currentPath = resolve(currentPath, segment)
+    const stats = lstatSync(currentPath)
+    if (stats.isSymbolicLink()) {
+      throw new Error(`Refusing symbolic link in ${label}: ${currentPath}`)
+    }
+    if (!stats.isDirectory()) {
+      throw new Error(`Expected directory in ${label}: ${currentPath}`)
+    }
+  }
+}
+
+function readProjectRootIdentity(projectRoot: string): {
+  readonly rootDevice: bigint
+  readonly rootInode: bigint
+} {
+  const stats = lstatSync(projectRoot, { bigint: true })
+  if (!stats.isDirectory()) {
+    throw new Error(`Expected directory for project root: ${projectRoot}`)
+  }
+  return { rootDevice: stats.dev, rootInode: stats.ino }
+}
 
 function assertDirectoryIfPresent(path: string, label: string): void {
-  if (!existsSync(path)) return
-  const stats = lstatSync(path)
+  const stats = lstatIfPresent(path)
+  if (!stats) return
   if (stats.isSymbolicLink()) {
     throw new Error(`Refusing symbolic link for ${label}: ${path}`)
   }
@@ -40,8 +83,8 @@ function assertDirectoryIfPresent(path: string, label: string): void {
 }
 
 function assertRegularFile(path: string, label: string): void {
-  if (!existsSync(path)) throw new Error(`Missing ${label}: ${path}`)
-  const stats = lstatSync(path)
+  const stats = lstatIfPresent(path)
+  if (!stats) throw new Error(`Missing ${label}: ${path}`)
   if (stats.isSymbolicLink()) {
     throw new Error(`Refusing symbolic link for ${label}: ${path}`)
   }
@@ -54,7 +97,7 @@ function expectedOutDir(projectRoot: string, target: DocsBuildTarget): string {
   return resolve(projectRoot, 'dist', target)
 }
 
-function validateBuildOutputPath(plan: DocsBuildPlan): void {
+function validateBuildOutputPath(plan: TrustedBuildPlan): void {
   const expected = expectedOutDir(plan.projectRoot, plan.target)
   if (resolve(plan.outDir) !== expected) {
     throw new Error('Build plan outDir does not match the selected target')
@@ -65,6 +108,39 @@ function validateBuildOutputPath(plan: DocsBuildPlan): void {
     'build output parent',
   )
   assertDirectoryIfPresent(plan.outDir, 'build output')
+}
+
+function requireTrustedBuildPlan(plan: DocsBuildPlan): TrustedBuildPlan {
+  const trusted = trustedBuildPlans.get(plan)
+  if (!trusted) {
+    throw new Error('Untrusted build plan; use createBuildPlan')
+  }
+  if (
+    plan.target !== trusted.target ||
+    plan.projectRoot !== trusted.projectRoot ||
+    plan.docsRoot !== trusted.docsRoot ||
+    plan.outDir !== trusted.outDir
+  ) {
+    throw new Error('Build plan fields do not match the trusted plan')
+  }
+
+  try {
+    assertNoSymbolicLinkComponents(trusted.projectRoot, 'project root')
+    if (realpathSync.native(trusted.projectRoot) !== trusted.projectRoot) {
+      throw new Error('project root realpath changed')
+    }
+    const identity = readProjectRootIdentity(trusted.projectRoot)
+    if (
+      identity.rootDevice !== trusted.rootDevice ||
+      identity.rootInode !== trusted.rootInode
+    ) {
+      throw new Error('project root identity changed')
+    }
+  } catch {
+    throw new Error(`Refusing replaced project root: ${trusted.projectRoot}`)
+  }
+
+  return trusted
 }
 
 export function createBuildPlan(
@@ -78,21 +154,30 @@ export function createBuildPlan(
     throw new Error(`Unsupported DOCS_BUILD_TARGET: ${targetValue}`)
   }
 
-  const projectRoot = resolve(projectRootValue)
+  const requestedRoot = resolve(projectRootValue)
+  if (!existsSync(requestedRoot)) {
+    throw new Error(`Missing project root: ${requestedRoot}`)
+  }
+  const projectRoot = realpathSync.native(requestedRoot)
+  assertNoSymbolicLinkComponents(projectRoot, 'project root')
+  const identity = readProjectRootIdentity(projectRoot)
   const plan = Object.freeze({
     target: targetValue,
     projectRoot,
     docsRoot: resolve(projectRoot, 'docs'),
     outDir: expectedOutDir(projectRoot, targetValue),
   })
-  validateBuildOutputPath(plan)
+  const trusted = Object.freeze({ ...plan, ...identity })
+  validateBuildOutputPath(trusted)
+  trustedBuildPlans.set(plan, trusted)
   return plan
 }
 
 export function cleanBuildOutput(plan: DocsBuildPlan): void {
-  validateBuildOutputPath(plan)
-  if (existsSync(plan.outDir)) {
-    rmSync(plan.outDir, { recursive: true, force: true })
+  const trusted = requireTrustedBuildPlan(plan)
+  validateBuildOutputPath(trusted)
+  if (existsSync(trusted.outDir)) {
+    rmSync(trusted.outDir, { recursive: true, force: true })
   }
 }
 
@@ -141,18 +226,19 @@ export function verifyPublishedJson(
 }
 
 export function publishWebJson(plan: DocsBuildPlan): void {
-  if (plan.target !== 'web') {
+  const trusted = requireTrustedBuildPlan(plan)
+  if (trusted.target !== 'web') {
     throw new Error('Compatibility JSON may only be published by the web build')
   }
-  validateBuildOutputPath(plan)
-  assertDirectoryIfPresent(plan.outDir, 'web build output')
-  if (!existsSync(plan.outDir)) {
-    throw new Error(`Missing web build output: ${plan.outDir}`)
+  validateBuildOutputPath(trusted)
+  assertDirectoryIfPresent(trusted.outDir, 'web build output')
+  if (!existsSync(trusted.outDir)) {
+    throw new Error(`Missing web build output: ${trusted.outDir}`)
   }
 
-  const sourceDirectory = resolve(plan.projectRoot, 'json')
+  const sourceDirectory = resolve(trusted.projectRoot, 'json')
   validateJsonInventory(sourceDirectory, 'legacy JSON source')
-  const destinationDirectory = resolve(plan.outDir, 'json')
+  const destinationDirectory = resolve(trusted.outDir, 'json')
   assertDirectoryIfPresent(destinationDirectory, 'published JSON destination')
   if (existsSync(destinationDirectory)) {
     rmSync(destinationDirectory, { recursive: true, force: true })
@@ -189,7 +275,7 @@ export function expectedSearchKeys(): readonly string[] {
   )
 }
 
-function validateBuiltOutput(plan: DocsBuildPlan): RenderedPagesReport {
+function validateBuiltOutput(plan: TrustedBuildPlan): RenderedPagesReport {
   const base = plan.target === 'android' ? '/assets/docs/' : '/'
   const report = validateRenderedPages({
     outputDirectory: plan.outDir,
@@ -210,11 +296,12 @@ export async function buildDocumentation(
   plan: DocsBuildPlan,
 ): Promise<RenderedPagesReport> {
   cleanBuildOutput(plan)
+  const trusted = requireTrustedBuildPlan(plan)
   const previousTarget = process.env.DOCS_BUILD_TARGET
-  process.env.DOCS_BUILD_TARGET = plan.target
+  process.env.DOCS_BUILD_TARGET = trusted.target
 
   try {
-    await build(plan.docsRoot)
+    await build(trusted.docsRoot)
   } finally {
     if (previousTarget === undefined) {
       delete process.env.DOCS_BUILD_TARGET
@@ -223,8 +310,9 @@ export async function buildDocumentation(
     }
   }
 
-  const report = validateBuiltOutput(plan)
-  if (plan.target === 'web') publishWebJson(plan)
+  const validated = requireTrustedBuildPlan(plan)
+  const report = validateBuiltOutput(validated)
+  if (validated.target === 'web') publishWebJson(plan)
   return report
 }
 

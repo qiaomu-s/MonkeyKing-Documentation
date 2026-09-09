@@ -29,12 +29,65 @@ interface HtmlTag {
 interface ParsedHtml {
   readonly tags: readonly HtmlTag[]
   readonly styleBlocks: readonly string[]
+  readonly inlineModuleScripts: readonly string[]
+}
+
+interface AttributeReference {
+  readonly attribute: string
+  readonly kind: 'link' | 'asset'
+}
+
+interface JavaScriptToken {
+  readonly kind: 'identifier' | 'string' | 'template' | 'punctuator'
+  readonly value: string
 }
 
 type ReferenceKind = 'link' | 'asset' | 'css' | 'js-import' | 'search'
 
 const renderedOrigin = 'https://rendered.monkeyking.invalid'
 const externalSchemes = new Set(['http', 'https', 'mailto', 'tel', 'data'])
+const singleUrlAttributesByTag = new Map<
+  string,
+  readonly AttributeReference[]
+>([
+  ['a', [{ attribute: 'href', kind: 'link' }]],
+  ['area', [{ attribute: 'href', kind: 'link' }]],
+  ['audio', [{ attribute: 'src', kind: 'asset' }]],
+  ['button', [{ attribute: 'formaction', kind: 'link' }]],
+  ['embed', [{ attribute: 'src', kind: 'asset' }]],
+  ['form', [{ attribute: 'action', kind: 'link' }]],
+  ['iframe', [{ attribute: 'src', kind: 'asset' }]],
+  [
+    'img',
+    [
+      { attribute: 'src', kind: 'asset' },
+    ],
+  ],
+  [
+    'input',
+    [
+      { attribute: 'src', kind: 'asset' },
+      { attribute: 'formaction', kind: 'link' },
+    ],
+  ],
+  ['link', [{ attribute: 'href', kind: 'asset' }]],
+  ['object', [{ attribute: 'data', kind: 'asset' }]],
+  ['script', [{ attribute: 'src', kind: 'asset' }]],
+  ['source', [{ attribute: 'src', kind: 'asset' }]],
+  ['track', [{ attribute: 'src', kind: 'asset' }]],
+  [
+    'video',
+    [
+      { attribute: 'src', kind: 'asset' },
+      { attribute: 'poster', kind: 'asset' },
+    ],
+  ],
+])
+const listUrlAttributesByTag = new Map<string, readonly string[]>([
+  ['img', ['srcset']],
+  ['link', ['imagesrcset']],
+  ['source', ['srcset']],
+])
 
 function toPosixPath(path: string): string {
   return path.split(sep).join('/')
@@ -170,6 +223,7 @@ function parseAttributes(tag: string, nameEnd: number): ReadonlyMap<string, stri
 function parseHtml(html: string): ParsedHtml {
   const tags: HtmlTag[] = []
   const styleBlocks: string[] = []
+  const inlineModuleScripts: string[] = []
   const lowerHtml = html.toLowerCase()
   let index = 0
 
@@ -196,9 +250,10 @@ function parseHtml(html: string): ParsedHtml {
     if (closing < 0) break
     const rawTag = html.slice(opening, closing + 1)
     const name = nameMatch[1].toLowerCase()
+    const attributes = parseAttributes(rawTag, nameMatch[0].length)
     tags.push({
       name,
-      attributes: parseAttributes(rawTag, nameMatch[0].length),
+      attributes,
     })
 
     if ((name === 'script' || name === 'style') && !/\/\s*>$/.test(rawTag)) {
@@ -208,7 +263,15 @@ function parseHtml(html: string): ParsedHtml {
         index = closing + 1
         continue
       }
-      if (name === 'style') styleBlocks.push(html.slice(closing + 1, closeStart))
+      const contents = html.slice(closing + 1, closeStart)
+      if (name === 'style') styleBlocks.push(contents)
+      if (
+        name === 'script' &&
+        attributes.get('type')?.trim().toLowerCase() === 'module' &&
+        !attributes.has('src')
+      ) {
+        inlineModuleScripts.push(contents)
+      }
       const closeEnd = findTagEnd(html, closeStart + rawClosing.length)
       index = closeEnd < 0 ? html.length : closeEnd + 1
       continue
@@ -216,7 +279,7 @@ function parseHtml(html: string): ParsedHtml {
     index = closing + 1
   }
 
-  return { tags, styleBlocks }
+  return { tags, styleBlocks, inlineModuleScripts }
 }
 
 function parseSrcset(value: string): readonly string[] {
@@ -238,45 +301,406 @@ function parseSrcset(value: string): readonly string[] {
   return urls
 }
 
-function cssUrls(css: string): readonly string[] {
-  const urls: string[] = []
+function isCssIdentifierCharacter(char: string | undefined): boolean {
+  return char !== undefined && /[A-Za-z\d_-]/.test(char)
+}
+
+function skipCssComment(css: string, index: number): number | undefined {
+  if (!css.startsWith('/*', index)) return undefined
+  const closing = css.indexOf('*/', index + 2)
+  return closing < 0 ? css.length : closing + 2
+}
+
+function skipCssTrivia(css: string, start: number): number {
+  let index = start
+  while (index < css.length) {
+    if (/\s/.test(css[index])) {
+      index += 1
+      continue
+    }
+    const afterComment = skipCssComment(css, index)
+    if (afterComment === undefined) break
+    index = afterComment
+  }
+  return index
+}
+
+function readQuotedValue(
+  source: string,
+  start: number,
+): { readonly value: string; readonly end: number } {
+  const quote = source[start]
+  let value = ''
+  let index = start + 1
+  while (index < source.length) {
+    const char = source[index]
+    if (char === quote) return { value, end: index + 1 }
+    if (char === '\\' && index + 1 < source.length) {
+      value += char + source[index + 1]
+      index += 2
+      continue
+    }
+    value += char
+    index += 1
+  }
+  return { value, end: source.length }
+}
+
+function readCssUrlFunction(
+  css: string,
+  openParenthesis: number,
+): { readonly value?: string; readonly end: number } {
+  let index = skipCssTrivia(css, openParenthesis + 1)
+  const quote = css[index]
+  if (quote === '"' || quote === "'") {
+    const quoted = readQuotedValue(css, index)
+    index = skipCssTrivia(css, quoted.end)
+    return css[index] === ')'
+      ? { value: quoted.value, end: index + 1 }
+      : { end: quoted.end }
+  }
+
+  const start = index
+  while (index < css.length) {
+    if (css[index] === '\\' && index + 1 < css.length) {
+      index += 2
+      continue
+    }
+    if (css[index] === ')') {
+      return { value: css.slice(start, index).trim(), end: index + 1 }
+    }
+    if (css[index] === '"' || css[index] === "'") return { end: index + 1 }
+    index += 1
+  }
+  return { end: css.length }
+}
+
+function cssReferences(css: string): readonly string[] {
+  const references: string[] = []
   let index = 0
   while (index < css.length) {
-    const match = /\burl\s*\(/gi.exec(css.slice(index))
-    if (!match) break
-    let cursor = index + match.index + match[0].length
-    while (/\s/.test(css[cursor] ?? '')) cursor += 1
-    const quote = css[cursor]
-    if (quote === '"' || quote === "'") {
-      cursor += 1
-      const start = cursor
-      while (cursor < css.length) {
-        if (css[cursor] === quote && css[cursor - 1] !== '\\') break
-        cursor += 1
-      }
-      urls.push(css.slice(start, cursor))
-      const closing = css.indexOf(')', cursor + 1)
-      index = closing < 0 ? css.length : closing + 1
+    const afterComment = skipCssComment(css, index)
+    if (afterComment !== undefined) {
+      index = afterComment
       continue
     }
 
-    const start = cursor
-    let depth = 1
-    while (cursor < css.length && depth > 0) {
-      if (css[cursor] === '(') depth += 1
-      if (css[cursor] === ')') depth -= 1
-      cursor += 1
+    const char = css[index]
+    if (char === '"' || char === "'") {
+      index = readQuotedValue(css, index).end
+      continue
     }
-    urls.push(css.slice(start, depth === 0 ? cursor - 1 : cursor).trim())
-    index = cursor
+
+    if (
+      char === '@' &&
+      css.slice(index + 1, index + 7).toLowerCase() === 'import' &&
+      !isCssIdentifierCharacter(css[index + 7])
+    ) {
+      const valueStart = skipCssTrivia(css, index + 7)
+      const quote = css[valueStart]
+      if (quote === '"' || quote === "'") {
+        const quoted = readQuotedValue(css, valueStart)
+        references.push(quoted.value)
+        index = quoted.end
+        continue
+      }
+      index = valueStart
+      continue
+    }
+
+    if (
+      css.slice(index, index + 3).toLowerCase() === 'url' &&
+      !isCssIdentifierCharacter(css[index - 1]) &&
+      !isCssIdentifierCharacter(css[index + 3])
+    ) {
+      const openParenthesis = skipCssTrivia(css, index + 3)
+      if (css[openParenthesis] === '(') {
+        const parsed = readCssUrlFunction(css, openParenthesis)
+        if (parsed.value !== undefined) references.push(parsed.value)
+        index = parsed.end
+        continue
+      }
+    }
+    index += 1
   }
-  return urls
+  return references
+}
+
+function isJavaScriptIdentifierStart(char: string | undefined): boolean {
+  return char !== undefined && /[A-Za-z_$]/.test(char)
+}
+
+function isJavaScriptIdentifierPart(char: string | undefined): boolean {
+  return char !== undefined && /[A-Za-z\d_$]/.test(char)
+}
+
+function decodeJavaScriptEscape(source: string, index: number): {
+  readonly value: string
+  readonly end: number
+} {
+  const char = source[index + 1]
+  if (char === undefined) return { value: '\\', end: index + 1 }
+  if (char === '\n') return { value: '', end: index + 2 }
+  if (char === '\r') {
+    return {
+      value: '',
+      end: source[index + 2] === '\n' ? index + 3 : index + 2,
+    }
+  }
+  const simpleEscapes: Readonly<Record<string, string>> = {
+    b: '\b',
+    f: '\f',
+    n: '\n',
+    r: '\r',
+    t: '\t',
+    v: '\v',
+    '0': '\0',
+  }
+  if (char in simpleEscapes) {
+    return { value: simpleEscapes[char], end: index + 2 }
+  }
+  if (char === 'x' && /^[\da-f]{2}$/i.test(source.slice(index + 2, index + 4))) {
+    return {
+      value: String.fromCodePoint(Number.parseInt(source.slice(index + 2, index + 4), 16)),
+      end: index + 4,
+    }
+  }
+  if (char === 'u') {
+    const braced = /^\{([\da-f]{1,6})\}/i.exec(source.slice(index + 2))
+    if (braced) {
+      const codePoint = Number.parseInt(braced[1], 16)
+      if (codePoint <= 0x10ffff) {
+        return {
+          value: String.fromCodePoint(codePoint),
+          end: index + 2 + braced[0].length,
+        }
+      }
+    }
+    const fixed = source.slice(index + 2, index + 6)
+    if (/^[\da-f]{4}$/i.test(fixed)) {
+      return {
+        value: String.fromCodePoint(Number.parseInt(fixed, 16)),
+        end: index + 6,
+      }
+    }
+  }
+  return { value: char, end: index + 2 }
+}
+
+function readJavaScriptString(
+  source: string,
+  start: number,
+): { readonly value: string; readonly end: number } {
+  const quote = source[start]
+  let value = ''
+  let index = start + 1
+  while (index < source.length) {
+    const char = source[index]
+    if (char === quote) return { value, end: index + 1 }
+    if (char === '\\') {
+      const escaped = decodeJavaScriptEscape(source, index)
+      value += escaped.value
+      index = escaped.end
+      continue
+    }
+    value += char
+    index += 1
+  }
+  return { value, end: source.length }
+}
+
+function canStartRegularExpression(previous: JavaScriptToken | undefined): boolean {
+  if (!previous) return true
+  if (previous.kind === 'identifier') {
+    return new Set([
+      'await',
+      'case',
+      'delete',
+      'do',
+      'else',
+      'in',
+      'instanceof',
+      'new',
+      'of',
+      'return',
+      'throw',
+      'typeof',
+      'void',
+      'yield',
+    ]).has(previous.value)
+  }
+  return (
+    previous.kind === 'punctuator' &&
+    ![')', ']', '}'].includes(previous.value)
+  )
+}
+
+function skipRegularExpression(source: string, start: number): number {
+  let index = start + 1
+  let characterClass = false
+  while (index < source.length) {
+    const char = source[index]
+    if (char === '\\') {
+      index += 2
+      continue
+    }
+    if (char === '[') characterClass = true
+    if (char === ']') characterClass = false
+    if (char === '/' && !characterClass) {
+      index += 1
+      while (/[A-Za-z]/.test(source[index] ?? '')) index += 1
+      return index
+    }
+    if (char === '\n' || char === '\r') return start + 1
+    index += 1
+  }
+  return start + 1
+}
+
+function tokenizeJavaScript(source: string): readonly JavaScriptToken[] {
+  const tokens: JavaScriptToken[] = []
+
+  const scanCode = (
+    start: number,
+    stopAtTemplateExpressionEnd: boolean,
+  ): number => {
+    let index = start
+    let braceDepth = 0
+    while (index < source.length) {
+      const char = source[index]
+      if (/\s/.test(char)) {
+        index += 1
+        continue
+      }
+      if (source.startsWith('//', index)) {
+        const lineEnd = source.indexOf('\n', index + 2)
+        index = lineEnd < 0 ? source.length : lineEnd + 1
+        continue
+      }
+      if (source.startsWith('/*', index)) {
+        const commentEnd = source.indexOf('*/', index + 2)
+        index = commentEnd < 0 ? source.length : commentEnd + 2
+        continue
+      }
+      if (char === '"' || char === "'") {
+        const string = readJavaScriptString(source, index)
+        tokens.push({ kind: 'string', value: string.value })
+        index = string.end
+        continue
+      }
+      if (char === '`') {
+        let cursor = index + 1
+        let value = ''
+        let hasInterpolation = false
+        while (cursor < source.length) {
+          const templateChar = source[cursor]
+          if (templateChar === '\\') {
+            const escaped = decodeJavaScriptEscape(source, cursor)
+            value += escaped.value
+            cursor = escaped.end
+            continue
+          }
+          if (templateChar === '`') {
+            cursor += 1
+            break
+          }
+          if (templateChar === '$' && source[cursor + 1] === '{') {
+            hasInterpolation = true
+            cursor = scanCode(cursor + 2, true)
+            continue
+          }
+          value += templateChar
+          cursor += 1
+        }
+        if (!hasInterpolation) tokens.push({ kind: 'template', value })
+        index = cursor
+        continue
+      }
+      if (stopAtTemplateExpressionEnd && char === '}' && braceDepth === 0) {
+        return index + 1
+      }
+      if (char === '{') braceDepth += 1
+      if (char === '}' && braceDepth > 0) braceDepth -= 1
+
+      if (isJavaScriptIdentifierStart(char)) {
+        const startIndex = index
+        index += 1
+        while (isJavaScriptIdentifierPart(source[index])) index += 1
+        tokens.push({ kind: 'identifier', value: source.slice(startIndex, index) })
+        continue
+      }
+      if (
+        char === '/' &&
+        canStartRegularExpression(tokens[tokens.length - 1])
+      ) {
+        const afterExpression = skipRegularExpression(source, index)
+        if (afterExpression > index + 1) {
+          index = afterExpression
+          continue
+        }
+      }
+      tokens.push({ kind: 'punctuator', value: char })
+      index += 1
+    }
+    return index
+  }
+
+  scanCode(0, false)
+  return tokens
+}
+
+function isLocalJavaScriptImport(value: string): boolean {
+  return value.startsWith('/') || value.startsWith('./') || value.startsWith('../')
 }
 
 function javascriptImports(source: string): readonly string[] {
+  const tokens = tokenizeJavaScript(source)
   const imports: string[] = []
-  const pattern = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)(['"])(\.{1,2}\/[^'"]+|\/[^'"]+)\1/g
-  for (const match of source.matchAll(pattern)) imports.push(match[2])
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index]
+    if (
+      token.kind !== 'identifier' ||
+      (token.value !== 'import' && token.value !== 'export') ||
+      tokens[index - 1]?.value === '.'
+    ) {
+      continue
+    }
+
+    const next = tokens[index + 1]
+    if (
+      token.value === 'import' &&
+      (next?.kind === 'string' || next?.kind === 'template')
+    ) {
+      if (isLocalJavaScriptImport(next.value)) imports.push(next.value)
+      continue
+    }
+    if (
+      token.value === 'import' &&
+      next?.kind === 'punctuator' &&
+      next.value === '(' &&
+      (tokens[index + 2]?.kind === 'string' ||
+        tokens[index + 2]?.kind === 'template')
+    ) {
+      const target = tokens[index + 2].value
+      if (isLocalJavaScriptImport(target)) imports.push(target)
+      continue
+    }
+    if (next?.value === '.') continue
+
+    for (let cursor = index + 1; cursor < tokens.length; cursor += 1) {
+      const candidate = tokens[cursor]
+      if (candidate.kind === 'punctuator' && candidate.value === ';') break
+      if (
+        candidate.kind === 'identifier' &&
+        candidate.value === 'from' &&
+        tokens[cursor + 1]?.kind === 'string'
+      ) {
+        const target = tokens[cursor + 1].value
+        if (isLocalJavaScriptImport(target)) imports.push(target)
+        break
+      }
+    }
+  }
   return imports
 }
 
@@ -505,30 +929,45 @@ export function validateRenderedPages(
 
   for (const [htmlFile, parsed] of parsedByHtmlFile) {
     for (const tag of parsed.tags) {
-      const href = tag.attributes.get('href')
-      if (href !== undefined) {
-        inspect(href, htmlFile, tag.name === 'a' ? 'link' : 'asset')
+      for (const reference of singleUrlAttributesByTag.get(tag.name) ?? []) {
+        const value = tag.attributes.get(reference.attribute)
+        if (value !== undefined) inspect(value, htmlFile, reference.kind)
       }
-      const src = tag.attributes.get('src')
-      if (src !== undefined) inspect(src, htmlFile, 'asset')
-      const srcset = tag.attributes.get('srcset')
-      if (srcset !== undefined) {
-        for (const candidate of parseSrcset(srcset)) {
-          inspect(candidate, htmlFile, 'asset')
+      for (const attribute of listUrlAttributesByTag.get(tag.name) ?? []) {
+        const value = tag.attributes.get(attribute)
+        if (value !== undefined) {
+          for (const candidate of parseSrcset(value)) {
+            inspect(candidate, htmlFile, 'asset')
+          }
+        }
+      }
+      const inlineStyle = tag.attributes.get('style')
+      if (inlineStyle !== undefined) {
+        for (const reference of cssReferences(inlineStyle)) {
+          inspect(reference, htmlFile, 'css')
         }
       }
     }
     for (const css of parsed.styleBlocks) {
-      for (const url of cssUrls(css)) inspect(url, htmlFile, 'css')
+      for (const reference of cssReferences(css)) {
+        inspect(reference, htmlFile, 'css')
+      }
+    }
+    for (const source of parsed.inlineModuleScripts) {
+      for (const target of javascriptImports(source)) {
+        inspect(target, htmlFile, 'js-import')
+      }
     }
   }
 
   for (const cssFile of outputFiles.filter((path) => path.endsWith('.css'))) {
     const css = readFileSync(resolve(outputDirectory, cssFile), 'utf8')
-    for (const url of cssUrls(css)) inspect(url, cssFile, 'css')
+    for (const reference of cssReferences(css)) {
+      inspect(reference, cssFile, 'css')
+    }
   }
 
-  for (const javascriptFile of outputFiles.filter((path) => path.endsWith('.js'))) {
+  for (const javascriptFile of outputFiles.filter((path) => /\.m?js$/.test(path))) {
     const source = readFileSync(resolve(outputDirectory, javascriptFile), 'utf8')
     for (const target of javascriptImports(source)) {
       inspect(target, javascriptFile, 'js-import')
