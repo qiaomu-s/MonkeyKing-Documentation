@@ -683,7 +683,6 @@ function validateDocsLayout(
   const allowedFiles = new Set([
     ...entries.map(({ source }) => source),
     'docs/index.md',
-    'docs/404.md',
     'docs/public/CNAME',
     'docs/public/logo.png',
     ...imageNames.map(

@@ -592,7 +592,6 @@ describe('content migration orchestration', () => {
     writeFixture(root, only.legacySource, '# Only\n')
     const shellFiles = new Map([
       ['docs/index.md', '# Home\n'],
-      ['docs/404.md', '# Not found\n'],
       ['docs/public/logo.png', 'logo-bytes'],
       ['docs/.vitepress/config.ts', 'export default {}\n'],
       ['docs/.vitepress/theme/index.ts', 'export default {}\n'],
@@ -779,6 +778,7 @@ describe('content migration orchestration', () => {
     ['docs', 'docs/rogue.txt'],
     ['public', 'docs/public/rogue.png'],
     ['nested docs', 'docs/unplanned/rogue.md'],
+    ['unplanned 404', 'docs/404.md'],
     ['lookalike VitePress', 'docs/.vitepress-rogue/config.mts'],
   ])('rejects an unknown %s artifact before mutation', async (_kind, artifact) => {
     const only = testEntry('only', 'docs/guide/only.md')
