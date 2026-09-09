@@ -57,14 +57,14 @@ describe('repository operations contract', () => {
     expect(workflow).toContain('group: pages-${{ github.ref }}')
     expect(workflow).toContain('cancel-in-progress: true')
     expect(workflow).toContain(masterOnlyCondition)
-    expect(workflow).toContain('uses: actions/upload-pages-artifact@v5')
+    expect(workflow).toContain('uses: actions/upload-pages-artifact@v3')
     expect(workflow).toContain('path: ./dist/web')
     expect(workflow).toMatch(
       /deploy:\s*\n\s+if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/master'[\s\S]*?needs: quality[\s\S]*?permissions:\s*\n\s+pages: write\s*\n\s+id-token: write/,
     )
     expect(workflow).toContain('name: github-pages')
     expect(workflow).toContain('url: ${{ steps.deployment.outputs.page_url }}')
-    expect(workflow).toContain('uses: actions/deploy-pages@v5')
+    expect(workflow).toContain('uses: actions/deploy-pages@v4')
   })
 
   test('documents the MonkeyKing repository and local workflows in Chinese', () => {

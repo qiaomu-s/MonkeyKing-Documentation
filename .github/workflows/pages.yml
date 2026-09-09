@@ -64,7 +64,7 @@ jobs:
 
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist/web
 
@@ -81,4 +81,4 @@ jobs:
     steps:
       - name: Deploy GitHub Pages site
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
