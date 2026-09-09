@@ -13,6 +13,7 @@ coverage/
 .vitepress/cache/
 .vitepress/temp/
 .vitepress/dist/
+docs/.vitepress/.temp/
 
 playwright-report/
 test-results/
