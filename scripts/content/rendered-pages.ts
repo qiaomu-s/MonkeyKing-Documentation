@@ -38,7 +38,7 @@ interface AttributeReference {
 }
 
 interface JavaScriptToken {
-  readonly kind: 'identifier' | 'string' | 'template' | 'punctuator'
+  readonly kind: 'identifier' | 'number' | 'string' | 'template' | 'punctuator'
   readonly value: string
 }
 
@@ -46,47 +46,18 @@ type ReferenceKind = 'link' | 'asset' | 'css' | 'js-import' | 'search'
 
 const renderedOrigin = 'https://rendered.monkeyking.invalid'
 const externalSchemes = new Set(['http', 'https', 'mailto', 'tel', 'data'])
-const singleUrlAttributesByTag = new Map<
+const additionalSingleUrlAttributesByTag = new Map<
   string,
   readonly AttributeReference[]
 >([
-  ['a', [{ attribute: 'href', kind: 'link' }]],
-  ['area', [{ attribute: 'href', kind: 'link' }]],
-  ['audio', [{ attribute: 'src', kind: 'asset' }]],
   ['button', [{ attribute: 'formaction', kind: 'link' }]],
-  ['embed', [{ attribute: 'src', kind: 'asset' }]],
   ['form', [{ attribute: 'action', kind: 'link' }]],
-  ['iframe', [{ attribute: 'src', kind: 'asset' }]],
-  [
-    'img',
-    [
-      { attribute: 'src', kind: 'asset' },
-    ],
-  ],
-  [
-    'input',
-    [
-      { attribute: 'src', kind: 'asset' },
-      { attribute: 'formaction', kind: 'link' },
-    ],
-  ],
-  ['link', [{ attribute: 'href', kind: 'asset' }]],
+  ['input', [{ attribute: 'formaction', kind: 'link' }]],
   ['object', [{ attribute: 'data', kind: 'asset' }]],
-  ['script', [{ attribute: 'src', kind: 'asset' }]],
-  ['source', [{ attribute: 'src', kind: 'asset' }]],
-  ['track', [{ attribute: 'src', kind: 'asset' }]],
-  [
-    'video',
-    [
-      { attribute: 'src', kind: 'asset' },
-      { attribute: 'poster', kind: 'asset' },
-    ],
-  ],
+  ['video', [{ attribute: 'poster', kind: 'asset' }]],
 ])
-const listUrlAttributesByTag = new Map<string, readonly string[]>([
-  ['img', ['srcset']],
+const additionalListUrlAttributesByTag = new Map<string, readonly string[]>([
   ['link', ['imagesrcset']],
-  ['source', ['srcset']],
 ])
 
 function toPosixPath(path: string): string {
@@ -629,6 +600,16 @@ function tokenizeJavaScript(source: string): readonly JavaScriptToken[] {
         tokens.push({ kind: 'identifier', value: source.slice(startIndex, index) })
         continue
       }
+      if (/\d/.test(char) || (char === '.' && /\d/.test(source[index + 1] ?? ''))) {
+        const number = /^(?:0[xX][\da-fA-F_]+n?|0[bB][01_]+n?|0[oO][0-7_]+n?|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?[\d_]+)?n?)/.exec(
+          source.slice(index),
+        )
+        if (number) {
+          tokens.push({ kind: 'number', value: number[0] })
+          index += number[0].length
+          continue
+        }
+      }
       if (
         char === '/' &&
         canStartRegularExpression(tokens[tokens.length - 1])
@@ -929,11 +910,31 @@ export function validateRenderedPages(
 
   for (const [htmlFile, parsed] of parsedByHtmlFile) {
     for (const tag of parsed.tags) {
-      for (const reference of singleUrlAttributesByTag.get(tag.name) ?? []) {
+      const href = tag.attributes.get('href')
+      if (href !== undefined) {
+        inspect(
+          href,
+          htmlFile,
+          tag.name === 'a' || tag.name === 'area' ? 'link' : 'asset',
+        )
+      }
+      const src = tag.attributes.get('src')
+      if (src !== undefined) inspect(src, htmlFile, 'asset')
+      const srcset = tag.attributes.get('srcset')
+      if (srcset !== undefined) {
+        for (const candidate of parseSrcset(srcset)) {
+          inspect(candidate, htmlFile, 'asset')
+        }
+      }
+      for (
+        const reference of additionalSingleUrlAttributesByTag.get(tag.name) ?? []
+      ) {
         const value = tag.attributes.get(reference.attribute)
         if (value !== undefined) inspect(value, htmlFile, reference.kind)
       }
-      for (const attribute of listUrlAttributesByTag.get(tag.name) ?? []) {
+      for (
+        const attribute of additionalListUrlAttributesByTag.get(tag.name) ?? []
+      ) {
         const value = tag.attributes.get(attribute)
         if (value !== undefined) {
           for (const candidate of parseSrcset(value)) {

@@ -193,6 +193,24 @@ describe('rendered page validation', () => {
       undefined,
       'Missing JavaScript import',
     ],
+    [
+      'a generic SVG href',
+      '<svg><use href="/missing.svg#icon"></use></svg>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'a generic custom-element src',
+      '<x-media src="/missing.bin"></x-media>',
+      undefined,
+      'Missing rendered asset',
+    ],
+    [
+      'a generic custom-element srcset',
+      '<x-image srcset="/missing-1x.png 1x, /missing-2x.png 2x"></x-image>',
+      undefined,
+      'Missing rendered asset',
+    ],
   ])('reports missing dependency from %s', (_label, body, css, message) => {
     const output = createOutput()
     write(
@@ -253,6 +271,7 @@ describe('rendered page validation', () => {
         'const single = \'import "/missing-single-string.js"\'',
         'const double = "import(\'/missing-double-string.js\')"',
         'const template = `import("/missing-template-text.js")`',
+        'const regex = /import\\("\\/missing-regex.js"\\)/',
       ].join('\n'),
     )
 
@@ -263,6 +282,24 @@ describe('rendered page validation', () => {
         expectedHtmlFiles: ['index.html'],
       }),
     ).not.toThrow()
+  })
+
+  test('detects a dynamic import after numeric division', () => {
+    const output = createOutput()
+    write(
+      output,
+      'index.html',
+      '<!doctype html><html><head><script type="module" src="/app.js"></script></head><body id="VPContent"></body></html>',
+    )
+    write(output, 'app.js', 'const ratio=1/2;import("/missing-after-division.js")')
+
+    expect(() =>
+      validateRenderedPages({
+        outputDirectory: output,
+        base: '/',
+        expectedHtmlFiles: ['index.html'],
+      }),
+    ).toThrow('Missing JavaScript import')
   })
 
   test('requires every absolute Android URL to stay under the asset-loader base', () => {
