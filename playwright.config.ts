@@ -20,7 +20,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `npm run docs:preview -- --host ${host} --port ${port}`,
+    command: `npm run build:web && npm run docs:preview -- --host ${host} --port ${port}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

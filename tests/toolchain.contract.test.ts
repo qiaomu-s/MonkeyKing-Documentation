@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import playwrightConfig from '../playwright.config'
 
 type PackageJson = {
   name?: string
@@ -74,5 +75,15 @@ describe('root toolchain contract', () => {
       test: 'vitest run',
       'test:e2e': 'playwright test',
     })
+  })
+
+  test('builds the web output before starting the Playwright preview server', () => {
+    const webServer = Array.isArray(playwrightConfig.webServer)
+      ? playwrightConfig.webServer[0]
+      : playwrightConfig.webServer
+
+    expect(webServer?.command).toBe(
+      'npm run build:web && npm run docs:preview -- --host 127.0.0.1 --port 4173',
+    )
   })
 })
