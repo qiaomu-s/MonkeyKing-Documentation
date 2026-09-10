@@ -620,4 +620,28 @@ if (continuation.enabled) {
 - [`dayjs`](https://day.js.org/docs/en/installation/installation)：使用提交内的核心单文件构建；未预装全部插件和地区包。
 - `i18n`：基于提交内的 `banana-i18n.js`，并增加本地 JSON 目录加载约定，详见 [Internationalization](../utilities/i18n.md)。
 
-这些页面只说明 Monkey King 的入口与差异；完整 API 请查阅各项目官方文档。
+首次读取属性时可能同步加载并执行较大的打包文件；需要控制启动耗时时，可在真正使用前再访问。以下示例只演示 Monkey King 入口，不替代上游完整文档。
+
+```js
+axios.get('https://example.com')
+    .then(response => console.log(response.status))
+    .catch(error => console.error(error));
+```
+
+```js
+const $ = cheerio.load('<main><h1>Monkey King</h1></main>');
+console.log($('h1').text()); // Monkey King
+```
+
+```js
+const date = dayjs('2026-09-10T08:30:00');
+console.log(date.format('YYYY-MM-DD HH:mm')); // 2026-09-10 08:30
+```
+
+```js
+i18n.setLocale('zh-CN');
+i18n.load({ 'zh-CN': { hello: '你好，$1' } });
+console.log(i18n('hello', 'Monkey King'));
+```
+
+`axios` 的请求适配器、Cookie、证书与线程行为受 Android/Rhino 构建影响；`cheerio` 不提供浏览器 DOM；`dayjs` 未自动安装上游全部插件；`i18n` 的路径与语言回退由 Monkey King 包装层管理。
