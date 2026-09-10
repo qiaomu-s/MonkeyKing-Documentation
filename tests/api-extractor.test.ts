@@ -85,6 +85,7 @@ describe('API manifest extractor', () => {
       'alpha',
       'alpha.nested',
       'dynamic',
+      'proxy',
     ])
     expect(manifest.modules.find(({ id }: { id: string }) => id === 'alpha')).toMatchObject({
       aliases: ['$alpha'],
@@ -159,6 +160,30 @@ describe('API manifest extractor', () => {
       kind: 'constructor',
     })
     expect(symbols.get('dynamic.generated')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.class')).toMatchObject({
+      owner: 'alpha',
+      kind: 'function',
+      source: expect.objectContaining({ path: expect.stringContaining('LegacyUtil.kt') }),
+    })
+    expect(symbols.get('alpha.getClass')).toMatchObject({ kind: 'function' })
+    expect(symbols.has('alpha.hiddenHelper')).toBe(false)
+    expect(symbols.get('alpha.nested.fileProviderAuthority')).toMatchObject({
+      kind: 'property',
+      annotations: ['ScriptInterface'],
+    })
+    expect(symbols.get('alpha.nested.ensureInstalled')).toMatchObject({
+      kind: 'function',
+      annotations: ['ScriptInterface'],
+    })
+    expect(symbols.get('alpha.nested.isActivityShortForm')).toMatchObject({
+      kind: 'function',
+      annotations: ['ScriptInterface'],
+    })
+    expect(symbols.has('alpha.nested.privateAnnotated')).toBe(false)
+    expect(symbols.get('dynamic.digest')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('dynamic.encrypt')).toMatchObject({ kind: 'function' })
+    expect(symbols.has('dynamic.cipher')).toBe(false)
+    expect(symbols.get('proxy.ensureInstalled')).toMatchObject({ kind: 'function' })
     expect(symbols.get('call:dynamic')).toMatchObject({
       kind: 'callable',
       source: expect.objectContaining({ line: 3 }),
@@ -224,6 +249,48 @@ describe('API manifest extractor', () => {
     )
   })
 
+  test.each([
+    {
+      label: 'missing path',
+      source: { path: 'app/src/main/java/example/Missing.kt', line: 1 },
+      expected: /missing source/i,
+    },
+    {
+      label: 'out-of-range line',
+      source: dynamicOverrides[0].source,
+      line: 999,
+      expected: /outside.*source/i,
+    },
+    {
+      label: 'blank line',
+      source: dynamicOverrides[0].source,
+      line: 2,
+      expected: /blank/i,
+    },
+    {
+      label: 'unrelated line',
+      source: dynamicOverrides[0].source,
+      line: 1,
+      expected: /semantic evidence/i,
+    },
+  ])('rejects override evidence with a $label', async ({ source, line, expected }) => {
+    const extractor = await loadExtractor()
+    expect(extractor, 'scripts/api/extractor.ts must exist').not.toBeNull()
+    if (!extractor) return
+
+    await expect(
+      extractor.extractApiManifest(createFixtureReader(), {
+        ref: 'fixture-ref',
+        overrides: [
+          {
+            ...dynamicOverrides[0],
+            source: { ...source, ...(line ? { line } : {}) },
+          },
+        ],
+      }),
+    ).rejects.toThrow(expected)
+  })
+
   test('applies an explicit standalone dynamic surface to its documented owner', async () => {
     const extractor = await loadExtractor()
     expect(extractor, 'scripts/api/extractor.ts must exist').not.toBeNull()
@@ -266,6 +333,17 @@ describe('API manifest extractor', () => {
             line: 3,
           },
         },
+        {
+          id: 'fixture-java-public-surface',
+          className: 'Database',
+          owner: 'alpha.Database',
+          includePublicMembers: true,
+          reason: 'The returned Java object exposes its declared public members.',
+          source: {
+            path: 'app/src/main/java/example/core/Database.java',
+            line: 3,
+          },
+        },
       ],
     })
 
@@ -301,6 +379,10 @@ describe('API manifest extractor', () => {
       name: 'find',
       kind: 'function',
     })
+    expect(symbols.get('alpha.Database.name')).toMatchObject({ kind: 'property' })
+    expect(symbols.get('alpha.Database.execSQL')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.Database.query')).toMatchObject({ kind: 'function' })
+    expect(symbols.has('alpha.Database.hiddenHelper')).toBe(false)
     expect(manifest.overrides).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: 'fixture-result-surface' }),

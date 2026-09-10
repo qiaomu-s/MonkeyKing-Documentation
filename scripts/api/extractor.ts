@@ -17,6 +17,7 @@ import {
   maskComments,
   maskNonCode,
   splitTopLevel,
+  type BalancedRange,
 } from './lexer'
 import type { SourceReader } from './source-reader'
 
@@ -29,6 +30,7 @@ interface Registration {
   readonly className: string
   readonly targetName: string
   readonly withDollarPrefix: boolean
+  readonly prototypeExpressions: readonly string[]
   readonly source: SourceLocation
   readonly lambdaNames: readonly string[]
 }
@@ -240,7 +242,7 @@ function parseRegistrations(path: string, source: string): Registration[] {
   const bodyStart = source.indexOf(body)
   const masked = maskNonCode(body)
   const pattern =
-    /\b([A-Z][A-Za-z0-9_]*)\s*(?:\([^{};\n]*?\))?\s*\.\s*(?:augmentWithRuntime|augment|proxying)\s*\(/g
+    /\b([A-Z][A-Za-z0-9_]*)\s*(?:\([^{};\n]*?\))?\s*\.\s*(augmentWithRuntime|augment|proxying)\s*\(/g
   const registrations: Registration[] = []
   let match: RegExpExecArray | null
 
@@ -255,6 +257,15 @@ function parseRegistrations(path: string, source: string): Registration[] {
       .slice(1)
       .map((argument) => argument.trim())
       .filter((argument) => argument === 'true' || argument === 'false')
+    const prototypeIndex = match[2] === 'augmentWithRuntime' ? 2 : 1
+    const prototypeCandidate = args[prototypeIndex]?.trim()
+    const prototypeExpressions =
+      prototypeCandidate &&
+      !/^(?:true|false|null|READONLY|PERMANENT|DONTENUM|\d+)$/.test(
+        prototypeCandidate,
+      )
+        ? [prototypeCandidate]
+        : []
     const suffix = body.slice(range.end + 1, range.end + 320)
     const lambdaNames = [...suffix.matchAll(/\.also\s*\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*->/g)]
       .map((lambda) => lambda[1])
@@ -263,6 +274,7 @@ function parseRegistrations(path: string, source: string): Registration[] {
       className: match[1],
       targetName,
       withDollarPrefix: booleans.at(-1) !== 'false',
+      prototypeExpressions,
       source: location(path, source, bodyStart + match.index),
       lambdaNames,
     })
@@ -282,6 +294,7 @@ function parseAssignedAugmentables(path: string, source: string): Registration[]
     className: match[1],
     targetName: 'global',
     withDollarPrefix: false,
+    prototypeExpressions: [],
     source: location(path, source, bodyStart + (match.index ?? 0)),
     lambdaNames: [],
   }))
@@ -839,16 +852,341 @@ function classSourcePath(
   )
 }
 
+interface PrototypeSource {
+  readonly className: string
+  readonly path: string
+}
+
+interface PrototypeMember {
+  readonly name: string
+  readonly kind: 'function' | 'property'
+  readonly offset: number
+}
+
+function runtimeValueTypes(source: string): ReadonlyMap<string, string> {
+  const masked = maskNonCode(source)
+  const types = new Map<string, string>()
+  const references = new Map<string, string>()
+  const identifier = '[A-Za-z_][A-Za-z0-9_]*'
+  const explicit = new RegExp(
+    `\\b(?:lateinit\\s+)?(?:val|var)\\s+(${identifier})\\s*:\\s*(${identifier})`,
+    'g',
+  )
+  let match: RegExpExecArray | null
+
+  while ((match = explicit.exec(masked)) !== null) {
+    types.set(match[1], match[2])
+  }
+
+  const inferred = new RegExp(
+    `\\b(?:val|var)\\s+(${identifier})(?:\\s*:[^=\\n]+)?\\s*=\\s*` +
+      `(${identifier}(?:\\.${identifier})*)`,
+    'g',
+  )
+  while ((match = inferred.exec(masked)) !== null) {
+    const expression = match[2]
+    const parts = expression.split('.')
+    const first = parts[0]
+    const last = parts.at(-1) ?? first
+    if (/^[A-Z]/.test(first)) {
+      types.set(match[1], first)
+    } else {
+      references.set(match[1], last)
+    }
+  }
+
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const [name, referencedName] of references) {
+      const type = types.get(referencedName)
+      if (!type || types.has(name)) continue
+      types.set(name, type)
+      changed = true
+    }
+  }
+  return types
+}
+
+function prototypeTypeNames(
+  expression: string,
+  valueTypes: ReadonlyMap<string, string>,
+  imports: ReadonlyMap<string, string>,
+): string[] {
+  const code = maskComments(expression)
+  const types = new Set<string>()
+  const pattern = /[A-Za-z_][A-Za-z0-9_]*/g
+  let match: RegExpExecArray | null
+
+  while ((match = pattern.exec(code)) !== null) {
+    const name = match[0]
+    const previous = code.slice(0, match.index).trimEnd().at(-1)
+    const next = code.slice(match.index + name.length).trimStart().at(0)
+    if (previous === '.' || next === '.') continue
+    const valueType = valueTypes.get(name)
+    if (valueType) {
+      types.add(valueType)
+      continue
+    }
+    if (imports.has(name)) types.add(name)
+  }
+  return [...types].sort(compareText)
+}
+
+function prototypeSource(
+  typeName: string,
+  imports: ReadonlyMap<string, string>,
+  sourceFiles: readonly string[],
+): PrototypeSource | null {
+  const imported = imports.get(typeName)
+  const className = imported?.split('.').at(-1) ?? typeName
+  const importedPath = findSourcePathForImport(typeName, imports, sourceFiles)
+  const fallbackPath = sourceFiles
+    .filter((path) =>
+      path.endsWith(`/${className}.kt`) || path.endsWith(`/${className}.java`),
+    )
+    .sort((left, right) =>
+      left.length - right.length || compareText(left, right),
+    )[0]
+  const path = importedPath ?? fallbackPath
+  return path ? { className, path } : null
+}
+
+function classBody(
+  source: string,
+  className: string,
+): { readonly declaration: number; readonly open: number; readonly close: number } | null {
+  const masked = maskNonCode(source)
+  const declaration = new RegExp(
+    `\\b(?:class|object)\\s+${escapeRegExp(className)}\\b`,
+  ).exec(masked)
+  if (!declaration) return null
+  const open = masked.indexOf('{', declaration.index + declaration[0].length)
+  if (open < 0) return null
+  const range = findBalancedRange(source, open, '{', '}')
+  return { declaration: declaration.index, open, close: range.end }
+}
+
+function prototypeMembers(
+  source: string,
+  className: string,
+  metadata: MethodMetadata,
+): PrototypeMember[] {
+  const body = classBody(source, className)
+  if (!body) return []
+  const masked = maskNonCode(source)
+  const depths = new Int16Array(body.close - body.open + 1)
+  let depth = 0
+  for (let index = body.open + 1; index < body.close; index += 1) {
+    depths[index - body.open] = depth
+    if (masked[index] === '{') depth += 1
+    if (masked[index] === '}') depth -= 1
+  }
+
+  const companionRanges: BalancedRange[] = []
+  const companionPattern = /\bcompanion\s+object(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\{/g
+  let companion: RegExpExecArray | null
+  while ((companion = companionPattern.exec(masked)) !== null) {
+    if (companion.index <= body.open || companion.index >= body.close) continue
+    const open = masked.indexOf('{', companion.index)
+    const range = findBalancedRange(source, open, '{', '}')
+    companionRanges.push(range)
+    companionPattern.lastIndex = range.end + 1
+  }
+
+  const inDirectCompanionBody = (offset: number): boolean =>
+    companionRanges.some(
+      (range) =>
+        offset > range.start &&
+        offset < range.end &&
+        depths[offset - body.open] === 1,
+    )
+  const members: PrototypeMember[] = []
+  const kotlin = new RegExp(
+    `\\b(?:(public|private|protected|internal)\\s+)?` +
+      `(?:(?:override|open|final|abstract|suspend|operator|infix|tailrec|external|inline|const|lateinit)\\s+)*` +
+      `(fun|val|var)\\s+(?:<[^>]+>\\s*)?(${kotlinIdentifierSource})`,
+    'g',
+  )
+  let match: RegExpExecArray | null
+  while ((match = kotlin.exec(masked)) !== null) {
+    const offset = match.index
+    if (offset <= body.declaration || offset >= body.close) continue
+    if (['private', 'protected', 'internal'].includes(match[1] ?? '')) continue
+    const name = normalizeKotlinIdentifier(match[3])
+    const inHeader = offset < body.open
+    const inDirectBody =
+      offset > body.open && depths[offset - body.open] === 0
+    const inCompanion = inDirectCompanionBody(offset)
+    if (!inHeader && !inDirectBody && !inCompanion) continue
+    if (
+      inCompanion &&
+      !(metadata.annotations.get(name) ?? []).some((annotation) =>
+        publicMemberAnnotationNames.has(annotation),
+      )
+    ) {
+      continue
+    }
+    members.push({
+      name,
+      kind: match[2] === 'fun' ? 'function' : 'property',
+      offset,
+    })
+  }
+
+  if (body.open >= 0) {
+    const java = /\b(public|protected|private)\s+(?:(?:static|final|abstract|synchronized|native)\s+)*(?:[A-Za-z_][A-Za-z0-9_$.<>?\[\], ]*\s+)([A-Za-z_][A-Za-z0-9_]*)\s*(\(|=|;)/g
+    while ((match = java.exec(masked)) !== null) {
+      const offset = match.index
+      if (offset <= body.open || offset >= body.close || match[1] !== 'public') {
+        continue
+      }
+      if (depths[offset - body.open] !== 0) continue
+      members.push({
+        name: match[2],
+        kind: match[3] === '(' ? 'function' : 'property',
+        offset,
+      })
+    }
+  }
+
+  return members.filter(
+    (member, index, all) =>
+      all.findIndex(
+        (candidate) =>
+          candidate.name === member.name && candidate.kind === member.kind,
+      ) === index,
+  )
+}
+
+function addPrototypeMembers(
+  symbols: Map<string, ApiSymbol>,
+  owner: string,
+  prototype: PrototypeSource,
+  source: string,
+  metadata: MethodMetadata,
+): void {
+  for (const member of prototypeMembers(source, prototype.className, metadata)) {
+    addSymbol(
+      symbols,
+      makeSymbol(
+        `${owner}.${member.name}`,
+        owner,
+        member.name,
+        member.kind,
+        location(prototype.path, source, member.offset),
+        metadata,
+      ),
+    )
+  }
+}
+
+function assertOverrideEvidence(
+  reader: SourceReader,
+  sourceFiles: readonly string[],
+  override: DynamicOverride,
+): void {
+  if (!sourceFiles.includes(override.source.path)) {
+    throw new Error(
+      `Override ${override.id} references missing source ${override.source.path}.`,
+    )
+  }
+  const source = reader.readFile(override.source.path)
+  const lines = source.split(/\r?\n/)
+  if (override.source.line > lines.length) {
+    throw new Error(
+      `Override ${override.id} line ${override.source.line} is outside source ` +
+        `${override.source.path} (${lines.length} lines).`,
+    )
+  }
+  const evidenceLine = lines[override.source.line - 1] ?? ''
+  if (!evidenceLine.trim()) {
+    throw new Error(
+      `Override ${override.id} references a blank evidence line at ` +
+        `${override.source.path}:${override.source.line}.`,
+    )
+  }
+
+  const window = lines
+    .slice(
+      Math.max(0, override.source.line - 2),
+      Math.min(lines.length, override.source.line + 1),
+    )
+    .join('\n')
+  const candidateNames = [
+    override.className,
+    ...(override.assignments ?? []),
+    ...(override.members ?? []).flatMap((member) => [
+      member.name,
+      ...(member.aliases ?? []),
+    ]),
+    ...(override.key ? ['key'] : []),
+  ].filter((name) =>
+    new RegExp(`\\b${escapeRegExp(name)}\\b`).test(source),
+  )
+  const hasNamedEvidence = candidateNames.some((name) =>
+    new RegExp(`\\b${escapeRegExp(name)}\\b`).test(window),
+  )
+  const hasStructuralEvidence =
+    /\b(?:class|object|interface|fun|val|var|init|for)\b|@Jvm|declared(?:Member|Method|Field)|\.methods\b|defineProp(?:erty)?\b|newNativeObject\b|toNativeArray\b|prototype\b|\bextends\b/.test(
+      window,
+    )
+  if (!hasNamedEvidence && !hasStructuralEvidence) {
+    throw new Error(
+      `Override ${override.id} has no related member, declaration, or reflection ` +
+        `semantic evidence near ${override.source.path}:${override.source.line}.`,
+    )
+  }
+}
+
+function overrideMemberSourcePath(
+  override: DynamicOverride,
+  sourceFiles: readonly string[],
+): string {
+  const candidate = sourceFiles
+    .filter(
+      (path) =>
+        path.endsWith(`/${override.className}.kt`) ||
+        path.endsWith(`/${override.className}.java`),
+    )
+    .sort((left, right) =>
+      left.length - right.length || compareText(left, right),
+    )[0]
+  return candidate ?? override.source.path
+}
+
 function applyOverrideMembers(
   symbols: Map<string, ApiSymbol>,
   moduleId: string,
   override: DynamicOverride,
   sourceText: string,
   metadata: MethodMetadata,
+  memberSourcePath = override.source.path,
 ): void {
   const excludedMembers = new Set(override.excludeMembers ?? [])
   const memberId = (name: string) =>
     override.idPrefix ? `${override.idPrefix}${name}` : `${moduleId}.${name}`
+
+  if (override.includePublicMembers) {
+    for (const member of prototypeMembers(
+      sourceText,
+      override.className,
+      metadata,
+    )) {
+      if (excludedMembers.has(member.name)) continue
+      addSymbol(
+        symbols,
+        makeSymbol(
+          memberId(member.name),
+          moduleId,
+          member.name,
+          member.kind,
+          location(memberSourcePath, sourceText, member.offset),
+          metadata,
+        ),
+      )
+    }
+  }
 
   if (override.includeAnnotatedMembers) {
     for (const [name, annotations] of metadata.annotations) {
@@ -889,7 +1227,7 @@ function applyOverrideMembers(
           moduleId,
           declaration.name,
           override.includeJvmFieldsAs,
-          location(override.source.path, sourceText, declaration.offset),
+          location(memberSourcePath, sourceText, declaration.offset),
           metadata,
         ),
       )
@@ -960,8 +1298,13 @@ export async function extractApiManifest(
     throw new Error('Cannot locate ScriptRuntime.kt or RhinoJavaScriptEngine.kt.')
   }
 
+  for (const override of options.overrides ?? []) {
+    assertOverrideEvidence(reader, sourceFiles, override)
+  }
+
   const runtimeSource = reader.readFile(runtimePath)
   const imports = extractImports(runtimeSource)
+  const valueTypes = runtimeValueTypes(runtimeSource)
   const overridesByClass = new Map(
     (options.overrides ?? []).map((override) => [override.className, override]),
   )
@@ -1036,6 +1379,20 @@ export async function extractApiManifest(
 
     addAssignments(symbols, moduleId, sourcePath, source, metadata)
     assertDynamicAssignmentsAreOverridden(actualClassName, source, override)
+    for (const expression of registration.prototypeExpressions) {
+      for (const typeName of prototypeTypeNames(expression, valueTypes, imports)) {
+        const prototype = prototypeSource(typeName, imports, sourceFiles)
+        if (!prototype) continue
+        const prototypeMetadata = readMetadata(prototype.path)
+        addPrototypeMembers(
+          symbols,
+          moduleId,
+          prototype,
+          prototypeMetadata.source,
+          prototypeMetadata.metadata,
+        )
+      }
+    }
 
     const capabilities = augmentableCapabilities(actualClassName, source)
     if (capabilities.callable) {
@@ -1077,6 +1434,7 @@ export async function extractApiManifest(
         override,
         source,
         metadata,
+        sourcePath,
       )
       appliedOverrides.set(override.id, {
         id: override.id,
@@ -1109,13 +1467,16 @@ export async function extractApiManifest(
         `Override ${override.id} does not match a registered class and has no explicit owner.`,
       )
     }
-    if (!sourceFiles.includes(override.source.path)) {
-      throw new Error(
-        `Override ${override.id} references missing source ${override.source.path}.`,
-      )
-    }
-    const { source, metadata } = readMetadata(override.source.path)
-    applyOverrideMembers(symbols, override.owner, override, source, metadata)
+    const memberSourcePath = overrideMemberSourcePath(override, sourceFiles)
+    const { source, metadata } = readMetadata(memberSourcePath)
+    applyOverrideMembers(
+      symbols,
+      override.owner,
+      override,
+      source,
+      metadata,
+      memberSourcePath,
+    )
     appliedOverrides.set(override.id, {
       id: override.id,
       className: override.className,

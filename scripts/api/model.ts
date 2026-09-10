@@ -85,6 +85,7 @@ export interface DynamicOverride {
   readonly idPrefix?: string
   readonly assignments?: readonly DynamicAssignmentName[]
   readonly includeAnnotatedMembers?: boolean
+  readonly includePublicMembers?: boolean
   readonly includeJvmFieldsAs?: 'class' | 'property'
   readonly excludeMembers?: readonly string[]
   readonly reason: string
