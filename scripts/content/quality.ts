@@ -32,7 +32,8 @@ const placeholderPatterns: readonly PlaceholderPattern[] = Object.freeze([
   },
   {
     label: 'TODO/FIXME',
-    expression: /\b(?:TODO|FIXME)\b/gi,
+    expression:
+      /^[ \t]*(?:>[ \t]*)?(?:[-*+][ \t]+)?(?:TODO|FIXME)[ \t]*:/gim,
   },
   {
     label: 'xxx 事件',

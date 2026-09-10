@@ -39,6 +39,21 @@ describe('documentation content quality', () => {
     expect(findPlaceholderIssues(markdown, 'docs/api/example.md')).toEqual([])
   })
 
+  test('does not treat the public TODO function as unfinished prose', () => {
+    const markdown = [
+      '# Global',
+      '',
+      '## [m] TODO',
+      '',
+      '### TODO(reason?)',
+      '',
+      '调用 `TODO()` 会抛出 NotImplementedError。',
+      '',
+    ].join('\n')
+
+    expect(findPlaceholderIssues(markdown, 'docs/api/global.md')).toEqual([])
+  })
+
   test('reports issues across the supplied content set', () => {
     const report = inspectContentQuality([
       { source: 'docs/a.md', markdown: '# A\n\n完整正文。\n' },
