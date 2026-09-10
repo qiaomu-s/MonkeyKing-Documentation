@@ -23,6 +23,7 @@ describe('API tooling command contract', () => {
       'api:extract': 'tsx scripts/api/extract.ts',
       'api:coverage': 'tsx scripts/api/coverage.ts',
       'api:check': 'tsx scripts/api/check.ts',
+      'api:mime': 'tsx scripts/api/mime-appendix.ts',
     })
   })
 

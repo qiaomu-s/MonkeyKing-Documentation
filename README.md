@@ -29,6 +29,7 @@ npm ci
 | `npx tsc --noEmit` | 检查 TypeScript 类型 |
 | `npm run check:content` | 校验内容目录、路径和迁移约束 |
 | `npm run json:build` | 重新生成根目录兼容 JSON |
+| `npm run api:mime -- --source <MonkeyKing> --document <mime.md> --check` | 校验固定源码生成的 MIME 常量附录 |
 | `git diff --exit-code -- json` | 确认 JSON 生成结果已提交且没有漂移 |
 | `npm test` | 运行 Vitest 单元测试和结构契约测试 |
 | `npm run build:web` | 构建网站产物到 `dist/web/` |

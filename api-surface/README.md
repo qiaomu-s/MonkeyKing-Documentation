@@ -32,7 +32,28 @@ Recompute documentation coverage:
 npm run api:coverage
 ```
 
-This command always refreshes `gaps.json`. It exits non-zero while any public
+Regenerate the 2,540-row MIME constant appendix from the same fixed source
+commit:
+
+```bash
+npm run api:mime -- \
+  --source /path/to/MonkeyKing \
+  --ref bafa2986212d27b6b59f1324f89548b72a810966 \
+  --document docs/api/utilities/mime.md
+
+npm run api:mime -- \
+  --source /path/to/MonkeyKing \
+  --ref bafa2986212d27b6b59f1324f89548b72a810966 \
+  --document docs/api/utilities/mime.md \
+  --check
+```
+
+`api:mime` reads `runtime/api/Mime.kt` through `git show`, validates exactly
+2,540 unique `@JvmField` names and `mime-constant-*` anchors, and replaces only
+the content between the `mime-constant-manifest` markers. Check mode performs a
+byte comparison and fails on drift; it never rewrites the document.
+
+The `api:coverage` command always refreshes `gaps.json`. It exits non-zero while any public
 symbol lacks a real target and writes `coverage.json` only after all gaps are
 resolved. Once coverage is complete, validate the committed mapping with:
 
