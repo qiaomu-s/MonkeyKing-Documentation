@@ -40,6 +40,19 @@ describe('API extraction overrides', () => {
       ),
     ).toBe(false)
     expect(database).toMatchObject({ includePublicMembers: true })
+    expect(database?.members?.map(({ name }: { name: string }) => name)).toEqual(
+      expect.arrayContaining([
+        'getDatabaseName',
+        'getReadableDatabase',
+        'getWritableDatabase',
+        'onConfigure',
+        'onDowngrade',
+        'setIdleConnectionTimeout',
+        'setLookasideConfig',
+        'setOpenParams',
+        'setWriteAheadLoggingEnabled',
+      ]),
+    )
     expect(
       (database?.members ?? []).some(
         ({ kind }: { kind: string }) => kind === 'dynamic',

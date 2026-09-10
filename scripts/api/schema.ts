@@ -193,18 +193,19 @@ export const coverageSchema = {
           patterns: {
             type: 'array',
             minItems: 1,
+            uniqueItems: true,
             items: { type: 'string', minLength: 1 },
           },
           exclude: {
             type: 'array',
-            nullable: true,
+            uniqueItems: true,
             items: { type: 'string', minLength: 1 },
           },
           status: {
             enum: ['documented', 'alias', 'external', 'excluded'],
           },
-          target: { type: 'string', minLength: 1, nullable: true },
-          reason: { type: 'string', minLength: 1, nullable: true },
+          target: { type: 'string', minLength: 1 },
+          reason: { type: 'string', minLength: 1, pattern: '\\S' },
         },
         allOf: [
           {
@@ -220,6 +221,13 @@ export const coverageSchema = {
               required: ['status'],
             },
             then: { required: ['reason'] },
+          },
+          {
+            if: {
+              properties: { status: { const: 'alias' } },
+              required: ['status'],
+            },
+            then: { not: { required: ['target'] } },
           },
         ],
       },

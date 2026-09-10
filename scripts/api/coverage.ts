@@ -54,12 +54,12 @@ export function parseCoverageArguments(args: readonly string[]): CoverageArgumen
   return { root, manifest, output, gaps, check }
 }
 
-export function runCoverage(arguments_: CoverageArguments): void {
+export async function runCoverage(arguments_: CoverageArguments): Promise<void> {
   const root = resolve(arguments_.root)
   const manifest = JSON.parse(
     readFileSync(resolve(root, arguments_.manifest), 'utf8'),
   ) as ApiManifest
-  const artifacts = generateApiCoverageArtifacts({
+  const artifacts = await generateApiCoverageArtifacts({
     manifest,
     projectRoot: root,
   })
@@ -130,12 +130,10 @@ function isDirectExecution(): boolean {
 }
 
 if (isDirectExecution()) {
-  try {
-    runCoverage(parseCoverageArguments(process.argv.slice(2)))
-  } catch (error) {
+  runCoverage(parseCoverageArguments(process.argv.slice(2))).catch((error) => {
     const message =
       error instanceof Error ? error.stack ?? error.message : String(error)
     process.stderr.write(`${message}\n`)
     process.exitCode = 1
-  }
+  })
 }

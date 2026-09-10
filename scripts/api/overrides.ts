@@ -461,11 +461,22 @@ export const dynamicOverrides: readonly DynamicOverride[] = [
     owner: 'sqlite.database',
     includePublicMembers: true,
     reason:
-      'sqlite returns a Rhino-wrapped Database; all public members declared by the pinned Java wrapper are extracted individually from source.',
+      'sqlite returns a Rhino-wrapped Database; all public members declared by the pinned Java wrapper are extracted individually from source, and the remaining SQLiteOpenHelper members come from compileSdk 36 declared by version.properties.',
     source: {
       path: 'app/src/main/java/com/qiaomu/monkeyking/core/database/Database.java',
       line: 21,
     },
+    members: members('function', [
+      'getDatabaseName',
+      'getReadableDatabase',
+      'getWritableDatabase',
+      'onConfigure',
+      'onDowngrade',
+      'setIdleConnectionTimeout',
+      'setLookasideConfig',
+      'setOpenParams',
+      'setWriteAheadLoggingEnabled',
+    ]),
   },
   {
     id: 'sqlite-cursor-wrapper',

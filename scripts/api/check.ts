@@ -38,7 +38,7 @@ export function parseCheckArguments(args: readonly string[]): CheckArguments {
   return { root, manifest, coverage }
 }
 
-export function runCheck(arguments_: CheckArguments): void {
+export async function runCheck(arguments_: CheckArguments): Promise<void> {
   const root = resolve(arguments_.root)
   const manifest = JSON.parse(
     readFileSync(resolve(root, arguments_.manifest), 'utf8'),
@@ -46,7 +46,7 @@ export function runCheck(arguments_: CheckArguments): void {
   const coverage = JSON.parse(
     readFileSync(resolve(root, arguments_.coverage), 'utf8'),
   ) as ApiCoverage
-  const report = assertApiSurface({ manifest, coverage, projectRoot: root })
+  const report = await assertApiSurface({ manifest, coverage, projectRoot: root })
   process.stdout.write(
     `API coverage valid: ${report.mappedSymbolCount}/${report.publicSymbolCount} ` +
       'public symbols mapped.\n',
@@ -62,12 +62,10 @@ function isDirectExecution(): boolean {
 }
 
 if (isDirectExecution()) {
-  try {
-    runCheck(parseCheckArguments(process.argv.slice(2)))
-  } catch (error) {
+  runCheck(parseCheckArguments(process.argv.slice(2))).catch((error) => {
     const message =
       error instanceof Error ? error.stack ?? error.message : String(error)
     process.stderr.write(`${message}\n`)
     process.exitCode = 1
-  }
+  })
 }

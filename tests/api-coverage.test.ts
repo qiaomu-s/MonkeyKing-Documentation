@@ -107,7 +107,7 @@ describe('API coverage generator', () => {
     if (!generator || !checker) return
 
     const projectRoot = fixtureProjectRoot()
-    const artifacts = generator.generateApiCoverageArtifacts({
+    const artifacts = await generator.generateApiCoverageArtifacts({
       manifest: fixtureManifest(),
       projectRoot,
       ownerPages: { alpha: 'docs/alpha.md', global: 'docs/global.md' },
@@ -154,7 +154,7 @@ describe('API coverage generator', () => {
     manifest.symbols = manifest.symbols.filter(
       ({ id }: { id: string }) => id === 'alpha.run',
     ) as typeof manifest.symbols
-    const artifacts = generator.generateApiCoverageArtifacts({
+    const artifacts = await generator.generateApiCoverageArtifacts({
       manifest,
       projectRoot,
       ownerPages: { alpha: 'docs/alpha.md' },
@@ -163,11 +163,11 @@ describe('API coverage generator', () => {
     expect(artifacts.gaps).toEqual([])
 
     expect(
-      checker.validateApiSurface({
+      await checker.validateApiSurface({
         manifest,
         coverage: artifacts.coverage,
         projectRoot,
-      }).errors,
+      }).then((report: { errors: unknown[] }) => report.errors),
     ).toEqual([])
   })
 
@@ -190,10 +190,85 @@ describe('API coverage generator', () => {
     }
     writeFileSync(resolve(projectRoot, 'coverage.json'), '{"stale":true}\n')
 
-    expect(() => coverageCli.runCoverage(arguments_)).toThrow(/coverage has \d+ gaps/i)
+    await expect(coverageCli.runCoverage(arguments_)).rejects.toThrow(
+      /coverage has \d+ gaps/i,
+    )
     const first = readFileSync(resolve(projectRoot, 'gaps.json'), 'utf8')
     expect(existsSync(resolve(projectRoot, 'coverage.json'))).toBe(false)
-    expect(() => coverageCli.runCoverage(arguments_)).toThrow(/coverage has \d+ gaps/i)
+    await expect(coverageCli.runCoverage(arguments_)).rejects.toThrow(
+      /coverage has \d+ gaps/i,
+    )
     expect(readFileSync(resolve(projectRoot, 'gaps.json'), 'utf8')).toBe(first)
+  })
+
+  test('uses rendered duplicate ids and ignores pseudo headings', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.symbols = manifest.symbols.filter(
+      ({ id }: { id: string }) => id === 'alpha.run',
+    ) as typeof manifest.symbols
+    writeFileSync(
+      resolve(projectRoot, 'docs/alpha.md'),
+      [
+        '# Alpha',
+        '',
+        '## First {#run}',
+        '',
+        '```md',
+        '## Run',
+        '```',
+        '',
+        '<!-- ## Run -->',
+        '',
+        '## Run',
+      ].join('\n'),
+    )
+
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { alpha: 'docs/alpha.md' },
+    })
+
+    expect(artifacts.gaps).toEqual([])
+    expect(artifacts.coverage.rules).toEqual([
+      expect.objectContaining({
+        patterns: ['alpha.run'],
+        target: 'docs/alpha.md#run-1',
+      }),
+    ])
+  })
+
+  test('does not treat fenced or commented member headings as documentation', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.symbols = manifest.symbols.filter(
+      ({ id }: { id: string }) => id === 'alpha.run',
+    ) as typeof manifest.symbols
+    writeFileSync(
+      resolve(projectRoot, 'docs/alpha.md'),
+      ['# Alpha', '', '```md', '## Run', '```', '', '<!-- ## Run -->'].join(
+        '\n',
+      ),
+    )
+
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { alpha: 'docs/alpha.md' },
+    })
+
+    expect(artifacts.coverage.rules).toEqual([])
+    expect(artifacts.gaps).toEqual([
+      expect.objectContaining({ symbolId: 'alpha.run' }),
+    ])
   })
 })

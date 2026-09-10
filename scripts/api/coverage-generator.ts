@@ -7,7 +7,10 @@ import {
   type ApiSymbol,
   type CoverageRule,
 } from './model'
-import { markdownSlug } from './checker'
+import {
+  buildMarkdownDocumentIndexes,
+  type MarkdownHeadingRecord,
+} from '../content/markdown-links'
 
 export interface GenerateApiCoverageOptions {
   readonly manifest: ApiManifest
@@ -30,11 +33,7 @@ export interface ApiCoverageArtifacts {
   readonly gaps: readonly ApiCoverageGap[]
 }
 
-interface HeadingRecord {
-  readonly level: number
-  readonly text: string
-  readonly anchor: string
-}
+type HeadingRecord = MarkdownHeadingRecord
 
 export const defaultOwnerPages: Readonly<Record<string, string>> = Object.freeze({
   global: 'docs/api/core/global.md',
@@ -129,26 +128,6 @@ export const defaultOwnerPages: Readonly<Record<string, string>> = Object.freeze
 
 function compareText(left: string, right: string): number {
   return left.localeCompare(right, 'en')
-}
-
-function parseHeadings(markdown: string): HeadingRecord[] {
-  const headings: HeadingRecord[] = []
-  const duplicateCounts = new Map<string, number>()
-  const pattern = /^(#{1,6})\s+(.+?)\s*#*\s*$/gm
-  let match: RegExpExecArray | null
-
-  while ((match = pattern.exec(markdown)) !== null) {
-    const rawText = match[2]
-    const explicit = rawText.match(/\s*\{#([^}]+)\}\s*$/)
-    const text = explicit ? rawText.slice(0, explicit.index).trim() : rawText
-    const base = explicit?.[1] ?? markdownSlug(text)
-    if (!base) continue
-    const count = duplicateCounts.get(base) ?? 0
-    const anchor = explicit ? base : count === 0 ? base : `${base}-${count}`
-    duplicateCounts.set(base, count + 1)
-    headings.push({ level: match[1].length, text, anchor })
-  }
-  return headings
 }
 
 function normalizedHeading(text: string): string {
@@ -258,11 +237,10 @@ function gap(
   }
 }
 
-export function generateApiCoverageArtifacts(
+export async function generateApiCoverageArtifacts(
   options: GenerateApiCoverageOptions,
-): ApiCoverageArtifacts {
+): Promise<ApiCoverageArtifacts> {
   const ownerPages = options.ownerPages ?? defaultOwnerPages
-  const headingCache = new Map<string, readonly HeadingRecord[]>()
   const claimedTargets = new Map<string, string>()
   const publicSymbols = options.manifest.symbols
     .filter((symbol) => symbol.public)
@@ -270,6 +248,19 @@ export function generateApiCoverageArtifacts(
   const rules: CoverageRule[] = []
   const gaps: ApiCoverageGap[] = []
   const mappedCanonicalIds = new Set<string>()
+  const pageSources = new Map<string, string>()
+
+  for (const symbol of publicSymbols.filter((candidate) => !candidate.canonicalId)) {
+    const page = pageForSymbol(symbol, ownerPages)
+    if (!page || pageSources.has(page)) continue
+    const absolutePage = resolve(options.projectRoot, page)
+    if (!existsSync(absolutePage)) continue
+    pageSources.set(page, readFileSync(absolutePage, 'utf8'))
+  }
+  const documentIndexes = await buildMarkdownDocumentIndexes(
+    [...pageSources].map(([id, markdown]) => ({ id, markdown })),
+    options.projectRoot,
+  )
 
   for (const symbol of publicSymbols.filter((candidate) => !candidate.canonicalId)) {
     const page = pageForSymbol(symbol, ownerPages)
@@ -291,11 +282,7 @@ export function generateApiCoverageArtifacts(
       continue
     }
 
-    let headings = headingCache.get(page)
-    if (!headings) {
-      headings = parseHeadings(readFileSync(absolutePage, 'utf8'))
-      headingCache.set(page, headings)
-    }
+    const headings = documentIndexes.get(page)?.headings ?? []
     const matches = headings
       .map((heading) => ({ heading, rank: headingMatchRank(heading, symbol) }))
       .filter(
@@ -371,8 +358,8 @@ export function generateApiCoverageArtifacts(
   }
 }
 
-export function generateApiCoverage(
+export async function generateApiCoverage(
   options: GenerateApiCoverageOptions,
-): ApiCoverage {
-  return generateApiCoverageArtifacts(options).coverage
+): Promise<ApiCoverage> {
+  return (await generateApiCoverageArtifacts(options)).coverage
 }

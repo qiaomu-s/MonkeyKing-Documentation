@@ -16,6 +16,22 @@ export interface HeadingSource {
   readonly markdown: string
 }
 
+export interface MarkdownDocumentSource {
+  readonly id: string
+  readonly markdown: string
+}
+
+export interface MarkdownHeadingRecord {
+  readonly level: number
+  readonly text: string
+  readonly anchor: string
+}
+
+export interface MarkdownDocumentIndex {
+  readonly headings: readonly MarkdownHeadingRecord[]
+  readonly anchors: ReadonlySet<string>
+}
+
 export interface CatalogLinkOptions {
   readonly entries?: readonly ContentEntry[]
   readonly headingIndex?: HeadingIndex
@@ -951,17 +967,71 @@ export function rewriteMarkdownLinks(
 export async function buildHeadingIndex(
   sources: readonly HeadingSource[],
 ): Promise<HeadingIndex> {
-  const renderer = await createMarkdownRenderer(process.cwd())
-  const entries = await Promise.all(
-    sources.map(async ({ entry, markdown }) => {
-      const tokens = renderer.parse(markdown, {})
-      const headings = tokens
-        .filter((token) => token.type === 'heading_open')
-        .map((token) => token.attrGet('id'))
-        .filter((id): id is string => id !== null)
-      return [entry.id, Object.freeze(headings)] as const
-    }),
+  const indexes = await buildMarkdownDocumentIndexes(
+    sources.map(({ entry, markdown }) => ({ id: entry.id, markdown })),
   )
+  return new Map(
+    sources.map(({ entry }) => [
+      entry.id,
+      Object.freeze(
+        (indexes.get(entry.id)?.headings ?? []).map(({ anchor }) => anchor),
+      ),
+    ]),
+  )
+}
 
-  return new Map(entries)
+function htmlAnchors(html: string): string[] {
+  const withoutComments = html.replace(/<!--[\s\S]*?-->/g, '')
+  return [...withoutComments.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map(
+    (match) => match[1],
+  )
+}
+
+export async function buildMarkdownDocumentIndexes(
+  sources: readonly MarkdownDocumentSource[],
+  sourceDirectory = process.cwd(),
+): Promise<ReadonlyMap<string, MarkdownDocumentIndex>> {
+  const renderer = await createMarkdownRenderer(sourceDirectory)
+  const indexes = sources.map(({ id, markdown }) => {
+    const tokens = renderer.parse(markdown, {})
+    const headings: MarkdownHeadingRecord[] = []
+    const anchors = new Set<string>()
+
+    for (let index = 0; index < tokens.length; index += 1) {
+      const token = tokens[index]
+      if (token.type === 'heading_open') {
+        const anchor = token.attrGet('id')
+        if (!anchor) continue
+        const level = Number.parseInt(token.tag.slice(1), 10)
+        const inline = tokens[index + 1]
+        const text =
+          inline?.type === 'inline'
+            ? inline.content.replace(/\s*\{#[^}]+\}\s*$/, '').trim()
+            : ''
+        headings.push({ level, text, anchor })
+        anchors.add(anchor)
+        continue
+      }
+
+      if (token.type === 'html_block') {
+        for (const anchor of htmlAnchors(token.content)) anchors.add(anchor)
+        continue
+      }
+      if (token.type !== 'inline') continue
+      for (const child of token.children ?? []) {
+        if (child.type !== 'html_inline') continue
+        for (const anchor of htmlAnchors(child.content)) anchors.add(anchor)
+      }
+    }
+
+    return [
+      id,
+      {
+        headings: Object.freeze(headings),
+        anchors,
+      },
+    ] as const
+  })
+
+  return new Map(indexes)
 }

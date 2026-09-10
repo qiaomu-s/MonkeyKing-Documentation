@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import Ajv from 'ajv'
+import { buildMarkdownDocumentIndexes } from '../content/markdown-links'
 import type {
   ApiCoverage,
   ApiManifest,
@@ -14,8 +15,14 @@ export interface ApiCheckError {
     | 'manifest-schema'
     | 'coverage-schema'
     | 'source-ref-mismatch'
+    | 'duplicate-module'
     | 'duplicate-symbol'
+    | 'duplicate-asset'
+    | 'duplicate-override'
+    | 'duplicate-rule'
     | 'unknown-symbol'
+    | 'invalid-pattern'
+    | 'batch-mapping'
     | 'duplicate-mapping'
     | 'duplicate-target'
     | 'unmapped-symbol'
@@ -55,97 +62,73 @@ function matches(pattern: string, symbolId: string): boolean {
   return patternToRegExp(pattern).test(symbolId)
 }
 
-function matchesRule(rule: CoverageRule, symbolId: string): boolean {
-  return (
-    rule.patterns.some((pattern) => matches(pattern, symbolId)) &&
-    !(rule.exclude ?? []).some((pattern) => matches(pattern, symbolId))
-  )
-}
-
-function formatAjvErrors(prefix: string, errors: typeof validateManifestSchema.errors): string {
+function formatAjvErrors(
+  prefix: string,
+  errors: typeof validateManifestSchema.errors,
+): string {
   return (errors ?? [])
-    .map((error) => `${prefix}${error.instancePath || '/'} ${error.message ?? ''}`.trim())
+    .map((error) =>
+      `${prefix}${error.instancePath || '/'} ${error.message ?? ''}`.trim(),
+    )
     .join('; ')
 }
 
-export function markdownSlug(raw: string): string {
-  return raw
-    .replace(/<[^>]*>/g, '')
-    .replace(/`([^`]*)`/g, '$1')
-    .trim()
-    .toLowerCase()
-    .replace(/[\u0000-\u001f!"#$%&'()*+,./:;<=>?@[\]\\^`{|}~]/g, '')
-    .replace(/\s+/g, '-')
-}
-
-export function markdownAnchors(markdown: string): ReadonlySet<string> {
-  const anchors = new Set<string>()
-  const explicit = /\bid\s*=\s*["']([^"']+)["']/g
-  let match: RegExpExecArray | null
-  while ((match = explicit.exec(markdown)) !== null) anchors.add(match[1])
-
-  const duplicateCounts = new Map<string, number>()
-  const headings = /^#{1,6}\s+(.+?)\s*#*\s*$/gm
-  while ((match = headings.exec(markdown)) !== null) {
-    const explicitHeading = match[1].match(/\s*\{#([^}]+)\}\s*$/)
-    if (explicitHeading) {
-      anchors.add(explicitHeading[1])
-      continue
+function addDuplicateIdErrors<T extends { readonly id: string }>(
+  items: readonly T[],
+  code:
+    | 'duplicate-module'
+    | 'duplicate-symbol'
+    | 'duplicate-asset'
+    | 'duplicate-override'
+    | 'duplicate-rule',
+  label: string,
+  errors: ApiCheckError[],
+): void {
+  const seen = new Set<string>()
+  for (const item of items) {
+    if (seen.has(item.id)) {
+      errors.push({
+        code,
+        message: `${label} contains duplicate id ${item.id}.`,
+        ...(code === 'duplicate-symbol' ? { symbolId: item.id } : {}),
+        ...(code === 'duplicate-rule' ? { ruleId: item.id } : {}),
+      })
     }
-    const base = markdownSlug(match[1])
-    if (!base) continue
-    const count = duplicateCounts.get(base) ?? 0
-    anchors.add(count === 0 ? base : `${base}-${count}`)
-    duplicateCounts.set(base, count + 1)
+    seen.add(item.id)
   }
-  return anchors
 }
 
-function resolvedTarget(
+function resolvedAliasTarget(
   symbol: ApiSymbol,
-  rule: CoverageRule,
   rulesBySymbol: ReadonlyMap<string, CoverageRule>,
   symbolsById: ReadonlyMap<string, ApiSymbol>,
   visited = new Set<string>(),
 ): string | undefined {
-  if (rule.target) return rule.target
-  if (rule.status !== 'alias' || !symbol.canonicalId) return undefined
-  if (visited.has(symbol.id)) return undefined
+  if (!symbol.canonicalId || visited.has(symbol.id)) return undefined
   visited.add(symbol.id)
   const canonical = symbolsById.get(symbol.canonicalId)
   const canonicalRule = rulesBySymbol.get(symbol.canonicalId)
-  return canonical && canonicalRule
-    ? resolvedTarget(canonical, canonicalRule, rulesBySymbol, symbolsById, visited)
-    : undefined
+  if (!canonical?.public || !canonicalRule) return undefined
+  if (canonicalRule.status === 'alias') {
+    return resolvedAliasTarget(canonical, rulesBySymbol, symbolsById, visited)
+  }
+  if (!['documented', 'external'].includes(canonicalRule.status)) {
+    return undefined
+  }
+  return canonicalRule.target
 }
 
-function resolvesToExcluded(
-  symbol: ApiSymbol,
-  rule: CoverageRule,
-  rulesBySymbol: ReadonlyMap<string, CoverageRule>,
-  symbolsById: ReadonlyMap<string, ApiSymbol>,
-  visited = new Set<string>(),
-): boolean {
-  if (rule.status === 'excluded') return true
-  if (rule.status !== 'alias' || !symbol.canonicalId) return false
-  if (visited.has(symbol.id)) return false
-  visited.add(symbol.id)
-  const canonical = symbolsById.get(symbol.canonicalId)
-  const canonicalRule = rulesBySymbol.get(symbol.canonicalId)
-  return canonical && canonicalRule
-    ? resolvesToExcluded(
-        canonical,
-        canonicalRule,
-        rulesBySymbol,
-        symbolsById,
-        visited,
-      )
-    : false
+interface TargetCheck {
+  readonly symbol: ApiSymbol
+  readonly rule: CoverageRule
+  readonly target: string
+  readonly page: string
+  readonly anchor: string
 }
 
-export function validateApiSurface(
+export async function validateApiSurface(
   options: ValidateApiSurfaceOptions,
-): ApiCheckReport {
+): Promise<ApiCheckReport> {
   const errors: ApiCheckError[] = []
   const manifestValid = validateManifestSchema(options.manifest)
   if (!manifestValid) {
@@ -162,29 +145,53 @@ export function validateApiSurface(
     })
   }
 
-  const manifest = options.manifest as Partial<ApiManifest>
-  const coverage = options.coverage as Partial<ApiCoverage>
-  const symbols = Array.isArray(manifest.symbols) ? manifest.symbols : []
-  const rules = Array.isArray(coverage.rules) ? coverage.rules : []
-  const publicSymbols = symbols.filter((symbol) => symbol.public)
-  const symbolsById = new Map<string, ApiSymbol>()
-
-  for (const symbol of symbols) {
-    if (symbolsById.has(symbol.id)) {
-      errors.push({
-        code: 'duplicate-symbol',
-        message: `Manifest contains duplicate symbol ${symbol.id}.`,
-        symbolId: symbol.id,
-      })
-    }
-    symbolsById.set(symbol.id, symbol)
+  const publicSymbolCount = manifestValid
+    ? (options.manifest as ApiManifest).symbols.filter((symbol) => symbol.public)
+        .length
+    : 0
+  if (!manifestValid || !coverageValid) {
+    return { errors, publicSymbolCount, mappedSymbolCount: 0 }
   }
 
-  if (
-    manifest.source?.commit &&
-    coverage.sourceRef &&
-    manifest.source.commit !== coverage.sourceRef
-  ) {
+  const manifest = options.manifest as ApiManifest
+  const coverage = options.coverage as ApiCoverage
+  const symbols = manifest.symbols
+  const rules = coverage.rules
+  const publicSymbols = symbols.filter((symbol) => symbol.public)
+
+  addDuplicateIdErrors(
+    manifest.modules,
+    'duplicate-module',
+    'Manifest modules',
+    errors,
+  )
+  addDuplicateIdErrors(
+    symbols,
+    'duplicate-symbol',
+    'Manifest symbols',
+    errors,
+  )
+  addDuplicateIdErrors(
+    manifest.assets,
+    'duplicate-asset',
+    'Manifest assets',
+    errors,
+  )
+  addDuplicateIdErrors(
+    manifest.overrides,
+    'duplicate-override',
+    'Manifest overrides',
+    errors,
+  )
+  addDuplicateIdErrors(
+    rules,
+    'duplicate-rule',
+    'Coverage rules',
+    errors,
+  )
+
+  const symbolsById = new Map(symbols.map((symbol) => [symbol.id, symbol]))
+  if (manifest.source.commit !== coverage.sourceRef) {
     errors.push({
       code: 'source-ref-mismatch',
       message:
@@ -195,21 +202,83 @@ export function validateApiSurface(
 
   const matchedRules = new Map<string, CoverageRule[]>()
   for (const rule of rules) {
-    const matchesForRule = publicSymbols.filter((symbol) =>
-      matchesRule(rule, symbol.id),
-    )
-    if (matchesForRule.length === 0) {
+    let validRule = true
+    const included = new Map<string, ApiSymbol>()
+
+    for (const pattern of rule.patterns) {
+      if (pattern === '*') {
+        errors.push({
+          code: 'invalid-pattern',
+          message: `Coverage rule ${rule.id} may not use the catch-all pattern *.`,
+          ruleId: rule.id,
+        })
+        validRule = false
+      }
+      const patternMatches = publicSymbols.filter((symbol) =>
+        matches(pattern, symbol.id),
+      )
+      if (patternMatches.length === 0) {
+        errors.push({
+          code: 'invalid-pattern',
+          message: `Coverage rule ${rule.id} pattern ${pattern} matches no public symbol.`,
+          ruleId: rule.id,
+        })
+        validRule = false
+      }
+      for (const symbol of patternMatches) included.set(symbol.id, symbol)
+    }
+
+    for (const pattern of rule.exclude ?? []) {
+      const excluded = [...included.values()].filter((symbol) =>
+        matches(pattern, symbol.id),
+      )
+      if (excluded.length === 0) {
+        errors.push({
+          code: 'invalid-pattern',
+          message:
+            `Coverage rule ${rule.id} exclude pattern ${pattern} removes no ` +
+            'included public symbol.',
+          ruleId: rule.id,
+        })
+        validRule = false
+      }
+      for (const symbol of excluded) included.delete(symbol.id)
+    }
+
+    if (included.size === 0) {
       errors.push({
         code: 'unknown-symbol',
-        message: `Coverage rule ${rule.id} does not match a public manifest symbol.`,
+        message: `Coverage rule ${rule.id} identifies no public manifest symbol.`,
         ruleId: rule.id,
       })
+      validRule = false
     }
-    for (const symbol of matchesForRule) {
-      const current = matchedRules.get(symbol.id) ?? []
-      current.push(rule)
-      matchedRules.set(symbol.id, current)
+    if (included.size > 1) {
+      errors.push({
+        code: 'batch-mapping',
+        message:
+          `Coverage rule ${rule.id} identifies ${included.size} public symbols; ` +
+          'strict coverage requires one rule per symbol.',
+        ruleId: rule.id,
+      })
+      validRule = false
     }
+    if (rule.status === 'excluded') {
+      errors.push({
+        code: 'invalid-target',
+        message:
+          `Coverage rule ${rule.id} is excluded; strict coverage requires a ` +
+          'real documented, external, or canonical alias target.',
+        ruleId: rule.id,
+      })
+      validRule = false
+    }
+    if (!validRule || included.size !== 1) continue
+
+    const symbol = included.values().next().value as ApiSymbol
+    const current = matchedRules.get(symbol.id) ?? []
+    current.push(rule)
+    matchedRules.set(symbol.id, current)
   }
 
   const rulesBySymbol = new Map<string, CoverageRule>()
@@ -218,7 +287,7 @@ export function validateApiSurface(
     if (matchesForSymbol.length === 0) {
       errors.push({
         code: 'unmapped-symbol',
-        message: `Public symbol ${symbol.id} has no coverage mapping.`,
+        message: `Public symbol ${symbol.id} has no valid coverage mapping.`,
         symbolId: symbol.id,
       })
       continue
@@ -236,14 +305,15 @@ export function validateApiSurface(
     rulesBySymbol.set(symbol.id, matchesForSymbol[0])
   }
 
-  const checkedTargets = new Set<string>()
   const documentedTargets = new Map<string, string>()
-  const anchorsByPage = new Map<string, ReadonlySet<string>>()
+  const targetChecks: TargetCheck[] = []
+  const pageSources = new Map<string, string>()
   for (const symbol of publicSymbols) {
     const rule = rulesBySymbol.get(symbol.id)
     if (!rule) continue
-    if (rule.status === 'excluded') continue
-    if (rule.status === 'alias' && !symbol.canonicalId) {
+
+    const aliasSymbol = Boolean(symbol.canonicalId)
+    if (rule.status === 'alias' && !aliasSymbol) {
       errors.push({
         code: 'invalid-alias',
         message: `Alias coverage rule ${rule.id} matched non-alias ${symbol.id}.`,
@@ -252,28 +322,35 @@ export function validateApiSurface(
       })
       continue
     }
-
-    const target = resolvedTarget(
-      symbol,
-      rule,
-      rulesBySymbol,
-      symbolsById,
-    )
-    if (
-      rule.status === 'alias' &&
-      resolvesToExcluded(symbol, rule, rulesBySymbol, symbolsById)
-    ) {
-      continue
-    }
-    if (!target) {
+    if (rule.status !== 'alias' && aliasSymbol) {
       errors.push({
-        code: 'invalid-target',
-        message: `Coverage rule ${rule.id} does not resolve to a page#anchor target.`,
+        code: 'invalid-alias',
+        message:
+          `Alias symbol ${symbol.id} must use an alias rule and resolve its ` +
+          `canonical symbol ${symbol.canonicalId}.`,
         symbolId: symbol.id,
         ruleId: rule.id,
       })
       continue
     }
+
+    const target =
+      rule.status === 'alias'
+        ? resolvedAliasTarget(symbol, rulesBySymbol, symbolsById)
+        : rule.target
+    if (!target) {
+      errors.push({
+        code: rule.status === 'alias' ? 'invalid-alias' : 'invalid-target',
+        message:
+          rule.status === 'alias'
+            ? `Alias ${symbol.id} does not resolve to an existing public canonical rule.`
+            : `Coverage rule ${rule.id} does not resolve to a page#anchor target.`,
+        symbolId: symbol.id,
+        ruleId: rule.id,
+      })
+      continue
+    }
+
     if (rule.status !== 'alias') {
       const existingSymbolId = documentedTargets.get(target)
       if (existingSymbolId) {
@@ -289,8 +366,6 @@ export function validateApiSurface(
       }
       documentedTargets.set(target, symbol.id)
     }
-    if (checkedTargets.has(target)) continue
-    checkedTargets.add(target)
 
     const targetMatch = target.match(/^(docs\/.+\.md)#([^#]+)$/)
     if (!targetMatch) {
@@ -312,19 +387,30 @@ export function validateApiSurface(
       })
       continue
     }
-    let anchors = anchorsByPage.get(pagePath)
-    if (!anchors) {
-      anchors = markdownAnchors(readFileSync(pagePath, 'utf8'))
-      anchorsByPage.set(pagePath, anchors)
+    if (!pageSources.has(targetMatch[1])) {
+      pageSources.set(targetMatch[1], readFileSync(pagePath, 'utf8'))
     }
-    if (!anchors.has(targetMatch[2])) {
-      errors.push({
-        code: 'missing-anchor',
-        message: `Coverage target anchor does not exist: ${target}.`,
-        symbolId: symbol.id,
-        ruleId: rule.id,
-      })
-    }
+    targetChecks.push({
+      symbol,
+      rule,
+      target,
+      page: targetMatch[1],
+      anchor: targetMatch[2],
+    })
+  }
+
+  const documentIndexes = await buildMarkdownDocumentIndexes(
+    [...pageSources].map(([id, markdown]) => ({ id, markdown })),
+    options.projectRoot,
+  )
+  for (const check of targetChecks) {
+    if (documentIndexes.get(check.page)?.anchors.has(check.anchor)) continue
+    errors.push({
+      code: 'missing-anchor',
+      message: `Coverage target anchor does not exist: ${check.target}.`,
+      symbolId: check.symbol.id,
+      ruleId: check.rule.id,
+    })
   }
 
   return {
@@ -334,8 +420,10 @@ export function validateApiSurface(
   }
 }
 
-export function assertApiSurface(options: ValidateApiSurfaceOptions): ApiCheckReport {
-  const report = validateApiSurface(options)
+export async function assertApiSurface(
+  options: ValidateApiSurfaceOptions,
+): Promise<ApiCheckReport> {
+  const report = await validateApiSurface(options)
   if (report.errors.length === 0) return report
   throw new Error(
     report.errors
