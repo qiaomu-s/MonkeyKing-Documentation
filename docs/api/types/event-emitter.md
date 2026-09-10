@@ -58,6 +58,8 @@ emitter.addListener('data', value => console.log(value));
 
 若立即消费 sticky 数据，该监听器不会加入后续监听列表。
 
+> **固定提交缺陷：**同一事件存在两个或更多 once 监听器时，发送循环会用递增索引修改 `CopyOnWriteArrayList`。前一个监听器删除后，后续删除可能命中错误位置或抛出 `IndexOutOfBoundsException`，后续一次性监听器可能残留。不要依赖一轮 `emit` 安全清除多个 `once` / `prependOnceListener`；需要可靠的一次性语义时应由回调自行用 `removeListener` 注销。
+
 ```js
 emitter.once('ready', value => console.log(value));
 ```
@@ -92,7 +94,7 @@ emitter.prependListener('step', () => console.log('first'));
 - **异常**：监听器达到上限或参数类型不兼容时抛出异常
 - **副作用**：把一次性监听器插入列表开头，并发送 `newListener`
 
-与 `once` 不同，固定提交中的 prepend 路径不会立即消费已保存的 sticky 数据。
+与 `once` 不同，固定提交中的 prepend 路径不会立即消费已保存的 sticky 数据。它仍受 [多个 once 监听器的移除缺陷](#eventemitter-once-eventname-listener) 影响。
 
 ```js
 emitter.prependOnceListener('step', () => console.log('first once'));
@@ -108,7 +110,7 @@ emitter.prependOnceListener('step', () => console.log('first once'));
 - **args** { [...any[]](data-types.md#any) }
 - <ins>**returns**</ins> { [boolean](data-types.md#boolean) } - 是否存在并调度了监听器
 - **异常**：同步桥接执行的监听器异常会进入当前脚本异常流程
-- **副作用**：按当前快照顺序发送事件；一次性监听器在本次发送后移除
+- **副作用**：按当前快照顺序发送事件；单个可正确定位的一次性监听器会在本次发送后移除，但多个一次性监听器可能残留并导致 `IndexOutOfBoundsException`
 
 ```js
 const handled = emitter.emit('data', 42, 'ok');
@@ -158,11 +160,14 @@ emitter.removeListener('data', listener);
 - **[ eventName ]** { [string](data-types.md#string) }
 - <ins>**returns**</ins> { [EventEmitter](#事件发射器-eventemitter) }
 - **异常**：指定事件名无法转换为字符串时抛出异常
-- **副作用**：移除指定事件或全部事件监听器，并为每个移除项发送 `removeListener`；不清除 sticky 数据
+- **副作用**：底层 Java 重载分别移除指定事件或全部事件监听器，并为每个移除项发送 `removeListener`；不清除 sticky 数据
+
+> **`events.__asEmitter__` 适配缺陷：**两个 removeAllListeners Java 重载会以同名属性互相覆盖，反射返回顺序又没有稳定保证。因此适配后的脚本对象最终只保留其中一个签名；不要依赖两种调用形式同时可用。若需要稳定地清空某一事件，请获取 `listeners(eventName)` 快照并逐个调用 `removeListener(eventName, listener)`。
 
 ```js
-emitter.removeAllListeners('data');
-emitter.removeAllListeners();
+for (const listener of emitter.listeners('data')) {
+    emitter.removeListener('data', listener);
+}
 ```
 
 ## [m#] EventEmitter#listeners
@@ -272,7 +277,7 @@ console.log(emitter.defaultMaxListeners()); // 10
 
 ## 获取 EventEmitter 接口
 
-`events.__asEmitter__(object?, thread?)` 是底层适配入口，会把上述 Java 公共方法安装到 Rhino 对象。object 必须是 Rhino `ScriptableObject`；thread 只接受运行时主线程代理或 Java `Thread`。
+`events.__asEmitter__(object?, thread?)` 是底层适配入口，会把上述 Java 公共方法安装到 Rhino 对象。object 必须是 Rhino `ScriptableObject`；thread 只接受运行时主线程代理或 Java `Thread`。同名 Java 重载没有被合并：它们先同时通过属性缺失检查，再依次写入相同属性名，后写入者覆盖先写入者；`removeAllListeners()` 与 `removeAllListeners(eventName)` 因此不能视为可靠共存。
 
 ```js
 const emitter = events.__asEmitter__({});

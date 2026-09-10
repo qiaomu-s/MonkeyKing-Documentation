@@ -109,16 +109,17 @@ monkeyking.restart('@');
 
 **`v6.7.0`**
 
-- **[ scriptsAfterExit ]** { [string](../types/data-types.md#string) | [string](../types/data-types.md#string)[] } - 应用退出流程完成后安排的脚本
+- **[ scriptsAfterExit ]** { [string](../types/data-types.md#string) | [string](../types/data-types.md#string)[] } - 保存为“下次应用启动后执行”的脚本
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：参数超过 1 个或参数既不是字符串、数组也不是 nullish 时抛出异常
 - **权限 / 生命周期**：不需要额外 Android 权限；结束应用进程与当前脚本资源
 
-请求退出 Monkey King 应用。脚本名称规范化规则与 [restart](#restart-scriptsafterrestart) 相同。此方法不同于全局 `exit()`：后者只停止当前脚本引擎。
+请求退出 Monkey King 应用。脚本名称规范化规则与 [restart](#restart-scriptsafterrestart) 相同。传入脚本时只会把名称写入“应用重启后脚本”偏好并退出；它不会自动重启应用，也不会在退出后立即运行这些脚本。只有用户以后再次启动 Monkey King，启动流程才有机会读取并执行该偏好。此方法不同于全局 `exit()`：后者只停止当前脚本引擎。
 
 ```js
 files.write('./before-exit.json', JSON.stringify({ saved: true }));
-monkeyking.exit();
+// 只登记到下次应用启动；本次调用不会安排自动重启。
+monkeyking.exit('after-next-launch.js');
 ```
 
 ## [m] isRootAvailable

@@ -213,7 +213,15 @@ typeof notice.channel; // "object"
 typeof notice.getBuilder; // "function"
 ```
 
-所有 `notice` 调用形式最多接受 3 个参数，并同步向 Android 通知服务提交通知。content/title 重载要求相应位置为字符串，builder 重载最多接受 2 个参数，且其 options 必须是 JavaScript 对象；其他带 options 的重载也会校验 options 所在参数。priority、intent 或渠道配置不合法时抛出异常。固定提交中，无法匹配字符串或 builder 的单个首参数会按空 options 处理并发送默认测试通知。Android 13 及以上若未授予通知权限，系统可能拒绝显示通知。
+所有 `notice` 调用形式最多接受 3 个参数，并同步向 Android 通知服务提交通知。content/title 重载要求相应位置为字符串，builder 重载最多接受 2 个参数，且其 options 必须是 JavaScript 对象；其他带 options 的重载也会校验 options 所在参数。priority、intent 或渠道配置不合法时抛出异常。固定提交中，无法匹配字符串或 builder 的单个首参数会按空 options 处理并发送默认测试通知。若 `POST_NOTIFICATIONS` 权限检查未通过，调用会在提交给 NotificationManager 之前同步抛出 RuntimeException，而不是仅由系统静默拒绝显示。
+
+```js
+try {
+    notice('需要通知权限');
+} catch (error) {
+    console.error(error); // 权限检查失败时在提交前同步到达这里
+}
+```
 
 ### notice(content)
 
@@ -427,18 +435,18 @@ if (!notice.isEnabled()) {
 
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：传入参数或当前通知被阻止时抛出异常
-- **权限 / 副作用**：只检查状态，不弹出授权界面，也不修改系统设置
+- **权限 / 副作用**：通知被阻止时会先尝试启动系统通知设置页，然后抛出异常；不会直接修改系统设置
 
 确保 Monkey King 的通知未被阻止 (not blocked).
 
-当通知被阻止时将抛出 `Exception` 异常.
+当通知被阻止时，`ensureEnabled() 会先尝试打开系统通知设置页，再抛出异常`。因此它不是纯检查接口；只想查询状态时应使用 `isEnabled()`。
 
 ```js
 try {
     notice.ensureEnabled();
     console.log('通知可用');
 } catch (error) {
-    console.warn('请先启用通知');
+    console.warn('已尝试打开通知设置，请在设置中启用通知');
 }
 ```
 
@@ -449,13 +457,14 @@ try {
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-- **异常**：传入参数，或系统无法启动对应设置 Activity 时可能抛出异常
-- **副作用**：启动 Monkey King 的系统通知设置页面，使应用界面离开当前页面
+- **异常**：仅传入参数时由参数守卫抛出；设置页启动失败会被 startSafely 吞掉，不会从此方法传播
+- **副作用**：尝试启动 Monkey King 的系统通知设置页面；启动失败时静默返回 `undefined`
 
 跳转至 Monkey King 的通知设置页面.
 
 ```js
 notice.launchSettings();
+// 返回 undefined 不代表设置页一定成功打开。
 ```
 
 ## [m] cancel
@@ -576,7 +585,7 @@ notice.config({
 **`6.3.0`** **`Getter`**
 
 - **&lt;get&gt;** { [NoticeBuilder](../types/notice-builder.md) }
-- **异常**：无
+- **异常**：notice.builder 与 notice.getBuilder() 相同；当前 `defaultPriority` 不是合法数字或 `default` / `low` / `min` / `high` / `max` 时会抛出异常
 - **权限 / 副作用**：读取只创建内存中的新 builder，不发送通知，也不请求权限
 
 每次读取都等价于重新调用 `notice.getBuilder()`，不会复用之前的构建状态。
@@ -585,6 +594,13 @@ notice.config({
 const first = notice.builder;
 const second = notice.builder;
 console.log(first !== second); // true
+
+notice.config({ defaultPriority: 'invalid-priority' });
+try {
+    void notice.builder; // 抛出 Unknown priority
+} finally {
+    notice.config({ defaultPriority: null }); // 恢复内置默认值
+}
 ```
 
 ## [p+] channel
@@ -675,7 +691,7 @@ notice.channel.create({ id: 'my_channel_id' });
 - **异常**：参数超过 2 个、渠道 ID 或 options 不合法时抛出异常
 - **副作用**：渠道不存在时写入 Android 通知渠道设置；已存在时不修改
 
-仅当指定渠道不存在时创建渠道。第一个参数也可以直接是 options 对象，此时从其 `channelId` 读取 ID。此方法用于避免重复提交已有渠道；它不会把新 options 强制覆盖到已有渠道。
+仅当指定渠道不存在时创建渠道。第一个参数也可以直接是 options 对象，此时优先从其 `channelId` 读取 ID；缺少 channelId 时回退到当前默认渠道 ID。此方法用于避免重复提交已有渠道；它不会把新 options 强制覆盖到已有渠道。
 
 ```js
 notice.channel.createIfNeeded('sync-result', {
@@ -689,7 +705,7 @@ notice('同步完成', { channelId: 'sync-result' });
 
 **`6.3.0`** **`Overload 2/2`**
 
-- **options** { [NoticeChannelOptions](../types/notice-channel-options.md) } - 必须通过 `channelId` 提供渠道 ID
+- **options** { [NoticeChannelOptions](../types/notice-channel-options.md) } - 可通过 `channelId` 提供渠道 ID；省略时使用当前默认渠道 ID
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常 / 副作用**：与上一重载相同
 
@@ -698,6 +714,9 @@ notice.channel.createIfNeeded({
     channelId: 'download-result',
     name: '下载结果',
 });
+
+// 未写 channelId 时不会因缺少 ID 抛出，而是使用当前默认渠道 ID。
+notice.channel.createIfNeeded({ name: '默认脚本渠道' });
 ```
 
 ### [m] contains

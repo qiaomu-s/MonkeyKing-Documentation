@@ -375,13 +375,18 @@ Promise.resolve('ok').finally(() => console.log('finished'));
 
 **`≤ 6.6.4`** **`Continuation`**
 
-- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-- **异常**：Promise 拒绝或 continuation 未启用时抛出异常
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 完成值；非 nullish 的拒绝原因会在记录 / Toast 后作为普通恢复值返回
+- **异常**：continuation 未启用时抛出异常；nullish 拒绝会使内部 `resumeError` 在恢复前抛出，当前等待可能一直保持等待
 - **线程 / 副作用**：暂停当前 continuation，直至 Promise 完成
+
+固定提交的 `Promise#await()` 复用 `continuation.await()`：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 `await` 语义。
 
 ```js
 const value = Promise.resolve(42).await();
 console.log(value); // 42
+
+const recovered = Promise.reject(new Error('failed')).await();
+console.log(recovered.message); // failed；同时会记录 / Toast
 ```
 
 ### Promise#wait()
@@ -389,8 +394,10 @@ console.log(value); // 42
 **`≤ 6.6.4`** **`Blocking`**
 
 - <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-- **异常**：Promise 拒绝时重新抛出原因
+- **异常**：实现只执行 `if (resultObj.error)`，因此只有真值拒绝原因才会抛出
 - **线程 / 副作用**：阻塞当前线程直到完成；不得在 UI 线程使用
+
+拒绝原因为 `false`、`0`、空字符串、`null` 或 `undefined` 时，真值判断把它当作没有错误，随后读取不存在的 `result` 字段并返回 `undefined`。不要用假值作为需要由 `Promise#wait()` 传播的拒绝原因。
 
 ```js
 const result = Promise.resolve(21)
@@ -398,6 +405,8 @@ const result = Promise.resolve(21)
     .wait();
 
 console.log(result); // 42
+
+console.log(Promise.reject(false).wait()); // undefined
 ```
 
 ### Promise.resolve(value?)
@@ -505,17 +514,14 @@ console.log(adapter.get()); // ready
 
 - **error** { [any](../types/data-types.md#any) }
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-- **异常**：UI continuation 路径不接受 nullish 错误；重复完成也可能失败
-- **副作用**：以失败值完成适配器并唤醒等待方
+- **异常**：UI continuation 路径不接受 nullish 错误，并会在发出恢复信号前抛出；重复完成也可能失败
+- **副作用**：非 UI 路径保存错误并唤醒阻塞方；当 `get()` 已在等待时，UI continuation 路径会记录 / Toast 非 nullish 错误，再把错误对象作为普通恢复值交给 `get()`
 
 ```js
 const adapter = new ResultAdapter();
 setTimeout(() => adapter.setError(new Error('failed')), 20);
-try {
-    adapter.get();
-} catch (error) {
-    console.warn(error.message);
-}
+const outcome = adapter.get();
+// UI continuation 路径：outcome 是 Error 对象；非 UI 阻塞路径：get() 会抛出该 Error。
 ```
 
 ### ResultAdapter#callback()
@@ -540,8 +546,10 @@ console.log(adapter.get()); // ready
 **`≤ 6.6.4`**
 
 - <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-- **异常**：适配器以错误完成时重新抛出该错误
+- **异常**：非 UI 阻塞路径会重新抛出非 `null` 错误；UI continuation 路径不会重新抛出非 nullish 错误
 - **线程 / 副作用**：未提前完成时暂停 continuation 或阻塞当前线程
+
+在 UI continuation 路径中，当 `get()` 已暂停调用栈后，非 nullish 的错误会被记录 / Toast 并作为普通恢复值返回；nullish `setError` 会在恢复前抛出，使已进入 `get()` 的调用可能一直保持等待。非 UI 路径使用 `ContinuationResult.getOrThrow`，会抛出任何非 `null` 错误值。
 
 ```js
 const adapter = new ResultAdapter();
@@ -582,11 +590,19 @@ ResultAdapter.promise(promiseAdapter)
 
 - **promise** { `Promise | ScriptPromiseAdapter` }
 - <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-- **异常**：Promise 拒绝时重新抛出原因
+- **异常**：取决于所选等待路径，不能保证所有拒绝都会重新抛出
 - **线程 / 副作用**：continuation 启用时调用 `await`，否则调用阻塞式 `wait`
+
+`ResultAdapter.wait` 不会统一两种错误语义：continuation 启用时沿用 UI continuation 路径，非 nullish 拒绝会作为普通恢复值返回，nullish 拒绝可能一直保持等待；未启用时沿用 `Promise#wait()`，只有真值拒绝原因才会抛出，假值拒绝返回 `undefined`。
 
 ```js
 console.log(ResultAdapter.wait(Promise.resolve(42))); // 42
+
+if (continuation.enabled) {
+    console.log(ResultAdapter.wait(Promise.reject('failed'))); // failed（并已记录 / Toast）
+} else {
+    console.log(ResultAdapter.wait(Promise.reject(false))); // undefined
+}
 ```
 
 ## 内置第三方入口
