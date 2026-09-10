@@ -386,6 +386,26 @@ describe('deterministic Markdown migration', () => {
     )
   })
 
+  test('rewrites legacy application short domains to the canonical source repository', () => {
+    const input = [
+      'Project: https://project.autojs6.com',
+      'Pull request: https://pr.autojs6.com/123',
+      'Release: https://download.autojs6.com/v6.7.0',
+      'Issues: https://issues.autojs6.com/456',
+      'Extension: https://vscext-project.autojs6.com',
+    ].join('\n')
+
+    expect(applyBrandPolicy(input, { current: fixtureCurrent })).toBe(
+      [
+        'Project: https://github.com/qiaomu-s/AutoJs6',
+        'Pull request: https://github.com/qiaomu-s/AutoJs6/pull/123',
+        'Release: https://github.com/qiaomu-s/AutoJs6/releases/v6.7.0',
+        'Issues: https://github.com/qiaomu-s/AutoJs6/issues/456',
+        'Extension: https://github.com/qiaomu-s/AutoJs6',
+      ].join('\n'),
+    )
+  })
+
   test.each(['AutoJs', 'AutoJsPro', 'AutoJs-Docs', 'AutoJs-foo'])(
     'rejects an unapproved AutoJs-prefixed form: %s',
     (legacyBrand) => {

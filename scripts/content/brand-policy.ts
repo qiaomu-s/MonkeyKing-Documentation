@@ -226,27 +226,27 @@ function replaceKnownBrandUrls(line: string): string {
     )
     .replace(
       /https?:\/\/project\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing',
+      'https://github.com/qiaomu-s/AutoJs6',
     )
     .replace(
       /https?:\/\/pr\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing/pull',
+      'https://github.com/qiaomu-s/AutoJs6/pull',
     )
     .replace(
       /https?:\/\/download\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing/releases',
+      'https://github.com/qiaomu-s/AutoJs6/releases',
     )
     .replace(
       /https?:\/\/changelog\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing/releases',
+      'https://github.com/qiaomu-s/AutoJs6/releases',
     )
     .replace(
       /https?:\/\/issues\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing/issues',
+      'https://github.com/qiaomu-s/AutoJs6/issues',
     )
     .replace(
       /https?:\/\/vscext-project\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing',
+      'https://github.com/qiaomu-s/AutoJs6',
     )
     .replace(/org\/autojs\/autojs6/g, 'com/qiaomu/monkeyking')
     .replace(/org\/autojs\/autojs/g, 'com/qiaomu/monkeyking')
