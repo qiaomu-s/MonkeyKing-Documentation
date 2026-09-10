@@ -32,6 +32,13 @@ import {
 } from '../scripts/json/legacy-parser'
 
 const fixtureDirectory = resolve(process.cwd(), 'tests/fixtures/json')
+const legacyCorpusStructureFixturePath = resolve(
+  fixtureDirectory,
+  'legacy-corpus-structure.json',
+)
+const legacyCorpusStructureBaseSha =
+  'f7de717b3a6d086003462772712aaa479eeda2e9'
+const legacyCorpusStructureAlgorithm = 'recursive-json-structure-v1'
 const retiredJsonFilenames = [
   '404.json',
   'coverpage.json',
@@ -52,6 +59,40 @@ const expectedCommittedJsonFilenames = [
 
 function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
+}
+
+function jsonStructureSignature(value: unknown): string {
+  if (value === null) return 'null'
+  if (Array.isArray(value)) {
+    return JSON.stringify([
+      'array',
+      value.length,
+      value.map((child) => jsonStructureSignature(child)),
+    ])
+  }
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>
+    return JSON.stringify([
+      'object',
+      Object.keys(record)
+        .sort()
+        .map((key) => [key, jsonStructureSignature(record[key])]),
+    ])
+  }
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return typeof value
+  }
+  throw new Error(`Unsupported JSON value type: ${typeof value}`)
+}
+
+function jsonStructureSha256(value: unknown): string {
+  return createHash('sha256')
+    .update(jsonStructureSignature(value))
+    .digest('hex')
 }
 
 function createTemporaryJsonProject(): string {
@@ -187,6 +228,114 @@ describe('legacy JSON compatibility', () => {
       'OcrOptions',
     )
     expect(ocrOptions.modules?.[0]?.textRaw).toBe('[p?] region')
+  })
+
+  test('uses a stable recursive JSON structure signature', () => {
+    const baseline = {
+      modules: [{ name: 'old', params: [1, true, null] }],
+    }
+    const textOnlyChange = {
+      modules: [{ name: 'new', params: [99, false, null] }],
+    }
+
+    expect(jsonStructureSha256(textOnlyChange)).toBe(
+      jsonStructureSha256(baseline),
+    )
+    expect(
+      jsonStructureSha256({
+        modules: [{ renamed: 'old', params: [1, true, null] }],
+      }),
+    ).not.toBe(jsonStructureSha256(baseline))
+    expect(
+      jsonStructureSha256({
+        modules: [{ name: 'old', params: [true, 1, null] }],
+      }),
+    ).not.toBe(jsonStructureSha256(baseline))
+    expect(
+      jsonStructureSha256({
+        modules: [{ name: 'old', params: [1, true] }],
+      }),
+    ).not.toBe(jsonStructureSha256(baseline))
+  })
+
+  test('matches the fixed BASE corpus structure using freshly generated JSON', () => {
+    expect(existsSync(legacyCorpusStructureFixturePath)).toBe(true)
+    if (!existsSync(legacyCorpusStructureFixturePath)) return
+
+    const fixture = JSON.parse(
+      readFileSync(legacyCorpusStructureFixturePath, 'utf8'),
+    ) as {
+      readonly metadata: {
+        readonly baseSha: string
+        readonly algorithm: string
+        readonly hash: string
+        readonly sharedFileCount: number
+        readonly baseOnlyFiles: readonly string[]
+        readonly currentOnlyFiles: readonly string[]
+      }
+      readonly files: Readonly<Record<string, string>>
+    }
+    expect(Object.keys(fixture).sort()).toEqual(['files', 'metadata'])
+    expect(fixture.metadata).toEqual({
+      baseSha: legacyCorpusStructureBaseSha,
+      algorithm: legacyCorpusStructureAlgorithm,
+      hash: 'sha256',
+      sharedFileCount: 112,
+      baseOnlyFiles: [
+        '404.json',
+        'coverpage.json',
+        'sidebar.json',
+        'toc.json',
+        'util.json',
+      ],
+      currentOnlyFiles: ['monkeyking.json'],
+    })
+
+    const fixtureFilenamesInOrder = Object.keys(fixture.files)
+    const fixtureFilenames = [...fixtureFilenamesInOrder].sort()
+    expect(fixtureFilenamesInOrder).toEqual(fixtureFilenames)
+    expect(fixtureFilenames).toHaveLength(112)
+    expect(
+      fixtureFilenames.every((filename) =>
+        /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\.json$/.test(filename),
+      ),
+    ).toBe(true)
+    expect(
+      Object.values(fixture.files).every((digest) =>
+        /^[0-9a-f]{64}$/.test(digest),
+      ),
+    ).toBe(true)
+
+    const temporaryRoot = createTemporaryJsonProject()
+    try {
+      buildLegacyJson(temporaryRoot)
+      const generatedJsonDirectory = resolve(temporaryRoot, 'json')
+      const generatedFilenames = readdirSync(generatedJsonDirectory)
+        .filter((filename) => filename.endsWith('.json'))
+        .sort()
+
+      expect(
+        generatedFilenames.filter(
+          (filename) => !fixtureFilenames.includes(filename),
+        ),
+      ).toEqual(['monkeyking.json'])
+      expect(
+        fixtureFilenames.filter(
+          (filename) => !generatedFilenames.includes(filename),
+        ),
+      ).toEqual([])
+
+      for (const filename of fixtureFilenames) {
+        const generated = JSON.parse(
+          readFileSync(resolve(generatedJsonDirectory, filename), 'utf8'),
+        ) as unknown
+        expect(jsonStructureSha256(generated), filename).toBe(
+          fixture.files[filename],
+        )
+      }
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
   })
 
   test('rejects active Markdown YAML blocks without adding a YAML parser', () => {

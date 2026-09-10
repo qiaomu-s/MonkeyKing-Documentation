@@ -15,6 +15,7 @@ type PackageJson = {
 }
 
 const packageJsonPath = resolve(process.cwd(), 'package.json')
+const packageLockPath = resolve(process.cwd(), 'package-lock.json')
 
 function readPackageJson(): PackageJson {
   if (!existsSync(packageJsonPath)) {
@@ -34,8 +35,22 @@ describe('root toolchain contract', () => {
       version: '2.0.0',
       private: true,
       type: 'module',
-      engines: { node: '>=22 <23' },
+      engines: { node: '>=22.9 <23' },
       packageManager: 'npm@11.17.0',
+    })
+  })
+
+  test('keeps the package-lock root runtime metadata aligned', () => {
+    const packageLock = JSON.parse(
+      readFileSync(packageLockPath, 'utf8'),
+    ) as {
+      readonly packages?: Readonly<
+        Record<string, { readonly engines?: Readonly<Record<string, string>> }>
+      >
+    }
+
+    expect(packageLock.packages?.['']?.engines).toEqual({
+      node: '>=22.9 <23',
     })
   })
 
