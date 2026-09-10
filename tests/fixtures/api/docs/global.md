@@ -1,0 +1,3 @@
+# Global API
+
+Fixture documentation.
