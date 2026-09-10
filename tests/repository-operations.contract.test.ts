@@ -24,13 +24,13 @@ function expectInOrder(source: string, values: readonly string[]): void {
 }
 
 describe('repository operations contract', () => {
-  test('runs the complete Node 22 quality gate for pull requests and master', () => {
+  test('runs the complete Node 22.23.2 quality gate for pull requests and master', () => {
     const workflow = readOptionalText(workflowPath)
 
     expect(existsSync(workflowPath), 'Pages workflow must exist').toBe(true)
     expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
     expect(workflow).toMatch(/pull_request:\s*\n\s+branches:\s*\n\s+- master/)
-    expect(workflow).toContain('node-version: 22')
+    expect(workflow).toContain('node-version: 22.23.2')
     expect(workflow).toContain('uses: actions/checkout@v7')
     expect(workflow).toContain('uses: actions/setup-node@v7')
     expect(workflow).toMatch(
@@ -79,7 +79,7 @@ describe('repository operations contract', () => {
     expect(readme).toContain('MonkeyKing-Documentation')
     expect(readme).toContain('qiaomu-s/MonkeyKing-Documentation')
     expect(readme).toContain('https://docs.monkeyking.com')
-    expect(readme).toContain('Node.js 22')
+    expect(readme).toContain('Node.js 22.23.2')
     expect(readme).toContain('npm@11.17.0')
     for (const command of [
       'npm ci',

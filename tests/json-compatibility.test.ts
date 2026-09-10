@@ -36,6 +36,7 @@ const legacyCorpusStructureFixturePath = resolve(
   fixtureDirectory,
   'legacy-corpus-structure.json',
 )
+const frozenFixtureDirectory = resolve(fixtureDirectory, 'frozen')
 const legacyCorpusStructureBaseSha =
   'f7de717b3a6d086003462772712aaa479eeda2e9'
 const legacyCorpusStructureAlgorithm = 'recursive-json-structure-v1'
@@ -95,28 +96,32 @@ function jsonStructureSha256(value: unknown): string {
     .digest('hex')
 }
 
-function createTemporaryJsonProject(): string {
-  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-build-'))
-  mkdirSync(resolve(temporaryRoot, 'json'), { recursive: true })
-
+function copyMarkdownInputs(sourceRoot: string, destinationRoot: string): void {
   for (const entry of contentEntries) {
-    const source = resolveEntryMarkdownPath(process.cwd(), entry)
-    const repositoryPath = source === resolve(process.cwd(), entry.source)
+    const source = resolveEntryMarkdownPath(sourceRoot, entry)
+    const repositoryPath = source === resolve(sourceRoot, entry.source)
       ? entry.source
       : entry.legacySource
-    const destination = resolve(temporaryRoot, repositoryPath)
+    const destination = resolve(destinationRoot, repositoryPath)
     mkdirSync(dirname(destination), { recursive: true })
     copyFileSync(source, destination)
   }
+}
 
-  for (const filename of readdirSync(resolve(process.cwd(), 'json'))) {
-    if (filename.endsWith('.json')) {
-      copyFileSync(
-        resolve(process.cwd(), 'json', filename),
-        resolve(temporaryRoot, 'json', filename),
-      )
-    }
+function createTemporaryJsonProject(sourceRoot = process.cwd()): string {
+  const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-build-'))
+  mkdirSync(resolve(temporaryRoot, 'json'), { recursive: true })
+
+  copyMarkdownInputs(sourceRoot, temporaryRoot)
+
+  for (const filename of Object.keys(frozenJsonHashes).sort()) {
+    copyFileSync(
+      resolve(frozenFixtureDirectory, filename),
+      resolve(temporaryRoot, 'json', filename),
+    )
   }
+
+  buildLegacyJson(temporaryRoot)
 
   for (const filename of retiredJsonFilenames) {
     writeFileSync(resolve(temporaryRoot, 'json', filename), '{}')
@@ -183,6 +188,57 @@ describe('legacy JSON compatibility', () => {
     expect(frozenLegacyJsonManifest.every((entry) => Object.isFrozen(entry))).toBe(
       true,
     )
+  })
+
+  test('provides exactly the BASE frozen JSON fixtures', () => {
+    expect(existsSync(frozenFixtureDirectory)).toBe(true)
+    if (!existsSync(frozenFixtureDirectory)) return
+
+    const fixtureFilenames = readdirSync(frozenFixtureDirectory).sort()
+    const expectedFilenames = Object.keys(frozenJsonHashes).sort()
+    expect(fixtureFilenames).toEqual(expectedFilenames)
+    expect(fixtureFilenames).toHaveLength(10)
+
+    for (const [filename, expectedHash] of Object.entries(frozenJsonHashes)) {
+      const fixturePath = resolve(frozenFixtureDirectory, filename)
+      const committedPath = resolve(process.cwd(), 'json', filename)
+      expect(sha256(fixturePath), filename).toBe(expectedHash)
+      expect(readFileSync(fixturePath), filename).toEqual(
+        readFileSync(committedPath),
+      )
+    }
+  })
+
+  test('ignores active and frozen JSON beside an alternate Markdown corpus', () => {
+    const sourceRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-source-'))
+    let temporaryRoot: string | undefined
+
+    try {
+      copyMarkdownInputs(process.cwd(), sourceRoot)
+      mkdirSync(resolve(sourceRoot, 'json'), { recursive: true })
+      writeFileSync(
+        resolve(sourceRoot, 'json/overview.json'),
+        '{"poisoned":"active"}',
+      )
+      writeFileSync(
+        resolve(sourceRoot, 'json/accessibilityActionsType.json'),
+        '{"poisoned":"frozen"}',
+      )
+
+      temporaryRoot = createTemporaryJsonProject(sourceRoot)
+      const jsonDirectory = resolve(temporaryRoot, 'json')
+      expect(
+        readFileSync(resolve(jsonDirectory, 'overview.json'), 'utf8'),
+      ).not.toContain('poisoned')
+      expect(
+        sha256(resolve(jsonDirectory, 'accessibilityActionsType.json')),
+      ).toBe(frozenJsonHashes['accessibilityActionsType.json'])
+    } finally {
+      if (temporaryRoot) {
+        rmSync(temporaryRoot, { recursive: true, force: true })
+      }
+      rmSync(sourceRoot, { recursive: true, force: true })
+    }
   })
 
   test('preserves the legacy parser golden behavior', () => {

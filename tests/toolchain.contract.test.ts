@@ -16,6 +16,10 @@ type PackageJson = {
 
 const packageJsonPath = resolve(process.cwd(), 'package.json')
 const packageLockPath = resolve(process.cwd(), 'package-lock.json')
+const nvmrcPath = resolve(process.cwd(), '.nvmrc')
+const workflowPath = resolve(process.cwd(), '.github/workflows/pages.yml')
+const readmePath = resolve(process.cwd(), 'README.md')
+const pinnedNodeVersion = '22.23.2'
 
 function readPackageJson(): PackageJson {
   if (!existsSync(packageJsonPath)) {
@@ -52,6 +56,16 @@ describe('root toolchain contract', () => {
     expect(packageLock.packages?.['']?.engines).toEqual({
       node: '>=22.9 <23',
     })
+  })
+
+  test('pins the same Node runtime for local use, CI, and documentation', () => {
+    expect(readFileSync(nvmrcPath, 'utf8')).toBe(`${pinnedNodeVersion}\n`)
+    expect(readFileSync(workflowPath, 'utf8')).toContain(
+      `node-version: ${pinnedNodeVersion}`,
+    )
+    expect(readFileSync(readmePath, 'utf8')).toContain(
+      `Node.js ${pinnedNodeVersion}`,
+    )
   })
 
   test('pins the documentation runtime dependencies exactly', () => {

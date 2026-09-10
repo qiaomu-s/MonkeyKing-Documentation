@@ -11,8 +11,8 @@ Monkey King 的官方文档仓库。站点使用 VitePress 构建，源码仓库
 
 ## 本地开发
 
-仓库要求 Node.js 22（见 `.nvmrc`）和 `npm@11.17.0`。切换到正确的 Node.js
-版本并确认 npm 版本后，使用锁文件安装依赖：
+仓库使用 Node.js 22.23.2（见 `.nvmrc`）和 `npm@11.17.0`；`package.json`
+声明支持 `>=22.9 <23`。切换到正确的 Node.js 版本并确认 npm 版本后，使用锁文件安装依赖：
 
 ```bash
 nvm use
