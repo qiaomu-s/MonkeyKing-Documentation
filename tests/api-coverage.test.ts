@@ -120,7 +120,7 @@ describe('API coverage generator', () => {
     expect(coverage.sourceRef).toBe(
       '1111111111111111111111111111111111111111',
     )
-    expect(coverage.rules).toHaveLength(1)
+    expect(coverage.rules).toHaveLength(3)
     expect(
       coverage.rules.every(
         (rule: { patterns: string[] }) => rule.patterns.length === 1,
@@ -130,16 +130,188 @@ describe('API coverage generator', () => {
       status: 'documented',
       target: 'docs/alpha.md#run',
     })
-    expect(rules.has('module:alpha')).toBe(false)
+    expect(rules.get('module:alpha')).toMatchObject({
+      status: 'documented',
+      target: 'docs/alpha.md#alpha-fixture',
+    })
     expect(rules.has('alpha.missing')).toBe(false)
-    expect(rules.has('alias:$alpha')).toBe(false)
+    expect(rules.get('alias:$alpha')).toMatchObject({ status: 'alias' })
+    expect(artifacts.gaps).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ symbolId: 'alpha.missing' }),
+      ]),
+    )
+    expect(artifacts.gaps).toHaveLength(1)
+  })
+
+  test('prefers the stable encoded api-symbol anchor over heading heuristics', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.symbols = manifest.symbols.filter(
+      ({ id }: { id: string }) => id === 'module:alpha',
+    ) as typeof manifest.symbols
+    writeFileSync(
+      resolve(projectRoot, 'docs/alpha.md'),
+      [
+        '<a id="api-symbol-bW9kdWxlOmFscGhh"></a>',
+        '',
+        '# First title',
+        '',
+        '# Conflicting title',
+      ].join('\n'),
+    )
+
+    expect(generator.apiSymbolAnchorId('module:alpha')).toBe(
+      'api-symbol-bW9kdWxlOmFscGhh',
+    )
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { alpha: 'docs/alpha.md' },
+    })
+
+    expect(artifacts.gaps).toEqual([])
+    expect(artifacts.coverage.rules).toEqual([
+      expect.objectContaining({
+        patterns: ['module:alpha'],
+        target: 'docs/alpha.md#api-symbol-bW9kdWxlOmFscGhh',
+      }),
+    ])
+  })
+
+  test('keeps an exact nested-module section ahead of the page H1', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.symbols = [
+      {
+        ...manifest.symbols.find(
+          ({ id }: { id: string }) => id === 'module:alpha',
+        )!,
+        id: 'module:alpha.nested',
+        owner: 'alpha.nested',
+        name: 'nested',
+      },
+    ] as typeof manifest.symbols
+    writeFileSync(
+      resolve(projectRoot, 'docs/alpha.md'),
+      ['# Alpha API', '', '## nested'].join('\n'),
+    )
+
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { alpha: 'docs/alpha.md' },
+    })
+
+    expect(artifacts.gaps).toEqual([])
+    expect(artifacts.coverage.rules).toEqual([
+      expect.objectContaining({
+        patterns: ['module:alpha.nested'],
+        target: 'docs/alpha.md#nested',
+      }),
+    ])
+  })
+
+  test('maps MIME constants only when their generated compatibility anchor exists', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.modules = []
+    manifest.symbols = [
+      {
+        id: 'mime.APPLICATION_JSON',
+        owner: 'mime',
+        name: 'APPLICATION_JSON',
+        kind: 'property',
+        public: true,
+        source: { path: 'Mime.kt', line: 1 },
+        annotations: [],
+        signatures: [],
+        overloads: [],
+      },
+    ] as typeof manifest.symbols
+    writeFileSync(
+      resolve(projectRoot, 'docs/mime.md'),
+      [
+        '# MIME',
+        '',
+        '<a id="mime-constant-application-json"></a>',
+      ].join('\n'),
+    )
+
+    const mapped = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { mime: 'docs/mime.md' },
+    })
+    expect(mapped.gaps).toEqual([])
+    expect(mapped.coverage.rules).toEqual([
+      expect.objectContaining({
+        patterns: ['mime.APPLICATION_JSON'],
+        target: 'docs/mime.md#mime-constant-application-json',
+      }),
+    ])
+
+    writeFileSync(resolve(projectRoot, 'docs/mime.md'), '# MIME\n')
+    const missing = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: { mime: 'docs/mime.md' },
+    })
+    expect(missing.coverage.rules).toEqual([])
+    expect(missing.gaps).toEqual([
+      expect.objectContaining({ symbolId: 'mime.APPLICATION_JSON' }),
+    ])
+  })
+
+  test('keeps module targets unique when owners share one canonical page', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const manifest = fixtureManifest()
+    manifest.symbols = [
+      manifest.symbols.find(({ id }: { id: string }) => id === 'module:alpha')!,
+      {
+        ...manifest.symbols.find(
+          ({ id }: { id: string }) => id === 'module:alpha',
+        )!,
+        id: 'module:beta',
+        owner: 'beta',
+        name: 'beta',
+      },
+    ] as typeof manifest.symbols
+    writeFileSync(resolve(projectRoot, 'docs/alpha.md'), '# Shared API\n')
+
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+      ownerPages: {
+        alpha: 'docs/alpha.md',
+        beta: 'docs/alpha.md',
+      },
+    })
+
+    expect(artifacts.coverage.rules).toEqual([])
     expect(artifacts.gaps).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ symbolId: 'module:alpha' }),
-        expect.objectContaining({ symbolId: 'alpha.missing' }),
-        expect.objectContaining({ symbolId: 'alias:$alpha' }),
+        expect.objectContaining({ symbolId: 'module:beta' }),
       ]),
     )
+    expect(artifacts.gaps).toHaveLength(2)
   })
 
   test('produces valid coverage when every public symbol has a real section', async () => {
@@ -255,9 +427,17 @@ describe('API coverage generator', () => {
     ) as typeof manifest.symbols
     writeFileSync(
       resolve(projectRoot, 'docs/alpha.md'),
-      ['# Alpha', '', '```md', '## Run', '```', '', '<!-- ## Run -->'].join(
-        '\n',
-      ),
+      [
+        '# Alpha',
+        '',
+        '```md',
+        '## Run',
+        '<a id="api-symbol-YWxwaGEucnVu"></a>',
+        '```',
+        '',
+        '<!-- ## Run -->',
+        '<!-- <a id="api-symbol-YWxwaGEucnVu"></a> -->',
+      ].join('\n'),
     )
 
     const artifacts = await generator.generateApiCoverageArtifacts({

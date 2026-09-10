@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import {
@@ -139,12 +140,46 @@ function normalizedHeading(text: string): string {
     .trim()
 }
 
+export function apiSymbolAnchorId(symbolId: string): string {
+  return `api-symbol-${Buffer.from(symbolId, 'utf8').toString('base64url')}`
+}
+
+function mimeConstantAnchorId(symbol: ApiSymbol): string | undefined {
+  if (
+    symbol.owner !== 'mime' ||
+    symbol.kind !== 'property' ||
+    !/^[A-Z][A-Z0-9_]*$/.test(symbol.name) ||
+    symbol.id !== `mime.${symbol.name}`
+  ) {
+    return undefined
+  }
+  return `mime-constant-${symbol.name.toLowerCase().replaceAll('_', '-')}`
+}
+
+function explicitSymbolAnchor(
+  symbol: ApiSymbol,
+  anchors: ReadonlySet<string>,
+): string | undefined {
+  const apiAnchor = apiSymbolAnchorId(symbol.id)
+  if (anchors.has(apiAnchor)) return apiAnchor
+  const mimeAnchor = mimeConstantAnchorId(symbol)
+  return mimeAnchor && anchors.has(mimeAnchor) ? mimeAnchor : undefined
+}
+
 function headingMatchRank(
   heading: HeadingRecord,
   symbol: ApiSymbol,
+  allowModuleH1: boolean,
 ): number | undefined {
-  if (heading.level === 1) return undefined
   const text = normalizedHeading(heading.text)
+  if (symbol.kind === 'module') {
+    const exactName = text.localeCompare(symbol.name, 'en', {
+      sensitivity: 'accent',
+    }) === 0
+    if (exactName && heading.level === 2) return 0
+    return allowModuleH1 && heading.level === 1 ? 1 : undefined
+  }
+  if (heading.level === 1) return undefined
   const escapedName = symbol.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const member = new RegExp(
     `(?:^|[A-Za-z_$][A-Za-z0-9_$]*\\.)${escapedName}(?=\\s*(?:\\(|\\[|$))`,
@@ -152,17 +187,11 @@ function headingMatchRank(
   )
   if (!member.test(text)) return undefined
 
-  const exactName = text.localeCompare(symbol.name, 'en', {
-    sensitivity: 'accent',
-  }) === 0
   const callable = new RegExp(
     `(?:^|[A-Za-z_$][A-Za-z0-9_$]*\\.)${escapedName}\\s*\\(`,
     'i',
   ).test(text)
 
-  if (symbol.kind === 'module') {
-    return exactName && heading.level === 2 ? 0 : undefined
-  }
   if (symbol.kind === 'callable') return callable ? heading.level : undefined
   if (symbol.kind === 'constructor') {
     const constructorMarker =
@@ -249,6 +278,25 @@ export async function generateApiCoverageArtifacts(
   const gaps: ApiCoverageGap[] = []
   const mappedCanonicalIds = new Set<string>()
   const pageSources = new Map<string, string>()
+  const topLevelModulesByPage = new Map<string, string[]>()
+
+  for (const symbol of publicSymbols.filter(
+    (candidate) =>
+      !candidate.canonicalId &&
+      candidate.kind === 'module' &&
+      !candidate.owner.includes('.'),
+  )) {
+    const page = pageForSymbol(symbol, ownerPages)
+    if (!page) continue
+    const moduleIds = topLevelModulesByPage.get(page) ?? []
+    moduleIds.push(symbol.id)
+    topLevelModulesByPage.set(page, moduleIds)
+  }
+  const h1ModuleIds = new Set(
+    [...topLevelModulesByPage.values()]
+      .filter((moduleIds) => moduleIds.length === 1)
+      .flat(),
+  )
 
   for (const symbol of publicSymbols.filter((candidate) => !candidate.canonicalId)) {
     const page = pageForSymbol(symbol, ownerPages)
@@ -282,9 +330,17 @@ export async function generateApiCoverageArtifacts(
       continue
     }
 
-    const headings = documentIndexes.get(page)?.headings ?? []
+    const documentIndex = documentIndexes.get(page)
+    const explicitAnchor = explicitSymbolAnchor(
+      symbol,
+      documentIndex?.anchors ?? new Set(),
+    )
+    const headings = documentIndex?.headings ?? []
     const matches = headings
-      .map((heading) => ({ heading, rank: headingMatchRank(heading, symbol) }))
+      .map((heading) => ({
+        heading,
+        rank: headingMatchRank(heading, symbol, h1ModuleIds.has(symbol.id)),
+      }))
       .filter(
         (
           candidate,
@@ -293,7 +349,7 @@ export async function generateApiCoverageArtifacts(
       )
     const bestRank = Math.min(...matches.map(({ rank }) => rank))
     const sectionMatches = matches.filter(({ rank }) => rank === bestRank)
-    if (sectionMatches.length !== 1) {
+    if (!explicitAnchor && sectionMatches.length !== 1) {
       gaps.push(
         gap(
           symbol,
@@ -306,7 +362,7 @@ export async function generateApiCoverageArtifacts(
       continue
     }
 
-    const target = `${page}#${sectionMatches[0].heading.anchor}`
+    const target = `${page}#${explicitAnchor ?? sectionMatches[0].heading.anchor}`
     const claimedBy = claimedTargets.get(target)
     if (claimedBy) {
       gaps.push(
