@@ -1,7 +1,7 @@
-import type { ContentEntry } from './catalog'
-
 export interface BrandPolicyContext {
-  readonly current: ContentEntry
+  readonly current: {
+    readonly legacySource: string
+  }
 }
 
 export interface LegacyBrandAllowance {
@@ -28,7 +28,7 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
   Object.freeze([
     Object.freeze({
       legacySource: 'api/changelog.md',
-      context: /^AutoJs6 \d+\.\d+\.\d+$/,
+      context: exactLine('AutoJs6 1.1.8'),
       reason: 'An explicit historical release identity.',
     }),
     Object.freeze({
@@ -40,21 +40,55 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
     }),
     Object.freeze({
       legacySource: 'api/appType.md',
-      context:
-        /^\| AUTOJSPRO\s+\| AutoJsPro\s+\| ~\s+\| org\.autojs\.autojspro\s+\| autojspro\s+\|$/,
+      context: exactLine(
+        '| AUTOJSPRO        | AutoJsPro      | ~                 | org.autojs.autojspro               | autojspro        |',
+      ),
       reason: 'The formal third-party AutoJsPro application enum row.',
     }),
-    Object.freeze({
-      legacySource: 'api/app.md',
-      context: /^\s*(?:packageName|className): "org\.autojs\.autojs(?:\.[^"]+)?",?$/,
-      reason: 'An example that explicitly launches the third-party Auto.js app.',
-    }),
-    Object.freeze({
-      legacySource: 'api/ui.md',
-      context:
-        /^Keep upstream Auto\.js, AutoJs-Docs, Auto\.js Pro, and `org\.autojs\.autojs`\.$/,
-      reason: 'The migration fixture documents the upstream-name exception.',
-    }),
+    ...exactAllowances(
+      'api/app.md',
+      [
+        '    packageName: "org.autojs.autojs",',
+        '    className: "org.autojs.autojs.ui.settings.SettingsActivity_",',
+        '    className: "org.autojs.autojs.ui.settings.SettingsActivity_"',
+        '* `uri` {string} 一个代表Uri的字符串, 例如"file:///sdcard/1.txt", "https://www.autojs.org"',
+        '** [[Pro 8.0.0新增](https://pro.autojs.org//)] **',
+      ],
+      'These exact examples refer to the third-party Auto.js application.',
+    ),
+    ...exactAllowances(
+      'api/dialogs.md',
+      ['    app.openUrl("https://www.autojs.org");'],
+      'This example opens the third-party Auto.js website.',
+    ),
+    ...exactAllowances(
+      'api/documentation.md',
+      [
+        '项目复刻 (Fork) 自 [hyb1996/AutoJs-Docs](https://github.com/hyb1996/AutoJs-Docs/) (GitHub).<br>',
+        '相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>',
+        '相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>',
+      ],
+      'These lines attribute the upstream application and documentation.',
+    ),
+    ...exactAllowances(
+      'api/global.md',
+      [
+        '## [m] requiresAutojsVersion',
+        '### requiresAutojsVersion(versionName)',
+        'requiresAutojsVersion("6.2.0");',
+        '### requiresAutojsVersion(versionCode)',
+        'requiresAutojsVersion(1024);',
+      ],
+      'These lines preserve the published compatibility API identifier.',
+    ),
+    ...exactAllowances(
+      'api/glossaries.md',
+      [
+        'console.log(R.string.text_app_name_autojspro); /* e.g. 2131887020 */',
+        'console.log(context.getString(R.string.text_app_name_autojspro)); /* e.g. AutoJsPro */',
+      ],
+      'These examples preserve upstream Android resource identifiers and values.',
+    ),
     ...exactAllowances(
       'api/scriptingJava.md',
       [
@@ -142,19 +176,11 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
   ])
 
 const forbiddenLegacyBrandPatterns: readonly RegExp[] = Object.freeze([
-  /AutoJs6/,
-  /(?<![\w])AutoJs(?![\w-])/,
-  /(?<![\w])Auto\.js(?![\w-])/,
-  /autojs6/,
-  /org\.autojs\.autojs(?!pro)/,
-  /(?<![\w])autojs(?![\w])/,
+  /auto(?:\.?)js/i,
 ])
 
 const forbiddenLegacyUrlPatterns: readonly RegExp[] = Object.freeze([
-  /AutoJs6|autojs6/,
-  /org(?:\.|\/)autojs(?:\.|\/)autojs(?!pro)/,
-  /docs\.autojs6\.com/i,
-  /SuperMonster003\/AutoJs6-Documentation/i,
+  /(?:https?:\/\/|mailto:|tel:|data:)[^\s)<>]*auto(?:\.?)js[^\s)<>]*/i,
 ])
 
 function isAllowedLegacyBrandLine(

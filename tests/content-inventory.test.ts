@@ -289,6 +289,20 @@ describe('content inventory', () => {
     }
   })
 
+  test('checks legacy brands in the published home page', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-home-brand-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(root, 'docs/index.md', '# Home\n\nAUTOJS6\n')
+
+      expect(checkContent(root).errors.join('\n')).toMatch(
+        /docs\/index\.md:3: AUTOJS6/,
+      )
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('rejects a drifted committed brand logo', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-brand-logo-'))
     try {

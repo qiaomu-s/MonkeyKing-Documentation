@@ -277,12 +277,21 @@ function inspectCanonicalLayout(
     )
   }
 
-  for (const entry of contentEntries) {
-    const path = resolve(rootDirectory, entry.source)
+  const catalogEntryBySource = new Map<
+    string,
+    { readonly legacySource: string }
+  >(
+    contentEntries.map((entry) => [entry.source, entry] as const),
+  )
+  for (const source of publishedMarkdown) {
+    const path = resolve(rootDirectory, source)
     if (!existsSync(path) || !lstatSync(path).isFile()) continue
     const markdown = readFileSync(path, 'utf8')
+    const entry = catalogEntryBySource.get(source)
     try {
-      assertAllowedLegacyBrands(markdown, { current: entry })
+      assertAllowedLegacyBrands(markdown, {
+        current: entry ?? { legacySource: source },
+      })
     } catch (error) {
       errors.push(error instanceof Error ? error.message : String(error))
     }
