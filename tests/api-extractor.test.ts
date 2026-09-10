@@ -5,6 +5,7 @@ const extractorModulePath = '../scripts/api/' + 'extractor'
 const modelModulePath = '../scripts/api/' + 'model'
 const fixtureRoot = resolve(process.cwd(), 'tests/fixtures/api/source')
 const fixtureCommit = '1111111111111111111111111111111111111111'
+const sourceRepository = 'qiaomu-s/AutoJs6'
 
 interface FixtureReader {
   readonly repositoryName: string
@@ -22,12 +23,15 @@ function fixtureFiles(directory = fixtureRoot): string[] {
   })
 }
 
-function createFixtureReader(reverse = false): FixtureReader {
+function createFixtureReader(
+  reverse = false,
+  repositoryName = 'fixture/MonkeyKing',
+): FixtureReader {
   const files = fixtureFiles().sort()
   if (reverse) files.reverse()
 
   return {
-    repositoryName: 'fixture/MonkeyKing',
+    repositoryName,
     resolveRef: () => fixtureCommit,
     listFiles: (prefix = '') => files.filter((path) => path.startsWith(prefix)),
     readFile: (path) => readFileSync(resolve(fixtureRoot, path), 'utf8'),
@@ -72,12 +76,13 @@ describe('API manifest extractor', () => {
     if (!extractor) return
 
     const manifest = await extractor.extractApiManifest(createFixtureReader(), {
+      repository: sourceRepository,
       ref: 'fixture-ref',
       overrides: dynamicOverrides,
     })
 
     expect(manifest.source).toEqual({
-      repository: 'fixture/MonkeyKing',
+      repository: sourceRepository,
       ref: 'fixture-ref',
       commit: fixtureCommit,
     })
@@ -166,7 +171,24 @@ describe('API manifest extractor', () => {
       source: expect.objectContaining({ path: expect.stringContaining('LegacyUtil.kt') }),
     })
     expect(symbols.get('alpha.getClass')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.inheritedRoot')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.inheritedIntermediate')).toMatchObject({
+      kind: 'function',
+    })
+    expect(symbols.get('alpha.contractMember')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.cycleOne')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.cycleTwo')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.overriddenMember')).toMatchObject({
+      kind: 'function',
+      source: expect.objectContaining({ path: expect.stringContaining('LegacyUtil.kt') }),
+    })
+    expect(symbols.get('alpha.overriddenMember')).not.toHaveProperty('providers')
     expect(symbols.has('alpha.hiddenHelper')).toBe(false)
+    expect(symbols.has('alpha.hiddenRoot')).toBe(false)
+    expect(symbols.has('alpha.protectedRoot')).toBe(false)
+    expect(symbols.has('alpha.hiddenContractMember')).toBe(false)
+    expect(symbols.has('alpha.nestedLeak')).toBe(false)
+    expect(symbols.has('alpha.publicNestedLeak')).toBe(false)
     expect(symbols.get('alpha.nested.fileProviderAuthority')).toMatchObject({
       kind: 'property',
       annotations: ['ScriptInterface'],
@@ -215,11 +237,16 @@ describe('API manifest extractor', () => {
     expect(model, 'scripts/api/model.ts must exist').not.toBeNull()
     if (!extractor || !model) return
 
-    const normal = await extractor.extractApiManifest(createFixtureReader(), {
-      ref: 'fixture-ref',
-      overrides: dynamicOverrides,
-    })
-    const reversed = await extractor.extractApiManifest(createFixtureReader(true), {
+    const normal = await extractor.extractApiManifest(
+      createFixtureReader(false, 'mirror/AutoJs6'),
+      {
+        repository: sourceRepository,
+        ref: 'fixture-ref',
+        overrides: dynamicOverrides,
+      },
+    )
+    const reversed = await extractor.extractApiManifest(createFixtureReader(true, ''), {
+      repository: sourceRepository,
       ref: 'fixture-ref',
       overrides: dynamicOverrides,
     })
@@ -241,6 +268,7 @@ describe('API manifest extractor', () => {
 
     await expect(
       extractor.extractApiManifest(createFixtureReader(), {
+        repository: sourceRepository,
         ref: 'fixture-ref',
         overrides: [keyOnlyOverride],
       }),
@@ -280,6 +308,7 @@ describe('API manifest extractor', () => {
 
     await expect(
       extractor.extractApiManifest(createFixtureReader(), {
+        repository: sourceRepository,
         ref: 'fixture-ref',
         overrides: [
           {
@@ -297,6 +326,7 @@ describe('API manifest extractor', () => {
     if (!extractor) return
 
     const manifest = await extractor.extractApiManifest(createFixtureReader(), {
+      repository: sourceRepository,
       ref: 'fixture-ref',
       overrides: [
         ...dynamicOverrides,
@@ -382,7 +412,28 @@ describe('API manifest extractor', () => {
     expect(symbols.get('alpha.Database.name')).toMatchObject({ kind: 'property' })
     expect(symbols.get('alpha.Database.execSQL')).toMatchObject({ kind: 'function' })
     expect(symbols.get('alpha.Database.query')).toMatchObject({ kind: 'function' })
+    expect(symbols.get('alpha.Database.inheritedParent')).toMatchObject({
+      kind: 'function',
+    })
+    expect(symbols.get('alpha.Database.inheritedGrandparent')).toMatchObject({
+      kind: 'function',
+    })
+    expect(symbols.get('alpha.Database.inheritedInterface')).toMatchObject({
+      kind: 'function',
+    })
+    expect(symbols.get('alpha.Database.inheritedOverride')).toMatchObject({
+      kind: 'function',
+      source: expect.objectContaining({ path: expect.stringContaining('/Database.java') }),
+    })
+    expect(symbols.get('alpha.Database.inheritedOverride')).not.toHaveProperty(
+      'providers',
+    )
     expect(symbols.has('alpha.Database.hiddenHelper')).toBe(false)
+    expect(symbols.has('alpha.Database.hiddenParent')).toBe(false)
+    expect(symbols.has('alpha.Database.protectedParent')).toBe(false)
+    expect(symbols.has('alpha.Database.hiddenGrandparent')).toBe(false)
+    expect(symbols.has('alpha.Database.protectedGrandparent')).toBe(false)
+    expect(symbols.has('alpha.Database.hiddenInterface')).toBe(false)
     expect(manifest.overrides).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: 'fixture-result-surface' }),

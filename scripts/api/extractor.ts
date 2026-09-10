@@ -22,6 +22,7 @@ import {
 import type { SourceReader } from './source-reader'
 
 export interface ExtractApiManifestOptions {
+  readonly repository: string
   readonly ref: string
   readonly overrides?: readonly DynamicOverride[]
 }
@@ -210,18 +211,32 @@ function findSourcePathForImport(
 ): string | null {
   const qualified = imports.get(className)
   if (!qualified) return null
-  const relative = qualified.replaceAll('.', '/')
-  const exact = sourceFiles.find(
-    (path) => path.endsWith(`${relative}.kt`) || path.endsWith(`${relative}.java`),
-  )
-  if (exact) return exact
+  return findSourcePathForQualifiedType(qualified, sourceFiles, className)
+}
 
-  const packagePath = relative.slice(0, relative.lastIndexOf('/'))
+function findSourcePathForQualifiedType(
+  qualifiedName: string,
+  sourceFiles: readonly string[],
+  localName = qualifiedName.split('.').at(-1) ?? qualifiedName,
+): string | null {
+  const segments = qualifiedName.split('.')
+  for (let length = segments.length; length > 0; length -= 1) {
+    const relative = segments.slice(0, length).join('/')
+    const exact = sourceFiles.find(
+      (path) =>
+        path.endsWith(`${relative}.kt`) || path.endsWith(`${relative}.java`),
+    )
+    if (exact) return exact
+  }
+
+  const packagePath = segments.slice(0, -1).join('/')
   return (
     sourceFiles.find((path) => {
-      if (!path.includes(`/${packagePath}/`)) return false
-      const fileName = path.slice(path.lastIndexOf('/') + 1).replace(/\.(?:kt|java)$/, '')
-      return fileName.toLowerCase() === className.toLowerCase()
+      if (packagePath && !path.includes(`/${packagePath}/`)) return false
+      const fileName = path
+        .slice(path.lastIndexOf('/') + 1)
+        .replace(/\.(?:kt|java)$/, '')
+      return fileName.toLowerCase() === localName.toLowerCase()
     }) ?? null
   )
 }
@@ -860,7 +875,24 @@ interface PrototypeSource {
 interface PrototypeMember {
   readonly name: string
   readonly kind: 'function' | 'property'
-  readonly offset: number
+  readonly source: SourceLocation
+  readonly metadata: MethodMetadata
+}
+
+interface PrototypeExtractionContext {
+  readonly sourceFiles: readonly string[]
+  readonly readMetadata: (
+    path: string,
+  ) => { readonly source: string; readonly metadata: MethodMetadata }
+  readonly cache: Map<string, readonly PrototypeMember[]>
+}
+
+interface TypeBody {
+  readonly kind: 'class' | 'object' | 'interface'
+  readonly declaration: number
+  readonly nameEnd: number
+  readonly open: number
+  readonly close: number
 }
 
 function runtimeValueTypes(source: string): ReadonlyMap<string, string> {
@@ -937,10 +969,37 @@ function prototypeSource(
   typeName: string,
   imports: ReadonlyMap<string, string>,
   sourceFiles: readonly string[],
+  currentPath?: string,
+  currentSource?: string,
 ): PrototypeSource | null {
-  const imported = imports.get(typeName)
-  const className = imported?.split('.').at(-1) ?? typeName
-  const importedPath = findSourcePathForImport(typeName, imports, sourceFiles)
+  const typeSegments = typeName.split('.')
+  const importedRoot = imports.get(typeSegments[0])
+  const qualifiedName = importedRoot
+    ? [importedRoot, ...typeSegments.slice(1)].join('.')
+    : imports.get(typeName) ?? (typeSegments.length > 1 ? typeName : undefined)
+  const className = (qualifiedName ?? typeName).split('.').at(-1) ?? typeName
+  const importedPath = qualifiedName
+    ? findSourcePathForQualifiedType(qualifiedName, sourceFiles, className)
+    : null
+  const packageName = currentSource?.match(
+    /^\s*package\s+([A-Za-z_][A-Za-z0-9_.]*)/m,
+  )?.[1]
+  const samePackagePath = packageName
+    ? findSourcePathForQualifiedType(
+        `${packageName}.${typeName}`,
+        sourceFiles,
+        className,
+      )
+    : null
+  const currentDirectory = currentPath?.slice(0, currentPath.lastIndexOf('/'))
+  const outerTypeName = typeSegments[0]
+  const sameDirectoryPath = currentDirectory
+    ? sourceFiles.find(
+        (path) =>
+          path === `${currentDirectory}/${outerTypeName}.kt` ||
+          path === `${currentDirectory}/${outerTypeName}.java`,
+      )
+    : undefined
   const fallbackPath = sourceFiles
     .filter((path) =>
       path.endsWith(`/${className}.kt`) || path.endsWith(`/${className}.java`),
@@ -948,31 +1007,207 @@ function prototypeSource(
     .sort((left, right) =>
       left.length - right.length || compareText(left, right),
     )[0]
-  const path = importedPath ?? fallbackPath
+  const path = importedPath ?? samePackagePath ?? sameDirectoryPath ?? fallbackPath
   return path ? { className, path } : null
 }
 
 function classBody(
   source: string,
   className: string,
-): { readonly declaration: number; readonly open: number; readonly close: number } | null {
+): TypeBody | null {
   const masked = maskNonCode(source)
   const declaration = new RegExp(
-    `\\b(?:class|object)\\s+${escapeRegExp(className)}\\b`,
+    `\\b(class|object|interface)\\s+${escapeRegExp(className)}\\b`,
   ).exec(masked)
   if (!declaration) return null
-  const open = masked.indexOf('{', declaration.index + declaration[0].length)
+  const nameEnd = declaration.index + declaration[0].length
+  let roundDepth = 0
+  let squareDepth = 0
+  let angleDepth = 0
+  let open = -1
+  for (let index = nameEnd; index < masked.length; index += 1) {
+    const character = masked[index]
+    if (
+      character === '{' &&
+      roundDepth === 0 &&
+      squareDepth === 0 &&
+      angleDepth === 0
+    ) {
+      open = index
+      break
+    }
+    if (character === '(') roundDepth += 1
+    if (character === ')') roundDepth = Math.max(0, roundDepth - 1)
+    if (character === '[') squareDepth += 1
+    if (character === ']') squareDepth = Math.max(0, squareDepth - 1)
+    if (character === '<') angleDepth += 1
+    if (character === '>') angleDepth = Math.max(0, angleDepth - 1)
+  }
   if (open < 0) return null
   const range = findBalancedRange(source, open, '{', '}')
-  return { declaration: declaration.index, open, close: range.end }
+  return {
+    kind: declaration[1] as TypeBody['kind'],
+    declaration: declaration.index,
+    nameEnd,
+    open,
+    close: range.end,
+  }
 }
 
-function prototypeMembers(
+function splitTypeList(source: string): string[] {
+  const masked = maskNonCode(source)
+  const parts: string[] = []
+  let start = 0
+  let roundDepth = 0
+  let squareDepth = 0
+  let angleDepth = 0
+
+  for (let index = 0; index < masked.length; index += 1) {
+    const character = masked[index]
+    if (
+      character === ',' &&
+      roundDepth === 0 &&
+      squareDepth === 0 &&
+      angleDepth === 0
+    ) {
+      parts.push(source.slice(start, index))
+      start = index + 1
+      continue
+    }
+    if (character === '(') roundDepth += 1
+    if (character === ')') roundDepth = Math.max(0, roundDepth - 1)
+    if (character === '[') squareDepth += 1
+    if (character === ']') squareDepth = Math.max(0, squareDepth - 1)
+    if (character === '<') angleDepth += 1
+    if (character === '>') angleDepth = Math.max(0, angleDepth - 1)
+  }
+  parts.push(source.slice(start))
+  return parts
+}
+
+function topLevelKeywordRanges(
   source: string,
-  className: string,
+  keywords: ReadonlySet<string>,
+): Array<{ readonly keyword: string; readonly start: number; readonly end: number }> {
+  const masked = maskNonCode(source)
+  const ranges: Array<{ keyword: string; start: number; end: number }> = []
+  let roundDepth = 0
+  let squareDepth = 0
+  let angleDepth = 0
+
+  for (let index = 0; index < masked.length; index += 1) {
+    const character = masked[index]
+    if (character === '(') roundDepth += 1
+    if (character === ')') roundDepth = Math.max(0, roundDepth - 1)
+    if (character === '[') squareDepth += 1
+    if (character === ']') squareDepth = Math.max(0, squareDepth - 1)
+    if (character === '<') angleDepth += 1
+    if (character === '>') angleDepth = Math.max(0, angleDepth - 1)
+    if (
+      roundDepth !== 0 ||
+      squareDepth !== 0 ||
+      angleDepth !== 0 ||
+      !/[A-Za-z_]/.test(character)
+    ) {
+      continue
+    }
+
+    const match = /^[A-Za-z_][A-Za-z0-9_]*/.exec(masked.slice(index))
+    if (!match) continue
+    if (keywords.has(match[0])) {
+      ranges.push({ keyword: match[0], start: index, end: index + match[0].length })
+    }
+    index += match[0].length - 1
+  }
+  return ranges
+}
+
+function topLevelCharacter(source: string, target: string): number {
+  const masked = maskNonCode(source)
+  let roundDepth = 0
+  let squareDepth = 0
+  let angleDepth = 0
+
+  for (let index = 0; index < masked.length; index += 1) {
+    const character = masked[index]
+    if (
+      character === target &&
+      roundDepth === 0 &&
+      squareDepth === 0 &&
+      angleDepth === 0
+    ) {
+      return index
+    }
+    if (character === '(') roundDepth += 1
+    if (character === ')') roundDepth = Math.max(0, roundDepth - 1)
+    if (character === '[') squareDepth += 1
+    if (character === ']') squareDepth = Math.max(0, squareDepth - 1)
+    if (character === '<') angleDepth += 1
+    if (character === '>') angleDepth = Math.max(0, angleDepth - 1)
+  }
+  return -1
+}
+
+function inheritedTypeName(declaration: string): string | null {
+  const withoutAnnotations = declaration
+    .trim()
+    .replace(/^(?:@[A-Za-z_][A-Za-z0-9_.]*(?:\([^)]*\))?\s*)+/, '')
+  const match = /^(?:[A-Za-z_][A-Za-z0-9_]*\.)*[A-Za-z_][A-Za-z0-9_]*/.exec(
+    withoutAnnotations,
+  )
+  const name = match?.[0]
+  return name && !['Any', 'Object', 'java.lang.Object'].includes(name)
+    ? name
+    : null
+}
+
+function inheritedTypeNames(
+  source: string,
+  prototype: PrototypeSource,
+  body: TypeBody,
+): string[] {
+  const header = maskNonCode(source).slice(body.nameEnd, body.open)
+  const declarations: string[] = []
+
+  if (prototype.path.endsWith('.kt')) {
+    const colon = topLevelCharacter(header, ':')
+    if (colon >= 0) {
+      let inheritance = header.slice(colon + 1)
+      const where = topLevelKeywordRanges(
+        inheritance,
+        new Set(['where']),
+      )[0]
+      if (where) inheritance = inheritance.slice(0, where.start)
+      declarations.push(...splitTypeList(inheritance))
+    }
+  } else {
+    const clauses = topLevelKeywordRanges(
+      header,
+      new Set(['extends', 'implements']),
+    )
+    for (let index = 0; index < clauses.length; index += 1) {
+      const clause = clauses[index]
+      const end = clauses[index + 1]?.start ?? header.length
+      declarations.push(...splitTypeList(header.slice(clause.end, end)))
+    }
+  }
+
+  const seen = new Set<string>()
+  return declarations
+    .map(inheritedTypeName)
+    .filter((name): name is string => {
+      if (!name || seen.has(name)) return false
+      seen.add(name)
+      return true
+    })
+}
+
+function declaredPrototypeMembers(
+  source: string,
+  prototype: PrototypeSource,
   metadata: MethodMetadata,
 ): PrototypeMember[] {
-  const body = classBody(source, className)
+  const body = classBody(source, prototype.className)
   if (!body) return []
   const masked = maskNonCode(source)
   const depths = new Int16Array(body.close - body.open + 1)
@@ -984,14 +1219,16 @@ function prototypeMembers(
   }
 
   const companionRanges: BalancedRange[] = []
-  const companionPattern = /\bcompanion\s+object(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\{/g
-  let companion: RegExpExecArray | null
-  while ((companion = companionPattern.exec(masked)) !== null) {
-    if (companion.index <= body.open || companion.index >= body.close) continue
-    const open = masked.indexOf('{', companion.index)
-    const range = findBalancedRange(source, open, '{', '}')
-    companionRanges.push(range)
-    companionPattern.lastIndex = range.end + 1
+  if (prototype.path.endsWith('.kt')) {
+    const companionPattern = /\bcompanion\s+object(?:\s+[A-Za-z_][A-Za-z0-9_]*)?\s*\{/g
+    let companion: RegExpExecArray | null
+    while ((companion = companionPattern.exec(masked)) !== null) {
+      if (companion.index <= body.open || companion.index >= body.close) continue
+      const open = masked.indexOf('{', companion.index)
+      const range = findBalancedRange(source, open, '{', '}')
+      companionRanges.push(range)
+      companionPattern.lastIndex = range.end + 1
+    }
   }
 
   const inDirectCompanionBody = (offset: number): boolean =>
@@ -1001,72 +1238,161 @@ function prototypeMembers(
         offset < range.end &&
         depths[offset - body.open] === 1,
     )
-  const members: PrototypeMember[] = []
-  const kotlin = new RegExp(
-    `\\b(?:(public|private|protected|internal)\\s+)?` +
-      `(?:(?:override|open|final|abstract|suspend|operator|infix|tailrec|external|inline|const|lateinit)\\s+)*` +
-      `(fun|val|var)\\s+(?:<[^>]+>\\s*)?(${kotlinIdentifierSource})`,
-    'g',
-  )
-  let match: RegExpExecArray | null
-  while ((match = kotlin.exec(masked)) !== null) {
-    const offset = match.index
-    if (offset <= body.declaration || offset >= body.close) continue
-    if (['private', 'protected', 'internal'].includes(match[1] ?? '')) continue
-    const name = normalizeKotlinIdentifier(match[3])
-    const inHeader = offset < body.open
-    const inDirectBody =
-      offset > body.open && depths[offset - body.open] === 0
-    const inCompanion = inDirectCompanionBody(offset)
-    if (!inHeader && !inDirectBody && !inCompanion) continue
-    if (
-      inCompanion &&
-      !(metadata.annotations.get(name) ?? []).some((annotation) =>
-        publicMemberAnnotationNames.has(annotation),
-      )
-    ) {
-      continue
-    }
-    members.push({
-      name,
-      kind: match[2] === 'fun' ? 'function' : 'property',
-      offset,
-    })
-  }
-
-  if (body.open >= 0) {
-    const java = /\b(public|protected|private)\s+(?:(?:static|final|abstract|synchronized|native)\s+)*(?:[A-Za-z_][A-Za-z0-9_$.<>?\[\], ]*\s+)([A-Za-z_][A-Za-z0-9_]*)\s*(\(|=|;)/g
-    while ((match = java.exec(masked)) !== null) {
-      const offset = match.index
-      if (offset <= body.open || offset >= body.close || match[1] !== 'public') {
+  const nestedConstructorRanges: BalancedRange[] = []
+  if (prototype.path.endsWith('.kt')) {
+    const nestedType = /\b(?:class|object|interface)\s+[A-Za-z_][A-Za-z0-9_]*/g
+    let declaration: RegExpExecArray | null
+    while ((declaration = nestedType.exec(masked)) !== null) {
+      const offset = declaration.index
+      if (
+        offset <= body.open ||
+        offset >= body.close ||
+        depths[offset - body.open] !== 0
+      ) {
         continue
       }
-      if (depths[offset - body.open] !== 0) continue
+      const nextParenthesis = masked.indexOf('(', nestedType.lastIndex)
+      const nextBody = masked.indexOf('{', nestedType.lastIndex)
+      if (
+        nextParenthesis < 0 ||
+        nextParenthesis >= body.close ||
+        (nextBody >= 0 && nextBody < nextParenthesis)
+      ) {
+        continue
+      }
+      nestedConstructorRanges.push(
+        findBalancedRange(source, nextParenthesis, '(', ')'),
+      )
+    }
+  }
+  const members: PrototypeMember[] = []
+  let match: RegExpExecArray | null
+  if (prototype.path.endsWith('.kt')) {
+    const kotlin = new RegExp(
+      `\\b(?:(public|private|protected|internal)\\s+)?` +
+        `(?:(?:override|open|final|abstract|suspend|operator|infix|tailrec|external|inline|const|lateinit)\\s+)*` +
+        `(fun|val|var)\\s+(?:<[^>]+>\\s*)?(${kotlinIdentifierSource})`,
+      'g',
+    )
+    while ((match = kotlin.exec(masked)) !== null) {
+      const offset = match.index
+      if (offset <= body.declaration || offset >= body.close) continue
+      if (
+        nestedConstructorRanges.some(
+          (range) => offset > range.start && offset < range.end,
+        )
+      ) {
+        continue
+      }
+      if (['private', 'protected', 'internal'].includes(match[1] ?? '')) continue
+      const name = normalizeKotlinIdentifier(match[3])
+      const inHeader = offset >= body.nameEnd && offset < body.open
+      const inDirectBody =
+        offset > body.open && depths[offset - body.open] === 0
+      const inCompanion = inDirectCompanionBody(offset)
+      if (!inHeader && !inDirectBody && !inCompanion) continue
+      if (
+        inCompanion &&
+        !(metadata.annotations.get(name) ?? []).some((annotation) =>
+          publicMemberAnnotationNames.has(annotation),
+        )
+      ) {
+        continue
+      }
       members.push({
-        name: match[2],
-        kind: match[3] === '(' ? 'function' : 'property',
-        offset,
+        name,
+        kind: match[2] === 'fun' ? 'function' : 'property',
+        source: location(prototype.path, source, offset),
+        metadata,
       })
+    }
+  } else {
+    const addJavaMatches = (pattern: RegExp, implicitInterface: boolean): void => {
+      while ((match = pattern.exec(masked)) !== null) {
+        const offset = match.index
+        if (offset <= body.open || offset >= body.close) continue
+        if (depths[offset - body.open] !== 0) continue
+        const visibility = implicitInterface ? undefined : match[1]
+        const name = implicitInterface ? match[1] : match[2]
+        const suffix = implicitInterface ? match[2] : match[3]
+        if (!implicitInterface && visibility !== 'public') continue
+        members.push({
+          name,
+          kind: suffix === '(' ? 'function' : 'property',
+          source: location(prototype.path, source, offset),
+          metadata,
+        })
+      }
+    }
+
+    addJavaMatches(
+      /\b(public|protected|private)\s+(?:(?:static|final|abstract|default|synchronized|native|strictfp|transient|volatile)\s+)*(?:<[^;{}()]+>\s*)?(?:[A-Za-z_$][A-Za-z0-9_$.<>?\[\], &]*\s+)([A-Za-z_$][A-Za-z0-9_$]*)\s*(\(|=|;)/g,
+      false,
+    )
+    if (body.kind === 'interface') {
+      addJavaMatches(
+        /^(?!\s*(?:public|protected|private)\b)\s*(?:(?:static|final|abstract|default|synchronized|native|strictfp|transient|volatile)\s+)*(?:<[^;{}()]+>\s*)?(?:[A-Za-z_$][A-Za-z0-9_$.<>?\[\], &]*\s+)([A-Za-z_$][A-Za-z0-9_$]*)\s*(\(|=|;)/gm,
+        true,
+      )
     }
   }
 
   return members.filter(
     (member, index, all) =>
-      all.findIndex(
-        (candidate) =>
-          candidate.name === member.name && candidate.kind === member.kind,
-      ) === index,
+      all.findIndex((candidate) => candidate.name === member.name) === index,
   )
+}
+
+function prototypeMembers(
+  prototype: PrototypeSource,
+  context: PrototypeExtractionContext,
+  visiting = new Set<string>(),
+): readonly PrototypeMember[] {
+  const key = `${prototype.path}#${prototype.className}`
+  const cached = context.cache.get(key)
+  if (cached) return cached
+  if (visiting.has(key)) return []
+  visiting.add(key)
+
+  const { source, metadata } = context.readMetadata(prototype.path)
+  const body = classBody(source, prototype.className)
+  if (!body) {
+    visiting.delete(key)
+    context.cache.set(key, [])
+    return []
+  }
+
+  const members = declaredPrototypeMembers(source, prototype, metadata)
+  const names = new Set(members.map(({ name }) => name))
+  const imports = extractImports(source)
+  for (const typeName of inheritedTypeNames(source, prototype, body)) {
+    const parent = prototypeSource(
+      typeName,
+      imports,
+      context.sourceFiles,
+      prototype.path,
+      source,
+    )
+    if (!parent) continue
+    for (const member of prototypeMembers(parent, context, visiting)) {
+      if (names.has(member.name)) continue
+      names.add(member.name)
+      members.push(member)
+    }
+  }
+
+  visiting.delete(key)
+  context.cache.set(key, members)
+  return members
 }
 
 function addPrototypeMembers(
   symbols: Map<string, ApiSymbol>,
   owner: string,
   prototype: PrototypeSource,
-  source: string,
-  metadata: MethodMetadata,
+  context: PrototypeExtractionContext,
 ): void {
-  for (const member of prototypeMembers(source, prototype.className, metadata)) {
+  for (const member of prototypeMembers(prototype, context)) {
     addSymbol(
       symbols,
       makeSymbol(
@@ -1074,8 +1400,8 @@ function addPrototypeMembers(
         owner,
         member.name,
         member.kind,
-        location(prototype.path, source, member.offset),
-        metadata,
+        member.source,
+        member.metadata,
       ),
     )
   }
@@ -1115,6 +1441,7 @@ function assertOverrideEvidence(
     .join('\n')
   const candidateNames = [
     override.className,
+    ...(override.sourceClassName ? [override.sourceClassName] : []),
     ...(override.assignments ?? []),
     ...(override.members ?? []).flatMap((member) => [
       member.name,
@@ -1143,11 +1470,17 @@ function overrideMemberSourcePath(
   override: DynamicOverride,
   sourceFiles: readonly string[],
 ): string {
+  const sourceClassNames = [override.sourceClassName, override.className].filter(
+    (name): name is string => Boolean(name),
+  )
   const candidate = sourceFiles
     .filter(
       (path) =>
-        path.endsWith(`/${override.className}.kt`) ||
-        path.endsWith(`/${override.className}.java`),
+        sourceClassNames.some(
+          (className) =>
+            path.endsWith(`/${className}.kt`) ||
+            path.endsWith(`/${className}.java`),
+        ),
     )
     .sort((left, right) =>
       left.length - right.length || compareText(left, right),
@@ -1161,6 +1494,7 @@ function applyOverrideMembers(
   override: DynamicOverride,
   sourceText: string,
   metadata: MethodMetadata,
+  prototypeContext: PrototypeExtractionContext,
   memberSourcePath = override.source.path,
 ): void {
   const excludedMembers = new Set(override.excludeMembers ?? [])
@@ -1168,11 +1502,11 @@ function applyOverrideMembers(
     override.idPrefix ? `${override.idPrefix}${name}` : `${moduleId}.${name}`
 
   if (override.includePublicMembers) {
-    for (const member of prototypeMembers(
-      sourceText,
-      override.className,
-      metadata,
-    )) {
+    const prototype = {
+      className: override.sourceClassName ?? override.className,
+      path: memberSourcePath,
+    }
+    for (const member of prototypeMembers(prototype, prototypeContext)) {
       if (excludedMembers.has(member.name)) continue
       addSymbol(
         symbols,
@@ -1181,8 +1515,8 @@ function applyOverrideMembers(
           moduleId,
           member.name,
           member.kind,
-          location(memberSourcePath, sourceText, member.offset),
-          metadata,
+          member.source,
+          member.metadata,
         ),
       )
     }
@@ -1322,6 +1656,11 @@ export async function extractApiManifest(
     metadataByPath.set(path, metadata)
     return { source, metadata }
   }
+  const prototypeContext: PrototypeExtractionContext = {
+    sourceFiles,
+    readMetadata,
+    cache: new Map(),
+  }
 
   for (const registration of registrations) {
     const parent = moduleAliases.get(registration.targetName)
@@ -1381,16 +1720,15 @@ export async function extractApiManifest(
     assertDynamicAssignmentsAreOverridden(actualClassName, source, override)
     for (const expression of registration.prototypeExpressions) {
       for (const typeName of prototypeTypeNames(expression, valueTypes, imports)) {
-        const prototype = prototypeSource(typeName, imports, sourceFiles)
-        if (!prototype) continue
-        const prototypeMetadata = readMetadata(prototype.path)
-        addPrototypeMembers(
-          symbols,
-          moduleId,
-          prototype,
-          prototypeMetadata.source,
-          prototypeMetadata.metadata,
+        const prototype = prototypeSource(
+          typeName,
+          imports,
+          sourceFiles,
+          runtimePath,
+          runtimeSource,
         )
+        if (!prototype) continue
+        addPrototypeMembers(symbols, moduleId, prototype, prototypeContext)
       }
     }
 
@@ -1434,6 +1772,7 @@ export async function extractApiManifest(
         override,
         source,
         metadata,
+        prototypeContext,
         sourcePath,
       )
       appliedOverrides.set(override.id, {
@@ -1475,6 +1814,7 @@ export async function extractApiManifest(
       override,
       source,
       metadata,
+      prototypeContext,
       memberSourcePath,
     )
     appliedOverrides.set(override.id, {
@@ -1550,7 +1890,7 @@ export async function extractApiManifest(
   return {
     schemaVersion: API_MANIFEST_SCHEMA_VERSION,
     source: {
-      repository: reader.repositoryName,
+      repository: options.repository,
       ref: options.ref,
       commit,
     },

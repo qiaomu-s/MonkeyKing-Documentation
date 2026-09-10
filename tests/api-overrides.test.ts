@@ -14,6 +14,9 @@ describe('API extraction overrides', () => {
     const cursor = dynamicOverrides.find(
       (override) => override.id === 'sqlite-cursor-wrapper',
     )
+    const webSocket = dynamicOverrides.find(
+      (override) => override.id === 'websocket-java-instance',
+    )
 
     expect(mime?.members?.map(({ name }: { name: string }) => name)).toEqual(
       expect.arrayContaining([
@@ -58,6 +61,12 @@ describe('API extraction overrides', () => {
         ({ kind }: { kind: string }) => kind === 'dynamic',
       ),
     ).toBe(false)
+    expect(webSocket).toMatchObject({
+      className: 'CoreWebSocket',
+      sourceClassName: 'WebSocket',
+      includePublicMembers: true,
+    })
+    expect(webSocket?.members).toBeUndefined()
 
     expect(
       dynamicOverrides.find(

@@ -4,7 +4,10 @@ import { pathToFileURL } from 'node:url'
 import { extractApiManifest } from './extractor'
 import { manifestMatches, stableJson } from './model'
 import { dynamicOverrides, MONKEYKING_API_BASELINE } from './overrides'
-import { GitSourceReader } from './source-reader'
+import {
+  GitSourceReader,
+  MONKEYKING_SOURCE_REPOSITORY,
+} from './source-reader'
 
 export interface ExtractArguments {
   readonly source: string
@@ -50,6 +53,7 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
 export async function runExtract(arguments_: ExtractArguments): Promise<void> {
   const reader = new GitSourceReader(arguments_.source)
   const manifest = await extractApiManifest(reader, {
+    repository: MONKEYKING_SOURCE_REPOSITORY,
     ref: arguments_.ref,
     overrides: dynamicOverrides,
   })

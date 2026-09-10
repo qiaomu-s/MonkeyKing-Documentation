@@ -153,27 +153,15 @@ export const dynamicOverrides: readonly DynamicOverride[] = [
   {
     id: 'websocket-java-instance',
     className: 'CoreWebSocket',
+    sourceClassName: 'WebSocket',
     owner: 'webSocket.instance',
+    includePublicMembers: true,
     reason:
       'The WebSocket constructor returns a Rhino-wrapped CoreWebSocket instance whose Java methods form the instance API.',
     source: {
       path: 'app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt',
       line: 15,
     },
-    members: [
-      ...members('property', ['client', 'url']),
-      ...members('function', [
-        'rebuild',
-        'cancel',
-        'close',
-        'queueSize',
-        'request',
-        'send',
-        'on',
-        'once',
-        'exitOnClose',
-      ]),
-    ],
   },
   {
     id: 'mediainfo-runtime-result',

@@ -19103,6 +19103,20 @@
       }
     },
     {
+      "annotations": [],
+      "id": "console.assertTrue",
+      "kind": "function",
+      "name": "assertTrue",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 46,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      }
+    },
+    {
       "annotations": [
         "RhinoRuntimeFunctionInterface"
       ],
@@ -19120,18 +19134,29 @@
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.clear",
       "kind": "function",
       "name": "clear",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 162,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 187,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 187,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 162,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19143,11 +19168,49 @@
       "name": "collapse",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 776,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 201,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 201,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 776,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.configurator",
+      "kind": "property",
+      "name": "configurator",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 87,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.copyAll",
+      "kind": "function",
+      "name": "copyAll",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 167,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19159,11 +19222,21 @@
       "name": "error",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 103,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 259,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 259,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 103,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19175,27 +19248,328 @@
       "name": "expand",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 774,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 194,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 194,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 774,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.export",
+      "kind": "function",
+      "name": "export",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 202,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.format",
+      "kind": "function",
+      "name": "format",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 12,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "ScriptInterface"
+      ],
+      "id": "console.getContentBackgroundAlpha",
+      "kind": "function",
+      "name": "getContentBackgroundAlpha",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 708,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getContentBackgroundColor",
+      "kind": "function",
+      "name": "getContentBackgroundColor",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 683,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getContentBackgroundTint",
+      "kind": "function",
+      "name": "getContentBackgroundTint",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 694,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getContentTextColors",
+      "kind": "function",
+      "name": "getContentTextColors",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 670,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getContentTextSize",
+      "kind": "function",
+      "name": "getContentTextSize",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 659,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getExitOnClose",
+      "kind": "function",
+      "name": "getExitOnClose",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 769,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getGravity",
+      "kind": "function",
+      "name": "getGravity",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 585,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getPosition",
+      "kind": "function",
+      "name": "getPosition",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 530,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getSize",
+      "kind": "function",
+      "name": "getSize",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 468,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.getTitle",
+      "kind": "function",
+      "name": "getTitle",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 101,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getTitleBackgroundAlpha",
+      "kind": "function",
+      "name": "getTitleBackgroundAlpha",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 637,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getTitleBackgroundColor",
+      "kind": "function",
+      "name": "getTitleBackgroundColor",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 613,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getTitleBackgroundTint",
+      "kind": "function",
+      "name": "getTitleBackgroundTint",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 626,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getTitleTextColor",
+      "kind": "function",
+      "name": "getTitleTextColor",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 602,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.getTitleTextSize",
+      "kind": "function",
+      "name": "getTitleTextSize",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 591,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.hide",
       "kind": "function",
       "name": "hide",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 432,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 173,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 173,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 432,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.hideDelayed",
+      "kind": "function",
+      "name": "hideDelayed",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 779,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19207,11 +19581,21 @@
       "name": "info",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 34,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+        },
+        {
+          "line": 247,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 247,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 34,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
       }
     },
     {
@@ -19228,6 +19612,52 @@
       "source": {
         "line": 221,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.isShowing",
+      "kind": "property",
+      "name": "isShowing",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 92,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.isTouchable",
+      "kind": "function",
+      "name": "isTouchable",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 494,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.isTouchThrough",
+      "kind": "function",
+      "name": "isTouchThrough",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 503,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19255,11 +19685,35 @@
       "name": "log",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 30,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+        },
+        {
+          "line": 235,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 235,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 30,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.logEntries",
+      "kind": "property",
+      "name": "logEntries",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 89,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19271,11 +19725,21 @@
       "name": "print",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 22,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+        },
+        {
+          "line": 265,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 265,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 22,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
       }
     },
     {
@@ -19287,11 +19751,35 @@
       "name": "printAllStackTrace",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 144,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 561,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 561,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 144,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.printf",
+      "kind": "function",
+      "name": "printf",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 8,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
       }
     },
     {
@@ -19333,11 +19821,53 @@
       "name": "reset",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 408,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 180,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 180,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 408,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.resetBackgroundAlpha",
+      "kind": "function",
+      "name": "resetBackgroundAlpha",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 752,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "ScriptInterface"
+      ],
+      "id": "console.resetContentBackgroundAlpha",
+      "kind": "function",
+      "name": "resetContentBackgroundAlpha",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 719,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19358,98 +19888,208 @@
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "ScriptInterface"
+      ],
+      "id": "console.resetTitleBackgroundAlpha",
+      "kind": "function",
+      "name": "resetTitleBackgroundAlpha",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 648,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.send",
+      "kind": "function",
+      "name": "send",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 228,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setBackgroundAlpha",
       "kind": "function",
       "name": "setBackgroundAlpha",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 746,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 498,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 498,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 746,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setBackgroundColor",
       "kind": "function",
       "name": "setBackgroundColor",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 734,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 484,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 484,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 734,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setBackgroundTint",
       "kind": "function",
       "name": "setBackgroundTint",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 740,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 491,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 491,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 740,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.setConsoleView",
+      "kind": "function",
+      "name": "setConsoleView",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 129,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setContentBackgroundAlpha",
       "kind": "function",
       "name": "setContentBackgroundAlpha",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 711,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 463,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 463,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 711,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setContentBackgroundColor",
       "kind": "function",
       "name": "setContentBackgroundColor",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 686,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 449,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 449,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 686,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setContentBackgroundTint",
       "kind": "function",
       "name": "setContentBackgroundTint",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 697,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 456,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 456,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 697,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19470,50 +20110,83 @@
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setContentTextColors",
       "kind": "function",
       "name": "setContentTextColors",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 675,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 445,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 445,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 675,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setContentTextSize",
       "kind": "function",
       "name": "setContentTextSize",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 662,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 409,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 409,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 662,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setExitOnClose",
       "kind": "function",
       "name": "setExitOnClose",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 758,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 505,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 505,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 758,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19534,66 +20207,126 @@
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "ScriptInterface"
+      ],
+      "id": "console.setGravity",
+      "kind": "function",
+      "name": "setGravity",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 539,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setPosition",
       "kind": "function",
       "name": "setPosition",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 506,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 350,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 350,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 506,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setSize",
       "kind": "function",
       "name": "setSize",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 458,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 340,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 340,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 458,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTextColor",
       "kind": "function",
       "name": "setTextColor",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 728,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 477,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 477,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 728,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTextSize",
       "kind": "function",
       "name": "setTextSize",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 722,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 470,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 470,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 722,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19605,139 +20338,253 @@
       "name": "setTitle",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 95,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 360,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 360,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 95,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleBackgroundAlpha",
       "kind": "function",
       "name": "setTitleBackgroundAlpha",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 640,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 395,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 395,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 640,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleBackgroundColor",
       "kind": "function",
       "name": "setTitleBackgroundColor",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 616,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 381,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 381,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 616,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleBackgroundTint",
       "kind": "function",
       "name": "setTitleBackgroundTint",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 629,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 388,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 388,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 629,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleIconsTint",
       "kind": "function",
       "name": "setTitleIconsTint",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 651,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 402,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 402,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 651,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleTextColor",
       "kind": "function",
       "name": "setTitleTextColor",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 605,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 374,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 374,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 605,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTitleTextSize",
       "kind": "function",
       "name": "setTitleTextSize",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 594,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 367,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 367,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 594,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.setTouchable",
       "kind": "function",
       "name": "setTouchable",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 475,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 518,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 518,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 475,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
       "annotations": [
-        "RhinoRuntimeFunctionInterface"
+        "ScriptInterface"
+      ],
+      "id": "console.setTouchThrough",
+      "kind": "function",
+      "name": "setTouchThrough",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 486,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface",
+        "ScriptInterface"
       ],
       "id": "console.show",
       "kind": "function",
       "name": "show",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 327,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+        },
+        {
+          "line": 163,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 163,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 327,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -19773,6 +20620,20 @@
       }
     },
     {
+      "annotations": [],
+      "id": "console.uiHandler",
+      "kind": "property",
+      "name": "uiHandler",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 57,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      }
+    },
+    {
       "annotations": [
         "RhinoRuntimeFunctionInterface"
       ],
@@ -19781,11 +20642,21 @@
       "name": "verbose",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 26,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+        },
+        {
+          "line": 241,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 241,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 26,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
       }
     },
     {
@@ -19797,11 +20668,35 @@
       "name": "warn",
       "overloads": [],
       "owner": "console",
+      "providers": [
+        {
+          "line": 38,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+        },
+        {
+          "line": 253,
+          "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        }
+      ],
       "public": true,
       "signatures": [],
       "source": {
-        "line": 253,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 38,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "console.write",
+      "kind": "function",
+      "name": "write",
+      "overloads": [],
+      "owner": "console",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 157,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       }
     },
     {
@@ -21765,6 +22660,20 @@
     },
     {
       "annotations": [],
+      "id": "events.addListener",
+      "kind": "function",
+      "name": "addListener",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "events.broadcast",
       "kind": "property",
       "name": "broadcast",
@@ -21775,6 +22684,48 @@
       "source": {
         "line": 88,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.defaultMaxListeners",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.emit",
+      "kind": "function",
+      "name": "emit",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.emitSticky",
+      "kind": "function",
+      "name": "emitSticky",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -21795,6 +22746,48 @@
     },
     {
       "annotations": [],
+      "id": "events.eventNames",
+      "kind": "function",
+      "name": "eventNames",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.getMaxListeners",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.getTimer",
+      "kind": "function",
+      "name": "getTimer",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "events.getTouchEventTimeout",
       "kind": "function",
       "name": "getTouchEventTimeout",
@@ -21805,6 +22798,34 @@
       "source": {
         "line": 230,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.listenerCount",
+      "kind": "function",
+      "name": "listenerCount",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.listeners",
+      "kind": "function",
+      "name": "listeners",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -21861,6 +22882,34 @@
       "source": {
         "line": 140,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.on",
+      "kind": "function",
+      "name": "on",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 173,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.once",
+      "kind": "function",
+      "name": "once",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 179,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -21991,6 +23040,34 @@
     },
     {
       "annotations": [],
+      "id": "events.prependListener",
+      "kind": "function",
+      "name": "prependListener",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.prependOnceListener",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "events.recycle",
       "kind": "function",
       "name": "recycle",
@@ -22033,6 +23110,20 @@
     },
     {
       "annotations": [],
+      "id": "events.removeAllListeners",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "events.removeAllTouchListeners",
       "kind": "function",
       "name": "removeAllTouchListeners",
@@ -22043,6 +23134,20 @@
       "source": {
         "line": 225,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.removeListener",
+      "kind": "function",
+      "name": "removeListener",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -22085,6 +23190,20 @@
       "source": {
         "line": 151,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "events.setMaxListeners",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "overloads": [],
+      "owner": "events",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -71848,6 +72967,34 @@
     },
     {
       "annotations": [],
+      "id": "sensors.addListener",
+      "kind": "function",
+      "name": "addListener",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.defaultMaxListeners",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "sensors.delay",
       "kind": "property",
       "name": "delay",
@@ -71858,6 +73005,62 @@
       "source": {
         "line": 26,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Sensors.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.emit",
+      "kind": "function",
+      "name": "emit",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.emitSticky",
+      "kind": "function",
+      "name": "emitSticky",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.eventNames",
+      "kind": "function",
+      "name": "eventNames",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.getMaxListeners",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -71876,6 +73079,20 @@
     },
     {
       "annotations": [],
+      "id": "sensors.getTimer",
+      "kind": "function",
+      "name": "getTimer",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "sensors.ignoresUnsupportedSensor",
       "kind": "property",
       "name": "ignoresUnsupportedSensor",
@@ -71890,6 +73107,90 @@
     },
     {
       "annotations": [],
+      "id": "sensors.listenerCount",
+      "kind": "function",
+      "name": "listenerCount",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.listeners",
+      "kind": "function",
+      "name": "listeners",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.on",
+      "kind": "function",
+      "name": "on",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 173,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.once",
+      "kind": "function",
+      "name": "once",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 179,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.prependListener",
+      "kind": "function",
+      "name": "prependListener",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.prependOnceListener",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "sensors.register",
       "kind": "function",
       "name": "register",
@@ -71900,6 +73201,48 @@
       "source": {
         "line": 65,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Sensors.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.removeAllListeners",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.removeListener",
+      "kind": "function",
+      "name": "removeListener",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "sensors.setMaxListeners",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "overloads": [],
+      "owner": "sensors",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -75718,6 +77061,20 @@
       }
     },
     {
+      "annotations": [],
+      "id": "ui.getDefaultValue",
+      "kind": "function",
+      "name": "getDefaultValue",
+      "overloads": [],
+      "owner": "ui",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 62,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
+      }
+    },
+    {
       "annotations": [
         "RhinoRuntimeFunctionInterface"
       ],
@@ -75779,6 +77136,20 @@
       "source": {
         "line": 721,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "ui.getWithoutProxy",
+      "kind": "function",
+      "name": "getWithoutProxy",
+      "overloads": [],
+      "owner": "ui",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 64,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
       }
     },
     {
@@ -77995,6 +79366,20 @@
     },
     {
       "annotations": [],
+      "id": "webSocket.instance.addListener",
+      "kind": "function",
+      "name": "addListener",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
       "id": "webSocket.instance.cancel",
       "kind": "function",
       "name": "cancel",
@@ -78003,7 +79388,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 55,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },
@@ -78017,7 +79402,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 17,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },
@@ -78031,8 +79416,64 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 57,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.defaultMaxListeners",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.emit",
+      "kind": "function",
+      "name": "emit",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.emitSticky",
+      "kind": "function",
+      "name": "emitSticky",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.eventNames",
+      "kind": "function",
+      "name": "eventNames",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -78045,8 +79486,64 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 76,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.getMaxListeners",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.getTimer",
+      "kind": "function",
+      "name": "getTimer",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.listenerCount",
+      "kind": "function",
+      "name": "listenerCount",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.listeners",
+      "kind": "function",
+      "name": "listeners",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -78059,7 +79556,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 72,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },
@@ -78073,8 +79570,36 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 73,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.prependListener",
+      "kind": "function",
+      "name": "prependListener",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.prependOnceListener",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -78087,7 +79612,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 64,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },
@@ -78101,8 +79626,36 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 40,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.removeAllListeners",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.removeListener",
+      "kind": "function",
+      "name": "removeListener",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -78115,7 +79668,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 66,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },
@@ -78129,8 +79682,22 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 68,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      }
+    },
+    {
+      "annotations": [],
+      "id": "webSocket.instance.setMaxListeners",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "overloads": [],
+      "owner": "webSocket.instance",
+      "public": true,
+      "signatures": [],
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
       }
     },
     {
@@ -78143,7 +79710,7 @@
       "public": true,
       "signatures": [],
       "source": {
-        "line": 15,
+        "line": 18,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       }
     },

@@ -58,8 +58,32 @@ function patternToRegExp(pattern: string): RegExp {
   return new RegExp(`^${escaped}$`)
 }
 
-function matches(pattern: string, symbolId: string): boolean {
-  return patternToRegExp(pattern).test(symbolId)
+export interface CoverageSymbolMatcher<T extends { readonly id: string }> {
+  match(pattern: string, candidates?: ReadonlyMap<string, T>): readonly T[]
+}
+
+export function createCoverageSymbolMatcher<T extends { readonly id: string }>(
+  symbols: readonly T[],
+): CoverageSymbolMatcher<T> {
+  const symbolsById = new Map(symbols.map((symbol) => [symbol.id, symbol]))
+  const wildcardPatterns = new Map<string, RegExp>()
+
+  return {
+    match(pattern, candidates = symbolsById) {
+      if (!pattern.includes('*')) {
+        const symbol = candidates.get(pattern)
+        return symbol ? [symbol] : []
+      }
+      let expression = wildcardPatterns.get(pattern)
+      if (!expression) {
+        expression = patternToRegExp(pattern)
+        wildcardPatterns.set(pattern, expression)
+      }
+      return [...candidates.values()].filter((symbol) =>
+        expression.test(symbol.id),
+      )
+    },
+  }
 }
 
 function formatAjvErrors(
@@ -191,6 +215,7 @@ export async function validateApiSurface(
   )
 
   const symbolsById = new Map(symbols.map((symbol) => [symbol.id, symbol]))
+  const symbolMatcher = createCoverageSymbolMatcher(publicSymbols)
   if (manifest.source.commit !== coverage.sourceRef) {
     errors.push({
       code: 'source-ref-mismatch',
@@ -214,9 +239,7 @@ export async function validateApiSurface(
         })
         validRule = false
       }
-      const patternMatches = publicSymbols.filter((symbol) =>
-        matches(pattern, symbol.id),
-      )
+      const patternMatches = symbolMatcher.match(pattern)
       if (patternMatches.length === 0) {
         errors.push({
           code: 'invalid-pattern',
@@ -229,9 +252,7 @@ export async function validateApiSurface(
     }
 
     for (const pattern of rule.exclude ?? []) {
-      const excluded = [...included.values()].filter((symbol) =>
-        matches(pattern, symbol.id),
-      )
+      const excluded = symbolMatcher.match(pattern, included)
       if (excluded.length === 0) {
         errors.push({
           code: 'invalid-pattern',

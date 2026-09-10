@@ -80,6 +80,7 @@ export interface DynamicOverrideMember {
 export interface DynamicOverride {
   readonly id: string
   readonly className: string
+  readonly sourceClassName?: string
   readonly key?: string
   readonly owner?: string
   readonly idPrefix?: string

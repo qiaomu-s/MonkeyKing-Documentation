@@ -147,6 +147,29 @@ function fixtureProjectRoot(): string {
 }
 
 describe('API surface checker', () => {
+  test('indexes exact symbol patterns while preserving cached wildcard matching', async () => {
+    const checker = await loadChecker()
+    expect(checker, 'scripts/api/checker.ts must exist').not.toBeNull()
+    if (!checker) return
+
+    const symbols = Array.from({ length: 20_000 }, (_, index) => ({
+      id: `bulk.symbol-${index}`,
+      public: true,
+    }))
+    const matcher = checker.createCoverageSymbolMatcher(symbols)
+    const started = performance.now()
+    let exactMatches = 0
+    for (const symbol of symbols) {
+      exactMatches += matcher.match(symbol.id).length
+    }
+    const exactDuration = performance.now() - started
+
+    expect(exactMatches).toBe(symbols.length)
+    expect(exactDuration).toBeLessThan(1_500)
+    expect(matcher.match('bulk.symbol-1*')).toHaveLength(11_111)
+    expect(matcher.match('bulk.symbol-1*')).toHaveLength(11_111)
+  })
+
   test('accepts a complete unique mapping with existing pages and anchors', async () => {
     const checker = await loadChecker()
     expect(checker, 'scripts/api/checker.ts must exist').not.toBeNull()

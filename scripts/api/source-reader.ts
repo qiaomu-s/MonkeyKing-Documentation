@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process'
-import { basename, resolve } from 'node:path'
+import { resolve } from 'node:path'
+
+export const MONKEYKING_SOURCE_REPOSITORY = 'qiaomu-s/AutoJs6'
 
 export interface SourceReader {
   readonly repositoryName: string
@@ -8,26 +10,13 @@ export interface SourceReader {
   readFile(path: string): string
 }
 
-function normalizeRepositoryName(remote: string, sourceDirectory: string): string {
-  const trimmed = remote.trim().replace(/\.git$/, '')
-  const githubMatch = trimmed.match(
-    /github\.com[/:]([^/]+\/[^/]+)$/,
-  )
-  return githubMatch?.[1] ?? basename(sourceDirectory)
-}
-
 export class GitSourceReader implements SourceReader {
   readonly sourceDirectory: string
-  readonly repositoryName: string
+  readonly repositoryName = MONKEYKING_SOURCE_REPOSITORY
   private resolvedCommit: string | null = null
 
   constructor(sourceDirectory: string) {
     this.sourceDirectory = resolve(sourceDirectory)
-    const remote = this.git(['config', '--get', 'remote.origin.url'], true)
-    this.repositoryName = normalizeRepositoryName(
-      remote || '',
-      this.sourceDirectory,
-    )
   }
 
   resolveRef(ref: string): string {

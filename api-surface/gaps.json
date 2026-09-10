@@ -2005,6 +2005,306 @@
     {
       "expectedPage": "docs/api/system/console.md",
       "kind": "function",
+      "name": "assertTrue",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.assertTrue in docs/api/system/console.md.",
+      "source": {
+        "line": 46,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      },
+      "symbolId": "console.assertTrue"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "property",
+      "name": "configurator",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.configurator in docs/api/system/console.md.",
+      "source": {
+        "line": 87,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.configurator"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "copyAll",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.copyAll in docs/api/system/console.md.",
+      "source": {
+        "line": 167,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.copyAll"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "export",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.export in docs/api/system/console.md.",
+      "source": {
+        "line": 202,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.export"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "format",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.format in docs/api/system/console.md.",
+      "source": {
+        "line": 12,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      },
+      "symbolId": "console.format"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getContentBackgroundAlpha",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getContentBackgroundAlpha in docs/api/system/console.md.",
+      "source": {
+        "line": 708,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getContentBackgroundAlpha"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getContentBackgroundColor",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getContentBackgroundColor in docs/api/system/console.md.",
+      "source": {
+        "line": 683,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getContentBackgroundColor"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getContentBackgroundTint",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getContentBackgroundTint in docs/api/system/console.md.",
+      "source": {
+        "line": 694,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getContentBackgroundTint"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getContentTextColors",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getContentTextColors in docs/api/system/console.md.",
+      "source": {
+        "line": 670,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getContentTextColors"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getContentTextSize",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getContentTextSize in docs/api/system/console.md.",
+      "source": {
+        "line": 659,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getContentTextSize"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getExitOnClose",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getExitOnClose in docs/api/system/console.md.",
+      "source": {
+        "line": 769,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getExitOnClose"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getGravity",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getGravity in docs/api/system/console.md.",
+      "source": {
+        "line": 585,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getGravity"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getPosition",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getPosition in docs/api/system/console.md.",
+      "source": {
+        "line": 530,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getPosition"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getSize",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getSize in docs/api/system/console.md.",
+      "source": {
+        "line": 468,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getSize"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitle",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitle in docs/api/system/console.md.",
+      "source": {
+        "line": 101,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitle"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitleBackgroundAlpha",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitleBackgroundAlpha in docs/api/system/console.md.",
+      "source": {
+        "line": 637,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitleBackgroundAlpha"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitleBackgroundColor",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitleBackgroundColor in docs/api/system/console.md.",
+      "source": {
+        "line": 613,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitleBackgroundColor"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitleBackgroundTint",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitleBackgroundTint in docs/api/system/console.md.",
+      "source": {
+        "line": 626,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitleBackgroundTint"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitleTextColor",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitleTextColor in docs/api/system/console.md.",
+      "source": {
+        "line": 602,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitleTextColor"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "getTitleTextSize",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.getTitleTextSize in docs/api/system/console.md.",
+      "source": {
+        "line": 591,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.getTitleTextSize"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "hideDelayed",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.hideDelayed in docs/api/system/console.md.",
+      "source": {
+        "line": 779,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.hideDelayed"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "isTouchable",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.isTouchable in docs/api/system/console.md.",
+      "source": {
+        "line": 494,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.isTouchable"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "isTouchThrough",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.isTouchThrough in docs/api/system/console.md.",
+      "source": {
+        "line": 503,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.isTouchThrough"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "property",
+      "name": "logEntries",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.logEntries in docs/api/system/console.md.",
+      "source": {
+        "line": 89,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.logEntries"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "printf",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.printf in docs/api/system/console.md.",
+      "source": {
+        "line": 8,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AbstractConsole.kt"
+      },
+      "symbolId": "console.printf"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
       "name": "println",
       "owner": "console",
       "reason": "No addressable member section exists for console.println in docs/api/system/console.md.",
@@ -2017,14 +2317,74 @@
     {
       "expectedPage": "docs/api/system/console.md",
       "kind": "function",
+      "name": "resetBackgroundAlpha",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.resetBackgroundAlpha in docs/api/system/console.md.",
+      "source": {
+        "line": 752,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.resetBackgroundAlpha"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "resetContentBackgroundAlpha",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.resetContentBackgroundAlpha in docs/api/system/console.md.",
+      "source": {
+        "line": 719,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.resetContentBackgroundAlpha"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "resetTitleBackgroundAlpha",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.resetTitleBackgroundAlpha in docs/api/system/console.md.",
+      "source": {
+        "line": 648,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.resetTitleBackgroundAlpha"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "send",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.send in docs/api/system/console.md.",
+      "source": {
+        "line": 228,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.send"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
       "name": "setBackgroundTint",
       "owner": "console",
       "reason": "No addressable member section exists for console.setBackgroundTint in docs/api/system/console.md.",
       "source": {
-        "line": 491,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 740,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       },
       "symbolId": "console.setBackgroundTint"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "setConsoleView",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.setConsoleView in docs/api/system/console.md.",
+      "source": {
+        "line": 129,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.setConsoleView"
     },
     {
       "expectedPage": "docs/api/system/console.md",
@@ -2033,8 +2393,8 @@
       "owner": "console",
       "reason": "No addressable member section exists for console.setContentBackgroundTint in docs/api/system/console.md.",
       "source": {
-        "line": 456,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 697,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       },
       "symbolId": "console.setContentBackgroundTint"
     },
@@ -2045,10 +2405,22 @@
       "owner": "console",
       "reason": "No addressable member section exists for console.setContentTextColors in docs/api/system/console.md.",
       "source": {
-        "line": 445,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 675,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       },
       "symbolId": "console.setContentTextColors"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "setGravity",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.setGravity in docs/api/system/console.md.",
+      "source": {
+        "line": 539,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.setGravity"
     },
     {
       "expectedPage": "docs/api/system/console.md",
@@ -2057,10 +2429,46 @@
       "owner": "console",
       "reason": "No addressable member section exists for console.setTitleBackgroundTint in docs/api/system/console.md.",
       "source": {
-        "line": 388,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
+        "line": 629,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
       },
       "symbolId": "console.setTitleBackgroundTint"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "setTouchThrough",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.setTouchThrough in docs/api/system/console.md.",
+      "source": {
+        "line": 486,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.setTouchThrough"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "property",
+      "name": "uiHandler",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.uiHandler in docs/api/system/console.md.",
+      "source": {
+        "line": 57,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.uiHandler"
+    },
+    {
+      "expectedPage": "docs/api/system/console.md",
+      "kind": "function",
+      "name": "write",
+      "owner": "console",
+      "reason": "No addressable member section exists for console.write in docs/api/system/console.md.",
+      "source": {
+        "line": 157,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/console/ConsoleImpl.kt"
+      },
+      "symbolId": "console.write"
     },
     {
       "expectedPage": "docs/api/media/canvas.md",
@@ -2840,6 +3248,30 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Events.java"
       },
       "symbolId": "events.broadcast"
+    },
+    {
+      "expectedPage": "docs/api/system/events.md",
+      "kind": "function",
+      "name": "emitSticky",
+      "owner": "events",
+      "reason": "No addressable member section exists for events.emitSticky in docs/api/system/events.md.",
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "events.emitSticky"
+    },
+    {
+      "expectedPage": "docs/api/system/events.md",
+      "kind": "function",
+      "name": "getTimer",
+      "owner": "events",
+      "reason": "No addressable member section exists for events.getTimer in docs/api/system/events.md.",
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "events.getTimer"
     },
     {
       "expectedPage": "docs/api/system/events.md",
@@ -39783,6 +40215,30 @@
     },
     {
       "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "addListener",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.addListener in docs/api/system/sensors.md.",
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.addListener"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.defaultMaxListeners in docs/api/system/sensors.md.",
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.defaultMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
       "kind": "property",
       "name": "delay",
       "owner": "sensors",
@@ -39796,6 +40252,54 @@
     {
       "expectedPage": "docs/api/system/sensors.md",
       "kind": "function",
+      "name": "emit",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.emit in docs/api/system/sensors.md.",
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.emit"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "emitSticky",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.emitSticky in docs/api/system/sensors.md.",
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.emitSticky"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "eventNames",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.eventNames in docs/api/system/sensors.md.",
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.eventNames"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.getMaxListeners in docs/api/system/sensors.md.",
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.getMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
       "name": "getSensor",
       "owner": "sensors",
       "reason": "No addressable member section exists for sensors.getSensor in docs/api/system/sensors.md.",
@@ -39804,6 +40308,126 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Sensors.java"
       },
       "symbolId": "sensors.getSensor"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "getTimer",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.getTimer in docs/api/system/sensors.md.",
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.getTimer"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "listenerCount",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.listenerCount in docs/api/system/sensors.md.",
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.listenerCount"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "listeners",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.listeners in docs/api/system/sensors.md.",
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.listeners"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "on",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.on in docs/api/system/sensors.md.",
+      "source": {
+        "line": 173,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.on"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "once",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.once in docs/api/system/sensors.md.",
+      "source": {
+        "line": 179,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.once"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "prependListener",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.prependListener in docs/api/system/sensors.md.",
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.prependListener"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.prependOnceListener in docs/api/system/sensors.md.",
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.prependOnceListener"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.removeAllListeners in docs/api/system/sensors.md.",
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.removeAllListeners"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "removeListener",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.removeListener in docs/api/system/sensors.md.",
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.removeListener"
+    },
+    {
+      "expectedPage": "docs/api/system/sensors.md",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "owner": "sensors",
+      "reason": "No addressable member section exists for sensors.setMaxListeners in docs/api/system/sensors.md.",
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "sensors.setMaxListeners"
     },
     {
       "expectedPage": "docs/api/system/sensors.md",
@@ -42304,6 +42928,18 @@
     {
       "expectedPage": "docs/api/automation/ui.md",
       "kind": "function",
+      "name": "getDefaultValue",
+      "owner": "ui",
+      "reason": "No addressable member section exists for ui.getDefaultValue in docs/api/automation/ui.md.",
+      "source": {
+        "line": 62,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
+      },
+      "symbolId": "ui.getDefaultValue"
+    },
+    {
+      "expectedPage": "docs/api/automation/ui.md",
+      "kind": "function",
       "name": "getNavigationBarHeight",
       "owner": "ui",
       "reason": "No addressable member section exists for ui.getNavigationBarHeight in docs/api/automation/ui.md.",
@@ -42348,6 +42984,18 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
       },
       "symbolId": "ui.getVisibleStatusBarHeight"
+    },
+    {
+      "expectedPage": "docs/api/automation/ui.md",
+      "kind": "function",
+      "name": "getWithoutProxy",
+      "owner": "ui",
+      "reason": "No addressable member section exists for ui.getWithoutProxy in docs/api/automation/ui.md.",
+      "source": {
+        "line": 64,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
+      },
+      "symbolId": "ui.getWithoutProxy"
     },
     {
       "expectedPage": "docs/api/automation/ui.md",
@@ -43719,15 +44367,123 @@
     },
     {
       "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "addListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.addListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.addListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
       "kind": "property",
       "name": "client",
       "owner": "webSocket.instance",
       "reason": "No addressable member section exists for webSocket.instance.client in docs/api/network/web-socket.md.",
       "source": {
-        "line": 15,
+        "line": 17,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       },
       "symbolId": "webSocket.instance.client"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.defaultMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.defaultMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "emit",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.emit in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.emit"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "emitSticky",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.emitSticky in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.emitSticky"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "eventNames",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.eventNames in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.eventNames"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.getMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.getMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "getTimer",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.getTimer in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.getTimer"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "listenerCount",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.listenerCount in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.listenerCount"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "listeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.listeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.listeners"
     },
     {
       "expectedPage": "docs/api/network/web-socket.md",
@@ -43736,10 +44492,70 @@
       "owner": "webSocket.instance",
       "reason": "No addressable member section exists for webSocket.instance.once in docs/api/network/web-socket.md.",
       "source": {
-        "line": 15,
+        "line": 73,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       },
       "symbolId": "webSocket.instance.once"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "prependListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.prependListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.prependListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.prependOnceListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.prependOnceListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.removeAllListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.removeAllListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "removeListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.removeListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.removeListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.setMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.setMaxListeners"
     },
     {
       "expectedPage": "docs/api/network/web-socket.md",
@@ -43748,7 +44564,7 @@
       "owner": "webSocket.instance",
       "reason": "No addressable member section exists for webSocket.instance.url in docs/api/network/web-socket.md.",
       "source": {
-        "line": 15,
+        "line": 18,
         "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
       },
       "symbolId": "webSocket.instance.url"
