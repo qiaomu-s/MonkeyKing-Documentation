@@ -1,57 +1,601 @@
 # 模块 (Module)
 
+Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 `require.cache` 返回同一真值导出。固定提交对假值导出的缓存例外见 [require.cache](#p-require-cache)。
+
+模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 `node_modules`，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。
+
+本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+
 ---
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+## [p] module
+
+**`≤ 6.6.4`** **`MODULE_LOCAL`**
+
+- { [Module](#module-对象) }
+
+当前文件的模块对象。它只在模块作用域内使用，不是普通脚本的全局变量。
+
+## [p] exports
+
+**`≤ 6.6.4`** **`MODULE_LOCAL`**
+
+- { [Object](../types/data-types.md#object) }
+
+初始时等价于 `module.exports`。给 `exports` 增加属性会修改默认导出对象；把 `exports` 本身重新赋值不会替换模块导出，替换导出必须赋值给 `module.exports`。
+
+```js
+// math.js
+exports.square = value => value * value;
+
+// factory.js
+module.exports = name => ({ name });
+```
+
+## [m] require
+
+### require(id, parent?)
+
+**`≤ 6.6.4`**
+
+- **id** { [string](../types/data-types.md#string) } - 模块标识或路径
+- **[ parent ]** { [Module](#module-对象) } - 解析相对路径时使用的父模块；普通脚本通常省略
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 模块的 `module.exports`
+- **异常**：找不到模块、文件读取失败、JSON 或包描述解析失败时抛出异常
+- **线程 / 副作用**：同步解析、读取并执行首次加载的模块；可能产生文件、网络和模块初始化副作用
+
+同步解析并加载模块。省略扩展名时依次尝试 JavaScript 和 JSON；目录会读取 `package.json` 的 `main`，否则尝试 `index.js`。相对路径按调用模块所在目录解析，顶层脚本按当前工作目录解析。
+
+加载失败时抛出带 `code` 的模块错误，常见值包括 `MODULE_NOT_FOUND`、`IO_ERROR` 和 `PARSE_ERROR`。HTTP/HTTPS 标识交给原生加载器处理，可能执行同步网络访问；不要在 UI 线程加载慢速模块。
+
+```js
+const local = require('./lib/math');
+const settings = require('./settings.json');
+
+console.log(local.square(6));
+console.log(settings.theme);
+```
+
+## [p] require.cache
+
+**`≤ 6.6.4`**
+
+- { [Object](../types/data-types.md#object) }
+- **异常**：读取本身不抛出模块错误
+- **副作用 / 生命周期**：删除或替换成员会改变当前运行时之后的加载行为
+
+以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 `false`、`0`、空字符串或 `null` 时，固定提交的真值判断不会形成稳定缓存命中。删除某个键可让下一次 `require` 重新加载对应模块，这可能重复注册监听器或产生其他副作用。
+
+```js
+const path = require.resolve('./counter');
+delete require.cache[path];
+const fresh = require('./counter');
+```
+
+## [m] require.resolve
+
+### require.resolve(id, parent?)
+
+**`≤ 6.6.4`**
+
+- **id** { [string](../types/data-types.md#string) }
+- **[ parent ]** { [Module](#module-对象) } - 用于确定搜索起点的父模块
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) | [Object](../types/data-types.md#object) | [boolean](../types/data-types.md#boolean) } - 文件路径、内置模块描述对象或 `false`
+- **异常**：无效 package.json 会抛出 `PARSE_ERROR`；底层路径查询也可能抛出 I/O 异常
+- **副作用**：不执行目标模块，但会访问文件系统或内置资源索引
+
+只执行解析，不运行目标模块。内置模块返回含 `path` 与 `core` 的资源描述对象，普通文件返回规范化路径，无法解析时返回 `false`。
+
+```js
+const resolved = require.resolve('./lib/math');
+console.log(resolved || 'not found');
+```
+
+## [m] require.paths
+
+### require.paths()
+
+**`≤ 6.6.4`**
+
+- <ins>**returns**</ins> { [string](../types/data-types.md#string)[] }
+- **异常**：读取 Java 系统属性或环境变量失败时可能抛出异常
+- **副作用**：无
+
+返回额外模块搜索路径，包括用户目录下的 `.node_modules`、`.node_libraries`，以及 Java 系统环境中的 `NODE_PATH`。
+
+```js
+console.log(require.paths());
+```
+
+## [p] require.NODE_PATH
+
+**`≤ 6.6.4`** **`Writable`**
+
+- { [string](../types/data-types.md#string) | [undefined](../types/data-types.md#undefined) }
+
+显式附加模块搜索路径。未设置时 `require.paths()` 读取进程环境变量 `NODE_PATH`；路径分隔符在 Windows 为分号，其他系统为冒号。
+
+```js
+require.NODE_PATH = files.join(files.cwd(), 'vendor');
+console.log(require.paths());
+```
+
+## [p] require.debug
+
+**`≤ 6.6.4`** **`Writable`**
+
+- { [boolean](../types/data-types.md#boolean) } - 固定提交中默认为 `true`
+
+控制解析失败并回退到原生加载器时是否向 Java 标准输出打印诊断信息。
+
+```js
+require.debug = false;
+```
+
+## [p] require.extensions
+
+**`≤ 6.6.4`** **`Low-level`**
+
+- { [Object](../types/data-types.md#object) }
+
+固定提交初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。
+
+```js
+console.log(Object.keys(require.extensions)); // []
+```
+
+## [p] require.root
+
+**`≤ 6.6.4`**
+
+- { [string](../types/data-types.md#string) }
+- **异常**：赋值本身不校验目录是否存在
+- **副作用 / 生命周期**：影响当前运行时之后的顶层模块解析
+
+顶层模块解析根目录，初始化为脚本运行时当前工作目录。修改它会影响后续顶层模块解析。
+
+```js
+const previousRoot = require.root;
+require.root = files.cwd();
+console.log(require.root);
+require.root = previousRoot;
+```
 
 ---
 
-Monkey King 有一个简单的模块加载系统.  在 Monkey King 中, 文件和模块是一一对应的（每个文件被视为一个独立的模块）.
+## Module 对象
 
-例子, 假设有一个名为 foo.js 的文件：
+### new Module(id, parent?, core?)
 
+**`≤ 6.6.4`**
+
+- **id** { [string](../types/data-types.md#string) }
+- **[ parent ]** { [Module](#module-对象) }
+- **[ core ]** { [boolean](../types/data-types.md#boolean) } - 省略时实际值为 `undefined`，按假值处理
+- <ins>**returns**</ins> { [Module](#module-对象) }
+- **异常**：构造器本身不校验路径；后续加载失败由 require 抛出
+- **副作用 / 生命周期**：有 parent 时把新模块追加到 `parent.children`，并为初始 exports 写入缓存
+
+`Module` 是永久全局构造器，主要由加载器使用。普通脚本通常只需使用当前文件的 `module` 和 `require`。
+
+```js
+const child = new Module('virtual.js', module, false);
+console.log(child.id); // virtual.js
 ```
-var circle = require('circle.js');
-console.log("半径为 4 的圆的面积是 %d", circle.area(4));
+
+### Module#id
+
+**`≤ 6.6.4`**
+
+- { [string](../types/data-types.md#string) } - 构造时的模块标识
+- **副作用**：可写；修改后会影响以该模块为 parent 时的根目录计算
+
+```js
+console.log(module.id);
 ```
 
-在第一行中, foo.js 加载了同一目录下的 circle.js 模块.
+### Module#filename
 
-circle.js 文件的内容为：
+**`≤ 6.6.4`**
 
+- { [string](../types/data-types.md#string) } - 初始值与 id 相同，加载后通常为解析路径
+- **副作用**：exports setter 使用该值作为 `require.cache` 的键
+
+```js
+console.log(module.filename);
 ```
-const PI = Math.PI;
 
-var circle = {};
+### Module#exports
 
-circle.area = function (r) {
-  return PI * r * r;
+**`≤ 6.6.4`**
+
+- **&lt;get&gt; / &lt;set&gt;** { [any](../types/data-types.md#any) }
+- **异常**：无类型限制
+- **副作用 / 生命周期**：赋值同时更新 `require.cache[module.filename]`
+
+```js
+module.exports = value => value * 2;
+```
+
+### Module#parent
+
+**`≤ 6.6.4`**
+
+- { [Module](#module-对象) | [undefined](../types/data-types.md#undefined) }
+- **副作用**：可写，但手动修改不会自动维护原父模块的 children
+
+```js
+console.log(module.parent && module.parent.filename);
+```
+
+### Module#children
+
+**`≤ 6.6.4`**
+
+- { [Module](#module-对象)[] }
+- **副作用 / 生命周期**：加载子模块或显式构造带 parent 的 Module 时追加成员
+
+```js
+require('./child');
+console.log(module.children.length);
+```
+
+### Module#loaded
+
+**`≤ 6.6.4`**
+
+- { [boolean](../types/data-types.md#boolean) } - 构造时为 `false`
+- **副作用**：可写；固定提交的 `jvm-npm.js` 不会自行把它改为 `true`，不应将它当作可靠加载完成信号
+
+```js
+console.log(module.loaded);
+```
+
+### Module#core
+
+**`≤ 6.6.4`**
+
+- { [boolean](../types/data-types.md#boolean) } - 是否为应用内置资源模块
+- **副作用**：读取无副作用
+
+```js
+console.log(Boolean(module.core));
+```
+
+### Module#require(id)
+
+**`≤ 6.6.4`**
+
+- **id** { [string](../types/data-types.md#string) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常、线程与副作用**：与全局 require 相同，但相对路径从当前 Module 解析
+
+```js
+const sibling = module.require('./sibling');
+```
+
+### Module.require(id, parent?)
+
+**`≤ 6.6.4`**
+
+- **id** { [string](../types/data-types.md#string) }
+- **[ parent ]** { [Module](#module-对象) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常、线程与副作用**：代理全局 require
+
+```js
+const value = Module.require('./lib/math', module);
+```
+
+### Module.runMain(main)
+
+**`≤ 6.6.4`** **`Low-level`**
+
+- **main** { [string](../types/data-types.md#string) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常**：入口无法解析或执行失败时抛出异常
+- **副作用**：解析并通过原生加载器执行入口文件
+
+```js
+// 独立启动入口时使用；普通依赖请使用 require。
+const exported = Module.runMain('./main.js');
+```
+
+### Module._load(file)
+
+**`≤ 6.6.4`** **`Internal`**
+
+- **file** { [string](../types/data-types.md#string) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常 / 副作用**：直接调用原生加载器，绕过 jvm-npm 的常规解析与缓存判断
+
+```js
+// 仅用于调试原生模块加载，不作为常规依赖入口。
+console.log(typeof Module._load);
+```
+
+---
+
+## Promise
+
+Monkey King 在引擎初始化时把内置 `promise.js` 以只读永久全局 `Promise` 注入。它基于 Promise polyfill，并增加 `await` 与 `wait`。回调经 `setImmediate` 或 `setTimeout(..., 0)` 调度；Promise 没有取消接口，生命周期持续到完成且引用被释放。
+
+### new Promise(executor)
+
+**`≤ 6.6.4`**
+
+- **executor** { [Function](../types/data-types.md#function) } - `(resolve, reject) => void`
+- <ins>**returns**</ins> { `Promise` }
+- **异常**：缺少 new 或 executor 不是函数时抛出 `TypeError`；executor 抛出的错误会转为拒绝
+- **副作用 / 生命周期**：立即同步执行 executor，完成回调异步调度
+
+```js
+const promise = new Promise(resolve => resolve(42));
+```
+
+### Promise#then(onFulfilled?, onRejected?)
+
+**`≤ 6.6.4`**
+
+- **onFulfilled / onRejected** { [Function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `Promise` } - 新的链式 Promise
+- **异常**：处理器抛出的错误会拒绝返回的 Promise
+- **副作用**：注册完成处理器
+
+```js
+Promise.resolve(21).then(value => value * 2);
+```
+
+### Promise#catch(onRejected)
+
+**`≤ 6.6.4`**
+
+- **onRejected** { [Function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `Promise` }
+- **异常 / 副作用**：等价于 `then(null, onRejected)`
+
+```js
+Promise.reject(new Error('failed')).catch(error => console.warn(error.message));
+```
+
+### Promise#finally(callback)
+
+**`≤ 6.6.4`**
+
+- **callback** { [Function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `Promise` }
+- **异常**：callback 不是函数或执行失败时，返回的 Promise 被拒绝
+- **副作用**：无论成功或失败都调度 callback，并保持原值或原拒绝原因
+
+```js
+Promise.resolve('ok').finally(() => console.log('finished'));
+```
+
+### Promise#await()
+
+**`≤ 6.6.4`** **`Continuation`**
+
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常**：Promise 拒绝或 continuation 未启用时抛出异常
+- **线程 / 副作用**：暂停当前 continuation，直至 Promise 完成
+
+```js
+const value = Promise.resolve(42).await();
+console.log(value); // 42
+```
+
+### Promise#wait()
+
+**`≤ 6.6.4`** **`Blocking`**
+
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常**：Promise 拒绝时重新抛出原因
+- **线程 / 副作用**：阻塞当前线程直到完成；不得在 UI 线程使用
+
+```js
+const result = Promise.resolve(21)
+    .then(value => value * 2)
+    .wait();
+
+console.log(result); // 42
+```
+
+### Promise.resolve(value?)
+
+**`≤ 6.6.4`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { `Promise` }
+- **异常**：读取 thenable 的 then 属性失败时返回拒绝态 Promise
+- **副作用**：已有同构 Promise 原样返回，其余值包装为完成态
+
+```js
+console.log(Promise.resolve(1) instanceof Promise); // true
+```
+
+### Promise.reject(reason?)
+
+**`≤ 6.6.4`**
+
+- **reason** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { `Promise` }
+- **副作用**：创建拒绝态 Promise；未注册处理器时通过 console.warn 发出警告
+
+```js
+Promise.reject('no').catch(reason => console.log(reason));
+```
+
+### Promise.all(values)
+
+**`≤ 6.6.4`**
+
+- **values** { [Array](../types/data-types.md#array) } - 数组或带 length 的类数组对象
+- <ins>**returns**</ins> { `Promise<any[]>` }
+- **异常**：输入不是类数组时返回拒绝态 Promise；任一成员拒绝时整体拒绝
+- **副作用**：订阅所有成员
+
+```js
+Promise.all([ Promise.resolve(1), 2 ]).then(values => console.log(values));
+```
+
+### Promise.allSettled(values)
+
+**`≤ 6.6.4`**
+
+- **values** { [Array](../types/data-types.md#array) } - 数组或带 length 的类数组对象
+- <ins>**returns**</ins> { `Promise<object[]>` }
+- **异常**：输入不是类数组时返回拒绝态 Promise
+- **副作用**：等待所有成员，结果包含 `fulfilled/value` 或 `rejected/reason`
+
+```js
+Promise.allSettled([ Promise.resolve(1), Promise.reject('no') ])
+    .then(results => console.log(results));
+```
+
+### Promise.race(values)
+
+**`≤ 6.6.4`**
+
+- **values** { [Array](../types/data-types.md#array) }
+- <ins>**returns**</ins> { `Promise` }
+- **异常**：输入不是类数组时返回拒绝态 Promise
+- **副作用**：订阅所有成员，以第一个完成或拒绝者决定结果
+
+```js
+Promise.race([ Promise.resolve('first'), Promise.resolve('second') ])
+    .then(value => console.log(value));
+```
+
+拒绝且未注册处理器的 Promise 会通过 `console.warn` 输出警告。`Promise._immediateFn` 与 `Promise._unhandledRejectionFn` 是 polyfill 内部钩子，不属于稳定业务 API。
+
+## ResultAdapter
+
+### new ResultAdapter()
+
+**`≤ 6.6.4`**
+
+- <ins>**returns**</ins> { ResultAdapter }
+- **异常**：UI 线程且 continuation 不可用时，首次等待可能失败
+- **线程 / 生命周期**：构造时根据线程选择 continuation 或可阻塞 disposable；一个实例应只完成一次
+
+把回调式异步接口转换成同步结果。在 UI 线程中使用 continuation；其他线程使用可阻塞的 disposable。
+
+```js
+const adapter = new ResultAdapter();
+```
+
+### ResultAdapter#setResult(result)
+
+**`≤ 6.6.4`**
+
+- **result** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：底层 continuation/disposable 已完成或失效时可能抛出异常
+- **副作用**：以成功值完成适配器并唤醒等待方
+
+```js
+const adapter = new ResultAdapter();
+setTimeout(() => adapter.setResult('ready'), 20);
+console.log(adapter.get()); // ready
+```
+
+### ResultAdapter#setError(error)
+
+**`≤ 6.6.4`**
+
+- **error** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：UI continuation 路径不接受 nullish 错误；重复完成也可能失败
+- **副作用**：以失败值完成适配器并唤醒等待方
+
+```js
+const adapter = new ResultAdapter();
+setTimeout(() => adapter.setError(new Error('failed')), 20);
+try {
+    adapter.get();
+} catch (error) {
+    console.warn(error.message);
+}
+```
+
+### ResultAdapter#callback()
+
+**`≤ 6.6.4`**
+
+- <ins>**returns**</ins> { [Function](../types/data-types.md#function) } - `(result, error) => void`
+- **异常**：回调完成底层适配器失败时向调用方传播
+- **副作用 / 生命周期**：返回绑定当前实例的 Node 风格回调；只能用于单次完成流程
+
+固定提交的实现只会在 `get()` 尚未开始等待时通过底层适配器完成；若先进入阻塞式 `get()`，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 `setResult` / `setError`。
+
+```js
+const adapter = new ResultAdapter();
+const callback = adapter.callback();
+callback('ready', null);
+console.log(adapter.get()); // ready
+```
+
+### ResultAdapter#get()
+
+**`≤ 6.6.4`**
+
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常**：适配器以错误完成时重新抛出该错误
+- **线程 / 副作用**：未提前完成时暂停 continuation 或阻塞当前线程
+
+```js
+const adapter = new ResultAdapter();
+adapter.setResult(42);
+console.log(adapter.get()); // 42
+```
+
+### ResultAdapter.promise(promiseAdapter)
+
+**`≤ 6.6.4`**
+
+- **promiseAdapter** { `ScriptPromiseAdapter` }
+- <ins>**returns**</ins> { `Promise` }
+- **异常**：参数没有 `onResolve` 或 `onReject` 时抛出异常
+- **副作用**：向原生适配器注册成功与失败回调
+
+```js
+// 实际使用时，promiseAdapter 通常由 Monkey King 原生异步 API 返回。
+const promiseAdapter = {
+    onResolve(callback) {
+        this.resolve = callback;
+        return this;
+    },
+    onReject(callback) {
+        this.reject = callback;
+        setTimeout(() => this.resolve('ready'), 20);
+        return this;
+    },
 };
 
-circle.circumference = (r) => 2 * PI * r;
-
-module.exports = circle;
+ResultAdapter.promise(promiseAdapter)
+    .then(value => console.log(value)); // ready
 ```
 
-circle.js 模块导出了 area() 和 circumference() 两个函数.  通过在特殊的 exports 对象上指定额外的属性, 函数和对象可以被添加到模块的根部.
+### ResultAdapter.wait(promise)
 
-模块内的本地变量是私有的.  在这个例子中, 变量 PI 是 circle.js 私有的, 不会影响到加载他的脚本的变量环境.
+**`≤ 6.6.4`**
 
-module.exports属性可以被赋予一个新的值（例如函数或对象）.
+- **promise** { `Promise | ScriptPromiseAdapter` }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
+- **异常**：Promise 拒绝时重新抛出原因
+- **线程 / 副作用**：continuation 启用时调用 `await`，否则调用阻塞式 `wait`
 
-如下, bar.js 会用到 square 模块, square 导出一个构造函数：
-
+```js
+console.log(ResultAdapter.wait(Promise.resolve(42))); // 42
 ```
-const square = require('square.js');
-const mySquare = square(2);
-console.log("正方形的面积是 %d", mySquare.area());
-square 模块定义在 square.js 中：
 
-// 赋值给 `exports` 不会修改模块, 必须使用 `module.exports`
-module.exports = function(width) {
-  return {
-    area: () => width ** 2
-  };
-};
-```
+## 内置第三方入口
+
+`axios`、`cheerio`、`dayjs` 和 `i18n` 是按首次访问延迟加载的全局属性。它们打包在应用源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 中，不从网络动态更新。
+
+- [`axios`](https://axios-http.com/docs/intro)：内置文件自报版本 `1.1.2`；Monkey King 使用适配 Android/Rhino 的构建。
+- [`cheerio`](https://cheerio.js.org/docs/intro)：使用提交内的单文件打包版本；源码未保留可验证的独立版本字段。
+- [`dayjs`](https://day.js.org/docs/en/installation/installation)：使用提交内的核心单文件构建；未预装全部插件和地区包。
+- `i18n`：基于提交内的 `banana-i18n.js`，并增加本地 JSON 目录加载约定，详见 [Internationalization](../utilities/i18n.md)。
+
+这些页面只说明 Monkey King 的入口与差异；完整 API 请查阅各项目官方文档。

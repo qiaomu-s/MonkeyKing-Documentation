@@ -1,5 +1,9 @@
 # 消息通知 (Notice)
 
+`notice` 与 `$notice` 指向同一个可调用模块对象；`notice.builder` 每次读取都会创建新的 AndroidX `NotificationCompat.Builder`。本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+
+发送通知会写入系统通知栏；创建、修改和删除渠道会改变应用级系统设置。Android 8.0 及以上使用通知渠道，渠道提交后除名称和描述外的大部分属性不能由应用自由提高或修改；Android 13 及以上还可能需要用户授予通知权限。
+
 notice 模块用于创建并显示消息通知.
 
 位于通知栏的消息, 可用于 [ 消息提醒 / 信息通信 / 执行操作 ] 等.
@@ -209,6 +213,8 @@ typeof notice.channel; // "object"
 typeof notice.getBuilder; // "function"
 ```
 
+所有 `notice` 调用形式最多接受 3 个参数，并同步向 Android 通知服务提交通知。content/title 重载要求相应位置为字符串，builder 重载最多接受 2 个参数，且其 options 必须是 JavaScript 对象；其他带 options 的重载也会校验 options 所在参数。priority、intent 或渠道配置不合法时抛出异常。固定提交中，无法匹配字符串或 builder 的单个首参数会按空 options 处理并发送默认测试通知。Android 13 及以上若未授予通知权限，系统可能拒绝显示通知。
+
 ### notice(content)
 
 **`6.3.0`** **`Global`** **`Overload 1/8`**
@@ -327,6 +333,14 @@ notice('message', 'hello', { isSilent: true });
 
 使用 `通知构建器 (Notice Builder)` 发送通知.
 
+```js
+const builder = notice.getBuilder()
+    .setContentTitle('任务状态')
+    .setContentText('已完成');
+const notificationId = notice(builder);
+console.log(notificationId);
+```
+
 参阅 [getBuilder](#m-getbuilder) 小节.
 
 ### notice(builder, options)
@@ -371,6 +385,8 @@ notice(builder, { notificationId });
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：传入参数时抛出异常
+- **权限 / 副作用**：不发起权限申请，只读查询应用通知开关与通知权限状态
 
 检测 Monkey King 的通知是否未被阻止 (not blocked).
 
@@ -410,10 +426,21 @@ if (!notice.isEnabled()) {
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：传入参数或当前通知被阻止时抛出异常
+- **权限 / 副作用**：只检查状态，不弹出授权界面，也不修改系统设置
 
 确保 Monkey King 的通知未被阻止 (not blocked).
 
 当通知被阻止时将抛出 `Exception` 异常.
+
+```js
+try {
+    notice.ensureEnabled();
+    console.log('通知可用');
+} catch (error) {
+    console.warn('请先启用通知');
+}
+```
 
 ## [m] launchSettings
 
@@ -422,6 +449,8 @@ if (!notice.isEnabled()) {
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：传入参数，或系统无法启动对应设置 Activity 时可能抛出异常
+- **副作用**：启动 Monkey King 的系统通知设置页面，使应用界面离开当前页面
 
 跳转至 Monkey King 的通知设置页面.
 
@@ -437,6 +466,8 @@ notice.launchSettings();
 
 - **id** { [number](../types/data-types.md#number) } - 通知 ID
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 1 时抛出异常；nullish 或不能转为有效数字的值会静默忽略
+- **副作用**：从系统通知栏取消当前应用对应 ID 的通知；不存在时无操作
 
 消除通知.
 
@@ -453,6 +484,8 @@ setTimeout(() => notice.cancel(id), 2e3);
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [NoticeBuilder](../types/notice-builder.md) }
+- **异常**：传入参数时抛出异常；默认 priority 配置非法时也会抛出异常
+- **权限 / 副作用**：只创建内存中的新 builder，不发送通知，也不请求权限
 
 获取一个简单通知构建器.
 
@@ -505,7 +538,7 @@ notice.config({ defaultIsSilent: true }); /* 通知发送时, 默认强制静音
 notice('hello', { isSilent: true });
 notice('message', { isSilent: true });
 notice('finished', { isSilent: true });
-/* ... ... */
+notice('all notifications use the same default policy', { isSilent: true });
 ```
 
 因此, `notice.config` 适用于在同一个脚本或项目中, 有多次使用 `notice` 需求的场景.
@@ -518,6 +551,8 @@ notice('finished', { isSilent: true });
 
 - **preset** { [NoticePresetConfiguration](../types/notice-preset-configuration.md) } - 通知预设配置对象
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 1、参数不是 JavaScript 对象、键不存在或对应配置不可写时抛出异常
+- **生命周期 / 副作用**：同步修改当前脚本运行时后续通知和渠道创建所用的默认配置；nullish 值会尝试恢复内置默认值
 
 配置通知渠道与通知发送的默认行为.
 
@@ -527,13 +562,34 @@ notice.config({
     useScriptNameAsDefaultChannelId: false, /* 禁用以脚本名称作为渠道 ID. */
     enableChannelInvalidModificationWarnings: false, /* 禁用渠道修改无效的警告消息. */
     defaultTitle: 'NEW MESSAGE', /* 修改默认通知标题. */
-    /* ... ... */
+    defaultContent: 'Created by Monkey King',
+    defaultPriority: 'default',
 });
 ```
 
 更多可用的默认行为配置, 参阅 [NoticePresetConfiguration](../types/notice-preset-configuration.md) 类型章节.
 
+## [p] builder
+
+### notice.builder
+
+**`6.3.0`** **`Getter`**
+
+- **&lt;get&gt;** { [NoticeBuilder](../types/notice-builder.md) }
+- **异常**：无
+- **权限 / 副作用**：读取只创建内存中的新 builder，不发送通知，也不请求权限
+
+每次读取都等价于重新调用 `notice.getBuilder()`，不会复用之前的构建状态。
+
+```js
+const first = notice.builder;
+const second = notice.builder;
+console.log(first !== second); // true
+```
+
 ## [p+] channel
+
+渠道方法同步访问 Android `NotificationManager`。创建或删除会改变应用级系统设置；查询方法只读。Android 8.0 以下不创建真正的渠道。`create` 最多接受 2 个参数，错误的渠道选项值会抛出异常，但第二参数若不是 JavaScript 对象会按空 options 处理。
 
 ### [m] create
 
@@ -547,6 +603,7 @@ notice.config({
 
 - **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) } - 渠道 ID
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 渠道 ID
+- **异常 / 副作用**：参数超过 2 个或渠道配置值非法时抛出异常；同步创建、恢复或提交默认配置的渠道
 
 创建通知渠道, 并指定渠道 ID.
 
@@ -563,6 +620,7 @@ notice('hello', { channelId: id }); /* 发送通知. */
 - **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) } - 渠道 ID
 - **options** { [NoticeChannelOptions](../types/notice-channel-options.md) } - 渠道创建选项
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 渠道 ID
+- **异常 / 副作用**：同上一重载；已存在渠道只会提交系统允许修改的字段
 
 创建通知渠道, 指定渠道 ID 并进行渠道配置.
 
@@ -589,6 +647,7 @@ notice.channel.create('my_channel_id', {
 
 - **options** { [NoticeChannelOptions](../types/notice-channel-options.md) } - 渠道创建选项
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 渠道 ID
+- **异常 / 副作用**：options 中 `id` 与配置值非法时抛出异常；同步创建、恢复或修改渠道
 
 创建通知渠道, 与 `create(channelId, options)` 方法类似, 但省略 `channelId` 参数.
 
@@ -598,9 +657,48 @@ notice.channel.create('my_channel_id', {
 notice.channel.create({ id: 'my_channel_id' });
 ```
 
-当不指定 `id` 时, 渠道 ID 将使用当前运行脚本的脚本名称.
+当不指定 `id` 时，默认配置会使用当前运行脚本的脚本名称；若关闭 `useScriptNameAsDefaultChannelId`，则使用内置默认渠道 ID。
 
 更多渠道配置相关信息, 参阅 [NoticeChannelOptions](../types/notice-channel-options.md) 类型章节.
+
+合法的 `importance` 字符串为 `unspecified`、`none`、`min`、`low`、`default`、`high`、`max`；`lockscreenVisibility` 为 `public`、`private` 或 `secret`。未知字符串、非数组的 `vibrationPattern` 等无效参数会抛出异常。
+
+### [m] createIfNeeded
+
+#### createIfNeeded(channelId, options?)
+
+**`6.3.0`** **`Overload 1/2`**
+
+- **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) | [NoticeChannelOptions](../types/notice-channel-options.md) }
+- **[ options ]** { [NoticeChannelOptions](../types/notice-channel-options.md) }
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数超过 2 个、渠道 ID 或 options 不合法时抛出异常
+- **副作用**：渠道不存在时写入 Android 通知渠道设置；已存在时不修改
+
+仅当指定渠道不存在时创建渠道。第一个参数也可以直接是 options 对象，此时从其 `channelId` 读取 ID。此方法用于避免重复提交已有渠道；它不会把新 options 强制覆盖到已有渠道。
+
+```js
+notice.channel.createIfNeeded('sync-result', {
+    name: '同步结果',
+    importance: 'default',
+});
+notice('同步完成', { channelId: 'sync-result' });
+```
+
+#### createIfNeeded(options)
+
+**`6.3.0`** **`Overload 2/2`**
+
+- **options** { [NoticeChannelOptions](../types/notice-channel-options.md) } - 必须通过 `channelId` 提供渠道 ID
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常 / 副作用**：与上一重载相同
+
+```js
+notice.channel.createIfNeeded({
+    channelId: 'download-result',
+    name: '下载结果',
+});
+```
 
 ### [m] contains
 
@@ -610,6 +708,8 @@ notice.channel.create({ id: 'my_channel_id' });
 
 - **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) } - 渠道 ID
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 当前渠道 ID 是否已被创建
+- **异常**：参数数量不为 1 时抛出异常
+- **副作用**：只读查询
 
 返回指定 `渠道 ID (Channel ID)` 的 Monkey King 渠道是否存在.
 
@@ -625,6 +725,8 @@ notice.channel.contains('my_channel_id'); /* e.g. false */
 
 - **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) } - 渠道 ID
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 删除前, 当前渠道 ID 是否已被创建
+- **异常**：参数数量不为 1 时抛出异常
+- **副作用**：存在时从 Android 通知管理器删除渠道
 
 根据 `渠道 ID (Channel ID)` 删除 Monkey King 的渠道实例.
 
@@ -643,7 +745,10 @@ if (notice.channel.contains(id)) {
 
 **`6.3.0`**
 
+- **channelId** { [string](../types/data-types.md#string) | [number](../types/data-types.md#number) } - 渠道 ID
 - <ins>**returns**</ins> { [android.app.NotificationChannel](https://developer.android.com/reference/android/app/NotificationChannel) | [null](../types/data-types.md#null) } - 渠道实例
+- **异常**：参数数量不为 1 时抛出异常
+- **副作用**：只读查询
 
 根据 `渠道 ID (Channel ID)` 获取 Monkey King 的渠道实例, 不存在时返回 `null`.
 
@@ -659,7 +764,7 @@ if (notice.channel.contains(id)) {
 
 let channel = notice.channel.get(id);
 if (channel !== null) {
-    /* ... */
+    console.log(channel.getName(), channel.getImportance());
 }
 ```
 
@@ -670,6 +775,8 @@ if (channel !== null) {
 **`6.3.0`**
 
 - <ins>**returns**</ins> { [android.app.NotificationChannel](https://developer.android.com/reference/android/app/NotificationChannel)[[]](../types/data-types.md#array) } - 渠道实例数组
+- **异常**：传入参数时抛出异常
+- **副作用**：只读查询
 
 获取 Monkey King 的所有通知渠道实例 (不包含已被删除的).
 
@@ -677,3 +784,5 @@ if (channel !== null) {
 console.log(`当前共计渠道 ${notice.channel.getAll().length} 个`);
 notice.channel.getAll().map(ch => ch.getId()); /* 获取所有渠道的 ID. */
 ```
+
+在 Android 8.0 以下，`contains` 和 `remove` 返回 `false`，`get` 返回 `null`，`getAll` 返回空数组；系统不会创建真正的通知渠道。

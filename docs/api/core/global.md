@@ -14,6 +14,8 @@ Monkey King 的内置模块均支持全局使用, 如 `app`, `images`, `device` 
 当作为模块使用时, `exports` 和 `module` 可作为全局对象使用.<br>
 另在 UI 模式下也有一些专属全局对象, 如 `activity`.
 
+本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+
 ## 覆写保护
 
 Monkey King 对部分全局对象及内置模块增加了覆写保护.<br>
@@ -45,12 +47,19 @@ selector = 1; /* 异常: 无法修改只读属性: selector. */
 })(); // "number"
 ```
 
-截至目前 (2022/10) 受覆写保护的对象有:
+Monkey King 6.7.0 中至少以下对象带只读或永久属性保护:
 
 ```text
 selector
 continuation
+Promise
+ResultAdapter
+Module
+require
+__engine__
 ```
+
+不同对象使用的 Rhino 属性标志不同；不要依赖对内置全局重新赋值或删除后的行为。
 
 ---
 
@@ -111,7 +120,314 @@ typeof global; // "object"
 typeof global.sleep; // "function"
 ```
 
+## [m] toString
+
+### global.toString()
+
+**`6.6.0`** **`Global`**
+
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 固定为 `[object global]`
+- **异常 / 权限 / 副作用**：传入参数时抛出异常；同步纯查询
+
+Monkey King 为顶级作用域安装了字面量 `toString` 实现，因此直接调用全局 `toString()` 与 `global.toString()` 结果相同。
+
+```js
+console.log(global.toString()); // [object global]
+console.log(toString()); // [object global]
+```
+
+## 引擎全局变量
+
+Monkey King 在 Rhino 引擎初始化过程中注入以下核心变量：
+
+| 名称 | 类型 | 可写性 | 说明 |
+| --- | --- | --- | --- |
+| `runtime` | `ScriptRuntime` | 普通全局属性 | 当前脚本运行时，持有模块实现与生命周期资源 |
+| `global` | `Object` | 永久属性 | 当前顶级作用域自身 |
+| `__engine__` | `RhinoJavaScriptEngine` | 只读、不可枚举、永久 | 当前脚本引擎；属于底层接口 |
+| `Promise` | `Function` | 只读、永久 | Monkey King 的 continuation 兼容 Promise |
+| `ResultAdapter` | `Function` | 只读、永久 | 回调、原生异步结果和同步等待之间的适配器 |
+| `Module` | `Function` | 永久 | CommonJS 模块构造器 |
+| `require` | `Function` | 永久 | CommonJS 模块加载函数 |
+| `crash` | `Function` | 普通全局属性 | 崩溃处理测试入口，不应在业务脚本中调用 |
+
+`context`、`activity` 等 Android 对象由具体运行场景提供，不能假设后台脚本一定存在 Activity。模块系统详见 [模块](modules.md)。
+
+```js
+console.log(runtime.engines.myEngine().id);
+console.log(global === runtime.topLevelScope);
+console.log(typeof Promise, typeof require);
+```
+
+## [m] isNullish
+
+### isNullish(...values)
+
+**`6.0.1`** **`Global`** **`v6.6.0: variadic`**
+
+- **values** { [...any[]](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 权限 / 副作用**：不抛出参数异常，不需要权限，只进行同步值判断
+
+仅当所有参数都是 `undefined`、`null` 或 Rhino 的“属性不存在”哨兵值时返回 `true`。不传参数时按空集合规则返回 `true`；`false`、`0`、`NaN` 和空字符串都不是 nullish。
+
+```js
+isNullish();                    // true
+isNullish(null, undefined);     // true
+isNullish(0);                   // false
+isNullish(global.missingValue); // true
+```
+
+## [m] structuredClone
+
+### structuredClone(value?)
+
+**`v6.7.0`** **`Global`**
+
+- **[ value = `undefined` ]** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 深复制结果
+- **异常**：值或任意后代包含函数时抛出带 `DataCloneError` 文本的 Error；属性描述复制失败时也会抛出异常
+- **权限 / 线程 / 副作用**：不需要权限，同步遍历对象图，不转移源缓冲区所有权
+
+在引擎初始化末尾由应用内置兼容实现注入。支持循环引用、普通对象、数组、`Date`、`RegExp`、`Map`、`Set`、`ArrayBuffer`、`DataView`、常见 TypedArray 和 `Error`。
+
+函数不能被克隆，会抛出包含 `DataCloneError` 的错误。该实现没有浏览器版的 transfer list 参数，也不会转移原缓冲区所有权。
+
+```js
+const source = {
+    createdAt: new Date(),
+    labels: new Set(['a', 'b']),
+};
+source.self = source;
+
+const copy = structuredClone(source);
+console.log(copy !== source);
+console.log(copy.self === copy);
+```
+
+## [p] isMonkeyKing
+
+**`6.6.0`** **`Global`**
+
+- { [boolean](../types/data-types.md#boolean) } - 固定为 `true`
+- **异常 / 权限 / 副作用**：无
+
+用于判断脚本是否运行在 Monkey King 的增强全局环境。
+
+```js
+console.log(isMonkeyKing); // true
+```
+
+## [m] TODO
+
+### TODO(reason?)
+
+**`≤ 6.6.4`** **`Global`**
+
+- **[ reason ]** { [string](../types/data-types.md#string) }
+- <ins>**returns**</ins> { `never` }
+- **异常 / 副作用**：始终抛出 `NotImplementedError`；不需要 Android 权限
+
+```js
+function unfinishedFeature() {
+    TODO('该功能尚未实现');
+}
+```
+
+## [m] isUiThread
+
+### isUiThread()
+
+**`≤ 6.6.4`** **`Global`**
+
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 权限 / 副作用**：参数不为空时抛出异常；不需要权限，只查询当前线程
+
+```js
+console.log(isUiThread());
+```
+
+## [m] isJavaObject
+
+### isJavaObject(value)
+
+**`≤ 6.6.4`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+```js
+console.log(isJavaObject(new java.io.File('/sdcard'))); // true
+```
+
+## [m] isInteger
+
+### isInteger(value)
+
+**`6.0.1`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+```js
+console.log(isInteger(42)); // true
+console.log(isInteger(4.2)); // false
+```
+
+## [m] isBigInt
+
+### isBigInt(value)
+
+**`6.1.0`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+```js
+console.log(isBigInt(42n)); // true
+```
+
+## [m] isPrimitive
+
+### isPrimitive(value)
+
+**`6.0.1`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+```js
+console.log(isPrimitive('text')); // true
+console.log(isPrimitive({})); // false
+```
+
+## [m] isReference
+
+### isReference(value)
+
+**`6.0.1`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+```js
+console.log(isReference({ key: 'value' })); // true
+```
+
+## [m] isObjectSpecies
+
+### isObjectSpecies(value)
+
+**`≤ 6.6.4`** **`Global`** **`Legacy alias`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断
+
+`isObjectSpecies(value)` 是旧式宽泛对象判断：只要 JavaScript `typeof` 为 `object` 且值不是 `null` 就返回 `true`，因此数组、日期和 Map 等也会通过。若要严格判断 Rhino `className` 是否为 `Object`，使用 `species.isObject(value)`。
+
+```js
+console.log(isObjectSpecies({ key: 'value' })); // true
+console.log(isObjectSpecies([])); // true
+console.log(species.isObject([])); // false
+console.log(isObjectSpecies(null)); // false
+```
+
+## [m] isEmptyObject
+
+### isEmptyObject(value)
+
+**`6.2.0`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：参数数量不为 1 时抛出异常；同步检查对象自身属性
+
+```js
+console.log(isEmptyObject({})); // true
+console.log(isEmptyObject({ key: 1 })); // false
+```
+
+## [m] unwrapJavaObject
+
+### unwrapJavaObject(value)
+
+**`6.1.0`** **`Global`**
+
+- **value** { [any](../types/data-types.md#any) }
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - Java 包装对象的底层值，或原值
+- **异常**：参数数量不为 1 时抛出异常
+- **副作用**：无；返回值可能是原生 Java 对象
+
+```js
+const file = new java.io.File('/sdcard');
+console.log(unwrapJavaObject(file));
+```
+
+## [m] toastVerbose
+
+### toastVerbose(message, isLong?, isForcible?)
+
+**`6.6.0`** **`Global`** **`Alias: toastverbose`**
+
+- **message** { [any](../types/data-types.md#any) }
+- **[ isLong ]** { [boolean](../types/data-types.md#boolean) }
+- **[ isForcible ]** { [boolean](../types/data-types.md#boolean) }
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不在 1 至 3 之间时抛出异常
+- **权限 / 副作用**：显示 toast，并把首个参数写入 verbose 日志
+
+```js
+toastVerbose('verbose message');
+```
+
+## [m] toastInfo
+
+### toastInfo(message, isLong?, isForcible?)
+
+**`6.6.0`** **`Global`** **`Alias: toastinfo`**
+
+- **参数与返回**：同 `toastVerbose`
+- **异常 / 权限 / 副作用**：同 `toastVerbose`，日志级别为 info
+
+```js
+toastInfo('information');
+```
+
+## [m] toastWarn
+
+### toastWarn(message, isLong?, isForcible?)
+
+**`6.6.0`** **`Global`** **`Alias: toastwarn`**
+
+- **参数与返回**：同 `toastVerbose`
+- **异常 / 权限 / 副作用**：同 `toastVerbose`，日志级别为 warn
+
+```js
+toastWarn('warning');
+```
+
+## [m] toastError
+
+### toastError(message, isLong?, isForcible?)
+
+**`6.6.0`** **`Global`** **`Alias: toasterror`**
+
+- **参数与返回**：同 `toastVerbose`
+- **异常 / 权限 / 副作用**：同 `toastVerbose`，日志级别为 error
+
+```js
+toastError('error message');
+```
+
 ## [m] sleep
+
+所有重载都会同步阻塞当前脚本线程，不需要 Android 权限，且不能在 UI 线程调用。参数数量不在 1 至 2 之间、第二参数类型不受支持或数值转换失败时抛出异常；负的最短时长会被收敛到 `0`。
 
 ### sleep(millis)
 
@@ -157,9 +473,11 @@ bounds 参数为 [数字字符串](../types/data-types.md#numberstring) 类型 (
 
 ```js
 /* 随机休眠 3 - 5 秒钟 (即 4 ± 1 秒钟). */
-sleep(4e3, "1e3");
-sleep(4e3, "±1e3"); /* 同上. */
+sleep(4e3, "1000");
+sleep(4e3, "±1000"); /* 同上. */
 ```
+
+固定提交先从字符串中提取普通十进制整数，再调用 Java `toLong()`；不要在 bounds 字符串中使用 `1e3` 或小数形式。
 
 ## [m+] toast
 
@@ -188,6 +506,10 @@ console.log(text);
 
 > 参阅: [toast(text)](../system/toast.md#toast-text)
 
+```js
+toastLog('任务开始');
+```
+
 ### toastLog(text, isLong)
 
 **`Global`** **`Overload 2/4`**
@@ -197,6 +519,10 @@ console.log(text);
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 
 > 参阅: [toast(text, isLong)](../system/toast.md#toast-text-islong)
+
+```js
+toastLog('需要较长时间阅读', true);
+```
 
 ### toastLog(text, isLong, isForcible)
 
@@ -209,6 +535,10 @@ console.log(text);
 
 > 参阅: [toast(text, isLong, isForcible)](../system/toast.md#toast-text-islong-isforcible)
 
+```js
+toastLog('替换当前浮动消息', true, true);
+```
+
 ### toastLog(text, isForcible)
 
 **`Global`** **`Overload 4/4`**
@@ -219,11 +549,17 @@ console.log(text);
 
 > 参阅: [toast(text, isForcible)](../system/toast.md#toast-text-isforcible)
 
+```js
+toastLog('强制显示', 'forcible');
+```
+
 ## [m+] notice
 
 notice 模块的全局化对象, 参阅 [消息通知 (Notice)](../system/notice.md) 模块章节.
 
 ## [m] random
+
+该方法同步使用 `Math.random()`，不需要权限且没有外部副作用。参数超过 2 个时抛出异常；只传 1 个参数时固定提交返回 `NaN`，不会把它解释为上限。
 
 ### random()
 
@@ -232,6 +568,11 @@ notice 模块的全局化对象, 参阅 [消息通知 (Notice)](../system/notice
 - <ins>**returns**</ins> { [number](../types/data-types.md#number) }
 
 与 Math.random() 相同, 返回落在 [0, 1) 区间的随机数字.
+
+```js
+const ratio = random();
+console.log(ratio >= 0 && ratio < 1); // true
+```
 
 ### random(min, max)
 
@@ -243,9 +584,16 @@ notice 模块的全局化对象, 参阅 [消息通知 (Notice)](../system/notice
 
 返回落在 [min, max] 区间的随机数字.
 
+```js
+console.log(random(1, 6)); // 1 至 6 的整数
+console.log(Number.isNaN(random(6))); // true
+```
+
 > 注: random(min, max) 右边界闭合, 而 random() 右边界开放.
 
 ## [m] wait
+
+所有重载都在当前线程同步轮询，可能调用无障碍选择器，不得在 UI 回调中执行。参数数量不在 1 至 4 之间、condition 直接传入 `UiObject`、limit 为负数、interval 为负数或无穷大、callback 不是对象，或 `then` / `else` 存在但不是函数时抛出异常。函数条件本身抛出的错误会直接传播。
 
 ### wait(condition)
 
@@ -487,6 +835,13 @@ wait(() => {
 
 [wait(condition, callback)](#wait-condition-callback) 增加条件检测限制.
 
+```js
+wait(() => device.isScreenOff(), 5e3, {
+    then: () => console.log('屏幕已关闭'),
+    else: () => console.log('等待超时'),
+});
+```
+
 > 参阅: [wait(condition, limit)](#wait-condition-limit)
 
 ### wait(condition, limit, interval, callback)
@@ -505,6 +860,13 @@ wait(() => {
 
 [wait(condition, limit, callback)](#wait-condition-limit-callback) 增加条件检测间隔.
 
+```js
+wait(() => device.isScreenOff(), 5e3, 250, {
+    then: () => console.log('屏幕已关闭'),
+    else: () => console.log('等待超时'),
+});
+```
+
 > 参阅: [wait(condition, limit, interval)](#wait-condition-limit-interval)
 
 ## [m] waitForActivity
@@ -514,6 +876,8 @@ wait(() => {
 因此其所有重载方法的结构与 wait 一致.<br>
 为节约篇幅, 将仅列出方法签名等重要信息.
 
+所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 `currentActivity()`；参数校验、limit、interval、callback、权限与返回规则继承 [wait](#m-wait)。Activity 名称会转换为字符串后进行全等比较。
+
 ### waitForActivity(activityName)
 
 **`6.2.0`** **`Global`** **`Overload 1/6`** **`A11Y?`** **`Non-UI`**
@@ -522,6 +886,10 @@ wait(() => {
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 
 > 参阅:[wait(condition)](#wait-condition)
+
+```js
+waitForActivity('com.example.MainActivity');
+```
 
 ### waitForActivity(activityName, limit)
 
@@ -533,6 +901,10 @@ wait(() => {
 
 > 参阅:[wait(condition, limit)](#wait-condition-limit)
 
+```js
+waitForActivity('com.example.MainActivity', 5e3);
+```
+
 ### waitForActivity(activityName, limit, interval)
 
 **`6.2.0`** **`Global`** **`Overload 3/6`** **`A11Y?`** **`Non-UI`**
@@ -543,6 +915,10 @@ wait(() => {
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 
 > 参阅:[wait(condition, limit, interval)](#wait-condition-limit-interval)
+
+```js
+waitForActivity('com.example.MainActivity', 5e3, 250);
+```
 
 ### waitForActivity(activityName, callback)
 
@@ -558,6 +934,12 @@ wait(() => {
 
 > 参阅: [wait(condition, callback)](#wait-condition-callback)
 
+```js
+waitForActivity('com.example.MainActivity', {
+    then: () => console.log('Activity 已出现'),
+});
+```
+
 ### waitForActivity(activityName, limit, callback)
 
 **`6.2.0`** **`Global`** **`Overload 5/6`** **`A11Y?`** **`Non-UI`**
@@ -572,6 +954,12 @@ wait(() => {
 - <ins>**template**</ins> [T](../types/data-types.md#generic), [R](../types/data-types.md#generic)
 
 > 参阅: [wait(condition, limit, callback)](#wait-condition-limit-callback)
+
+```js
+waitForActivity('com.example.MainActivity', 5e3, {
+    else: () => console.log('等待超时'),
+});
+```
 
 ### waitForActivity(activityName, limit, interval, callback)
 
@@ -589,12 +977,20 @@ wait(() => {
 
 > 参阅: [wait(condition, limit, interval, callback)](#wait-condition-limit-interval-callback)
 
+```js
+waitForActivity('com.example.MainActivity', 5e3, 250, {
+    then: () => console.log('Activity 已出现'),
+});
+```
+
 ## [m] waitForPackage
 
 等待指定包名的应用出现 (前置).<br>
 此方法相当于 `wait(() => currentPackage() === packageName, ...args)`,<br>
 因此其所有重载方法的结构与 wait 一致.<br>
 为节约篇幅, 将仅列出方法签名等重要信息.
+
+所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 `currentPackage()`；参数校验、limit、interval、callback、权限与返回规则继承 [wait](#m-wait)。包名会转换为字符串后进行全等比较。
 
 ### waitForPackage(packageName)
 
@@ -604,6 +1000,10 @@ wait(() => {
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 
 > 参阅:[wait(condition)](#wait-condition)
+
+```js
+waitForPackage('com.android.settings');
+```
 
 ### waitForPackage(packageName, limit)
 
@@ -615,6 +1015,10 @@ wait(() => {
 
 > 参阅:[wait(condition, limit)](#wait-condition-limit)
 
+```js
+waitForPackage('com.android.settings', 5e3);
+```
+
 ### waitForPackage(packageName, limit, interval)
 
 **`6.2.0`** **`Global`** **`Overload 3/6`** **`A11Y?`** **`Non-UI`**
@@ -625,6 +1029,10 @@ wait(() => {
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 
 > 参阅:[wait(condition, limit, interval)](#wait-condition-limit-interval)
+
+```js
+waitForPackage('com.android.settings', 5e3, 250);
+```
 
 ### waitForPackage(packageName, callback)
 
@@ -639,6 +1047,12 @@ wait(() => {
 - <ins>**template**</ins> [T](../types/data-types.md#generic), [R](../types/data-types.md#generic)
 
 > 参阅: [wait(condition, callback)](#wait-condition-callback)
+
+```js
+waitForPackage('com.android.settings', {
+    then: () => console.log('设置应用已前置'),
+});
+```
 
 ### waitForPackage(packageName, limit, callback)
 
@@ -655,6 +1069,12 @@ wait(() => {
 
 > 参阅: [wait(condition, limit, callback)](#wait-condition-limit-callback)
 
+```js
+waitForPackage('com.android.settings', 5e3, {
+    else: () => console.log('等待超时'),
+});
+```
+
 ### waitForPackage(packageName, limit, interval, callback)
 
 **`6.2.0`** **`Global`** **`Overload 6/6`** **`A11Y?`** **`Non-UI`**
@@ -670,6 +1090,12 @@ wait(() => {
 - <ins>**template**</ins> [T](../types/data-types.md#generic), [R](../types/data-types.md#generic)
 
 > 参阅: [wait(condition, limit, interval, callback)](#wait-condition-limit-interval-callback)
+
+```js
+waitForPackage('com.android.settings', 5e3, 250, {
+    then: () => console.log('设置应用已前置'),
+});
+```
 
 ## [m] exit
 
@@ -701,7 +1127,7 @@ while (true) log("hello"); /* 控制台将打印一定数量的 "hello". */
 
 ```js
 if (!isStopped()) {
-    // 其他代码...
+    console.log('脚本仍在运行');
 }
 ```
 
@@ -727,12 +1153,12 @@ if (!isStopped()) {
 ```js
 /* threads. */
 if (!threads.currentThread().isInterrupted()) {
-    // 其他代码...
+    console.log('当前线程未中断');
 }
 
 /* engines. */
 if (!engines.myEngine().isStopped()) {
-    // 其他代码...
+    console.log('当前引擎未停止');
 }
 ```
 
@@ -771,11 +1197,19 @@ if (!pickup(buttonText)) {
 
 **`Global`** - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 
+- **异常 / 生命周期 / 副作用**：传入参数时抛出异常；与 `exit()` 相同，会结束当前脚本引擎
+
 停止脚本运行.
 
 [exit()](#exit) 的别名方法.
 
 > 注: stop 方法不存在 [exit(e)](#exit-e) 对应的重载方法.
+
+```js
+if (!isStopped()) {
+    stop();
+}
+```
 
 ## [m] isStopped
 
@@ -784,10 +1218,15 @@ if (!pickup(buttonText)) {
 **`Global`** **`DEPRECATED`**
 
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
 
 检测脚本主线程是否已中断.
 
 即 `runtime.isInterrupted()`.
+
+```js
+console.log(isStopped());
+```
 
 ## [m] isShuttingDown
 
@@ -796,10 +1235,15 @@ if (!pickup(buttonText)) {
 **`Global`** **`DEPRECATED`**
 
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
 
 检测脚本主线程是否已中断.
 
 因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 [isStopped()](#m-isstopped) 或 `runtime.isInterrupted()` 替代.
+
+```js
+console.log(isShuttingDown());
+```
 
 ## [m] isRunning
 
@@ -807,9 +1251,15 @@ if (!pickup(buttonText)) {
 
 **`Global`** - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
+
 检测脚本主线程是否未被中断.
 
 即 `!runtime.isInterrupted()`.
+
+```js
+console.log(isRunning());
+```
 
 ## [m] notStopped
 
@@ -818,10 +1268,15 @@ if (!pickup(buttonText)) {
 **`Global`** **`DEPRECATED`**
 
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
 
 检测脚本主线程是否未被中断.
 
 因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 [isRunning()](#m-isrunning) 或 `!runtime.isInterrupted()` 替代.
+
+```js
+console.log(notStopped());
+```
 
 ## [m] requiresApi
 
@@ -847,9 +1302,9 @@ requiresApi(android.os.Build.VERSION_CODES.R); /* 同上. */
 > - [Android API Level - 安卓 API 级别](../../reference/android/api-level.md)
 > - util.versionCodes
 
-## [m] requiresAutojsVersion
+## [m] requiresMonkeykingVersion
 
-### requiresAutojsVersion(versionName)
+### requiresMonkeykingVersion(versionName)
 
 **`Global`** **`Overload 1/2`**
 
@@ -859,14 +1314,14 @@ requiresApi(android.os.Build.VERSION_CODES.R); /* 同上. */
 脚本运行的最低 Monkey King 版本要求 (版本名称).
 
 ```js
-requiresAutojsVersion("6.2.0");
+requiresMonkeykingVersion("6.2.0");
 ```
 
 可通过 `monkeyking.versionName` 查看 Monkey King 版本名称.
 
 > 参阅: [monkeyking.versionName](monkeyking.md#p-versionname)
 
-### requiresAutojsVersion(versionCode)
+### requiresMonkeykingVersion(versionCode)
 
 **`Global`** **`Overload 2/2`**
 
@@ -876,7 +1331,7 @@ requiresAutojsVersion("6.2.0");
 脚本运行的最低 Monkey King 版本要求 (版本号).
 
 ```js
-requiresAutojsVersion(1024);
+requiresMonkeykingVersion(1024);
 ```
 
 可通过 `monkeyking.versionCode` 查看 Monkey King 版本号.
@@ -939,23 +1394,51 @@ importClass(
 
 ## [m] currentPackage
 
-### currentPackage()
+### currentPackage(mode?)
 
-**`Global`** **`A11Y`**
+**`Global`** **`v6.6.1: mode`**
 
+- **[ mode = `"auto"` ]** { [string](../types/data-types.md#string) | [Object](../types/data-types.md#object) } - 获取方式，或 `{ by }` / `{ mode }`
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) }
+- **异常**：参数超过 1 个或 mode 未知时抛出异常
+- **权限 / 线程 / 副作用**：`accessibility` 依赖无障碍服务，`shizuku` 与 `root` 依赖相应能力；查询可能执行同步系统命令
 
-获取最近一次监测到的应用包名, 并视为当前正在运行的应用包名.
+获取当前应用包名。mode 支持 `auto`、`a11y` / `accessibility`、`shizuku` 与 `root`；自动模式按 Shizuku、Root、无障碍的顺序返回第一个非空结果。
+
+```js
+console.log(currentPackage());
+console.log(currentPackage({ by: 'accessibility' }));
+```
 
 ## [m] currentActivity
 
-### currentActivity()
+### currentActivity(mode?)
 
-**`Global`** **`A11Y`**
+**`Global`** **`v6.6.1: mode`**
 
+- **[ mode = `"auto"` ]** { [string](../types/data-types.md#string) | [Object](../types/data-types.md#object) }
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) }
+- **异常、权限、线程与副作用**：与 [currentPackage](#currentpackage-mode) 相同
 
-获取最近一次监测到的活动名称, 并视为当前正在运行的活动名称.
+获取当前 Activity 类名；无法取得时返回空字符串。
+
+```js
+console.log(currentActivity('auto'));
+```
+
+## [m] currentComponent
+
+### currentComponent(mode?)
+
+**`6.6.1`** **`Global`**
+
+- **[ mode = `"auto"` ]** { [string](../types/data-types.md#string) | [Object](../types/data-types.md#object) }
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 当前组件，无法取得时为空字符串
+- **异常、权限、线程与副作用**：与 [currentPackage](#currentpackage-mode) 相同
+
+```js
+console.log(currentComponent({ mode: 'shizuku' }));
+```
 
 ## [m] setClip
 
@@ -964,8 +1447,14 @@ importClass(
 **`Global`** - **text** { [string](../types/data-types.md#string) } - 剪贴板内容
 
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 1 时抛出异常
+- **权限 / 副作用**：同步写入系统剪贴板；Android 版本和前后台状态可能影响系统可见性
 
 设置系统剪贴板内容.
+
+```js
+setClip('copied from Monkey King');
+```
 
 > 参阅: [getClip](#m-getclip)
 
@@ -997,7 +1486,14 @@ console.log(getClip());
 
 **`Global`** - <ins>**returns**</ins> { [UiSelector](../automation/ui-selector.md) }
 
+- **异常 / 权限 / 副作用**：传入参数时抛出异常；只创建选择器，不立即查询无障碍窗口
+
 构建一个 "空" [选择器](../automation/ui-selector.md).
+
+```js
+const emptySelector = selector();
+console.log(typeof emptySelector.findOne); // function
+```
 
 ## [m] pickup
 
@@ -1082,13 +1578,129 @@ console.log(contentMatch(/^开始.*/).exists()
     || content('点击继续').exists()); /* e.g. true */
 ```
 
+## [m] setScreenMetrics
+
+### setScreenMetrics(width, height)
+
+**`≤ 6.6.4`** **`Global`** **`Legacy scale API`**
+
+- **width** { [number](../types/data-types.md#number) } - 脚本设计宽度
+- **height** { [number](../types/data-types.md#number) } - 脚本设计高度
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 2 或数值不能转换为整数时抛出异常
+- **线程 / 生命周期 / 副作用**：同步修改当前脚本运行时的旧式 `ScreenMetrics`；影响之后使用该度量对象的坐标缩放，脚本结束后失效
+
+设置旧式自动化坐标缩放的设计分辨率。宽或高为 `0` 时，对应轴的旧式缩放保持原坐标。此方法不会修改 `cX`、`cY` 使用的 720 × 1280 默认基数；后者应通过 `setScaleBases` 配置。
+
+```js
+setScreenMetrics(1080, 1920);
+click(540, 960); // 由使用 ScreenMetrics 的自动化实现按设备分辨率换算
+```
+
+## [m] getScaleBases
+
+### getScaleBases()
+
+**`6.2.0`** **`Global`**
+
+- <ins>**returns**</ins> { [Object](../types/data-types.md#object) } - `{ x, y }` 当前缩放基数的快照
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
+
+```js
+console.log(getScaleBases()); // 默认 { x: 720, y: 1280 }
+```
+
+## [m] getScaleBaseX
+
+### getScaleBaseX()
+
+**`6.2.0`** **`Global`**
+
+- <ins>**returns**</ins> { [number](../types/data-types.md#number) } - 当前横坐标缩放基数
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
+
+```js
+console.log(getScaleBaseX()); // 默认 720
+```
+
+## [m] getScaleBaseY
+
+### getScaleBaseY()
+
+**`6.2.0`** **`Global`**
+
+- <ins>**returns**</ins> { [number](../types/data-types.md#number) } - 当前纵坐标缩放基数
+- **异常 / 副作用**：传入参数时抛出异常；同步只读查询
+
+```js
+console.log(getScaleBaseY()); // 默认 1280
+```
+
+## [m] setScaleBases
+
+### setScaleBases(baseX, baseY)
+
+**`6.2.0`** **`Global`**
+
+- **baseX** { [number](../types/data-types.md#number) } - 正整数横坐标基数
+- **baseY** { [number](../types/data-types.md#number) } - 正整数纵坐标基数
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 2、参数不能转换为整数、基数不为正整数，或任一轴在当前运行时已设置过时抛出异常
+- **生命周期 / 副作用**：按 X、Y 顺序同步写入当前运行时基数；每个轴最多设置一次，脚本结束后失效
+
+应在首次调用 `cX`、`cY`、`cYx` 或 `cXy` 前统一配置。若 X 写入成功后 Y 校验失败，X 不会自动回滚，因此不要捕获异常后尝试用另一组值重复设置。
+
+```js
+setScaleBases(1080, 1920);
+console.log(cX(540)); // 当前设备宽度的一半
+console.log(cY(960)); // 当前设备高度的一半
+```
+
+## [m] setScaleBaseX
+
+### setScaleBaseX(baseX)
+
+**`6.2.0`** **`Global`**
+
+- **baseX** { [number](../types/data-types.md#number) } - 正整数横坐标基数
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 1、参数不能转换为整数、值不为正整数，或当前运行时已经设置过 X 基数时抛出异常
+- **生命周期 / 副作用**：同步修改之后 `cX` 的默认基数；每个运行时最多成功调用一次，并参与两轴均已设置后的 `cYx` / `cXy` 换算
+
+只设置 X 会使两轴状态不一致，期间调用 `cYx` 或 `cXy` 会抛出异常；需要跨轴换算时应继续设置 Y，或直接使用 `setScaleBases`。
+
+```js
+setScaleBaseX(1080);
+console.log(getScaleBaseX()); // 1080
+```
+
+## [m] setScaleBaseY
+
+### setScaleBaseY(baseY)
+
+**`6.2.0`** **`Global`**
+
+- **baseY** { [number](../types/data-types.md#number) } - 正整数纵坐标基数
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：参数数量不为 1、参数不能转换为整数、值不为正整数，或当前运行时已经设置过 Y 基数时抛出异常
+- **生命周期 / 副作用**：同步修改之后 `cY` 的默认基数；每个运行时最多成功调用一次，并参与两轴均已设置后的 `cYx` / `cXy` 换算
+
+只设置 Y 会使两轴状态不一致，期间调用 `cYx` 或 `cXy` 会抛出异常；需要跨轴换算时应继续设置 X，或直接使用 `setScaleBases`。
+
+```js
+setScaleBaseY(1920);
+console.log(getScaleBaseY()); // 1920
+```
+
 ## [m] cX
 
 横坐标标度.
 
+所有重载均同步读取当前设备宽度，不需要额外权限。参数超过 3 个、数值无法转换，或显式 `base` 不是整数时抛出异常；调用本身不修改缩放基数。
+
 ### cX()
 
-**`6.2.0`** **`Global`** **`Overload 1/5`**
+**`6.2.0`** **`Global`** **`Overload 1/4`**
 
 - <ins>**returns**</ins> { [number](../types/data-types.md#number) }
 
@@ -1149,6 +1761,11 @@ cX(100); /* 相当于 cX(100, 1096) . */
 
 `isRatio` 参数为 `false` 时, `x` 参数将强制视为绝对坐标值, 如 `cX(0.5, false)` 意味着 `0.5` 像素值, 其意义不再是百分比.
 
+```js
+console.log(cX(0.5, true));  // 当前设备宽度的 50%
+console.log(cX(0.5, false)); // 按绝对值和当前 X 基数换算
+```
+
 ### cX(x)
 
 **`6.2.0`** **`Global`** **`Overload 4/4`**
@@ -1160,20 +1777,27 @@ cX(100); /* 相当于 cX(100, 1096) . */
 
 当参数 `x` 满足 `x <= -1 | x >= 1` 时, 相当于 `cX(x, /* base = */ 720)`, 即 `x` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseX` 等方法修改, `720` 为其默认值.
 
+```js
+console.log(cX(0.25)); // 当前设备宽度的 25%
+console.log(cX(360));  // 默认设计宽度 720 中的 360
+```
+
 ## [m] cY
 
-横坐标标度.
+纵坐标标度.
+
+所有重载均同步读取当前设备高度，不需要额外权限。参数超过 3 个、数值无法转换，或显式 `base` 不是整数时抛出异常；调用本身不修改缩放基数。
 
 ### cY()
 
-**`6.2.0`** **`Global`** **`Overload 1/5`**
+**`6.2.0`** **`Global`** **`Overload 1/4`**
 
 - <ins>**returns**</ins> { [number](../types/data-types.md#number) }
 
 无参时, 返回当前设备高度.
 
 ```js
-console.log(cY() === device.width); // true
+console.log(cY() === device.height); // true
 ```
 
 ### cY(y, base)
@@ -1227,6 +1851,11 @@ cY(100); /* 相当于 cY(100, 2560) . */
 
 `isRatio` 参数为 `false` 时, `y` 参数将强制视为绝对坐标值, 如 `cY(0.5, false)` 意味着 `0.5` 像素值, 其意义不再是百分比.
 
+```js
+console.log(cY(0.5, true));  // 当前设备高度的 50%
+console.log(cY(0.5, false)); // 按绝对值和当前 Y 基数换算
+```
+
 ### cY(y)
 
 **`6.2.0`** **`Global`** **`Overload 4/4`**
@@ -1238,9 +1867,16 @@ cY(100); /* 相当于 cY(100, 2560) . */
 
 当参数 `y` 满足 `y <= -1 | y >= 1` 时, 相当于 `cY(y, /* base = */ 1280)`, 即 `y` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseY` 等方法修改, `1280` 为其默认值.
 
+```js
+console.log(cY(0.25)); // 当前设备高度的 25%
+console.log(cY(640));  // 默认设计高度 1280 中的 640
+```
+
 ## [m] cYx
 
 以横坐标度量的纵坐标标度.
+
+所有重载均同步读取当前显示尺寸，不需要额外权限。参数超过 3 个、比例字符串无效、数值无法转换，或只设置了一个缩放轴导致 X/Y 基数状态不一致时抛出异常；调用本身不修改基数。
 
 与设备高度无关, 与设备宽度相关的坐标标度.
 
@@ -1360,6 +1996,11 @@ cYx(0.2); /* 相当于 cYx(0.2, 1096 / 2560) . */
 
 `isRatio` 参数为 `false` 时, `y` 参数将强制视为绝对坐标值, 如 `cYx(0.5, false)` 意味着 `0.5` 像素值, 其意义不再是百分比.
 
+```js
+console.log(cYx(0.5, true));  // 按默认宽高比换算 50% 高度
+console.log(cYx(384, false)); // 按当前 X 基数换算绝对纵坐标
+```
+
 ### cYx(y)
 
 **`6.2.0`** **`Global`** **`Overload 3/3`**
@@ -1367,9 +2008,9 @@ cYx(0.2); /* 相当于 cYx(0.2, 1096 / 2560) . */
 - **y** { [number](../types/data-types.md#number) } - 绝对坐标值或屏幕高度百分比
 - <ins>**returns**</ins> { [number](../types/data-types.md#number) }
 
-当参数 `y` 满足 `-1 < y < 1` 时, 相当于 `cY(y, /* isRatio = */ true)`, 即 `y` 将视为屏幕高度百分比.
+当参数 `y` 满足 `-1 < y < 1` 时, 相当于 `cYx(y, /* isRatio = */ true)`, 即 `y` 将视为屏幕高度百分比.
 
-当参数 `y` 满足 `y <= -1 | y >= 1` 时, 相当于 `cY(y, /* base = */ 720)`, 即 `y` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseX` 等方法修改, `720` 为其默认值.
+当参数 `y` 满足 `y <= -1 | y >= 1` 时, 相当于 `cYx(y, /* base = */ 720)`, 即 `y` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseX` 等方法修改, `720` 为其默认值.
 
 ```js
 cYx(0.3); /* 相当于 cYx(0.3, '9:16') . */
@@ -1379,6 +2020,8 @@ cYx(384); /* 相当于 cYx(384, 720) . */
 ## [m] cXy
 
 以纵坐标度量的横坐标标度.
+
+所有重载均同步读取当前显示尺寸，不需要额外权限。参数超过 3 个、比例字符串无效、数值无法转换，或只设置了一个缩放轴导致 X/Y 基数状态不一致时抛出异常；调用本身不修改基数。
 
 与设备宽度无关, 与设备高度相关的坐标标度.
 
@@ -1498,6 +2141,11 @@ cXy(0.5); /* 相当于 cXy(0.5, 1096 / 2560) . */
 
 `isRatio` 参数为 `false` 时, `x` 参数将强制视为绝对坐标值, 如 `cXy(0.5, false)` 意味着 `0.5` 像素值, 其意义不再是百分比.
 
+```js
+console.log(cXy(0.5, true));   // 按默认宽高比换算 50% 宽度
+console.log(cXy(384, false));  // 按当前 Y 基数换算绝对横坐标
+```
+
 ### cXy(x)
 
 **`6.2.0`** **`Global`** **`Overload 3/3`**
@@ -1505,31 +2153,27 @@ cXy(0.5); /* 相当于 cXy(0.5, 1096 / 2560) . */
 - **x** { [number](../types/data-types.md#number) } - 绝对坐标值或屏幕宽度百分比
 - <ins>**returns**</ins> { [number](../types/data-types.md#number) }
 
-当参数 `x` 满足 `-1 < x < 1` 时, 相当于 `cY(x, /* isRatio = */ true)`, 即 `x` 将视为屏幕宽度百分比.
+当参数 `x` 满足 `-1 < x < 1` 时, 相当于 `cXy(x, /* isRatio = */ true)`, 即 `x` 将视为屏幕宽度百分比.
 
-当参数 `x` 满足 `x <= -1 | x >= 1` 时, 相当于 `cY(x, /* base = */ 720)`, 即 `x` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseX` 等方法修改, `720` 为其默认值.
+当参数 `x` 满足 `x <= -1 | x >= 1` 时, 相当于 `cXy(x, /* base = */ 1280)`, 即 `x` 将视为绝对坐标值, 另 `base` 参数可能由 `setScaleBaseY` 等方法修改, `1280` 为其默认值.
 
 ```js
 cXy(0.3); /* 相当于 cXy(0.3, '9:16') . */
-cXy(384); /* 相当于 cXy(384, 720) . */
+cXy(384); /* 相当于 cXy(384, 1280) . */
 ```
 
 ## [m+] species
 
 ### species(o)
 
-**`Global`**
+**`6.6.0`** **`Global`** **`Alias: $species`**
 
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [string](../types/data-types.md#string) }
+- **异常**：参数数量不为 1 时抛出异常；对象转换或种类识别失败时返回 `Unknown`
+- **线程 / 权限 / 副作用**：同步纯判断，不需要 Android 权限，也不修改传入对象
 
-查看任意对象的 "种类", 如 `Object`, `Array`, `Number`, `String`, `RegExp` 等.
-
-内部实现代码摘要:
-
-```js
-Object.prototype.toString.call(o).slice('[Object\x20'.length, ']'.length * -1);
-```
+查看任意对象经 Rhino `Context.javaToJS` 转换后的种类。JavaScript 对象返回其 Rhino `className`；Java 原生值先转换再判断。无法识别或转换失败时返回 `Unknown`，不会把异常传给调用方。
 
 示例:
 
@@ -1561,329 +2205,567 @@ species.isNumber(23); // true
 species.isRegExp(/test$/); // true
 ```
 
+`isJavaClass`、`isJavaPackage` 和 `isObject` 同时作为全局函数导出；其余判断器通过 `species.isXxx` 调用。
+
 ### [m] isArray
 
 #### isArray(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Array`.
+
+```js
+console.log(species.isArray([])); // true
+```
 
 ### [m] isArrayBuffer
 
 #### isArrayBuffer(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `ArrayBuffer`.
+
+```js
+console.log(species.isArrayBuffer(new ArrayBuffer(8))); // true
+```
 
 ### [m] isBigInt
 
 #### isBigInt(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `BigInt`.
+
+```js
+console.log(species.isBigInt(1n)); // true
+```
 
 ### [m] isBoolean
 
 #### isBoolean(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Boolean`.
+
+```js
+console.log(species.isBoolean(true)); // true
+```
 
 ### [m] isContinuation
 
 #### isContinuation(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Continuation`.
+
+```js
+console.log(species.isContinuation({})); // false
+```
 
 ### [m] isDataView
 
 #### isDataView(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `DataView`.
+
+```js
+console.log(species.isDataView(new DataView(new ArrayBuffer(8)))); // true
+```
 
 ### [m] isDate
 
 #### isDate(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Date`.
+
+```js
+console.log(species.isDate(new Date())); // true
+```
 
 ### [m] isError
 
 #### isError(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Error`.
+
+```js
+console.log(species.isError(new Error('failed'))); // true
+```
 
 ### [m] isFloat32Array
 
 #### isFloat32Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Float32Array`.
+
+```js
+console.log(species.isFloat32Array(new Float32Array(1))); // true
+```
 
 ### [m] isFloat64Array
 
 #### isFloat64Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Float64Array`.
+
+```js
+console.log(species.isFloat64Array(new Float64Array(1))); // true
+```
 
 ### [m] isFunction
 
 #### isFunction(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Function`.
 
-### [m] isHTMLDocument
-
-#### isHTMLDocument(o)
-
-- **o** { [any](../types/data-types.md#any) } - 任意对象
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
-
-判断对象的 "种类" 是否为 `HTMLDocument`.
+```js
+console.log(species.isFunction(() => null)); // true
+```
 
 ### [m] isInt16Array
 
 #### isInt16Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Int16Array`.
+
+```js
+console.log(species.isInt16Array(new Int16Array(1))); // true
+```
 
 ### [m] isInt32Array
 
 #### isInt32Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Int32Array`.
+
+```js
+console.log(species.isInt32Array(new Int32Array(1))); // true
+```
 
 ### [m] isInt8Array
 
 #### isInt8Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Int8Array`.
+
+```js
+console.log(species.isInt8Array(new Int8Array(1))); // true
+```
 
 ### [m] isJavaObject
 
 #### isJavaObject(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `JavaObject`.
+
+```js
+console.log(species.isJavaObject(new java.io.File('/sdcard'))); // true
+```
+
+### [m] isJavaClass
+
+#### isJavaClass(o)
+
+**`6.6.0`**
+
+- **o** { [any](../types/data-types.md#any) } - 任意对象
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
+
+判断对象的 "种类" 是否为 `JavaClass`。此方法也以全局函数 `isJavaClass(o)` 暴露。
+
+```js
+console.log(species.isJavaClass(java.lang.String)); // true
+```
 
 ### [m] isJavaPackage
 
 #### isJavaPackage(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `JavaPackage`.
+
+```js
+console.log(species.isJavaPackage(java.lang)); // true
+```
 
 ### [m] isMap
 
 #### isMap(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Map`.
+
+```js
+console.log(species.isMap(new Map())); // true
+```
 
 ### [m] isNamespace
 
 #### isNamespace(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Namespace`.
+
+```js
+console.log(species.isNamespace(new Namespace('urn:example'))); // true
+```
 
 ### [m] isNull
 
 #### isNull(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Null`.
+
+```js
+console.log(species.isNull(null)); // true
+```
 
 ### [m] isNumber
 
 #### isNumber(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Number`.
+
+```js
+console.log(species.isNumber(42)); // true
+```
 
 ### [m] isObject
 
 #### isObject(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Object`.
+
+```js
+console.log(species.isObject({ key: 'value' })); // true
+```
 
 ### [m] isQName
 
 #### isQName(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `QName`.
+
+```js
+console.log(species.isQName(new QName('urn:example', 'name'))); // true
+```
 
 ### [m] isRegExp
 
 #### isRegExp(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `RegExp`.
+
+```js
+console.log(species.isRegExp(/test$/)); // true
+```
 
 ### [m] isSet
 
 #### isSet(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Set`.
+
+```js
+console.log(species.isSet(new Set())); // true
+```
 
 ### [m] isString
 
 #### isString(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `String`.
+
+```js
+console.log(species.isString('text')); // true
+```
 
 ### [m] isUint16Array
 
 #### isUint16Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Uint16Array`.
+
+```js
+console.log(species.isUint16Array(new Uint16Array(1))); // true
+```
 
 ### [m] isUint32Array
 
 #### isUint32Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Uint32Array`.
+
+```js
+console.log(species.isUint32Array(new Uint32Array(1))); // true
+```
 
 ### [m] isUint8Array
 
 #### isUint8Array(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Uint8Array`.
+
+```js
+console.log(species.isUint8Array(new Uint8Array(1))); // true
+```
 
 ### [m] isUint8ClampedArray
 
 #### isUint8ClampedArray(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Uint8ClampedArray`.
+
+```js
+console.log(species.isUint8ClampedArray(new Uint8ClampedArray(1))); // true
+```
 
 ### [m] isUndefined
 
 #### isUndefined(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `Undefined`.
+
+```js
+console.log(species.isUndefined(undefined)); // true
+```
 
 ### [m] isWeakMap
 
 #### isWeakMap(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `WeakMap`.
+
+```js
+console.log(species.isWeakMap(new WeakMap())); // true
+```
 
 ### [m] isWeakSet
 
 #### isWeakSet(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `WeakSet`.
 
-### [m] isWindow
-
-#### isWindow(o)
-
-- **o** { [any](../types/data-types.md#any) } - 任意对象
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
-
-判断对象的 "种类" 是否为 `Window`.
+```js
+console.log(species.isWeakSet(new WeakSet())); // true
+```
 
 ### [m] isXML
 
 #### isXML(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `XML`.
+
+```js
+console.log(species.isXML(<root/>)); // true
+```
 
 ### [m] isXMLList
 
 #### isXMLList(o)
 
+**`6.6.0`**
+
 - **o** { [any](../types/data-types.md#any) } - 任意对象
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 线程 / 副作用**：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限
 
 判断对象的 "种类" 是否为 `XMLList`.
+
+```js
+console.log(species.isXMLList(<><a/><b/></>)); // true
+```
 
 ## [p] WIDTH
 
