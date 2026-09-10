@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { createMarkdownRenderer } from 'vitepress'
 
 function markdown(path: string): string {
   return readFileSync(resolve(process.cwd(), path), 'utf8')
@@ -93,6 +94,32 @@ describe('Monkey King 6.7.0 source-backed module contracts', () => {
     expect(sha256(manifest)).toBe(
       'f801cc55e6762c00b6fa0e2dc9a9b0a3902aa32ac46a8948f7145102f70eff5a',
     )
+  })
+
+  test('renders the complete MIME constant appendix as one readable table', async () => {
+    const source = markdown('docs/api/utilities/mime.md')
+    const startMarker = '<!-- mime-constant-manifest:start -->'
+    const endMarker = '<!-- mime-constant-manifest:end -->'
+    const start = source.indexOf(startMarker)
+    const end = source.indexOf(endMarker)
+
+    expect(start).toBeGreaterThanOrEqual(0)
+    expect(end).toBeGreaterThan(start)
+
+    const appendix = source.slice(start + startMarker.length, end)
+    const renderer = await createMarkdownRenderer(process.cwd())
+    const rendered = renderer.render(appendix)
+    const tables = [...rendered.matchAll(/<table\b/g)]
+    const tbody = rendered.match(/<tbody>([\s\S]*?)<\/tbody>/)
+
+    expect(tables).toHaveLength(1)
+    expect(rendered).toContain('<th>稳定锚点</th>')
+    expect(rendered).toContain('<th>公开成员</th>')
+    expect(rendered).toContain('<th>固定源码声明值</th>')
+    expect(tbody).not.toBeNull()
+    expect([...(tbody?.[1] ?? '').matchAll(/<tr>/g)]).toHaveLength(2540)
+    expect([...rendered.matchAll(/<a id="mime-constant-[a-z0-9-]+"><\/a>/g)])
+      .toHaveLength(2540)
   })
 
   test('states the required second argument and 2-to-3 arity for Zip one-shot methods', () => {

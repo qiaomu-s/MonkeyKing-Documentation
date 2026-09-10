@@ -232,9 +232,9 @@ console.log(mime.VIDEO_MP4); // video/mp4
 
 下表按固定源码声明顺序列出全部公开常量。每行的显式锚点由成员名确定，可长期用 `#mime-constant-<小写连字符成员名>` 直接定位。第三列保留源码声明值；引用另一个常量的行是兼容别名。
 
+<!-- mime-constant-manifest:start -->
 | 稳定锚点 | 公开成员 | 固定源码声明值 |
 | --- | --- | --- |
-<!-- mime-constant-manifest:start -->
 | <a id="mime-constant-application-atom-xml"></a> | `mime.APPLICATION_ATOM_XML` | `"application/atom+xml"` |
 | <a id="mime-constant-application-x-www-form-urlencoded"></a> | `mime.APPLICATION_X_WWW_FORM_URLENCODED` | `"application/x-www-form-urlencoded"` |
 | <a id="mime-constant-application-form-urlencoded"></a> | `mime.APPLICATION_FORM_URLENCODED` | `APPLICATION_X_WWW_FORM_URLENCODED` |
