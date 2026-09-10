@@ -101,7 +101,12 @@ const newExpr = /^new ([A-Z][a-zA-Z]+)\([^)]*\)\s*$/
 const paramExpr = /\((.*)\);?$/
 
 export function stripLegacyComments(input: string): string {
-  return input.replace(/^@\/\/.*$/gim, '')
+  return input
+    .replace(/^@\/\/.*$/gim, '')
+    // API contract metadata is consumed by the VitePress/API tooling and
+    // must not become arbitrary legacy-document properties when the same
+    // Markdown is converted to the compatibility JSON format.
+    .replace(/<!--\s*api-member-contract(?:-group)?\b[^>]*-->\s*/g, '')
 }
 
 export function parseLegacyMarkdown(
