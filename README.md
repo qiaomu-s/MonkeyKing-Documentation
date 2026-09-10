@@ -27,30 +27,41 @@ npm ci
 | `npm run docs:dev` | 启动 VitePress 本地开发服务器 |
 | `npm run docs:preview` | 预览已生成的 `dist/web/` 网站产物 |
 | `npx tsc --noEmit` | 检查 TypeScript 类型 |
+| `npm run api:extract -- --source <源码仓> --ref <提交> --check` | 从固定源码提交校验公开 API manifest |
+| `npm run api:mime -- --source <源码仓> --ref <提交> --check` | 校验固定源码生成的 MIME 常量附录 |
+| `npm run api:coverage -- --check` | 校验每个公开符号唯一映射到有效文档锚点 |
+| `npm run api:check` | 校验 manifest、coverage、页面与锚点契约 |
+| `npm run examples:check` | 校验 Rhino 2.0 JavaScript 示例和占位代码 |
 | `npm run check:content` | 校验内容目录、路径和迁移约束 |
 | `npm run json:build` | 重新生成根目录兼容 JSON |
-| `npm run api:mime -- --source <MonkeyKing> --document <mime.md> --check` | 校验固定源码生成的 MIME 常量附录 |
 | `git diff --exit-code -- json` | 确认 JSON 生成结果已提交且没有漂移 |
 | `npm test` | 运行 Vitest 单元测试和结构契约测试 |
 | `npm run build:web` | 构建网站产物到 `dist/web/` |
 | `npm run check:links` | 校验构建后的页面、锚点和资源链接 |
 | `npm run build:android` | 构建 Android 离线产物到 `dist/android/` |
 | `npm run test:e2e` | 构建并预览网站后运行 Playwright 浏览器测试 |
+| `npm run api:smoke -- --serial emulator-5554` | 在已安装 Monkey King 6.7.0 的设备上执行 API smoke 脚本 |
 
 提交前至少应运行与改动相关的检查。完整验证顺序与 CI 一致：
 
 ```bash
 npm ci
 npx tsc --noEmit
+npm run api:extract -- --source /path/to/MonkeyKing --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
+npm run api:mime -- --source /path/to/MonkeyKing --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
+npm run api:coverage -- --check
+npm run api:check
+npm run examples:check
 npm run check:content
 npm run json:build
-git diff --exit-code -- json
+git diff --exit-code -- api-surface json
 npm test
 npm run build:web
 npm run check:links
 npm run build:android
 npx playwright install --with-deps chromium
 npm run test:e2e
+npm run api:smoke -- --serial emulator-5554
 ```
 
 ## 兼容 JSON
@@ -94,11 +105,13 @@ Android 集成属于独立工作：应用应使用 `WebViewAssetLoader` 通过 H
 首次发布前，仓库管理员需要完成一次 GitHub 与 DNS 配置：
 
 1. 在仓库 **Settings → Pages → Build and deployment** 中把 Source 设为 **GitHub Actions**。
-2. 在 Pages 的 Custom domain 中填写 `docs.monkeyking.com`。仓库中的
+2. 创建 fine-grained PAT，并保存为 Actions Secret `MONKEYKING_SOURCE_TOKEN`。该令牌只授权
+   `qiaomu-s/AutoJs6` 的 **Contents: read** 与 **Metadata: read**；工作流两次 checkout 都关闭凭据持久化。
+3. 在 Pages 的 Custom domain 中填写 `docs.monkeyking.com`。仓库中的
    `docs/public/CNAME` 会随网站构建进入发布产物，请勿删除。
-3. 在 DNS 服务商创建 `CNAME` 记录：主机记录 `docs`，目标 `qiaomu-s.github.io`。记录值不要带
+4. 在 DNS 服务商创建 `CNAME` 记录：主机记录 `docs`，目标 `qiaomu-s.github.io`。记录值不要带
    `https://`、仓库路径或结尾斜杠，并等待 DNS 生效。
-4. 建议在 GitHub 账户中验证自定义域。GitHub 签发证书且域名检查成功后，在 Pages 设置中启用
+5. 建议在 GitHub 账户中验证自定义域。GitHub 签发证书且域名检查成功后，在 Pages 设置中启用
    **Enforce HTTPS**。
 
 工作流不会创建仓库、修改远端、配置 DNS 或替管理员启用 Pages；这些操作需要由仓库所有者完成。

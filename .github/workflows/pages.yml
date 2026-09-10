@@ -55,6 +55,12 @@ jobs:
       - name: Verify fixed API surface
         run: npm run api:extract -- --source .source/monkeyking --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
 
+      - name: Verify generated MIME appendix
+        run: npm run api:mime -- --source .source/monkeyking --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
+
+      - name: Verify API coverage manifest
+        run: npm run api:coverage -- --check
+
       - name: Check API documentation coverage
         run: npm run api:check
 
