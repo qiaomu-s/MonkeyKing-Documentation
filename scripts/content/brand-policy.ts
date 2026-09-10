@@ -97,21 +97,6 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
       'This page explicitly credits the upstream Auto.js Pro source.',
     ),
     ...exactAllowances(
-      'api/qa.md',
-      [
-        'Monkey King 永久免费, 它是基于开源版本 (Auto.js 4.1.1 alpha2) 二次开发的, 将保持开源免费.',
-        '开源版本 (Auto.js 4.1.1 alpha2) 是非常好的学习资料, Monkey King 之所以存在, 恰恰是因为站在巨人的肩膀上.',
-        'Monkey King 的目标是对开源版本 (Auto.js 4.1.1 alpha2) 进行完善及扩展.',
-        '> Monkey King 基于 MLKit 引擎的 [OCR 实现源码](https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrMLKit.kt) 参考自 [TonyJiangWJ](https://github.com/TonyJiangWJ) 的 [Auto.js](https://github.com/TonyJiangWJ/Auto.js) 项目.<br>',
-        '### 不同的 Auto.js 应用',
-        '不同的 Auto.js 应用对 [ JavaScript 封装模块 / Java 包名及类名 ] 等进行了不同程度的 [ 增添 / 修改 / 删减 ], 因此同样的脚本很难在不同 Auto.js 应用上达到同样的运行效果, 甚至出现无法运行的情况.',
-        '- 继续使用之前编写脚本代码的 Auto.js 应用',
-        '- 修改脚本代码以适应新 Auto.js 应用',
-        '- 在脚本代码中加入不同 Auto.js 应用的检测, 在对应分支编写兼容代码',
-      ],
-      'These lines describe the upstream version or the third-party Auto.js ecosystem.',
-    ),
-    ...exactAllowances(
       'api/ui.md',
       [
         '**注意：**并不是所有属性都能在js代码设置, 有一些属性只能在布局创建时设置, 例如style属性；还有一些属性虽然能在代码中设置, 但是还没支持；对于这些情况, 在Auto.js Pro 8.1.0+会抛出异常, 其他版本则不会抛出异常.',
@@ -120,14 +105,6 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
         '例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
       ],
       'These lines compare Auto.js Pro behavior or preserve fixed upstream icon examples.',
-    ),
-    ...exactAllowances(
-      'api/overview.md',
-      [
-        '  - [Auto.js Pro](https://pro.autojs.org/)',
-        '  - [Auto.js DevTools](https://github.com/pboymt/autojs-dev/)',
-      ],
-      'These are links to distinct upstream projects.',
     ),
     ...exactAllowances(
       'api/web.md',
@@ -182,6 +159,13 @@ const forbiddenLegacyBrandPatterns: readonly RegExp[] = Object.freeze([
 const forbiddenLegacyUrlPatterns: readonly RegExp[] = Object.freeze([
   /(?:https?:\/\/|mailto:|tel:|data:)[^\s)<>]*auto(?:\.?)js[^\s)<>]*/i,
 ])
+
+function removeCanonicalSourceRepositoryUrls(line: string): string {
+  return line.replace(
+    /https:\/\/github\.com\/qiaomu-s\/AutoJs6(?:[^\s)<>]*)?/gi,
+    '',
+  )
+}
 
 function isAllowedLegacyBrandLine(
   line: string,
@@ -315,9 +299,13 @@ export function assertAllowedLegacyBrands(
 
   markdown.split('\n').forEach((line, index) => {
     const withoutExternalUrls = protectExternalUrls(line).value
+    const withoutCanonicalSourceRepositoryUrls =
+      removeCanonicalSourceRepositoryUrls(line)
     if (
       !isAllowedLegacyBrandLine(line, context) &&
-      (forbiddenLegacyUrlPatterns.some((pattern) => pattern.test(line)) ||
+      (forbiddenLegacyUrlPatterns.some((pattern) =>
+        pattern.test(withoutCanonicalSourceRepositoryUrls),
+      ) ||
         forbiddenLegacyBrandPatterns.some((pattern) =>
           pattern.test(withoutExternalUrls),
         ))

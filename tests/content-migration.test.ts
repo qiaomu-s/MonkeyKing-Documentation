@@ -51,33 +51,6 @@ const allowedDottedAutoJsLines = [
     '> 注: 此章节参考并修改自 [Auto.js Pro](https://pro.autojs.org/) 及 [Scripting Java](http://udn.realityripple.com/docs/Mozilla/Projects/Rhino/Scripting_Java/).',
   ],
   [
-    'api/qa.md',
-    'Monkey King 永久免费, 它是基于开源版本 (Auto.js 4.1.1 alpha2) 二次开发的, 将保持开源免费.',
-  ],
-  [
-    'api/qa.md',
-    '开源版本 (Auto.js 4.1.1 alpha2) 是非常好的学习资料, Monkey King 之所以存在, 恰恰是因为站在巨人的肩膀上.',
-  ],
-  [
-    'api/qa.md',
-    'Monkey King 的目标是对开源版本 (Auto.js 4.1.1 alpha2) 进行完善及扩展.',
-  ],
-  [
-    'api/qa.md',
-    '> Monkey King 基于 MLKit 引擎的 [OCR 实现源码](https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrMLKit.kt) 参考自 [TonyJiangWJ](https://github.com/TonyJiangWJ) 的 [Auto.js](https://github.com/TonyJiangWJ/Auto.js) 项目.<br>',
-  ],
-  ['api/qa.md', '### 不同的 Auto.js 应用'],
-  [
-    'api/qa.md',
-    '不同的 Auto.js 应用对 [ JavaScript 封装模块 / Java 包名及类名 ] 等进行了不同程度的 [ 增添 / 修改 / 删减 ], 因此同样的脚本很难在不同 Auto.js 应用上达到同样的运行效果, 甚至出现无法运行的情况.',
-  ],
-  ['api/qa.md', '- 继续使用之前编写脚本代码的 Auto.js 应用'],
-  ['api/qa.md', '- 修改脚本代码以适应新 Auto.js 应用'],
-  [
-    'api/qa.md',
-    '- 在脚本代码中加入不同 Auto.js 应用的检测, 在对应分支编写兼容代码',
-  ],
-  [
     'api/ui.md',
     '**注意：**并不是所有属性都能在js代码设置, 有一些属性只能在布局创建时设置, 例如style属性；还有一些属性虽然能在代码中设置, 但是还没支持；对于这些情况, 在Auto.js Pro 8.1.0+会抛出异常, 其他版本则不会抛出异常.',
   ],
@@ -92,11 +65,6 @@ const allowedDottedAutoJsLines = [
   [
     'api/ui.md',
     '例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-  ],
-  ['api/overview.md', '  - [Auto.js Pro](https://pro.autojs.org/)'],
-  [
-    'api/overview.md',
-    '  - [Auto.js DevTools](https://github.com/pboymt/autojs-dev/)',
   ],
   ['api/web.md', '> 注: 上述设置参考自 Auto.js 4.1.1 Alpha2 源码.'],
   [
@@ -447,6 +415,21 @@ describe('deterministic Markdown migration', () => {
     ).toThrow(/Unapproved legacy brand references/)
   })
 
+  test('allows the canonical Monkey King source repository URL only behind current branding', () => {
+    const currentSource =
+      '[Monkey King 源码](https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966)'
+
+    expect(() =>
+      assertAllowedLegacyBrands(currentSource, { current: fixtureCurrent }),
+    ).not.toThrow()
+    expect(() =>
+      assertAllowedLegacyBrands(
+        '[AutoJs6](https://github.com/qiaomu-s/AutoJs6)',
+        { current: fixtureCurrent },
+      ),
+    ).toThrow(/Unapproved legacy brand references/)
+  })
+
   test('replaces standalone Auto.js without changing external URLs', () => {
     const input = [
       'Auto.js is the current product.',
@@ -546,7 +529,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 29, occurrences: 31 })
+    }).toEqual({ lines: 18, occurrences: 18 })
     expect(remaining).toEqual(expected)
     for (const entry of contentEntries) {
       expect(() =>
@@ -584,7 +567,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 41, uniqueLines: 39, occurrences: 64 })
+    }).toEqual({ lines: 35, uniqueLines: 33, occurrences: 54 })
     expect(
       remaining.filter(({ legacySource }) => legacySource === 'docs/index.md'),
     ).toEqual([])

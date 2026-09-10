@@ -1,284 +1,306 @@
-# 疑难解答 (Q & A)
+# 疑难解答 (Troubleshooting)
 
----
+本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。
 
-## Monkey King
+本文于 2026-09-10 按 [Monkey King 源码](https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966) 固定提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
 
-### Monkey King 功能简介
-
-Monkey King 是 Android 平台支持无障碍服务的 JavaScript 自动化工具.
-
-可用作 JavaScript IDE, 支持 [ 代码补全 / 变量重命名 / 代码格式化 ] 等.
-
-Monkey King 封装了丰富的 JavaScript 模块, 提供丰富功能, 内置实用工具:
-
-功能
-
-- 图像处理 / 文字识别
-- 自动化操作 / 控件操作 / 应用操作
-- UI 交互 / 对话框交互 / 悬浮窗控件 / 画布控件
-- 多线程编程 / 协程 / 异步编程 / 事件监听
-- 文件处理 / 多媒体处理
-- 定时任务 / 消息通知
-- HTTP 请求
-- Shell 语句
-- 国际化
-- ... ...
-
-工具
-
-- 设备信息 / 传感器信息 / 控件信息
-- Base64 编解码 / 密文生成
-- 数学运算 / 颜色转换
-- ... ...
-
-### Monkey King 如何使用
-
-详见 [Monkey King 使用手册](manual.md) 章节.
-
-### Monkey King 是否免费
-
-Monkey King 永久免费, 它是基于开源版本 (Auto.js 4.1.1 alpha2) 二次开发的, 将保持开源免费.
-
-### Monkey King 目标
-
-开源版本 (Auto.js 4.1.1 alpha2) 是非常好的学习资料, Monkey King 之所以存在, 恰恰是因为站在巨人的肩膀上.
-
-Monkey King 的目标是对开源版本 (Auto.js 4.1.1 alpha2) 进行完善及扩展.
-
-### Monkey King 特色
-
-Monkey King 对以下功能进行了十足的打磨:
-
-- 夜间模式
-- 多语言
-
-同时对已有模块进行了精心优化及扩展:
-
-- [颜色 (colors)](../api/media/color.md)
-- [选择器 (UiSelector)](../api/automation/ui-selector.md)
-- [控件节点 (UiObject)](../api/automation/ui-object.md)
-- ... ...
-
-其中尤其具备 Monkey King 特色的, 当属 [pickup 选择器](../api/automation/ui-selector.md#m-pickup) 及 [compass 控件罗盘](../api/automation/ui-object.md#m-compass).
-
-关于 Monkey King 的更多内容, 可参阅 [项目更新日志](https://github.com/qiaomu-s/MonkeyKing/releases).
-
-## 文档
-
-### 文档格式不统一
-
-Monkey King 文档是在开源版本文档的基础上进行更新和修改的, 目前仅完成部分章节的更新, 未更新的章节依然保留原始文档内容, 因此会存在新旧不同的文档编写格式.<br>
-因文档编写需要耗费巨量的时间及精力, 文档更新速度会相对缓慢.<br>
-当全部章节完成编写及更新后, 文档将实现格式统一.
-
-### 不支持夜间模式
-
-使用 Monkey King 查看文档时, 若开启夜间模式后文档依然是亮色主题, 需检查 WebView (或 Google Chrome 等浏览器) 的版本条件:
-
-- API 级别 29 (安卓 10) [Q] 及以上: 版本不低于 76
-- API 级别 28 (安卓 9) [P] 及以下: 版本不低于 105
-
-### 内容难以理解
-
-对于存在阅读障碍的文档内容, 可尝试暂时略过, 继续阅读后续内容.<br>
-当完整阅读一个章节或小节后, 可能对之前略过内容的进一步理解有所帮助.<br>
-也可提交反馈至 GitHub 项目页面, 开发者可能会根据提交的反馈适当调整文档内容.
-
-## 图像
-
-### OCR 特性
-
-Monkey King 的 OCR 特性是基于 [Google ML Kit](https://developers.google.com/ml-kit?hl=zh-cn) 的 [文字识别 API](https://developers.google.com/ml-kit/vision/text-recognition/android?hl=zh-cn) 及 [Baidu PaddlePaddle](https://www.paddlepaddle.org.cn/) 的 [Paddle Lite](https://github.com/PaddlePaddle/Paddle-Lite) 实现的.
-
-> 注:<br>
-> Monkey King 基于 MLKit 引擎的 [OCR 实现源码](https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrMLKit.kt) 参考自 [TonyJiangWJ](https://github.com/TonyJiangWJ) 的 [Auto.js](https://github.com/TonyJiangWJ/Auto.js) 项目.<br>
-> Monkey King 基于 Paddle Lite 引擎的 [OCR 实现源码](https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrPaddle.kt) 源自 [TonyJiangWJ](https://github.com/TonyJiangWJ) 的 [GitHub PR](https://github.com/qiaomu-s/MonkeyKing/pull/120).
-
-> 参阅: [光学字符识别 (OCR)](../api/media/ocr.md) 模块
-
-### 区域截图
-
-Monkey King 不支持区域截图.
-
-可通过 [images.captureScreen](../api/media/image.md#images-capturescreen) 截取屏幕后使用 [images.clip](../api/media/image.md#images-clip-img-x-y-w-h) 等方法做进一步处理.
-
-## 定时任务
-
-### 定时运行脚本
-
-脚本右侧菜单 -> 定时任务, 即可定时运行脚本.<br>
-需保持 Monkey King 后台运行, 包括 [ 自启动白名单 / 忽略电池优化 / 忽略后台活动限制 / 系统多任务保留 ] 等.<br>
-在设备关屏情况下, 可使用 `device.wakeUp()` 唤醒屏幕.<br>
-但 Monkey King 暂未提供解锁功能, 因此可能需要根据设备自行设计解锁代码.
-
-### 定时任务获取外部参数
-
-若脚本由 intent (如网络状态变化等特定事件) 触发启动, 可通过 `engines.myEngine().execArgv.intent` 获取 intent, 进而获取外部参数.
-
-## 脚本执行差异
-
-同样的脚本, 在不同环境 (如设备或系统等) 可能出现执行结果差异, 甚至出现异常而无法正常运行.
-
-### 不同的系统版本
-
-Monkey King 可以安装在 `Andoird API 24 (7.0) [N]` 及以上的操作系统.
-
-然而不同操作系统 `API` 是有区别的, 有些 `API` 在某个系统版本之后 (甚至之前) 才能使用.
-
-下面列出几个 Monkey King 中受系统版本影响的方法或属性:
-
-- [notice](../api/system/notice.md) 模块的渠道相关功能只能在 `Android API 26 (8.0) [O]` 及以上起作用
-- [device.getIMEI()](../api/system/device.md#device-getimei) 只能在 `Android API 29 (10) [Q]` 及以下获取到设备 IMEI 值
-- [UiSelector#imeEnter](../api/automation/ui-selector.md#m-imeenter) 只能在 `Android API 30 (11) [R]` 及以上才能起作用
-- [UiSelector#dragStart](../api/automation/ui-selector.md#m-dragstart) 只能在 `Android API 32 (12.1) [S_V2]` 及以上才能起作用
-- [UiSelector#showTextSuggestions](../api/automation/ui-selector.md#m-showtextsuggestions) 只能在 `Android API 33 (13) [TIRAMISU]` 及以上才能起作用
-- ... ...
-
-### 不同的设备厂商
-
-因不同设备厂商对操作系统进行了不同程度的定制和修改, 一些 `API` 可能发生变更.
-
-下表列出了部分厂商及操作系统的信息 (排序无先后):
-
-| 厂商或品牌                            | 操作系统                    |
-|----------------------------------|-------------------------|
-| 魅族 (MEIZU)                       | Flyme OS                |
-| 欧珀 (OPPO / Realme)               | 	ColorOS                |
-| 小米 (XiaoMi / Redmi / BlackShark) | 	MIUI                   |
-| 一加 (OnePlus)                     | 氢OS / Oxygen OS         |
-| 维沃 (VIVO / IQOO)                 | 	Funtouch OS / OriginOS |
-| 华为 (Huawei / Honor) 	            | EMUI / HarmonyOS        |
-| 联想 (Lenovo)                      | 	ZUI                    |
-| 酷派 (Coolpad)                     | 	CoolOS                 |
-| 卓易 (Droi)                        | 	Freeme OS              |
-| 锤子科技 (Smartisan)                 | Smartisan OS            |
-| 中兴 (ZTE / 天机 / 远航 / Axon)        | MyOS                    |
-| 努比亚 (Nubia / 红魔)                 | REDMAGIC OS             |
-| Google Pixel                     | 原生                      |
-| AVD (安卓虚拟机)                      | 原生                      |
-| 索尼 (Sony / XPERIA)               | 类原生                     |
-| 三星 (Samsung)                     | 类原生                     |
-| 黑莓 (BlackBerry)                  | 类原生                     |
-| LG                               | 类原生                     |
-| 摩托罗拉 (Motorola)                  | 类原生                     |
-| 诺基亚 (Nokia)                      | 类原生 (仅限部分机型)            |
-| 华硕 (ASUS / ZenFone / ROG Phone)  | 类原生                     |
-| 宏达电 (HTC)                        | 类原生                     |
-
-由此可见, 想要在众多不同的操作系统中实现完全无差别且无异常的脚本执行效果, 难度是巨大的.
-
-往往需要在实际操作系统中进行功能测试并编写额外的兼容代码, 甚至可能需要查询定制操作系统的开放 `API` 文档 (如果有的话).
-
-> 注: 表格中的信息可能与实际存在出入, 仅供参考.
-
-### 不同的 Auto.js 应用
-
-不同的 Auto.js 应用对 [ JavaScript 封装模块 / Java 包名及类名 ] 等进行了不同程度的 [ 增添 / 修改 / 删减 ], 因此同样的脚本很难在不同 Auto.js 应用上达到同样的运行效果, 甚至出现无法运行的情况.
-
-有以下几种可能的解决方案:
-
-- 继续使用之前编写脚本代码的 Auto.js 应用
-- 修改脚本代码以适应新 Auto.js 应用
-- 在脚本代码中加入不同 Auto.js 应用的检测, 在对应分支编写兼容代码
-
-### 不同的 Monkey King 版本
-
-随着 Monkey King 版本的更新, 一些 `API` 可能出现 [ 新增 / 修改 / 废弃 / 移除 ] 等操作.
-
-当升级 Monkey King 后, 某个或某些 `API` 出现异常时, 可查询应用文档并定位到相关章节, 根据文档的提示排查并解决上述问题.
-
-如问题仍未解决, 可在项目的 GitHub 议题页面提交 [反馈](#反馈).
-
-## 打包应用
-
-Monkey King 打包功能尚不完善, 打包应用与 Monkey King 主应用可能有较大的功能和界面差异.
-
-Monkey King 开发者暂不考虑参与打包功能相关的开发工作, 目前以 [LZX284](https://github.com/LZX284) 为主要贡献者进行打包功能的开发及维护, 后续将继续由其他开发者贡献相关代码.
-
-### 图片等资源共同打包及多脚本打包
-
-上述需求需使用 "项目" 功能.
-
-点击 Monkey King 主页面 "+" 图标, 选择项目, 填写信息后可新建一个项目.<br>
-项目支持存放多个 [ 脚本 / 模块 / 资源文件 ].<br>
-项目工具栏的 APK 打包图标, 点击可打包一个项目.
-
-例如:<br>
-脚本读取同目录 `1.png`: `images.read("./1.png")`.<br>
-UI 脚本图片控件引用同目录 `2.png`: `<img src="file://2.png"/>`.<br>
-Monkey King 内置模块支持相对路径引用, 其他情况可能需借助 `files.path()` 转换为绝对路径.
-
-### 打包应用不显示主界面
-
-需使用 "项目" 功能.<br>
-新建项目后, 在项目目录 `project.json` 文件中增加以下条目:
-
-```json
-{
-  "launchConfig": {
-    "hideLogs": true
-  }
-}
-```
-
-例如:
-
-```json
-{
-  "name": "First-Project",
-  "versionName": "1.0.0",
-  "versionCode": 1,
-  "packageName": "org.monkeyking.example.first",
-  "main": "main.js",
-  "launchConfig": {
-    "hideLogs": true
-  }
-}
-```
-
-## 代码转换
-
-Monkey King 支持直接调用 [ Java / Android / 扩展库 ] 等 API.<br>
-对于 Monkey King 没有内置的功能, 可进行 Java 脚本化, 即直接参照 Java (或 Kotlin 等) 源码, 转换为 JavaScript 代码.<br>
-例如:
-
-```java
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-
-public static Bitmap rotate(Bitmap src, int degrees, float px, float py) {
-    if (degrees == 0) return src;
-    Matrix matrix = new Matrix();
-    matrix.setRotate(degrees, px, py);
-    Bitmap ret = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
-    return ret;
-}
-```
-
-转换为 JavaScript 代码:
+## 先确认版本与执行环境
 
 ```js
-importClass(android.graphics.Bitmap);
-importClass(android.graphics.Matrix);
+console.log({
+    versionName: monkeyking.versionName,
+    versionCode: monkeyking.versionCode,
+    packageName: monkeyking.packageName,
+    apiLevel: device.sdkInt,
+    engine: engines.myEngine().toString(),
+    cwd: files.cwd(),
+});
+```
 
-function rotate(src, degrees, px, py) {
-    if (degrees == 0) return src;
-    let matrix = new Matrix();
-    matrix.setRotate(degrees, px, py);
-    let ret = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
-    return ret;
+提交问题时保留这段输出，并说明脚本是普通、UI、定时任务、Intent 触发还是打包应用。Monkey King 主应用的正式包名是 `com.qiaomu.monkeyking`；构建变体或自建 APK 可能带后缀。
+
+## 脚本无法运行
+
+### 出现语法错误
+
+Monkey King 使用 Rhino 2.0，不是 V8、浏览器或 Node.js。先删除装饰器、可选链等不确定语法，确认最小 ES6 脚本可运行：
+
+```js
+'use strict';
+
+const values = [1, 2, 3];
+console.log(values.map(value => value * 2));
+```
+
+如果代码来自 npm 包，还要确认它没有依赖 DOM、Node.js 原生模块、动态 `import()` 或构建期注入变量。第三方库入口见 [模块系统](../api/core/modules.md)。
+
+### 相对路径找不到文件
+
+相对路径以当前引擎工作目录为基准，不一定等于脚本文件所在目录。打印 `files.cwd()`，再用 `files.path()` 或 `files.join()` 解析：
+
+```js
+const path = files.join(files.cwd(), 'config.json');
+console.log({ path, exists: files.exists(path) });
+```
+
+定时任务、Intent 触发和打包应用可能使用不同工作目录，不要硬编码桌面开发时的绝对路径。
+
+### `require()` 找不到模块
+
+先确认模块名、文件扩展名和目录中的 `package.json` / `index.js`。本地模块应使用 CommonJS：
+
+```js
+// lib/value.js
+module.exports = { value: 42 };
+
+// main.js
+const local = require('./lib/value');
+console.log(local.value);
+```
+
+Monkey King 支持部分 `node_modules` 布局，但不保证 Node.js 原生模块或面向 V8 的预编译包可用。
+
+## 无障碍与自动化
+
+### 找不到控件或点击无效
+
+1. 确认 Monkey King 无障碍服务已启用。
+2. 在脚本开始调用 `auto.waitFor()`，不要只依赖系统设置页的开关状态。
+3. 打印当前包名、Activity 和控件树中的关键属性。
+4. 优先使用稳定的 `id`、文本与层级组合，避免只依赖屏幕坐标。
+5. WebView、游戏、自绘 Canvas 或安全窗口可能没有可用无障碍节点，此时再考虑坐标或图像方案。
+
+```js
+auto.waitFor();
+
+console.log({
+    packageName: currentPackage(),
+    activityName: currentActivity(),
+});
+
+const target = text('确定').findOne(3000);
+if (target === null) {
+    throw new Error('未找到“确定”控件');
+}
+console.log(target.click());
+```
+
+自动化动作会影响当前前台应用。测试时使用专用账号和可恢复数据，避免在支付、删除或授权界面上直接运行未验证脚本。
+
+### 坐标在另一台设备上偏移
+
+确认设计分辨率、屏幕方向、状态栏和显示缩放。可用 `setScreenMetrics()` 或 `setScaleBases()` 建立缩放基准，但分屏、折叠屏和应用内缩放仍可能改变实际坐标。
+
+```js
+setScreenMetrics(1080, 1920);
+console.log({ x: cX(540), y: cY(960) });
+```
+
+## 截图、图像与 OCR
+
+### 截图返回失败或弹出授权窗口
+
+调用 `images.requestScreenCapture()` 会触发 Android MediaProjection 授权；用户可拒绝，系统也可能在进程重启后要求重新授权。不要在 UI 线程等待授权。
+
+```js
+if (!images.requestScreenCapture()) {
+    throw new Error('用户拒绝截图权限');
+}
+
+const image = images.captureScreen();
+try {
+    console.log(image.getWidth(), image.getHeight());
+} finally {
+    image.recycle();
 }
 ```
 
-关于脚本化 Java 的更多信息, 参阅 [Scripting Java - 脚本化 Java](../reference/android/scripting-java.md) 章节.
+图像包装对象占用原生内存。循环处理时应在 `finally` 中回收中间图像，并避免长期保存大量截图。
 
-## 反馈
+### OCR 结果为空或差异很大
 
-如有任何问题或建议, 可在 GitHub 项目议题页面发起新的反馈.
+6.7.0 提供 ML Kit、Paddle 和 Rapid 三种入口。不同引擎的模型、语言、方向校正和输出类型不同；先用同一张清晰、正向、对比度足够的静态图片比较，再调整区域和选项。
 
-关于 <strong>应用文档</strong> 的反馈:<br>
-https://github.com/qiaomu-s/MonkeyKing-Documentation
+```js
+const image = images.read('./ocr-sample.png');
+try {
+    console.log(ocr.mlkit.recognizeText(image));
+    console.log(ocr.rapid.recognizeText(image));
+} finally {
+    image.recycle();
+}
+```
 
-关于 <strong>Monkey King</strong> 的反馈:<br>
-https://github.com/qiaomu-s/MonkeyKing/issues
+Paddle 可使用内置实现或插件宿主，是否可用取决于当前构建和插件安装状态。完整选项见 [OCR](../api/media/ocr.md)。
+
+## 权限问题
+
+### `runtime.requestPermissions()` 没有效果
+
+该方法只会请求 APK Manifest 已声明、且 Android 允许动态授予的运行时权限。Root、Shizuku、无障碍、通知监听、悬浮窗、所有文件访问、修改系统设置等属于特殊访问权，需要各自的系统设置或模块入口。
+
+```js
+runtime.requestPermissions([
+    'record_audio',
+    'android.permission.ACCESS_FINE_LOCATION',
+]);
+```
+
+方法会启动权限请求 Activity，但不会同步返回最终授权结果。需要继续使用权限时，应在用户操作后再次检查实际能力。
+
+### 悬浮窗或对话框无法显示
+
+- 检查“显示在其他应用上层”权限。
+- 后台脚本没有 `activity`，不要把 Application Context 当作 Activity 窗口使用。
+- UI 脚本中的界面更新应切回 UI 线程。
+- 系统和厂商可能限制后台弹窗。
+
+```js
+if (!floaty.hasPermission()) {
+    floaty.requestPermission();
+    exit();
+}
+```
+
+### Android 13 及以上通知不显示
+
+除通知渠道外，系统可能要求 `POST_NOTIFICATIONS` 运行时权限。用户关闭渠道后，应用不能用脚本强制重新打开，只能引导用户进入系统通知设置。
+
+## UI 线程与阻塞
+
+### UI 点击后界面卡死
+
+网络、文件大批量处理、`sleep()`、同步 OCR 和 Promise `wait()` 都不应直接在 UI 回调中执行。把耗时工作放入 `threads.start()`，只在 `ui.run()` 中更新视图：
+
+```js
+'ui';
+
+ui.layout(
+    <vertical padding="16">
+        <button id="load" text="加载" />
+        <text id="result" text="未开始" />
+    </vertical>
+);
+
+ui.load.on('click', () => {
+    threads.start(() => {
+        const response = http.get('https://example.com');
+        const text = response.body.string();
+        ui.run(() => ui.result.setText(`长度: ${text.length}`));
+    });
+});
+```
+
+脚本退出时 runtime 会清理其线程、计时器、事件和 UI 资源，但业务代码仍应主动关闭不再需要的响应体、文件和监听器。
+
+## 网络与 WebSocket
+
+### HTTP 请求失败
+
+先区分 DNS、TLS、超时、HTTP 状态码和 JSON 解析错误。服务器返回 404 或 500 不等于传输层异常；读取响应前检查状态码。
+
+```js
+try {
+    const response = http.get('https://example.com');
+    console.log({
+        statusCode: response.statusCode,
+        statusMessage: response.statusMessage,
+    });
+    console.log(response.body.string());
+} catch (error) {
+    console.error(error.stack || error);
+}
+```
+
+企业代理、自签名证书和旧 TLS 配置需要服务端或客户端证书策略配合。不要通过全局关闭证书校验来解决生产问题。
+
+### WebSocket 连接后脚本立即退出
+
+保留 WebSocket 引用并注册事件；根据脚本设计维持事件循环。退出时关闭连接，避免远端仍认为会话有效。
+
+```js
+const socket = web.newWebSocket('wss://echo.websocket.events');
+
+socket.on('open', () => socket.send('hello'));
+socket.on('text', text => {
+    console.log(text);
+    socket.close(1000, 'done');
+});
+socket.on('failure', error => console.error(error));
+```
+
+## Root 与 Shizuku
+
+### Root 命令失败
+
+`su` 文件存在不代表授权成功。先检查 `monkeyking.isRootAvailable()`，再查看 shell 结果的 `code`、`result` 和 `error`。不要假设不同 Root 管理器的提示和挂载命名空间完全一致。
+
+```js
+const result = shell('id', true);
+console.log(result.toJson());
+result.throwIfError();
+```
+
+### Shizuku 未连接
+
+Shizuku 依赖管理器应用、Binder 服务和用户授权。设备重启后服务可能需要重新启动。调用命令前检查模块的 operational / permission 状态，失败时不要自动退化为 Root，除非脚本明确允许。
+
+## 定时任务与外部启动
+
+### 定时任务没有按时运行
+
+检查 Android 精确闹钟权限、电池优化、自启动与后台限制。Monkey King 被强制停止、清除数据或卸载后，任务不能继续运行。厂商电源管理可能延迟或取消后台启动。
+
+定时或 Intent 启动的脚本可从当前引擎参数读取触发数据：
+
+```js
+const argv = engines.myEngine().execArgv;
+if (argv && argv.intent) {
+    console.log(argv.intent.getAction());
+}
+```
+
+### 锁屏后自动化失败
+
+`device.wakeUp()` 只负责唤醒屏幕，不保证解除安全锁屏。不要在文档或脚本中保存 PIN、密码等敏感凭据；需要无人值守设备时，应使用专门测试设备和合规的设备管理方案。
+
+## 项目与打包 APK
+
+项目目录使用 `project.json` 描述入口、版本、包名和 `launchConfig`。6.7.0 同时识别兼容键 `hideLogs` 与规范键 `logsVisible`；新项目应优先使用语义明确的规范字段。
+
+```json
+{
+  "name": "First Project",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "packageName": "com.example.first",
+  "main": "main.js",
+  "launchConfig": {
+    "logsVisible": false,
+    "splashVisible": false,
+    "launcherVisible": true,
+    "runOnBoot": false
+  }
+}
+```
+
+自建 APK 的功能、签名、包名、权限和系统升级路径都可能与 Monkey King 主应用不同。构建前确认资源许可、applicationId 唯一性和所需权限，不要依靠 APK 编辑器追加危险权限。
+
+## 文档显示或搜索异常
+
+- 网页版支持浅色 / 深色主题和本地全文搜索。
+- 应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 `https://docs.monkeyking.com` 为准。
+- 搜索不到新 API 时，先确认页面底部更新时间与应用版本。
+- 失效链接或错误签名请提交文档 issue，并附页面 URL 和标题锚点。
+
+## 如何提交有效反馈
+
+最小反馈应包含：
+
+1. Monkey King `versionName` 和 `versionCode`。
+2. Android API 级别、设备型号或模拟器镜像。
+3. 脚本执行方式及已授予权限。
+4. 可直接运行的最小复现脚本。
+5. 完整日志、异常栈和预期结果。
+
+文档问题请提交到 [MonkeyKing-Documentation issues](https://github.com/qiaomu-s/MonkeyKing-Documentation/issues)；应用行为问题请提交到 [Monkey King 源码仓 issues](https://github.com/qiaomu-s/AutoJs6/issues)。

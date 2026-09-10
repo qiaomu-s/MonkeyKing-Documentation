@@ -42,7 +42,7 @@ colors 与 device 类似, 表示全局对象.<br>
 
 rgb(red, green, blue)
 
-... ...
+后续成员会沿用相同的“标签、签名、参数、返回值、约束与示例”结构。
 
 上述 `rgb` 表示 `colors.rgb`.
 
@@ -259,7 +259,7 @@ __`Overload 3/17`__
 
 #### pickup(selector, resultType)
 
-... ...
+其余重载可合并展示，也可按序号分别列出。
 
 __`Overload 16/17`__
 
@@ -443,7 +443,7 @@ typeof foo.bar('hello', 3); // string
 
 ## 声明
 
-当前项目 (文档) 及 [Monkey King](https://github.com/qiaomu-s/MonkeyKing) (App) 均为二次开发.<br>
+当前项目 (文档) 及 [Monkey King 源码](https://github.com/qiaomu-s/AutoJs6) (App) 均为二次开发.<br>
 相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>
 相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>
 开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>
