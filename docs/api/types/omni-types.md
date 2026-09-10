@@ -1,11 +1,22 @@
 # 全能类型 (Omnipotent Types)
 
----
+## Rhino 2.0 运行时合同
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Apr 9, 2023.</p>
+全能类型是 Monkey King **v6.7.0** 文档层的“可接受输入集合”，不是 Rhino 2.0 的真实类。API 会根据实参形态依次尝试标准化；例如 `OmniColor` 可以是颜色字符串、整数或颜色对象，但最终仍转换为目标 Android API 所需的具体值。
 
----
+- **参数、默认值与合法值**：以每个 Omni 类型下列出的成员类型和调用 API 的选项说明为准；未列出的形态不应视为隐式支持。
+- **返回值与异常**：Omni 类型只描述输入，返回类型由目标 API 决定；无法匹配任一成员类型时同步抛出参数或转换异常。
+- **权限与线程**：聚合与标准化本身通常同步且无需权限；若输入是文件、URI 或 Android 对象，仍继承目标 API 的权限与线程限制。
+- **生命周期与副作用**：类型定义本身没有生命周期和副作用；标准化可能创建临时 Java / Rhino 包装对象，但不转移外部资源所有权。
+- **旧版本**：无法从固定源码恢复首次版本的既有类型按 **≤ v6.6.4（旧文档未记录精确版本）** 记录。
+
+```js
+// Rhino 2.0：三种 OmniColor 输入最终可得到同一个 ColorInt。
+const a = s13n.color('red');
+const b = s13n.color('#ff0000');
+const c = s13n.color(Color('red'));
+console.log(a === b && b === c); // true
+```
 
 全能类型是一种聚合类型.
 

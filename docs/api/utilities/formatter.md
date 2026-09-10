@@ -174,3 +174,29 @@ console.log(fmt.bytes.loose(1024, { useIecIdentifier: true })); // 1.00 KiB
 - `fractionDigits` 为负数、`autoCarryThreshold` 非正数、非 `AUTO` 目标使用自定义进位阈值、单位无效或参数个数不在 1 至 4 之间时会抛出异常。
 - 严格模式的 `AUTO` 会自动选阶；显式指定 `KB` 或 `KiB` 可避免输出单位含义不明确。
 - 本模块只进行同步内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-Y2FsbDpmbXQuYnl0ZXM"></a> `call:fmt.bytes` | `fmt.bytes(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L42` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof fmt.bytes);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLkFVVE8"></a> `fmt.bytes.AUTO` | `fmt.bytes.AUTO` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L32` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(fmt.bytes.AUTO);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLklFQ19ESVY"></a> `fmt.bytes.IEC_DIV` | `fmt.bytes.IEC_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L33` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(fmt.bytes.IEC_DIV);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLmxvb3Nl"></a> `fmt.bytes.loose` | `fmt.bytes.loose(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L183` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof fmt.bytes.loose);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLlNJX0RJVg"></a> `fmt.bytes.SI_DIV` | `fmt.bytes.SI_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L34` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(fmt.bytes.SI_DIV);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLnN0cmljdA"></a> `fmt.bytes.strict` | `fmt.bytes.strict(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L177` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof fmt.bytes.strict);` |
+| <a id="api-symbol-Zm10LmJ5dGVzLlVOSVRT"></a> `fmt.bytes.UNITS` | `fmt.bytes.UNITS` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/formatter/Bytes.kt:L31` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(fmt.bytes.UNITS);` |
+| <a id="api-symbol-bW9kdWxlOmZtdA"></a> `module:fmt` | `fmt` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L769` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof fmt);` |
+| <a id="api-symbol-bW9kdWxlOmZtdC5ieXRlcw"></a> `module:fmt.bytes` | `bytes` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L770` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步格式化 | 生命周期：无持久资源；副作用：无，仅返回字符串 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof fmt.bytes);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: formatter');
+```
+
+<!-- fixed-source-contracts:end -->

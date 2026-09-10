@@ -1,12 +1,5 @@
 # 线程 (Threads)
 
----
-
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
-
----
-
 threads模块提供了多线程支持, 可以启动新线程来运行脚本.
 
 脚本主线程会等待所有子线程执行完成后才停止执行, 因此如果子线程中有死循环, 请在必要的时候调用`exit()`来直接停止脚本或`threads.shutDownAll()`来停止所有子线程.
@@ -409,3 +402,39 @@ sum.on('result', function(s){
 ```
 
 有关线程的其他问题, 例如生产者消费者等问题, 请用Java相关方法解决, 例如`java.util.concurrent.BlockingQueue`.
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-bW9kdWxlOnRocmVhZHM"></a> `module:threads` | `threads` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L755` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads);` |
+| <a id="api-symbol-dGhyZWFkcy5hbGxUaHJlYWRz"></a> `threads.allThreads` | `threads.allThreads()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L68` | 无参数；不接受额外参数 | 返回：运行时值；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.allThreads);` |
+| <a id="api-symbol-dGhyZWFkcy5hdG9taWM"></a> `threads.atomic` | `threads.atomic(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L84` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.atomic);` |
+| <a id="api-symbol-dGhyZWFkcy5jdXJyZW50VGhyZWFk"></a> `threads.currentThread` | `threads.currentThread(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L75` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.currentThread);` |
+| <a id="api-symbol-dGhyZWFkcy5kaXNwb3NhYmxl"></a> `threads.disposable` | `threads.disposable(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/Threads.kt:L85` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.disposable);` |
+| <a id="api-symbol-dGhyZWFkcy5leGl0"></a> `threads.exit` | `threads.exit()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L97` | 无参数；不接受额外参数 | 返回：运行时值；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.exit);` |
+| <a id="api-symbol-dGhyZWFkcy5nZXRUaHJlYWRz"></a> `threads.getThreads` | `threads.getThreads()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L33` | 无参数；不接受额外参数 | 返回：运行时值；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.getThreads);` |
+| <a id="api-symbol-dGhyZWFkcy5oYXNSdW5uaW5nVGhyZWFkcw"></a> `threads.hasRunningThreads` | `threads.hasRunningThreads()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L110` | 无参数；不接受额外参数 | 返回：Boolean；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.hasRunningThreads);` |
+| <a id="api-symbol-dGhyZWFkcy5pbnRlcm5hbFBvb2w"></a> `threads.internalPool` | `threads.internalPool(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L52` | 参数：corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long；可选项与默认值按固定源码重载 | 返回：ThreadPoolExecutor；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.internalPool);` |
+| <a id="api-symbol-dGhyZWFkcy5pbnRlcnJ1cHQ"></a> `threads.interrupt` | `threads.interrupt(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/Threads.kt:L42` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.interrupt);` |
+| <a id="api-symbol-dGhyZWFkcy5sb2Nr"></a> `threads.lock` | `threads.lock(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L88` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.lock);` |
+| <a id="api-symbol-dGhyZWFkcy5tYWluVGhyZWFk"></a> `threads.mainThread` | `threads.mainThread` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L24` | 属性访问；无调用参数 | 返回：Thread；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(threads.mainThread);` |
+| <a id="api-symbol-dGhyZWFkcy5wb29s"></a> `threads.pool` | `threads.pool(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/Threads.kt:L65` | 参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：ThreadPoolExecutor；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.pool);` |
+| <a id="api-symbol-dGhyZWFkcy5zaHV0RG93bkFsbA"></a> `threads.shutDownAll` | `threads.shutDownAll(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L90` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.shutDownAll);` |
+| <a id="api-symbol-dGhyZWFkcy5zdGFydA"></a> `threads.start` | `threads.start(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/Threads.kt:L50` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof threads.start);` |
+| <a id="api-symbol-dGhyZWFkcy50aHJlYWRQb29scw"></a> `threads.threadPools` | `threads.threadPools` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/Threads.kt:L31` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(threads.threadPools);` |
+| <a id="api-symbol-dGhyZWFkcy52b2xhdGlsZVJlc3VsdC5ibG9ja2VkR2V0"></a> `threads.volatileResult.blockedGet` | `volatileResult.blockedGet(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/VolatileDisposeNativeObject.kt:L82` | 参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Any?；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof volatileResult.blockedGet);` |
+| <a id="api-symbol-dGhyZWFkcy52b2xhdGlsZVJlc3VsdC5ibG9ja2VkR2V0T3JUaHJvdw"></a> `threads.volatileResult.blockedGetOrThrow` | `volatileResult.blockedGetOrThrow(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/VolatileDisposeNativeObject.kt:L91` | 参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Any?；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof volatileResult.blockedGetOrThrow);` |
+| <a id="api-symbol-dGhyZWFkcy52b2xhdGlsZVJlc3VsdC5zZXRBbmROb3RpZnk"></a> `threads.volatileResult.setAndNotify` | `volatileResult.setAndNotify(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/VolatileDisposeNativeObject.kt:L106` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：创建线程无需额外 Android 权限；线程：成员用于创建、查询、等待或中断工作线程 | 生命周期：活动子线程保持脚本存活，interrupt 或 shutDownAll 后终止；副作用：改变线程池或阻塞状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof volatileResult.setAndNotify);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: threads');
+```
+
+<!-- fixed-source-contracts:end -->

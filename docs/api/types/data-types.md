@@ -1,11 +1,21 @@
 # 数据类型 (Data Types)
 
----
+## Rhino 2.0 运行时合同
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Feb 22, 2023.</p>
+本页是 Monkey King **v6.7.0** 文档使用的类型记法，不会在 Rhino 2.0 中自动创建同名构造器，也不等同于 TypeScript 的静态类型系统。参数是否合法由各 API 的运行时参数守卫、Rhino 到 Java 的转换以及目标 Android / Java 方法共同决定；返回值也可能是 Java 对象、Rhino 原生对象或 JavaScript 基本值。
 
----
+- **参数与异常**：类型链接描述可接受值；参数数量错误、强制转换失败或目标 Java API 拒绝值时会同步抛出异常。
+- **返回值**：`void` 表示调用方不应依赖返回结果；Java `null`、JavaScript `null` 与 `undefined` 必须按具体 API 说明区分。
+- **权限与线程**：类型记法自身不请求权限、不切换线程；真正的权限和线程限制属于使用该类型的 API。
+- **生命周期与副作用**：类型记法没有生命周期或副作用；文件、数据库、游标、流和 Android 组件等实例仍须按其所属 API 管理资源。
+- **旧版本**：既有类型名多数早于当前源码基线，无法从固定源码恢复首次版本时记作 **≤ v6.6.4（旧文档未记录精确版本）**。
+
+```js
+// Rhino 2.0：文档里的 number 与 Java long 都可能以 JS number 交互。
+const now = java.lang.System.currentTimeMillis();
+console.log(typeof now); // "number"
+console.log(util.isJavaObject(new java.io.File('.'))); // true
+```
 
 数据类型是用来约束数据的解释.<br>
 本章节的数据类型包括 [ number / void / any / object / 泛型 / 交叉类型 ] 等.

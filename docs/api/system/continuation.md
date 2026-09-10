@@ -189,3 +189,23 @@ console.log(recovered.message); // request failed
 
 // 不要传 null 或 undefined：resumeError 会先抛出，creator.await() 可能永远等不到恢复。
 ```
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-Y29udGludWF0aW9uLmNyZWF0ZQ"></a> `continuation.create` | `continuation.create(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/continuation/Continuation.kt:L37` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：UI 线程使用 continuation，其他线程按等待实现执行 | 生命周期：等待对象在恢复或拒绝后完成；副作用：暂停并恢复当前 continuation | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof continuation.create);` |
+| <a id="api-symbol-Y29udGludWF0aW9uLmVuYWJsZWQ"></a> `continuation.enabled` | `continuation.enabled` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/continuation/Continuation.kt:L21` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：UI 线程使用 continuation，其他线程按等待实现执行 | 生命周期：等待对象在恢复或拒绝后完成；副作用：暂停并恢复当前 continuation | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(continuation.enabled);` |
+| <a id="api-symbol-bW9kdWxlOmNvbnRpbnVhdGlvbg"></a> `module:continuation` | `continuation` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L761` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需额外 Android 权限；线程：UI 线程使用 continuation，其他线程按等待实现执行 | 生命周期：等待对象在恢复或拒绝后完成；副作用：暂停并恢复当前 continuation | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof continuation);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: continuation');
+```
+
+<!-- fixed-source-contracts:end -->

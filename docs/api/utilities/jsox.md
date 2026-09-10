@@ -86,3 +86,24 @@ console.log(typeof Array.ensureArray); // "function"
 - 扩展同步完成，不访问文件、网络或 Android 权限。
 - 新成员安装到当前脚本运行时的内建对象及其原型，并在该运行时后续代码中持续可见；这些属性按永久属性注册。
 - 对同一模块重复扩展不会创建另一套内建对象，但仍应避免在无必要时反复执行全局修改。
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-Y2FsbDpqc294"></a> `call:jsox` | `jsox(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L27` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof jsox);` |
+| <a id="api-symbol-anNveC5leHRlbmQ"></a> `jsox.extend` | `jsox.extend(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L35` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof jsox.extend);` |
+| <a id="api-symbol-anNveC5leHRlbmRBbGw"></a> `jsox.extendAll` | `jsox.extendAll(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L67` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof jsox.extendAll);` |
+| <a id="api-symbol-bW9kdWxlOmpzb3g"></a> `module:jsox` | `jsox` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L777` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof jsox);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: jsox');
+```
+
+<!-- fixed-source-contracts:end -->

@@ -1,12 +1,5 @@
 # Shell
 
----
-
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
-
----
-
 shell即Unix Shell, 在类Unix系统提供与操作系统交互的一系列命令.
 
 很多程序可以用来执行shell命令, 例如终端模拟器.
@@ -317,7 +310,7 @@ shell("am display-density 480", true);
   包含标志 FLAG_ACTIVITY_TASK_ON_HOME.
 * --receiver-registered-only<br>
   包含标志 FLAG_RECEIVER_REGISTERED_ONLY.
-* --receiver-replace-pending<br>
+* `--receiver-replace-pending`<br>
   包含标志 FLAG_RECEIVER_REPLACE_PENDING.
 * --selector<br>
   需要使用 -d 和 -t 选项以设置 intent 数据和类型.
@@ -501,3 +494,48 @@ ls filepath
 ```
 log(shell("ls /system/bin").result);
 ```
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-Y2FsbDpzaGVsbA"></a> `call:shell` | `shell(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L64` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell);` |
+| <a id="api-symbol-Z2xvYmFsOkJhY2s"></a> `global:Back` | `Back()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L172` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Back);` |
+| <a id="api-symbol-Z2xvYmFsOkNhbWVyYQ"></a> `global:Camera` | `Camera()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L226` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Camera);` |
+| <a id="api-symbol-Z2xvYmFsOkRvd24"></a> `global:Down` | `Down()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L184` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Down);` |
+| <a id="api-symbol-Z2xvYmFsOkhvbWU"></a> `global:Home` | `Home()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L166` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Home);` |
+| <a id="api-symbol-Z2xvYmFsOklucHV0"></a> `global:Input` | `Input(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L238` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Input);` |
+| <a id="api-symbol-Z2xvYmFsOktleUNvZGU"></a> `global:KeyCode` | `KeyCode(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L257` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof KeyCode);` |
+| <a id="api-symbol-Z2xvYmFsOkxlZnQ"></a> `global:Left` | `Left()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L190` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Left);` |
+| <a id="api-symbol-Z2xvYmFsOk1lbnU"></a> `global:Menu` | `Menu()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L160` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Menu);` |
+| <a id="api-symbol-Z2xvYmFsOk9L"></a> `global:OK` | `OK()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L202` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof OK);` |
+| <a id="api-symbol-Z2xvYmFsOlBvd2Vy"></a> `global:Power` | `Power()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L220` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Power);` |
+| <a id="api-symbol-Z2xvYmFsOlJpZ2h0"></a> `global:Right` | `Right()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L196` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Right);` |
+| <a id="api-symbol-Z2xvYmFsOlNjcmVlbmNhcA"></a> `global:Screencap` | `Screencap(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L251` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Screencap);` |
+| <a id="api-symbol-Z2xvYmFsOlNldFNjcmVlbk1ldHJpY3M"></a> `global:SetScreenMetrics` | `SetScreenMetrics(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L263` | 参数：恰好 2 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof SetScreenMetrics);` |
+| <a id="api-symbol-Z2xvYmFsOlN3aXBl"></a> `global:Swipe` | `Swipe(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L270` | 参数：4 至 5 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Swipe);` |
+| <a id="api-symbol-Z2xvYmFsOlRhcA"></a> `global:Tap` | `Tap(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L244` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Tap);` |
+| <a id="api-symbol-Z2xvYmFsOlRleHQ"></a> `global:Text` | `Text(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L232` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Text);` |
+| <a id="api-symbol-Z2xvYmFsOlVw"></a> `global:Up` | `Up()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L178` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof Up);` |
+| <a id="api-symbol-Z2xvYmFsOlZvbHVtZURvd24"></a> `global:VolumeDown` | `VolumeDown()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L214` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof VolumeDown);` |
+| <a id="api-symbol-Z2xvYmFsOlZvbHVtZVVw"></a> `global:VolumeUp` | `VolumeUp()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L208` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Undefined；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof VolumeUp);` |
+| <a id="api-symbol-bW9kdWxlOnNoZWxs"></a> `module:shell` | `shell` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L739` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell);` |
+| <a id="api-symbol-c2hlbGwuY3VycmVudEFjdGl2aXR5"></a> `shell.currentActivity` | `shell.currentActivity()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L112` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：String；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.currentActivity);` |
+| <a id="api-symbol-c2hlbGwuY3VycmVudENvbXBvbmVudA"></a> `shell.currentComponent` | `shell.currentComponent()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L128` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：String；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.currentComponent);` |
+| <a id="api-symbol-c2hlbGwuY3VycmVudFBhY2thZ2U"></a> `shell.currentPackage` | `shell.currentPackage()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L103` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：String；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.currentPackage);` |
+| <a id="api-symbol-c2hlbGwuZXhlY0NvbW1hbmQ"></a> `shell.execCommand` | `shell.execCommand(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L72` | 参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫 | 返回：AbstractShell.Result；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.execCommand);` |
+| <a id="api-symbol-c2hlbGwuZnJvbUludGVudA"></a> `shell.fromIntent` | `shell.fromIntent(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L87` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：String；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.fromIntent);` |
+| <a id="api-symbol-c2hlbGwuZ2V0Q29tbWFuZA"></a> `shell.getCommand` | `shell.getCommand(arg)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L79` | 参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫 | 返回：String；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.getCommand);` |
+| <a id="api-symbol-c2hlbGwua2lsbA"></a> `shell.kill` | `shell.kill(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L93` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待 | 生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof shell.kill);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: shell');
+```
+
+<!-- fixed-source-contracts:end -->

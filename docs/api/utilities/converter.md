@@ -164,3 +164,29 @@ console.log(cvt.bytes.loose('2 MiB', { toUnit: 'KiB' })); // 2048
 - `source` 内嵌单位与 `fromUnit` 同时出现且含义冲突时会抛出异常。
 - `fractionDigits` 为负数、`autoCarryThreshold` 非正数、非 `AUTO` 目标使用自定义进位阈值、单位无效或参数个数不在 1 至 4 之间时会抛出异常。
 - 本模块只进行同步内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。
+
+<!-- fixed-source-contracts:start -->
+
+## 固定源码合同表
+
+下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+
+| API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| <a id="api-symbol-Y2FsbDpjdnQuYnl0ZXM"></a> `call:cvt.bytes` | `cvt.bytes(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L42` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLkFVVE8"></a> `cvt.bytes.AUTO` | `cvt.bytes.AUTO` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L32` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.AUTO);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLklFQ19ESVY"></a> `cvt.bytes.IEC_DIV` | `cvt.bytes.IEC_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L33` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.IEC_DIV);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLmxvb3Nl"></a> `cvt.bytes.loose` | `cvt.bytes.loose(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L171` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.loose);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLlNJX0RJVg"></a> `cvt.bytes.SI_DIV` | `cvt.bytes.SI_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L34` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.SI_DIV);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLnN0cmljdA"></a> `cvt.bytes.strict` | `cvt.bytes.strict(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L165` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.strict);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLlVOSVRT"></a> `cvt.bytes.UNITS` | `cvt.bytes.UNITS` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L31` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.UNITS);` |
+| <a id="api-symbol-bW9kdWxlOmN2dA"></a> `module:cvt` | `cvt` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L766` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt);` |
+| <a id="api-symbol-bW9kdWxlOmN2dC5ieXRlcw"></a> `module:cvt.bytes` | `bytes` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L767` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
+
+### Rhino 2.0 表格读取示例
+
+```js
+console.log('Rhino 2.0 contract table: converter');
+```
+
+<!-- fixed-source-contracts:end -->

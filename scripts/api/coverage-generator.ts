@@ -232,11 +232,18 @@ function pageForSymbol(
   for (const [sourceSegment, page] of augmentablePage) {
     if (symbol.source.path.includes(sourceSegment)) return page
   }
-  if (['global:Module', 'global:Promise', 'global:require'].includes(symbol.id)) {
+  if (
+    [
+      'global:Module',
+      'global:Promise',
+      'global:require',
+      'global:ResultAdapter',
+    ].includes(symbol.id)
+  ) {
     return 'docs/api/core/modules.md'
   }
   if (symbol.kind === 'class') {
-    return 'docs/reference/android/scripting-java.md'
+    return 'docs/api/core/global.md'
   }
   return pageForOwner(symbol.owner, ownerPages)
 }
