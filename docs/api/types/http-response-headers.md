@@ -4,7 +4,7 @@ HttpResponseHeaders 是一个代表 [HTTP 响应头](../../reference/glossaries/
 
 HTTP 标头字段是大小写 **不敏感** 的 (根据 [RFC 2616](http://www.ietf.org/rfc/rfc2616.txt)), 本章节采用 **全部小写** 的形式表示标头字段 (如 content-type).
 
-> 注: 本章节仅列出部分响应头字段信息, 更多信息可参阅 [HTTP 标头](../../reference/glossaries/http-headers.md#响应标头) 术语章节.
+> 本页给出常见响应头字段示例；其他字段也会保留在响应对象中，协议语义可参阅 [HTTP 标头](../../reference/glossaries/http-headers.md#响应标头) 术语章节.
 
 ---
 
@@ -62,7 +62,7 @@ cache-control: private
 cache-control: proxy-revalidate
 cache-control: max-age=<seconds>
 cache-control: s-maxage=<seconds>
-... ...
+cache-control: stale-while-revalidate=<seconds>
 ```
 
 | 指令                       | 含义                                                 |
@@ -76,7 +76,7 @@ cache-control: s-maxage=<seconds>
 | proxy-revalidate         | 与 must-revalidate 作用相同, 但它仅适用于共享缓存 (如代理), 并被私有缓存忽略 |
 | max-age=&lt;seconds&gt;  | 设置缓存存储最大周期, 单位为秒, 超过这个时间缓存被认为过期                    |
 | s-maxage=&lt;seconds&gt; | 覆盖 max-age 或 expires 头, 但仅适用于共享缓存, 私有缓存会忽略         |
-| ... ...                  | ... ...                                            |
+| stale-while-revalidate   | 允许缓存先返回旧响应，同时在后台重新验证资源                    |
 
 > 参阅: [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control)
 
@@ -96,7 +96,7 @@ content-type: multipart/form-data; boundary=something
 |------------|------------------------------------|
 | media-type | 资源或数据的 [MIME 类型](../../reference/glossaries/mime-types.md) |
 | charset    | 字符编码                               |
-| ... ...    | ... ...                            |
+| boundary   | multipart 媒体类型中各部分之间使用的分隔符       |
 
 > 参阅: [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Type)
 
@@ -260,7 +260,7 @@ connection: close
 |------------|------------------------------------------|
 | close      | 表明客户端或服务器想要关闭该网络连接. 这是 HTTP/1.0 请求的默认值   |
 | keep-alive | 表明客户端想要保持该网络连接打开. HTTP/1.1 的请求默认使用一个持久连接 |
-| ... ...    | ... ...                                  |
+| upgrade     | 请求切换到其他协议时使用的连接令牌                 |
 
 > 参阅: [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Connection)
 
@@ -346,7 +346,7 @@ access-control-allow-origin: https://developer.mozilla.org
 
 ```text
 # 语法
-access-control-allow-methods: <method>, <method>, ...
+access-control-allow-methods: <method>[, <method>]
 
 # 示例
 access-control-allow-methods: POST, GET, OPTIONS

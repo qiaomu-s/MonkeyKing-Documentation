@@ -1,449 +1,942 @@
 # WebSocket
 
----
+Monkey King 的 <code>WebSocket</code> 是对
+[OkHttp WebSocket](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-web-socket/)
+的 Rhino 2.0 封装，并继承 [EventEmitter](../types/event-emitter.md) 的事件接口。
+构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 30, 2023.</p>
+本页按 Monkey King 6.7.0 的固定源码描述公开行为。网络权限、DNS、TLS
+证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由
+<code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间
+阻塞操作。
 
----
+~~~js
+var socket = new WebSocket('wss://echo.websocket.events');
 
-WebSocket 类主要用于构建一个 [OkHttp3 WebSocket](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-web-socket/) 接口实现类的实例, 以便完成基于 [WebSocket 协议](https://zh.wikipedia.org/wiki/WebSocket) 的网络请求.
-
-> 注: WebSocket 不同于 Socket.<br>
-> WebSocket 是应用层的网络传输协议. 而 Socket 并非协议, 是位于应用层和传输控制层之间的一组接口, 是对 TCP/IP 协议的封装.
-
-一个流程相对完备的 WebSocket 示例:
-
-```js
-console.setExitOnClose(7e3).show();
-
-let ws = new WebSocket('wss://echo.websocket.events');
-
-ws
-    .on(WebSocket.EVENT_OPEN, (res, ws) => {
-        console.log('WebSocket 已连接');
+socket
+    .on(WebSocket.EVENT_OPEN, function () {
+        socket.send('Hello from Rhino 2.0');
     })
-    .on(WebSocket.EVENT_MESSAGE, (message, ws) => {
-        console.log('接收到消息');
-        // if (message instanceof okio.ByteString) {
-        //     console.log(`消息类型: ByteString`);
-        // } else if (typeof message === 'string') {
-        //     console.log(`消息类型: String`);
-        // } else {
-        //     throw TypeError('Should never happen');
-        // }
+    .on(WebSocket.EVENT_TEXT, function (text) {
+        console.log(text);
+        socket.close(WebSocket.CODE_CLOSE_NORMAL, 'done');
     })
-    .on(WebSocket.EVENT_TEXT, (text, ws) => {
-        console.info('接收到文本消息:');
-        console.info(`text: ${text}`);
-    })
-    .on(WebSocket.EVENT_BYTES, (bytes, ws) => {
-        console.info('接收到字节数组消息:');
-        console.info(`utf8: ${bytes.utf8()}`);
-        console.info(`base64: ${bytes.base64()}`);
-        console.info(`md5: ${bytes.md5()}`);
-        console.info(`hex: ${bytes.hex()}`);
-    })
-    .on(WebSocket.EVENT_CLOSING, (code, reason, ws) => {
-        console.log('WebSocket 关闭中');
-    })
-    .on(WebSocket.EVENT_CLOSED, (code, reason, ws) => {
-        console.log('WebSocket 已关闭');
-        console.log(`code: ${code}`);
-        if (reason) console.log(`reason: ${reason}`);
-    })
-    .on(WebSocket.EVENT_FAILURE, (err, res, ws) => {
-        console.error('WebSocket 连接失败');
-        console.error(err);
+    .on(WebSocket.EVENT_FAILURE, function (error) {
+        console.error(error);
     });
 
-/* 发送文本消息. */
-ws.send('Hello WebSocket');
+socket.exitOnClose();
+~~~
 
-/* 发送字节数组消息. */
-ws.send(new okio.ByteString(new java.lang.String('Hello WebSocket').getBytes()));
+<a id="api-symbol-bW9kdWxlOndlYlNvY2tldA"></a>
 
-setTimeout(() => {
-    console.log('断开 WebSocket');
-    ws.close('由用户断开连接');
-}, 8e3);
-```
+## WebSocket 模块
 
----
+**版本：6.7.0**
 
-<p style="font: bold 2em sans-serif; color: #FF7043">WebSocket</p>
+全局 <code>WebSocket</code> 同时是构造器和静态常量容器。也可通过
+[web.newWebSocket](web.md#newwebsocket-url) 使用默认 HTTP 客户端创建同类实例。
 
----
+<a id="api-symbol-Y29uc3RydWN0OndlYlNvY2tldA"></a>
 
-## [C] WebSocket
+## new WebSocket(url) / new WebSocket(client, url)
 
-- <ins>**extends**</ins> { [EventEmitter](../types/event-emitter.md) }
+**版本：6.7.0 · Global**
 
-WebSocket 类继承自 [EventEmitter](../types/event-emitter.md) 类.
+- <code>url</code>：字符串，WebSocket 地址。
+- <code>client</code>：可选的 Monkey King 可变 OkHttp 客户端；其他类型会回退到
+  <code>http.okhttp</code>。
+- 返回：新的 <code>WebSocket</code> 实例。
 
-因此 WebSocket 实例拥有继承而来的 [on](../system/events.md#eventemitter-on-eventname-listener), [once](../system/events.md#eventemitter-once-eventname-listener), [emit](../system/events.md#eventemitter-emit-eventname-args), [eventNames](../system/events.md#eventemitter-eventnames), [addListener](../system/events.md#eventemitter-addlistener-eventname-listener), [removeListener](../system/events.md#eventemitter-removelistener-eventname-listener) 等方法, 详情参阅 [事件发射器 (EventEmitter)](../types/event-emitter.md) 章节.
+一个参数时使用运行时默认客户端。两个参数时，首参数只有在属于运行时的
+<code>MutableOkHttp</code> 类型时才会采用。构造过程立即调用客户端的
+<code>newWebSocket</code>，因此连接事件可能很快到达。
 
-> 注:<br>
-> 特别地, on 和 once 方法在子类进行了 `覆写 (override)`, 其返回值类型被具体化为 WebSocket, 以便于链式调用.<br>
-> 为节约篇幅, 本章节仅列举了 on 方法的相关文档, once 方法与 on 的用法相同.
+~~~js
+var defaultSocket = new WebSocket('wss://echo.websocket.events');
+var configuredSocket = new WebSocket(http.okhttp, 'wss://echo.websocket.events');
 
-### [c] (url)
+defaultSocket.exitOnClose();
+configuredSocket.exitOnClose();
+~~~
 
-**`6.3.4`** **`Global`**
+<a id="api-symbol-d2ViU29ja2V0LmdldA"></a>
 
-- **url** { [string](../types/data-types.md#string) } - 请求的 URL 地址
-- <ins>**returns**</ins> { [WebSocket](web-socket.md) }
+## WebSocket.get(scope, key)
 
-构建一个 [WebSocket](web-socket.md) 实例.
+**版本：6.7.0**
 
-> 注: 构建实例时, 已经隐含客户端建立连接的过程.
+静态字段代理。运行时用它从 <code>WebSocket</code> 伴生对象读取名为
+<code>key</code> 的公开常量；不存在或读取失败时返回 Rhino 的“属性不存在”值。
+脚本通常直接读取 <code>WebSocket.EVENT_OPEN</code> 等属性，无需手动调用本方法。
 
-以下示例建立一个 WebSocket 连接, 并在 5 秒钟后主动断开连接.
+### 事件常量
 
+事件监听器的最后一个参数始终是当前 <code>WebSocket</code> 实例。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX09QRU4"></a>
+
+#### WebSocket.EVENT_OPEN
+
+**版本：6.7.0 · 值：<code>"open"</code>**
+
+连接建立后触发。监听器参数为 <code>(response, socket)</code>，其中
+<code>response</code> 是握手响应。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX01FU1NBR0U"></a>
+
+#### WebSocket.EVENT_MESSAGE
+
+**版本：6.7.0 · 值：<code>"message"</code>**
+
+收到任意消息时触发。监听器参数为 <code>(message, socket)</code>；
+<code>message</code> 是字符串或
+[okio.ByteString](https://square.github.io/okio/3.x/okio/okio/okio/-byte-string/)。
+同一消息随后还会触发 <code>EVENT_TEXT</code> 或 <code>EVENT_BYTES</code>。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX1RFWFQ"></a>
+
+#### WebSocket.EVENT_TEXT
+
+**版本：6.7.0 · 值：<code>"text"</code>**
+
+收到文本消息时触发。监听器参数为 <code>(text, socket)</code>。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX0JZVEVT"></a>
+
+#### WebSocket.EVENT_BYTES
+
+**版本：6.7.0 · 值：<code>"bytes"</code>**
+
+收到二进制消息时触发。监听器参数为 <code>(bytes, socket)</code>，
+<code>bytes</code> 为 <code>okio.ByteString</code>。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NJTkc"></a>
+
+#### WebSocket.EVENT_CLOSING
+
+**版本：6.7.0 · 值：<code>"closing"</code>**
+
+远端表示不会再发送消息时触发。监听器参数为
+<code>(code, reason, socket)</code>。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NFRA"></a>
+
+#### WebSocket.EVENT_CLOSED
+
+**版本：6.7.0 · 值：<code>"closed"</code>**
+
+双方完成关闭且连接资源已释放时触发。监听器参数为
+<code>(code, reason, socket)</code>。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX0ZBSUxVUkU"></a>
+
+#### WebSocket.EVENT_FAILURE
+
+**版本：6.7.0 · 值：<code>"failure"</code>**
+
+读写或握手失败时触发。监听器参数为
+<code>(error, response, socket)</code>；在尚无 HTTP 响应时
+<code>response</code> 为 <code>null</code>。失败前已排队或已接收的数据可能丢失。
+
+<a id="api-symbol-d2ViU29ja2V0LkVWRU5UX01BWF9SRUJVSUxEUw"></a>
+
+#### WebSocket.EVENT_MAX_REBUILDS
+
+**版本：6.7.0 · 值：<code>"max_rebuilds"</code>**
+
+调用 <code>rebuild</code> 时已达到允许的重建次数后触发。监听器参数为
+<code>(maxRebuildTimes, socket)</code>。
+
+~~~js
+var socket = new WebSocket('wss://echo.websocket.events');
+socket.on(WebSocket.EVENT_MESSAGE, function (message) {
+    if (typeof message === 'string') {
+        console.log('text:', message);
+    } else {
+        console.log('bytes:', message.hex());
+    }
+});
+socket.exitOnClose();
+~~~
+
+### 关闭状态常量
+
+这些值可传给 <code>close(code, reason)</code>。OkHttp 会校验发送用关闭码；
+部分保留状态码用于描述接收或异常状态，并不适合作为主动发送值。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfTk9STUFM"></a>
+
+#### WebSocket.CODE_CLOSE_NORMAL
+
+**版本：6.7.0 · 值：1000**
+
+正常完成或常规关闭。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfR09JTkdfQVdBWQ"></a>
+
+#### WebSocket.CODE_CLOSE_GOING_AWAY
+
+**版本：6.7.0 · 值：1001**
+
+端点即将离开或服务即将不可用。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfUFJPVE9DT0xfRVJST1I"></a>
+
+#### WebSocket.CODE_CLOSE_PROTOCOL_ERROR
+
+**版本：6.7.0 · 值：1002**
+
+协议错误或无效帧。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVU5TVVBQT1JURUQ"></a>
+
+#### WebSocket.CODE_CLOSE_UNSUPPORTED
+
+**版本：6.7.0 · 值：1003**
+
+收到端点不支持的数据帧类型。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VEX05PX1NUQVRVUw"></a>
+
+#### WebSocket.CODE_CLOSED_NO_STATUS
+
+**版本：6.7.0 · 值：1005**
+
+连接已关闭，但未收到关闭状态码。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfQUJOT1JNQUw"></a>
+
+#### WebSocket.CODE_CLOSE_ABNORMAL
+
+**版本：6.7.0 · 值：1006**
+
+未收到关闭帧的异常关闭。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfVU5TVVBQT1JURURfUEFZTE9BRA"></a>
+
+#### WebSocket.CODE_UNSUPPORTED_PAYLOAD
+
+**版本：6.7.0 · 值：1007**
+
+消息内容与声明类型不一致，例如无效 UTF-8。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfUE9MSUNZX1ZJT0xBVElPTg"></a>
+
+#### WebSocket.CODE_POLICY_VIOLATION
+
+**版本：6.7.0 · 值：1008**
+
+消息违反端点策略，且没有更具体的状态码。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVE9PX0xBUkdF"></a>
+
+#### WebSocket.CODE_CLOSE_TOO_LARGE
+
+**版本：6.7.0 · 值：1009**
+
+消息过大，端点无法处理。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfTUFOREFUT1JZX0VYVEVOU0lPTg"></a>
+
+#### WebSocket.CODE_MANDATORY_EXTENSION
+
+**版本：6.7.0 · 值：1010**
+
+客户端要求的扩展没有由服务端协商。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfU0VSVkVSX0VSUk9S"></a>
+
+#### WebSocket.CODE_SERVER_ERROR
+
+**版本：6.7.0 · 值：1011**
+
+服务端处理请求时发生内部错误。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfU0VSVklDRV9SRVNUQVJU"></a>
+
+#### WebSocket.CODE_SERVICE_RESTART
+
+**版本：6.7.0 · 值：1012**
+
+服务正在重启。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfVFJZX0FHQUlOX0xBVEVS"></a>
+
+#### WebSocket.CODE_TRY_AGAIN_LATER
+
+**版本：6.7.0 · 值：1013**
+
+服务端暂时拒绝请求，可稍后重试。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfQkFEX0dBVEVXQVk"></a>
+
+#### WebSocket.CODE_BAD_GATEWAY
+
+**版本：6.7.0 · 值：1014**
+
+网关从上游收到无效响应。
+
+<a id="api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM"></a>
+
+#### WebSocket.CODE_TLS_HANDSHAKE_FAIL
+
+**版本：6.7.0 · 值：1015**
+
+TLS 握手失败，例如证书未通过验证。
+
+### 实例属性
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNsaWVudA"></a>
+
+#### socket.client
+
+**版本：6.7.0**
+
+创建连接所用的
+[okhttp3.OkHttpClient](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/)
+只读引用。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnVybA"></a>
+
+#### socket.url
+
+**版本：6.7.0**
+
+构造时提供的 URL 字符串。重建连接时继续使用该值。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmRlZmF1bHRNYXhMaXN0ZW5lcnM"></a>
+
+#### socket.defaultMaxListeners
+
+**版本：6.7.0**
+
+继承自 <code>EventEmitter</code> 的静态默认值，初始为 10。它只影响之后创建的
+发射器实例的初始上限；已有实例请用 <code>setMaxListeners</code> 修改。
+
+### 连接与消息方法
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnNlbmQ"></a>
+
+#### socket.send(text) / socket.send(bytes)
+
+**版本：6.7.0**
+
+- <code>text</code>：字符串，按 UTF-8 文本消息发送。
+- <code>bytes</code>：<code>okio.ByteString</code>，按二进制消息发送。
+- 返回：布尔值，消息成功进入发送队列时为 <code>true</code>。
+
+方法立即返回。连接正在关闭、已关闭、已取消，或队列超出 OkHttp 限制时返回
+<code>false</code>；队列溢出还会启动优雅关闭。
+
+~~~js
+var socket = new WebSocket('wss://echo.websocket.events');
+socket.on(WebSocket.EVENT_OPEN, function () {
+    console.log(socket.send('text message'));
+    var bytes = new okio.ByteString(
+        new java.lang.String('binary message').getBytes()
+    );
+    console.log(socket.send(bytes));
+    socket.close();
+});
+socket.exitOnClose();
+~~~
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNsb3Nl"></a>
+
+#### socket.close(code?, reason?) / socket.close(reason)
+
+**版本：6.7.0**
+
+启动优雅关闭，并让已排队消息有机会先发送。省略状态码时使用
+<code>CODE_CLOSE_NORMAL</code>；只传字符串时把它作为正常关闭原因。返回是否成功
+启动关闭流程。状态码或原因不符合 OkHttp 约束时会抛出参数异常。
+
+~~~js
+socket.close();
+socket.close(WebSocket.CODE_CLOSE_NORMAL);
+socket.close(WebSocket.CODE_CLOSE_NORMAL, 'finished');
+socket.close('finished');
+~~~
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNhbmNlbA"></a>
+
+#### socket.cancel()
+
+**版本：6.7.0**
+
+立即取消连接并释放资源，尚未发送的队列内容会被丢弃。无返回值。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnF1ZXVlU2l6ZQ"></a>
+
+#### socket.queueSize()
+
+**版本：6.7.0**
+
+返回等待发送的消息内容字节数，不含 WebSocket 帧、操作系统或中间网络缓冲。
+取消后仍可能返回非零值，表示这些已排队数据没有送达。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlcXVlc3Q"></a>
+
+#### socket.request()
+
+**版本：6.7.0**
+
+返回发起本连接的原始
+[okhttp3.Request](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-request/)。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlYnVpbGQ"></a>
+
+#### socket.rebuild(maxRebuildTimes?)
+
+**版本：6.7.0**
+
+先取消当前连接，再用同一客户端和 URL 新建连接。传入
+<code>maxRebuildTimes</code> 时先更新上限；每次成功开始重建后计数加一。达到上限时
+不会新建连接，而会触发 <code>EVENT_MAX_REBUILDS</code>。省略上限时沿用当前值，
+初始上限为 <code>Int.MAX_VALUE</code>。
+
+~~~js
+var socket = new WebSocket('wss://echo.websocket.events');
+socket.on(WebSocket.EVENT_FAILURE, function () {
+    socket.rebuild(3);
+});
+socket.on(WebSocket.EVENT_MAX_REBUILDS, function (limit) {
+    console.error('rebuild limit:', limit);
+});
+socket.exitOnClose();
+~~~
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV4aXRPbkNsb3Nl"></a>
+
+#### socket.exitOnClose(enabled?) / socket.exitOnClose(timeout)
+
+**版本：6.7.0**
+
+控制脚本退出时是否关闭连接。省略参数或传 <code>true</code> 会启用，传
+<code>false</code> 会禁用；传入毫秒数会启用并把关闭延迟设为不小于零的值。此设置
+不会令当前脚本立即退出，也不会等待远端完成关闭。
+
+### 事件监听方法
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLm9u"></a>
+
+#### socket.on(eventName, listener)
+
+**版本：6.7.0**
+
+在事件列表末尾注册持久监听器并返回当前 socket，便于链式调用。如果该事件曾由
+<code>emitSticky</code> 发射，注册时会先把保存的参数交给监听器，然后仍保留监听器。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmFkZExpc3RlbmVy"></a>
+
+#### socket.addListener(eventName, listener)
+
+**版本：6.7.0**
+
+<code>on</code> 的别名，返回当前 socket。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLm9uY2U"></a>
+
+#### socket.once(eventName, listener)
+
+**版本：6.7.0**
+
+注册只执行一次的监听器并返回当前 socket。若已有同名粘性事件，监听器会立即收到
+保存的参数，并且不会再加入监听列表。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRMaXN0ZW5lcg"></a>
+
+#### socket.prependListener(eventName, listener)
+
+**版本：6.7.0**
+
+把持久监听器插入列表开头，并触发内部 <code>newListener</code> 事件。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRPbmNlTGlzdGVuZXI"></a>
+
+#### socket.prependOnceListener(eventName, listener)
+
+**版本：6.7.0**
+
+把一次性监听器插入列表开头，并触发内部 <code>newListener</code> 事件。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUxpc3RlbmVy"></a>
+
+#### socket.removeListener(eventName, listener)
+
+**版本：6.7.0**
+
+按函数对象身份移除第一个匹配监听器；成功移除时触发内部
+<code>removeListener</code> 事件。返回当前 socket。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUFsbExpc3RlbmVycw"></a>
+
+#### socket.removeAllListeners(eventName?)
+
+**版本：6.7.0**
+
+移除指定事件或全部事件的监听器，并为每个被移除的监听器触发内部
+<code>removeListener</code> 事件。返回当前 socket。
+
+~~~js
+function onText(text) {
+    console.log(text);
+}
+
+socket.prependOnceListener(WebSocket.EVENT_TEXT, onText);
+socket.on(WebSocket.EVENT_TEXT, onText);
+console.log(socket.listenerCount(WebSocket.EVENT_TEXT));
+socket.removeListener(WebSocket.EVENT_TEXT, onText);
+~~~
+
+### 事件发射与查询
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmVtaXQ"></a>
+
+#### socket.emit(eventName, ...args)
+
+**版本：6.7.0**
+
+向当前已注册监听器发射事件。有监听器时返回 <code>true</code>，否则返回
+<code>false</code>。一次性监听器在本次发射后移除。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmVtaXRTdGlja3k"></a>
+
+#### socket.emitSticky(eventName, ...args)
+
+**版本：6.7.0**
+
+先执行普通 <code>emit</code>，再保存本次参数，供之后注册的
+<code>on</code>/<code>once</code> 监听器接收。返回普通发射是否命中监听器。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV2ZW50TmFtZXM"></a>
+
+#### socket.eventNames()
+
+**版本：6.7.0**
+
+返回监听器映射中已有的事件名称数组。移除单个监听器不会自动删除空的名称项。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVyQ291bnQ"></a>
+
+#### socket.listenerCount(eventName)
+
+**版本：6.7.0**
+
+返回指定事件当前注册的监听器数量；没有该事件时返回 0。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVycw"></a>
+
+#### socket.listeners(eventName)
+
+**版本：6.7.0**
+
+返回指定事件监听函数的快照数组。查询尚不存在的事件会为该名称创建空的监听器项。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldE1heExpc3RlbmVycw"></a>
+
+#### socket.getMaxListeners()
+
+**版本：6.7.0**
+
+返回当前实例的监听器上限。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnNldE1heExpc3RlbmVycw"></a>
+
+#### socket.setMaxListeners(maxListeners)
+
+**版本：6.7.0**
+
+设置每个事件名称允许的监听器数量并返回当前 socket。使用 0 表示不限制；使用正数
+表示有限上限。超过上限时，后续注册会抛出包装后的
+<code>TooManyListenersException</code>。
+
+<a id="api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldFRpbWVy"></a>
+
+#### socket.getTimer()
+
+**版本：6.7.0**
+
+返回创建 <code>EventEmitter</code> 时绑定的运行时计时器；没有绑定时返回
+<code>null</code>。这是底层调度对象，通常无需直接操作。
+
+~~~js
+var socket = new WebSocket('wss://echo.websocket.events');
+socket.setMaxListeners(20);
+console.log(socket.getMaxListeners());
+console.log(socket.eventNames());
+socket.cancel();
+~~~
+
+## 生命周期与错误处理
+
+- 构造和重建都会把实例加入运行时的弱引用列表，供脚本退出钩子处理。
+- <code>close</code> 是优雅关闭；<code>cancel</code> 立即丢弃未发送队列。
+- <code>exitOnClose</code> 只登记退出策略。若实例已被回收，退出钩子不会再处理它。
+- WebSocket 网络回调可能晚于发起调用；在 UI 脚本中更新视图时仍需遵守 Android
+  线程规则。
+- 服务端拒绝、网络断开、DNS 或 TLS 失败统一通过 <code>EVENT_FAILURE</code>
+  交付；主动方法的参数错误则直接抛出。
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="construct:webSocket" version="6.7.0" -->
+`construct:webSocket` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
-let ws = new WebSocket('wss://echo.websocket.events');
-setTimeout(() => {
-    console.log('断开 WebSocket');
-    ws.close(WebSocket.CODE_CLOSE_NORMAL, 'Closed by user');
-}, 5e3);
+var value = new WebSocket('wss://echo.websocket.events');
+value.cancel();
 ```
 
-## [m] send
-
-### send(text)
-
-**`Overload 1/2`**
-
-Attempts to enqueue text to be UTF-8 encoded and sent as a the data of a text (type 0x1) message.
-This method returns true if the message was enqueued. Messages that would overflow the outgoing message buffer will be rejected and trigger a graceful shutdown of this web socket. This method returns false in that case, and in any other case where this web socket is closing, closed, or canceled.
-This method returns immediately.
-
+<!-- api-member-contract id="module:webSocket" version="6.7.0" -->
+`module:webSocket` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
-let ws = new WebSocket('wss://echo.websocket.events');
-ws.send('Hello WebSocket');
-ws.exitOnClose();
+console.log(typeof webSocket);
 ```
 
-### send(bytes)
-
-**`Overload 2/2`**
-
-Attempts to enqueue bytes to be sent as a the data of a binary (type 0x2) message.
-This method returns true if the message was enqueued. Messages that would overflow the outgoing message buffer (16 MiB) will be rejected and trigger a graceful shutdown of this web socket. This method returns false in that case, and in any other case where this web socket is closing, closed, or canceled.
-This method returns immediately.
-
+<!-- api-member-contract id="webSocket.CODE_BAD_GATEWAY" version="6.7.0" -->
+`webSocket.CODE_BAD_GATEWAY` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
-let ws = new WebSocket('wss://echo.websocket.events');
-ws.send(new okio.ByteString(new java.lang.String('Hello WebSocket').getBytes()));
-ws.exitOnClose();
+console.log(WebSocket.CODE_BAD_GATEWAY);
 ```
 
-## [m] close
-
-### close(code?, reason?)
-
-**`Overload [1-3]/4`**
-
-- **[ code = `WebSocket.CODE_CLOSE_NORMAL [1000]` ]** { [number](../types/data-types.md#number) } - 状态码
-- **[ reason = `null` ]** { [string](../types/data-types.md#string) } - 连接关闭原因
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 优雅关闭是否已经启动
-
-尝试启动 WebSocket 优雅关闭, 此时已排队的报文将在 WebSocket 断开前被传送.
-
-> 注: 相对应地, [cancel](#m-cancel) 则会立即释放资源, 而丢弃所有排队的报文.
-
-如果调用 `close` 时启动了优雅关闭, 返回 true.<br>
-如果调用 `close` 时, 优雅关闭已经启动, 或 WebSocket 已关闭或取消, 返回 false.
-
-参数 `code` 可选, 代表状态码, 通过状态码可以获取或判断连接关闭的原因. 其范围为 `[1000..5000)`.
-
-参数 `reason` 可选, 代表关闭原因, 方便用户直接通过阅读字符串获取连接关闭的原因.
-
-以下调用方式均被支持 (其中 `ws` 代表一个 WebSocket 实例):
-
+<!-- api-member-contract id="webSocket.CODE_CLOSE_ABNORMAL" version="6.7.0" -->
+`webSocket.CODE_CLOSE_ABNORMAL` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
-ws.close(); /* 默认状态码, 无具体关闭原因. */
-ws.close(WebSocket.CODE_CLOSE_NORMAL); /* 指定状态码, 无具体关闭原因. */
-ws.close(WebSocket.CODE_CLOSE_NORMAL, '用户正常关闭'); /* 指定状态码, 指定具体关闭原因. */
+console.log(WebSocket.CODE_CLOSE_ABNORMAL);
 ```
 
-### close(reason)
-
-**`Overload 4/4`**
-
-- **reason** { [string](../types/data-types.md#string) } - 连接关闭原因
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 优雅关闭是否已经启动
-
-相当于 `close(WebSocket.CODE_CLOSE_NORMAL, reason)`.
-
-## [m] exitOnClose
-
-### exitOnClose()
-
-**`Overload 1/2`**
-
-... ...
-
-### exitOnClose(timeout)
-
-**`Overload 2/2`**
-
-... ...
-
-## [m] cancel
-
-### cancel()
-
-- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-
-立即强制释放该 WebSocket 所占用的资源, 并丢弃所有排队的报文.
-
-> 注: 相对应地, [close](#m-close) 则会在释放资源之前将排队的报文完成传送.
-
-## [m] queueSize
-
-### queueSize()
-
-- <ins>**returns**</ins> { [number](../types/data-types.md#number) }
-
-Returns the size in bytes of all messages enqueued to be transmitted to the server. This doesn't include framing overhead. If compression is enabled, uncompressed messages size is used to calculate this value. It also doesn't include any bytes buffered by the operating system or network intermediaries. This method returns 0 if no messages are waiting in the queue. If may return a nonzero value after the web socket has been canceled; this indicates that enqueued messages were not transmitted.
-
-## [m] on
-
-### on(eventName, callback)
-
-- **eventName** { [string](../types/data-types.md#string) } - 最大连接重建次数
-- **callback** { [(](../types/data-types.md#function)args: [...](../../project/about.md#可变参数)[any](../types/data-types.md#any)[[]](../../project/about.md#可变参数)[)](../types/data-types.md#function) [=>](../types/data-types.md#function) [any](../types/data-types.md#any) } - 事件监听回调参数
-- <ins>**returns**</ins> { [WebSocket](web-socket.md) }
-
-注册一个 WebSocket 相关的事件监听器, 当事件名称与 `eventName` 参数一致时, 触发执行回调函数 `callback`.
-
-... ...
-
-不同事件名称, 其对应监听回调函数的参数也不同 (给出具体对应的在 [p] 文档内).
-
-... ...
-
-## [m] rebuild
-
-### rebuild(maxRebuildTimes?)
-
-**`Overload [1-2]/2`**
-
-- **maxRebuildTimes** { [number](../types/data-types.md#number) } - 最大连接重建次数
-- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-
-... ...
-
-## [m] request
-
-### request()
-
-- <ins>**returns**</ins> { [Okhttp3Request](../types/okhttp3-request.md) }
-
-Returns the original request that initiated this web socket.
-
-## [p] EVENT_OPEN
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `open` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量.
-
-- 事件触发: 远程对等端接受网络套接字, 并且可以开始信息传输.
-- 事件监听: [WebSocket#on](#m-on)
-
+<!-- api-member-contract id="webSocket.CODE_CLOSE_GOING_AWAY" version="6.7.0" -->
+`webSocket.CODE_CLOSE_GOING_AWAY` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
-let ws = new WebSocket('wss://echo.websocket.events');
-ws.on(WebSocket.EVENT_OPEN, (res, ws) => console.log('WebSocket 已连接'));
-ws.exitOnClose();
+console.log(WebSocket.CODE_CLOSE_GOING_AWAY);
 ```
 
-## [p] EVENT_MESSAGE
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `message` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when a text (type 0x1) message has been received.
-
-## [p] EVENT_TEXT
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `text` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when a text (type 0x1) message has been received.
-
-## [p] EVENT_BYTES
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `bytes` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when a text (type 0x1) message has been received.
-
-## [p] EVENT_CLOSING
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `closing` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when the remote peer has indicated that no more incoming messages will be transmitted.
-
-## [p] EVENT_CLOSED
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `closed` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when both peers have indicated that no more messages will be transmitted and the connection has been successfully released. No further calls to this listener will be made.
-
-## [p] EVENT_FAILURE
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `failure` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-Invoked when a web socket has been closed due to an error reading from or writing to the network. Both outgoing and incoming messages may have been lost. No further calls to this listener will be made.
-
-## [p] EVENT_MAX_REBUILDS
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `max_rebuilds` ] { [string](../types/data-types.md#string) }
-
-WebSocket 事件名称常量, 用于 xxx 事件.
-
-## [p] CODE_CLOSE_NORMAL
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1000` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示成功操作或常规的 Socket 关闭操作.
-
-## [p] CODE_CLOSE_GOING_AWAY
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1001` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端正在处于移除状态, 服务端或客户端即将不可用.
-
-## [p] CODE_CLOSE_PROTOCOL_ERROR
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1002` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端因协议错误或无效帧而即将终止连接.
-
-## [p] CODE_CLOSE_UNSUPPORTED
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1003` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端因帧数据类型不支持而即将终止连接.
-
-## [p] CODE_CLOSED_NO_STATUS
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1005` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示不包含错误原因, 仅代表已经关闭的状态.
-
-## [p] CODE_CLOSE_ABNORMAL
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1006` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示异常关闭 (如浏览器关闭).
-
-## [p] CODE_UNSUPPORTED_PAYLOAD
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1007` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端接收到不一致的报文 (如异常格式的 UTF-8).
-
-## [p] CODE_POLICY_VIOLATION
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1008` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端因收到了违反其策略的报文而即将终止连接.
-
-## [p] CODE_CLOSE_TOO_LARGE
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1009` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端因无法处理长度过大的报文而即将终止连接.
-
-## [p] CODE_MANDATORY_EXTENSION
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1010` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示终端因期望与服务端进行扩展协商而即将终止连接.
-
-## [p] CODE_SERVER_ERROR
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1011` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示服务端因发生内部错误而即将终止连接.
-
-## [p] CODE_SERVICE_RESTART
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1012` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示服务端正在重启过程中.
-
-## [p] CODE_TRY_AGAIN_LATER
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1013` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示服务端临时拒绝了终端请求.
-
-## [p] CODE_BAD_GATEWAY
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1014` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示网关服务器接收到无效的请求.
-
-## [p] CODE_TLS_HANDSHAKE_FAIL
-
-**`6.3.4`** **`CONSTANT`**
-
-- [ `1015` ] { [number](../types/data-types.md#number) }
-
-WebSocket 状态码, 表示 TLS 握手失败 (如服务端证书未通过验证等).
+<!-- api-member-contract id="webSocket.CODE_CLOSE_NORMAL" version="6.7.0" -->
+`webSocket.CODE_CLOSE_NORMAL` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_CLOSE_NORMAL);
+```
+
+<!-- api-member-contract id="webSocket.CODE_CLOSE_PROTOCOL_ERROR" version="6.7.0" -->
+`webSocket.CODE_CLOSE_PROTOCOL_ERROR` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_CLOSE_PROTOCOL_ERROR);
+```
+
+<!-- api-member-contract id="webSocket.CODE_CLOSE_TOO_LARGE" version="6.7.0" -->
+`webSocket.CODE_CLOSE_TOO_LARGE` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_CLOSE_TOO_LARGE);
+```
+
+<!-- api-member-contract id="webSocket.CODE_CLOSE_UNSUPPORTED" version="6.7.0" -->
+`webSocket.CODE_CLOSE_UNSUPPORTED` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_CLOSE_UNSUPPORTED);
+```
+
+<!-- api-member-contract id="webSocket.CODE_CLOSED_NO_STATUS" version="6.7.0" -->
+`webSocket.CODE_CLOSED_NO_STATUS` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_CLOSED_NO_STATUS);
+```
+
+<!-- api-member-contract id="webSocket.CODE_MANDATORY_EXTENSION" version="6.7.0" -->
+`webSocket.CODE_MANDATORY_EXTENSION` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_MANDATORY_EXTENSION);
+```
+
+<!-- api-member-contract id="webSocket.CODE_POLICY_VIOLATION" version="6.7.0" -->
+`webSocket.CODE_POLICY_VIOLATION` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_POLICY_VIOLATION);
+```
+
+<!-- api-member-contract id="webSocket.CODE_SERVER_ERROR" version="6.7.0" -->
+`webSocket.CODE_SERVER_ERROR` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_SERVER_ERROR);
+```
+
+<!-- api-member-contract id="webSocket.CODE_SERVICE_RESTART" version="6.7.0" -->
+`webSocket.CODE_SERVICE_RESTART` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_SERVICE_RESTART);
+```
+
+<!-- api-member-contract id="webSocket.CODE_TLS_HANDSHAKE_FAIL" version="6.7.0" -->
+`webSocket.CODE_TLS_HANDSHAKE_FAIL` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_TLS_HANDSHAKE_FAIL);
+```
+
+<!-- api-member-contract id="webSocket.CODE_TRY_AGAIN_LATER" version="6.7.0" -->
+`webSocket.CODE_TRY_AGAIN_LATER` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_TRY_AGAIN_LATER);
+```
+
+<!-- api-member-contract id="webSocket.CODE_UNSUPPORTED_PAYLOAD" version="6.7.0" -->
+`webSocket.CODE_UNSUPPORTED_PAYLOAD` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.CODE_UNSUPPORTED_PAYLOAD);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_BYTES" version="6.7.0" -->
+`webSocket.EVENT_BYTES` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_BYTES);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_CLOSED" version="6.7.0" -->
+`webSocket.EVENT_CLOSED` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_CLOSED);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_CLOSING" version="6.7.0" -->
+`webSocket.EVENT_CLOSING` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_CLOSING);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_FAILURE" version="6.7.0" -->
+`webSocket.EVENT_FAILURE` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_FAILURE);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_MAX_REBUILDS" version="6.7.0" -->
+`webSocket.EVENT_MAX_REBUILDS` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_MAX_REBUILDS);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_MESSAGE" version="6.7.0" -->
+`webSocket.EVENT_MESSAGE` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_MESSAGE);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_OPEN" version="6.7.0" -->
+`webSocket.EVENT_OPEN` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_OPEN);
+```
+
+<!-- api-member-contract id="webSocket.EVENT_TEXT" version="6.7.0" -->
+`webSocket.EVENT_TEXT` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.EVENT_TEXT);
+```
+
+<!-- api-member-contract id="webSocket.get" version="6.7.0" -->
+`webSocket.get` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(WebSocket.get);
+```
+
+<!-- api-member-contract id="webSocket.instance.addListener" version="6.7.0" -->
+`webSocket.instance.addListener` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.addListener);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.cancel" version="6.7.0" -->
+`webSocket.instance.cancel` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.cancel);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.client" version="6.7.0" -->
+`webSocket.instance.client` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.client);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.close" version="6.7.0" -->
+`webSocket.instance.close` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.close);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.defaultMaxListeners" version="6.7.0" -->
+`webSocket.instance.defaultMaxListeners` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.defaultMaxListeners);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.emit" version="6.7.0" -->
+`webSocket.instance.emit` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.emit);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.emitSticky" version="6.7.0" -->
+`webSocket.instance.emitSticky` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.emitSticky);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.eventNames" version="6.7.0" -->
+`webSocket.instance.eventNames` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.eventNames);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.exitOnClose" version="6.7.0" -->
+`webSocket.instance.exitOnClose` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.exitOnClose);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.getMaxListeners" version="6.7.0" -->
+`webSocket.instance.getMaxListeners` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.getMaxListeners);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.getTimer" version="6.7.0" -->
+`webSocket.instance.getTimer` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.getTimer);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.listenerCount" version="6.7.0" -->
+`webSocket.instance.listenerCount` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.listenerCount);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.listeners" version="6.7.0" -->
+`webSocket.instance.listeners` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.listeners);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.on" version="6.7.0" -->
+`webSocket.instance.on` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.on);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.once" version="6.7.0" -->
+`webSocket.instance.once` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.once);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.prependListener" version="6.7.0" -->
+`webSocket.instance.prependListener` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.prependListener);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.prependOnceListener" version="6.7.0" -->
+`webSocket.instance.prependOnceListener` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.prependOnceListener);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.queueSize" version="6.7.0" -->
+`webSocket.instance.queueSize` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.queueSize);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.rebuild" version="6.7.0" -->
+`webSocket.instance.rebuild` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.rebuild);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.removeAllListeners" version="6.7.0" -->
+`webSocket.instance.removeAllListeners` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.removeAllListeners);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.removeListener" version="6.7.0" -->
+`webSocket.instance.removeListener` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.removeListener);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.request" version="6.7.0" -->
+`webSocket.instance.request` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.request);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.send" version="6.7.0" -->
+`webSocket.instance.send` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.send);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.setMaxListeners" version="6.7.0" -->
+`webSocket.instance.setMaxListeners` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.setMaxListeners);
+socket.cancel();
+```
+
+<!-- api-member-contract id="webSocket.instance.url" version="6.7.0" -->
+`webSocket.instance.url` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var socket = new WebSocket('wss://echo.websocket.events');
+console.log(socket.url);
+socket.cancel();
+```

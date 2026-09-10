@@ -13,7 +13,7 @@ console.log(`${size.width}x${size.height}`);
 
 - [UiObject#size](../automation/ui-object.md#m-size)
 
-> 注: 本章节仅列出部分属性或方法.
+> 本页聚焦 MonkeyKing 尺寸参数所需的构造与宽高属性；OpenCV 的其余 Java 方法请查阅上方官方类参考。
 
 ---
 

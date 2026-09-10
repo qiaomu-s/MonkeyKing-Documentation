@@ -1,11 +1,10 @@
 # 画布 (Canvas)
 
----
+<a id="api-symbol-bW9kdWxlOmNhbnZhcw"></a>
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+## `canvas` 模块
 
----
+`canvas` 是脚本运行时自动提供的全局构造器，创建结果是对 Android `Canvas` 的脚本封装。它不会自动切换线程；同一画布实例不应由多个脚本线程同时修改。构造和绘制本身不申请系统权限，但读取源图片仍受文件访问规则约束。
 
 canvas提供了使用画布进行2D画图的支持, 可用于简单的小游戏开发或者图片编辑. 使用canvas可以轻松地在一张图片或一个界面上绘制各种线与图形.
 
@@ -40,6 +39,40 @@ canvas.drawRect(0, 0, 100, 100, paint);
 ```
 
 结合画笔, canvas可以绘制基本图形、图片等.
+
+<a id="api-symbol-Y29uc3RydWN0OmNhbnZhcw"></a>
+
+## `new canvas(source?)`
+
+```ts
+new canvas(): ScriptCanvas
+new canvas(bitmap: android.graphics.Bitmap): ScriptCanvas
+new canvas(image: ImageWrapper): ScriptCanvas
+new canvas(width: number, height: number): ScriptCanvas
+```
+
+- 无参数形式创建一个尚未绑定 Android 画布的包装器，供宿主或 UI 之后通过 `setCanvas` 注入；在绑定前调用依赖画布的方法会失败。
+- `Bitmap` 形式直接在给定的可变位图上绘制。
+- `ImageWrapper` 形式先复制其位图，再在副本上绘制，因此不会改写原图。
+- 宽高形式会把数值转为整数，并创建 `ARGB_8888` 位图；非数字参数会抛出参数异常，Android 也会拒绝无效尺寸。
+
+`toImage()` 返回当前内部位图的副本，调用方负责按 `ImageWrapper` 生命周期回收返回值。构造器最多接受两个参数，多余参数或不支持的单参数类型会抛出 `WrappedIllegalArgumentException`。
+
+```js
+const board = new canvas(320, 180)
+const paint = new android.graphics.Paint()
+paint.setARGB(255, 255, 64, 64)
+board.drawRect(20, 20, 300, 160, paint)
+
+const output = board.toImage()
+try {
+  images.save(output, '/sdcard/Download/canvas-demo.png')
+} finally {
+  output.recycle()
+}
+```
+
+该构造入口在 MonkeyKing 6.7.0 中可用；实例方法主要转发到 Android `Canvas`，参数限制和绘制语义以对应 Android API 为准。
 
 ## canvas.getWidth()
 
@@ -202,3 +235,22 @@ canvas.drawRect(0, 0, 100, 100, paint);
 # 路径特效
 
 # 区域
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="construct:canvas" version="6.7.0" -->
+`construct:canvas` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var value = new canvas(1, 1);
+console.log(value.getWidth());
+value.toImage().recycle();
+```
+
+<!-- api-member-contract id="module:canvas" version="6.7.0" -->
+`module:canvas` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof canvas);
+```

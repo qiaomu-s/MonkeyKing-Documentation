@@ -1,65 +1,116 @@
 # Okhttp3Request
 
----
+`Okhttp3Request` 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 `okhttp3.Request`。`http.buildRequest` 直接返回该类型，`HttpResponse.request` 返回产生最终响应的请求。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Mar 2, 2023.</p>
-
----
-
-[okhttp3.Request](https://square.github.io/okhttp/3.x/okhttp/okhttp3/Request.html) 别名.
-
-Okhttp3Request 表示一个 HTTP 请求.
+官方 API：[`okhttp3.Request`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-request/)。
 
 ```js
-let request = new okhttp3.Request.Builder()
-    .url('https://www.msn.com')
-    .method('GET', null)
-    .build();
+const request = http.buildRequest('https://example.com/items', {
+  method: 'GET',
+  headers: { accept: 'application/json' },
+})
 
-// Request{method=GET, url=https://www.msn.com/}
-console.log(request);
+console.log(request.method())
+console.log(request.url())
+console.log(request.header('accept'))
 ```
 
-常见相关方法或属性:
+## 常用方法
 
-- [httpResponseType#request](http-response.md#p-request)
-- [okhttp3.Request.Builder#build](https://square.github.io/okhttp/3.x/okhttp/okhttp3/Request.Builder.html#build--)
+### `method()`
 
-> 注: 本章节仅列出部分属性或方法.
+```ts
+method(): string
+```
 
----
+返回大写或调用方指定形式的 HTTP 方法。
 
-<p style="font: bold 2em sans-serif; color: #FF7043">okhttp3.Request</p>
+### `url()`
 
----
+```ts
+url(): okhttp3.HttpUrl
+```
 
-## [m] body
+返回已解析、规范化的 URL。类型见 [Okhttp3HttpUrl](okhttp3-http-url.md)。
 
-### body()
+### `headers()`
 
-- <ins>**returns**</ins> { [okhttp3.RequestBody](https://square.github.io/okhttp/3.x/okhttp/okhttp3/RequestBody.html) | [null](data-types.md#null) }
+```ts
+headers(): okhttp3.Headers
+```
 
-获取 HTTP 请求的 "请求体 (Request Body)".
+返回请求的完整不可变 header 集合。使用 `header(name)` 读取最后一个同名值，使用 `headers(name)` 读取全部同名值。
 
-## [m] cacheControl
+### `header(name)` / `headers(name)`
 
-### cacheControl()
+```ts
+header(name: string): string | null
+headers(name: string): java.util.List<string>
+```
 
-- <ins>**returns**</ins> { [okhttp3.CacheControl](https://square.github.io/okhttp/3.x/okhttp/okhttp3/CacheControl.html) }
+名称匹配不区分大小写；不存在时单值入口返回 `null`，多值入口返回空列表。
 
-获取 HTTP 请求标头字段 [cache-control](http-request-headers.md#p-cache-control) 的信息.
+### `body()`
+
+```ts
+body(): okhttp3.RequestBody | null
+```
+
+返回请求体；GET/HEAD 等无 body 请求通常为 `null`。请求体可能是一次写入的流式实现，不要假设可以任意重复读取。
+
+### `cacheControl()`
+
+```ts
+cacheControl(): okhttp3.CacheControl
+```
+
+解析请求 `Cache-Control` header 并返回 OkHttp `CacheControl`。
 
 ```js
-let cacheControl = http.get('https://www.msn.com', {
-    headers: {
-        'cache-control': 'no-transform, no-store, no-cache',
-    },
-    contentType: 'text/plain',
-}).request.cacheControl();
-
-console.log(cacheControl); // no-transform, no-store, no-cache
-console.log(cacheControl.noTransform()); // true
-console.log(cacheControl.noStore()); // true
-console.log(cacheControl.mustRevalidate()); // false
+const request = http.buildRequest('https://example.com', {
+  method: 'GET',
+  headers: { 'cache-control': 'no-store, no-cache' },
+})
+const policy = request.cacheControl()
+console.log(policy.noStore(), policy.noCache())
 ```
+
+### `isHttps()`
+
+```ts
+isHttps(): boolean
+```
+
+请求 URL 使用 HTTPS 时返回 `true`。
+
+### `tag()` / `tag(type)`
+
+```ts
+tag(): object | null
+tag(type: java.lang.Class): object | null
+```
+
+读取 builder 附加的请求标签；MonkeyKing 默认构建流程不设置 tag。
+
+### `newBuilder()`
+
+```ts
+newBuilder(): okhttp3.Request.Builder
+```
+
+返回以当前请求为模板的可变 builder，可修改 URL、方法、headers、body 或 tags 后构建新请求；原请求保持不变。
+
+### `toString()`
+
+```ts
+toString(): string
+```
+
+返回 OkHttp 调试摘要，通常包含方法、URL 和 tags。不要把格式当作稳定序列化协议。
+
+## 生命周期、线程与版本
+
+- Request 对象不可变且不持有打开的 response body，不需要关闭；其中的自定义 `RequestBody` 可能在发送时访问外部资源，应由其创建者管理。
+- `Request.Builder` 可变，不应由多个线程并发修改；已构建 Request 可安全只读共享。
+- `HttpResponse.request` 可能是重定向链最终请求，不一定等于最初构建的对象。
+- 本页合同固定到 OkHttp 4.12.0；其他方法请以官方 4.x API 为准。

@@ -1520,32 +1520,33 @@ Color('#010101').isSimilar('#020202', { similarity: 0.95 }); // true
 
 ## [m#] isEqual
 
-### isEqual(other, alphaMatters?)
+### isEqual(other, thresholdOrOptions?)
 
 **`6.3.0`** **`Overload[1-2]/2`**
 
 - **other** { [ColorHex](data-types.md#colorhex) | [ColorInt](data-types.md#colorint) | [ColorName](data-types.md#colorname) } - 颜色参数
-- **[ alphaMatters = `false` ]** { [boolean](data-types.md#boolean) } - 是否考虑 `A (alpha)` 分量
-- <ins>**returns**</ins> { [boolean](data-types.md#boolean) } - 实例颜色与参数颜色是否相等
+- **[ thresholdOrOptions ]** { [number](data-types.md#number) | [object](data-types.md#object) } - 颜色匹配阈值，或包含 `threshold`、`similarity`、`algorithm` 的选项对象
+- <ins>**returns**</ins> { [boolean](data-types.md#boolean) } - 实例颜色与参数颜色是否达到匹配条件
 
-判断实例颜色与参数颜色是否相等, 比较时由 `alphaMatters` 参数决定是否考虑 `A (alpha)` 分量:
+`Color#isEqual` 是静态 `colors.isEqual` 的实例转发，使用与 `colors.isSimilar` 相同的颜色检测器。省略第三个参数时采用默认阈值 `4` 和 `diff` 算法；传入数字时将其作为阈值；传入对象时读取 `threshold` 或 `similarity`，并可指定 `algorithm`。第三个参数不是 `alphaMatters`，不会启用完整 ARGB 严格相等比较。
 
 ```js
 /* Hex 代码. */
-colors.isEqual('#FF0000', '#FF0000'); // true
-colors.isEqual('#FF0000', '#F00'); /* 同上, 三位数简写形式. */
+Color('#FF0000').isEqual('#FF0000'); // true
+Color('#FF0000').isEqual('#F00'); /* 同上, 三位数简写形式. */
 /* 颜色整数. */
-colors.isEqual(-65536, 0xFF0000); // true
+Color(-65536).isEqual(0xFF0000); // true
 /* 颜色名称. */
-colors.isEqual('red', 'RED'); /* true, 不区分大小写. */
-colors.isEqual('orange', 'Orange'); /* true, 不区分大小写. */
-colors.isEqual('dark-gray', 'DARK_GRAY'); /* true, 连字符与下划线均被支持. */
+Color('red').isEqual('RED'); /* true, 不区分大小写. */
+Color('orange').isEqual('Orange'); /* true, 不区分大小写. */
+Color('dark-gray').isEqual('DARK_GRAY'); /* true, 连字符与下划线均被支持. */
 /* 不同类型比较. */
-colors.isEqual('red', '#FF0000'); // true
-colors.isEqual('orange', '#FFA500'); // true
-/* A (alpha) 分量的不同情况. */
-colors.isEqual('#A1FF0000', '#A2FF0000'); /* true, 默认忽略 A 分量. */
-colors.isEqual('#A1FF0000', '#A2FF0000', true); /* false, 需考虑 A 分量. */
+Color('red').isEqual('#FF0000'); // true
+Color('orange').isEqual('#FFA500'); // true
+/* 第三个参数沿用 isSimilar 的阈值/选项语义. */
+Color('#A1FF0000').isEqual('#A2FF0000', 4); // true 或 false 取决于颜色检测算法
+Color('#A1FF0000').isEqual('#A2FF0000', { threshold: 4, algorithm: 'diff' });
+Color('#A1FF0000').isEqual('#A2FF0000', { similarity: 0.99 });
 ```
 
 ## [m#] equals
@@ -1572,17 +1573,9 @@ Color('red').equals('#FF0000'); // true
 Color('#A1FF0000').equals('#A2FF0000'); // true
 ```
 
-但以下示例将全部抛出异常:
-
-```js
-Color('orange').equals('#FFA500'); /* 抛出异常. */
-Color('dark-gray').equals('#444'); /* 抛出异常. */
-Color('#FF0000').equals('#F00'); /* 抛出异常. */
-```
-
-上述示例对于 [Color#isEqual](#m-isequal) 则全部返回 `true`.
-
-除非需要考虑多版本兼容, 否则建议始终使用 `Color#isEqual` 替代 `Color#equals`.
+`equals` 只接受一个参数，并调用底层 `isEqualRhino`：默认比较 RGB 分量、忽略 alpha，
+但不会接受 `threshold`、`similarity` 或 `algorithm` 选项。需要颜色检测阈值或算法时，
+请使用上面的 `Color#isEqual`/`colors.isSimilar`。
 
 ## [m#] luminance
 
@@ -1641,3 +1634,223 @@ Color('blue').setPaintColor(paint);
 ```
 
 更多 setPaintColor 相关内容, 参阅 [colors.setPaintColor](../media/color.md#m-setpaintcolor) 小节.
+
+---
+
+## MonkeyKing 6.7.0 动态实例合同
+
+<a id="api-symbol-Y29sb3IucmVzdWx0LnRvU3RyaW5nUmVhZGFibGU"></a>
+
+### `toStringReadable()`
+
+```ts
+Color.prototype.toStringReadable(): string
+```
+
+不接受参数，返回当前颜色的可读摘要。完全不透明颜色使用 Hex、RGB、HSL、HSV 和整数形式；带透明度的颜色改用 RGBA、HSLA、HSVA。
+
+```js
+console.log(Color('red').toStringReadable())
+// Color { #FF0000 | rgb(255, 0, 0) | hsl(0, 100%, 50%) | hsv(0, 100%, 100%) | int(-65536) }
+
+console.log(Color('#80FF0000').toStringReadable())
+// Color { #80FF0000 | rgba(255, 0, 0, 0.5) | hsla(0, 100%, 50%, 0.5) | hsva(0, 100%, 100%, 0.5) | int(-2130771968) }
+```
+
+多余参数会触发参数数量异常。该方法只读取实例的 `color` 整数，不修改实例，也不申请权限。
+
+<a id="api-symbol-ZHluYW1pYzpjb2xvci5yZXN1bHQuZm9yd2FyZGVkLWZ1bmN0aW9ucw"></a>
+
+### 动态转发的 Color 实例方法
+
+`Color` 实例在属性读取时动态解析 [colors](../media/color.md) 模块方法：
+
+- `setAlpha`、`setRed`、`setGreen`、`setBlue`、相对设置、移除分量、`setRgb`、`setRgba`、`setArgb`、`setHsv`、`setHsva`、`setHsl`、`setHsla` 和 `setPaintColor` 会更新实例的 `color` 字段并返回当前实例，可链式调用。
+- `toRgb`、`toRgba`、`toArgb`、`toHsv`、`toHsva`、`toHsl`、`toHsla` 以及其他可解析的 `colors` 方法会把当前 `color` 自动插入为第一个参数，返回转换结果而不修改实例。
+- `equals` 和 `toStringReadable` 由实例直接实现，不走通用反射转发。
+
+因此 `Color('red').toHex()` 等价于 `colors.toHex(Color('red').color)`，而 `Color('red').setBlue(255)` 会原地更新实例。访问不存在的方法时按普通 JavaScript 属性查找规则得到缺失值；参数错误则由被转发的 `colors` 方法抛出。
+
+```js
+const color = Color('red')
+const same = color.setBlue(255).setAlpha(0.5)
+
+console.log(same === color) // true
+console.log(color.toHex())
+console.log(color.toHslaString())
+```
+
+动态方法同步运行，实例可变且不做跨线程同步；不要在多个脚本线程中并发修改同一个 `Color` 实例。
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="color.result.color" version="6.7.0" -->
+`color.result.color` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.color);
+```
+
+<!-- api-member-contract id="color.result.equals" version="6.7.0" -->
+`color.result.equals` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.equals);
+```
+
+<!-- api-member-contract id="color.result.removeAlpha" version="6.7.0" -->
+`color.result.removeAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.removeAlpha);
+```
+
+<!-- api-member-contract id="color.result.removeBlue" version="6.7.0" -->
+`color.result.removeBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.removeBlue);
+```
+
+<!-- api-member-contract id="color.result.removeGreen" version="6.7.0" -->
+`color.result.removeGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.removeGreen);
+```
+
+<!-- api-member-contract id="color.result.removeRed" version="6.7.0" -->
+`color.result.removeRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.removeRed);
+```
+
+<!-- api-member-contract id="color.result.setAlpha" version="6.7.0" -->
+`color.result.setAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setAlpha);
+```
+
+<!-- api-member-contract id="color.result.setAlphaRelative" version="6.7.0" -->
+`color.result.setAlphaRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setAlphaRelative);
+```
+
+<!-- api-member-contract id="color.result.setArgb" version="6.7.0" -->
+`color.result.setArgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setArgb);
+```
+
+<!-- api-member-contract id="color.result.setBlue" version="6.7.0" -->
+`color.result.setBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setBlue);
+```
+
+<!-- api-member-contract id="color.result.setBlueRelative" version="6.7.0" -->
+`color.result.setBlueRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setBlueRelative);
+```
+
+<!-- api-member-contract id="color.result.setGreen" version="6.7.0" -->
+`color.result.setGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setGreen);
+```
+
+<!-- api-member-contract id="color.result.setGreenRelative" version="6.7.0" -->
+`color.result.setGreenRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setGreenRelative);
+```
+
+<!-- api-member-contract id="color.result.setHsl" version="6.7.0" -->
+`color.result.setHsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setHsl);
+```
+
+<!-- api-member-contract id="color.result.setHsla" version="6.7.0" -->
+`color.result.setHsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setHsla);
+```
+
+<!-- api-member-contract id="color.result.setHsv" version="6.7.0" -->
+`color.result.setHsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setHsv);
+```
+
+<!-- api-member-contract id="color.result.setHsva" version="6.7.0" -->
+`color.result.setHsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setHsva);
+```
+
+<!-- api-member-contract id="color.result.setPaintColor" version="6.7.0" -->
+`color.result.setPaintColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setPaintColor);
+```
+
+<!-- api-member-contract id="color.result.setRed" version="6.7.0" -->
+`color.result.setRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setRed);
+```
+
+<!-- api-member-contract id="color.result.setRedRelative" version="6.7.0" -->
+`color.result.setRedRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setRedRelative);
+```
+
+<!-- api-member-contract id="color.result.setRgb" version="6.7.0" -->
+`color.result.setRgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setRgb);
+```
+
+<!-- api-member-contract id="color.result.setRgba" version="6.7.0" -->
+`color.result.setRgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.setRgba);
+```
+
+<!-- api-member-contract id="color.result.toStringReadable" version="6.7.0" -->
+`color.result.toStringReadable` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.toStringReadable);
+```
+
+<!-- api-member-contract id="dynamic:color.result.forwarded-functions" version="6.7.0" -->
+`dynamic:color.result.forwarded-functions` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var result = color('red');
+console.log(result.forwardedFunctions);
+```

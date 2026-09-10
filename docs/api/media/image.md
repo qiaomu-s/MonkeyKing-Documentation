@@ -1,30 +1,30 @@
 # 图像 (Images)
 
----
+<a id="api-symbol-bW9kdWxlOmltYWdlcw"></a>
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+## `images` 模块
 
----
-
-images模块提供了一些手机设备中常见的图片处理函数, 包括截图、读写图片、图片剪裁、旋转、二值化、找色找图等.
+`images` 是全局图像模块，另有 `$images` 同义入口；`captureScreen`、`requestScreenCapture` 和 `requestScreenCaptureAsync` 还会直接导出为同名全局函数。模块覆盖截图、编解码、OpenCV 变换、找色找图、特征匹配和相似度计算。
 
 该模块分为两个部分, 找图找色部分和图片处理部分.
 
-需要注意的是, image对象创建后尽量在不使用时进行回收, 同时避免循环创建大量图片. 因为图片是一种占用内存比较大的资源, 尽管Monkey King通过各种方式（比如图片缓存机制、垃圾回收时回收图片、脚本结束时回收所有图片）尽量降低图片资源的泄漏和内存占用, 但是糟糕的代码仍然可以占用大量内存.
+图像和 OpenCV 矩阵占用原生内存。除明确返回布尔值、数字或普通对象的入口外，创建出的 `ImageWrapper`、`Mat`、`ImageFeatures` 应在不用时回收；脚本退出清理只是最后保障。路径输入通常会被包装为一次性图像并在该次操作后自动回收，方法返回的新图像仍由调用方负责。
 
-Image对象通过调用`recycle()`函数来回收. 例如：
-
+```js
+const image = images.read('./1.png', true)
+try {
+  const gray = images.grayscale(image)
+  try {
+    images.save(gray, './gray.png')
+  } finally {
+    gray.recycle()
+  }
+} finally {
+  image.recycle()
+}
 ```
-// 读取图片
-var img = images.read("./1.png");
-//对图片进行操作
-...
-// 回收图片
-img.recycle();
-```
 
-例外的是, `captureScreen()` 返回的图片不需要回收.
+所有变换和匹配入口同步运行在调用脚本线程；网络加载异步入口和屏幕授权异步入口返回 Promise。OpenCV 函数首次使用时可能触发按需初始化。
 
 ## 图片处理
 
@@ -782,8 +782,6 @@ log(result.sortBy("top-right"));
 
 坐标系以图片左上角为原点. 以图片左侧边为y轴, 上侧边为x轴.
 
-##
-
 # Point
 
 findColor, findImage返回的对象. 表示一个点（坐标）.
@@ -795,3 +793,1099 @@ findColor, findImage返回的对象. 表示一个点（坐标）.
 ## Point.y
 
 纵坐标.
+
+---
+
+## MonkeyKing 6.7.0 补充合同
+
+以下入口由 6.7.0 Kotlin 运行时直接导出。图片参数除特别说明外可传 `ImageWrapper` 或路径；路径会严格读取为一次性图像，失败时抛出参数/读取异常，并在调用结束后自动回收。返回的新图像不随输入一起回收。
+
+### 读取、保存与屏幕捕获
+
+<a id="api-symbol-aW1hZ2VzLmltcmVhZA"></a>
+
+#### `images.imread(path)`
+
+```ts
+images.imread(path: string): com.qiaomu.monkeyking.core.opencv.Mat
+```
+
+规范化路径后直接调用 OpenCV `Imgcodecs.imread`，返回 MonkeyKing `Mat` 包装。与 `images.read` 不同，它不返回 `ImageWrapper`，也不把空矩阵转换为 `null`；调用方必须在用完后 `release()`。
+
+<a id="api-symbol-aW1hZ2VzLmxvYWRBc3luYw"></a>
+
+#### `images.loadAsync(url)`
+
+```ts
+images.loadAsync(url: string): Promise<ImageWrapper>
+```
+
+在异步操作适配器中通过 HTTP URL 加载并解码图片。成功时 Promise 解析为新 `ImageWrapper`；连接、读取或解码错误使 Promise 拒绝。模块不会缓存响应，调用方负责回收结果。
+
+```js
+images.loadAsync('https://example.com/image.png').then(image => {
+  try {
+    console.log(image.width, image.height)
+  } finally {
+    image.recycle()
+  }
+})
+```
+
+<a id="api-symbol-aW1hZ2VzLmNhcHR1cmVTY3JlZW4"></a>
+
+#### `images.captureScreen(path?)`
+
+```ts
+images.captureScreen(): ImageWrapper
+images.captureScreen(path: string): boolean
+```
+
+无参数时返回当前有效屏幕帧；带路径时捕获并保存，返回保存是否成功。后台脚本线程在尚无捕获器时会先同步请求授权；UI 线程不会隐式执行同步授权，应先用 `requestScreenCaptureAsync`。没有授权或多次重试后仍无有效帧时抛出 `SecurityException` 或 `WrappedRuntimeException`。
+
+同步捕获器可能复用内部帧包装；不要长期持有或跨线程共享截图。需要长期保存时先 `images.copy`，并回收副本。
+
+<a id="api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJlQXN5bmM"></a>
+
+#### `images.requestScreenCaptureAsync(options?)`
+
+```ts
+images.requestScreenCaptureAsync(landscape?: boolean): Promise<boolean>
+images.requestScreenCaptureAsync(options?: ScreenCaptureRequestOptions): Promise<boolean>
+images.requestScreenCaptureAsync(width: number, height: number): Promise<boolean>
+
+interface ScreenCaptureRequestOptions {
+  orientation?: 'none' | 'auto' | 'portrait' | 'landscape' | number
+  width?: number
+  height?: number
+  isAsync?: boolean
+  async?: boolean
+}
+```
+
+先停止旧捕获器，再异步请求 MediaProjection。布尔值 `true` 表示横屏、`false` 表示竖屏；两个数值参数指定固定宽高并使用 `orientation = none`。Promise 解析为授权结果。
+
+`isAsync`（兼容名 `async`）为 `true` 时，捕获器会连续把可用帧作为 `screen_capture_available`、`capture_available` 和兼容事件 `screen_capture` 从 `images` 事件发射器发出。事件图像仍需遵守 `ImageWrapper` 生命周期。
+
+```js
+images.requestScreenCaptureAsync({
+  orientation: 'portrait',
+  isAsync: false,
+}).then(granted => {
+  if (!granted) throw new Error('用户未授权截图')
+})
+```
+
+<a id="api-symbol-aW1hZ2VzLnN0b3BTY3JlZW5DYXB0dXJl"></a>
+
+#### `images.stopScreenCapture()`
+
+```ts
+images.stopScreenCapture(): void
+```
+
+不接受参数，释放捕获器、上一帧缓存和授权请求绑定。之后再次截图需要重新请求授权。脚本退出时运行时也会执行捕获清理。
+
+<a id="api-symbol-aW1hZ2VzLmdldFNjcmVlbkNhcHR1cmVPcHRpb25z"></a>
+
+#### `images.getScreenCaptureOptions()`
+
+```ts
+images.getScreenCaptureOptions(): {
+  width: number
+  height: number
+  orientation: number
+  density: number
+  isAsync: boolean
+} | null
+```
+
+不接受参数。捕获器尚未建立时返回 `null`；否则返回当前捕获器实际宽高、方向、密度和连续异步模式标记的只读记录。
+
+<a id="api-symbol-aW1hZ2VzLnNhdmVJbWFnZQ"></a>
+
+#### `images.saveImage(image, path, format?, quality?)`
+
+```ts
+images.saveImage(image: ImageWrapper | string, path: string, format?: string, quality?: number): boolean
+```
+
+与 `images.save` 共用实现。格式默认 `png`，允许 `png`、`jpg`、`jpeg`、`webp`、`webp_lossless`、`webp_lossy`（连字符形式也可）；质量默认 `100` 并限制到 `0..100`。父目录会自动创建；未知格式、空路径、写入失败或不支持的 WebP lossless 质量会抛出异常。
+
+<a id="api-symbol-aW1hZ2VzLnBpeGVs"></a>
+
+#### `images.pixel(image, x, y)`
+
+```ts
+images.pixel(image: ImageWrapper | string, x: number, y: number): ColorInt
+```
+
+将坐标转为整数并返回 ARGB 像素。坐标越界、输入不是图像或矩阵通道不受支持时抛出异常。实例形式 `image.pixel(x, y)` 使用同一像素合同。
+
+### OpenCV 变换与几何
+
+<a id="api-symbol-aW1hZ2VzLmludmVydA"></a>
+
+#### `images.invert(image)`
+
+```ts
+images.invert(image: ImageWrapper | string): ImageWrapper
+```
+
+返回颜色反相的新图像。6.7.0 实现反转 BGR 颜色通道并保留原 alpha 通道；输入不会原地修改。
+
+<a id="api-symbol-aW1hZ2VzLmlzR3JheXNjYWxl"></a>
+
+#### `images.isGrayscale(imageOrMat)`
+
+```ts
+images.isGrayscale(value: ImageWrapper | string | org.opencv.core.Mat): boolean
+```
+
+单通道矩阵直接返回 `true`；多通道矩阵逐通道比较，所有通道值完全相同才返回 `true`。输入类型无效时抛出 `WrappedIllegalArgumentException`。
+
+<a id="api-symbol-aW1hZ2VzLmJpbGF0ZXJhbEZpbHRlcg"></a>
+
+#### `images.bilateralFilter(image, d?, sigmaColor?, sigmaSpace?, borderType?)`
+
+```ts
+images.bilateralFilter(
+  image: ImageWrapper | string,
+  d?: number,
+  sigmaColor?: number,
+  sigmaSpace?: number,
+  borderType?: string | number,
+): ImageWrapper
+```
+
+调用 OpenCV bilateral filter，默认 `d = 0`、`sigmaColor = 40`、`sigmaSpace = 20`、`borderType = BORDER_DEFAULT`。字符串边界类型可省略 `BORDER_` 前缀；未知名称或 OpenCV 不接受的参数会抛出异常。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRDaXJjbGVz"></a>
+
+#### `images.findCircles(image, options?)`
+
+```ts
+images.findCircles(image: ImageWrapper | string, options?: {
+  region?: OmniRegion
+  dp?: number
+  minDst?: number
+  param1?: number
+  param2?: number
+  minRadius?: number
+  maxRadius?: number
+}): Array<{ x: number; y: number; radius: number }>
+```
+
+必要时先转为灰度图，再调用 OpenCV `HoughCircles`。默认 `dp = 1`、`minDst = image.height / 8`、`param1 = 100`、`param2 = 100`、`minRadius = 0`、`maxRadius = 0`。指定 `region` 时返回坐标相对于该处理区域；无圆时返回空数组。
+
+<a id="api-symbol-aW1hZ2VzLmZsaXA"></a>
+
+#### `images.flip(image, orientation?, vertical?)`
+
+```ts
+images.flip(image: ImageWrapper | string): ImageWrapper
+images.flip(image: ImageWrapper | string, orientation: boolean | string | boolean[] | object): ImageWrapper
+images.flip(image: ImageWrapper | string, horizontal: boolean, vertical: boolean): ImageWrapper
+```
+
+省略方向时默认水平翻转。字符串接受 `h|horizontal|x`、`v|vertical|y`、`both|all|xy` 等；对象可用 `x/h/horizontal` 和 `y/v/vertical`，数组前两项分别表示水平与垂直。无法识别的单值会退化为布尔转换或“不翻转”。返回新图像。
+
+### 找色与找图
+
+以下找色选项共用 `region`、`threshold` 和 `similarity`。`threshold` 默认 `4`，是 `0..255` 色差阈值；`similarity` 会换算为 `round(255 * (1 - similarity))`。同一对象同时提供二者会抛出异常。
+
+<a id="api-symbol-aW1hZ2VzLmRldGVjdENvbG9y"></a>
+
+#### `images.detectColor(image, color, x, y, threshold?, algorithm?)`
+
+```ts
+images.detectColor(
+  image: ImageWrapper | string,
+  color: OmniColor,
+  x: number,
+  y: number,
+  threshold?: number,
+  algorithm?: string,
+): boolean
+```
+
+读取整数坐标像素并用 `ColorDetector` 比较目标色。默认 `threshold = 4`、`algorithm = 'diff'`；未知算法、非法颜色或越界坐标会抛出异常。已废弃的 `images.detectsColor` 使用同一实现。
+
+<a id="api-symbol-aW1hZ2VzLmRldGVjdE11bHRpQ29sb3Jz"></a>
+
+#### `images.detectMultiColors(image, x, y, firstColor, paths, options?)`
+
+```ts
+images.detectMultiColors(
+  image: ImageWrapper | string,
+  x: number,
+  y: number,
+  firstColor: OmniColor,
+  paths: Array<[dx: number, dy: number, color: OmniColor]>,
+  options?: { region?: OmniRegion; threshold?: number; similarity?: number },
+): boolean
+```
+
+先在 `(x, y)` 比较 `firstColor`，再按每个相对偏移比较其颜色；全部满足才返回 `true`。`paths` 必须是 JavaScript 数组，每项也必须可解构为 `[dx, dy, color]`。
+
+<a id="api-symbol-aW1hZ2VzLmRldGVjdHNNdWx0aUNvbG9ycw"></a>
+
+#### `images.detectsMultiColors(...)`
+
+```ts
+images.detectsMultiColors(
+  image: ImageWrapper | string,
+  x: number,
+  y: number,
+  firstColor: OmniColor,
+  paths: Array<[number, number, OmniColor]>,
+  options?: object,
+): boolean
+```
+
+已废弃的兼容名，完整转发到 `images.detectMultiColors`。新代码应使用不带 `s` 的名称。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3I"></a>
+
+#### `images.findPointByColor(image, color, optionsOrX?, y?, width?, height?, threshold?)`
+
+```ts
+images.findPointByColor(
+  image: ImageWrapper | string,
+  color: OmniColor,
+  options?: { region?: OmniRegion; threshold?: number; similarity?: number },
+): org.opencv.core.Point | null
+
+images.findPointByColor(
+  image: ImageWrapper | string,
+  color: OmniColor,
+  x?: number,
+  y?: number,
+  width?: number,
+  height?: number,
+  threshold?: number,
+): org.opencv.core.Point | null
+```
+
+在区域内返回第一处匹配颜色的点，无匹配时返回 `null`。位置式区域是兼容形式；对象形式更清晰。坐标和区域会转换为整数并验证不超出图像。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3JFeGFjdGx5"></a>
+
+#### `images.findPointByColorExactly(image, color, optionsOrX?, y?, width?, height?)`
+
+```ts
+images.findPointByColorExactly(
+  image: ImageWrapper | string,
+  color: OmniColor,
+  optionsOrX?: object | number,
+  y?: number,
+  width?: number,
+  height?: number,
+): org.opencv.core.Point | null
+```
+
+与 `findPointByColor` 相同，但强制色差阈值为 `0`。兼容名 `findColorEquals` 已废弃。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludHNCeUNvbG9y"></a>
+
+#### `images.findPointsByColor(image, color, options?)`
+
+```ts
+images.findPointsByColor(
+  image: ImageWrapper | string,
+  color: OmniColor,
+  options?: { region?: OmniRegion; threshold?: number; similarity?: number },
+): org.opencv.core.Point[]
+```
+
+返回区域内全部匹配点；无匹配时返回空数组。高分辨率图片可能生成很大的数组，应尽量限制 `region`。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRBbGxQb2ludHNGb3JDb2xvcg"></a>
+
+#### `images.findAllPointsForColor(...)`
+
+```ts
+images.findAllPointsForColor(image: ImageWrapper | string, color: OmniColor, options?: object): org.opencv.core.Point[]
+```
+
+已废弃的兼容名，转发到 `images.findPointsByColor`。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3Jz"></a>
+
+#### `images.findPointByColors(image, firstColor, paths, options?)`
+
+```ts
+images.findPointByColors(
+  image: ImageWrapper | string,
+  firstColor: OmniColor,
+  paths: Array<[dx: number, dy: number, color: OmniColor]>,
+  options?: { region?: OmniRegion; threshold?: number; similarity?: number },
+): org.opencv.core.Point | null
+```
+
+在区域中搜索第一处满足多点颜色模式的锚点。`paths` 中坐标相对候选锚点；无匹配返回 `null`。已废弃的 `findMultiColors` 是同义入口。
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludHNCeUNvbG9ycw"></a>
+
+#### `images.findPointsByColors(image, firstColor, paths, options?)`
+
+```ts
+images.findPointsByColors(
+  image: ImageWrapper | string,
+  firstColor: OmniColor,
+  paths: Array<[number, number, OmniColor]>,
+  options?: { region?: OmniRegion; threshold?: number; similarity?: number },
+): org.opencv.core.Point[]
+```
+
+返回全部满足多点颜色模式的锚点，无匹配时返回空数组。
+
+```js
+const points = images.findPointsByColors(
+  '/sdcard/Download/buttons.png',
+  '#1976D2',
+  [[10, 0, '#FFFFFF'], [0, 10, '#FFFFFF']],
+  { region: [0, 0, -1, 0.5], similarity: 0.95 },
+)
+console.log(points.length)
+```
+
+<a id="api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5SW1hZ2U"></a>
+
+#### `images.findPointByImage(image, template, optionsOrX?, y?, width?, height?, threshold?)`
+
+```ts
+images.findPointByImage(
+  image: ImageWrapper | string,
+  template: ImageWrapper | string,
+  options?: {
+    region?: OmniRegion
+    weakThreshold?: number
+    threshold?: number
+    similarity?: number
+    level?: number
+  },
+): org.opencv.core.Point | null
+```
+
+返回模板第一次匹配的位置，无匹配时返回 `null`。默认 `weakThreshold = 0.6`、`threshold = 0.9`、`level = -1`；也保留位置式区域兼容重载。旧名称 `findImage`、`findImageInRegion` 使用同一实现。
+
+### 像素批量读取与特征匹配
+
+<a id="api-symbol-aW1hZ2VzLnJlYWRQaXhlbHM"></a>
+
+#### `images.readPixels(path)`
+
+```ts
+images.readPixels(path: string): {
+  data: int[]
+  width: number
+  height: number
+}
+```
+
+严格读取路径，把整张位图按行复制为 ARGB `int[]`，并返回尺寸。无效路径抛出异常。临时图像和位图在返回前回收，因此返回对象只持有独立像素数组；数组长度为 `width * height`。
+
+<a id="api-symbol-aW1hZ2VzLmRldGVjdEFuZENvbXB1dGVGZWF0dXJlcw"></a>
+
+#### `images.detectAndComputeFeatures(image, options?)`
+
+```ts
+images.detectAndComputeFeatures(image: ImageWrapper | string, options?: {
+  method?: 'SIFT' | 'ORB' | number
+  scale?: number
+  grayscale?: boolean
+  region?: OmniRegion
+}): ImageFeatures
+```
+
+在指定区域检测并计算特征描述子。默认方法 `SIFT`；`scale` 缺省时按约一百万像素且最长边不超过 1600 的策略自动计算，最终限制到 `0..1`；`grayscale` 默认 `false`。返回对象包含 `javaObject`、`scale`、`region`、`recycled` 和 `recycle()`，必须释放。
+
+<a id="api-symbol-aW1hZ2VzLm1hdGNoRmVhdHVyZXM"></a>
+
+#### `images.matchFeatures(sceneFeatures, objectFeatures, options?)`
+
+```ts
+images.matchFeatures(scene: ImageFeatures, object: ImageFeatures, options?: {
+  matcher?: string
+  threshold?: number
+  drawMatches?: string
+}): ObjectFrame | null
+```
+
+匹配两组特征并返回目标四边形，无足够匹配或无法计算四边形时返回 `null`。ORB 类描述子默认 `BRUTEFORCE_HAMMING`、阈值 `0.8`；其他描述子默认 `FLANNBASED`、阈值 `0.7`。`matcher` 按 OpenCV `DescriptorMatcher` 静态字段名解析；`drawMatches` 会把调试匹配图以 JPEG 质量 100 保存到指定路径。
+
+`ObjectFrame` 包含 `topLeft`、`topRight`、`bottomLeft`、`bottomRight`、`centerX`、`centerY` 和 `center`。坐标会撤销特征缩放并加回场景区域偏移。
+
+```js
+const scene = images.detectAndComputeFeatures('/sdcard/Download/scene.png', {
+  method: 'ORB',
+})
+const object = images.detectAndComputeFeatures('/sdcard/Download/logo.png', {
+  method: 'ORB',
+})
+try {
+  const frame = images.matchFeatures(scene, object)
+  if (frame) console.log(frame.center)
+} finally {
+  scene.recycle()
+  object.recycle()
+}
+```
+
+### 生命周期、压缩与尺寸
+
+<a id="api-symbol-aW1hZ2VzLmlzUmVjeWNsZWQ"></a>
+
+#### `images.isRecycled(...values)`
+
+```ts
+images.isRecycled(...values: unknown[]): boolean
+```
+
+只有每个参数都是已回收的 `ImageWrapper` 时返回 `true`；出现普通值、未回收图像时返回 `false`。无参数时按空集合“全部满足”规则返回 `true`。方法不修改参数。
+
+<a id="api-symbol-aW1hZ2VzLnJlY3ljbGU"></a>
+
+#### `images.recycle(...values)`
+
+```ts
+images.recycle(...values: unknown[]): boolean
+```
+
+依次回收每个尚未回收的 `ImageWrapper`。所有参数都是图像且清理成功时返回 `true`；任一参数类型不符或回收抛错时返回 `false`。已回收图像视为成功，无参数也返回 `true`。
+
+```js
+const a = images.read('/sdcard/Download/a.png', true)
+const b = images.read('/sdcard/Download/b.png', true)
+console.log(images.recycle(a, b))
+console.log(images.isRecycled(a, b))
+```
+
+<a id="api-symbol-aW1hZ2VzLmNvbXByZXNz"></a>
+
+#### `images.compress(image, format?, quality?)`
+
+```ts
+images.compress(
+  image: ImageWrapper | string,
+  format?: 'png' | 'jpg' | 'jpeg' | 'webp' | 'webp_lossless' | 'webp_lossy',
+  quality?: number,
+): ImageWrapper
+```
+
+把图像编码为字节后重新解码，返回新的包装器。格式默认 `png`，质量默认 `60` 并限制到 `0..100`。PNG 在质量不是 100 时使用 PNG 量化桥；量化失败会抛出 `WrappedRuntimeException`。Android 11 及以上的 lossless WebP 不接受非 100 质量。返回图像必须回收。
+
+<a id="api-symbol-aW1hZ2VzLmNvbXByZXNzVG9CeXRlcw"></a>
+
+#### `images.compressToBytes(image, format?, quality?)`
+
+```ts
+images.compressToBytes(image: ImageWrapper | string, format?: string, quality?: number): byte[]
+```
+
+使用与 `images.compress` 相同的格式、默认质量 `60` 和异常规则，但直接返回编码字节，不再解码为图像。返回数组不持有原生图像资源。
+
+<a id="api-symbol-aW1hZ2VzLmRvd25zYW1wbGU"></a>
+
+#### `images.downsample(source, requestedWidth, requestedHeight, withAlpha?)`
+
+```ts
+images.downsample(
+  source: byte[] | string | java.net.URL | android.net.Uri | android.graphics.Bitmap | ImageWrapper,
+  requestedWidth: number,
+  requestedHeight: number,
+  withAlpha?: boolean,
+): ImageWrapper
+```
+
+按请求尺寸执行降采样并返回新图像；`withAlpha` 默认 `true`。字符串既可为普通文件路径，也可为 URI。无法识别来源类型时抛出 `WrappedIllegalArgumentException`，解码失败时抛出 `WrappedRuntimeException`。对于编码字节、文件、URL 和 URI，降采样发生在解码流程中，可降低峰值内存；对现有位图/包装器则从已有像素生成缩小结果。
+
+<a id="api-symbol-aW1hZ2VzLmdldFNpemU"></a>
+
+#### `images.getSize(source)`
+
+```ts
+images.getSize(source: ImageWrapper | org.opencv.core.Mat | android.graphics.Bitmap | string): org.opencv.core.Size
+```
+
+返回 `Size(width, height)`。路径形式只读取图片边界而不完整解码，文件不存在时抛出异常；未知类型抛出 `WrappedIllegalArgumentException`。一次性图像会在读取尺寸后触发回收。
+
+<a id="api-symbol-aW1hZ2VzLmJ1aWxkUmVnaW9u"></a>
+
+#### `images.buildRegion(image, region)`
+
+```ts
+images.buildRegion(
+  image: ImageWrapper | string,
+  region: number[] | android.graphics.Rect | org.opencv.core.Rect | null | undefined,
+): org.opencv.core.Rect
+```
+
+把通用区域规范化为 OpenCV `Rect(x, y, width, height)`。空值表示整张图；数组缺失项分别默认为 `x = 0`、`y = 0`、`width = image.width - x`、`height = image.height - y`。`-1` 和 `0..1` 小数按 MonkeyKing 屏幕度量规则换算。运行时要求 `x/y` 非负且区域右、下边界不超过图像，否则抛出异常。
+
+### 图像相似度
+
+以下方法都接受两个 `ImageWrapper`、路径或 OpenCV `Mat`，路径/包装器会转换为 BGR 矩阵。除 `isEqual` 外，尺寸不一致会抛出异常；`mse` 还要求类型一致。
+
+<a id="api-symbol-aW1hZ2VzLnBzbnI"></a>
+
+#### `images.psnr(imageA, imageB)`
+
+```ts
+images.psnr(imageA: ImageLike, imageB: ImageLike): number
+```
+
+返回 OpenCV PSNR（峰值信噪比）。值越高通常表示像素误差越小；完全相同图像由 OpenCV 的实现决定其极大值/无穷表示。
+
+<a id="api-symbol-aW1hZ2VzLnNzaW0"></a>
+
+#### `images.ssim(imageA, imageB)`
+
+```ts
+images.ssim(imageA: ImageLike, imageB: ImageLike): number
+```
+
+返回结构相似度。实现使用 11×11 高斯窗口与固定常数，并把与 `1` 相差小于 `1e-6` 的结果校正为 `1`。
+
+<a id="api-symbol-aW1hZ2VzLm1zc2lt"></a>
+
+#### `images.mssim(imageA, imageB)`
+
+```ts
+images.mssim(imageA: ImageLike, imageB: ImageLike): number
+```
+
+返回平均结构相似度，是 `images.getSimilarity` 的默认指标；接近 `1` 表示更相似。
+
+<a id="api-symbol-aW1hZ2VzLmhpc3Q"></a>
+
+#### `images.hist(imageA, imageB)`
+
+```ts
+images.hist(imageA: ImageLike, imageB: ImageLike): number
+```
+
+计算各图第一通道的 256 桶归一化直方图，并用 OpenCV correlation 比较；结果理论范围为 `-1..1`，越接近 `1` 越相似。
+
+<a id="api-symbol-aW1hZ2VzLm1zZQ"></a>
+
+#### `images.mse(imageA, imageB)`
+
+```ts
+images.mse(imageA: ImageLike, imageB: ImageLike): number
+```
+
+返回所有通道的均方误差；`0` 表示逐像素相同，数值越小越相似。图像尺寸或矩阵类型不同会抛出异常。
+
+<a id="api-symbol-aW1hZ2VzLm5jYw"></a>
+
+#### `images.ncc(imageA, imageB)`
+
+```ts
+images.ncc(imageA: ImageLike, imageB: ImageLike): number
+```
+
+先转灰度再计算归一化交叉相关，返回值限制在 `-1..1`；越接近 `1` 表示正相关越强。
+
+<a id="api-symbol-aW1hZ2VzLmlzRXF1YWw"></a>
+
+#### `images.isEqual(imageA, imageB)`
+
+```ts
+images.isEqual(imageA: ImageWrapper | string, imageB: ImageWrapper | string): boolean
+```
+
+尺寸或矩阵类型不同直接返回 `false`；否则对矩阵逐位异或并检查是否存在非零像素，完全一致才返回 `true`。
+
+<a id="api-symbol-aW1hZ2VzLmdldFNpbWlsYXJpdHk"></a>
+
+#### `images.getSimilarity(imageA, imageB, options?)`
+
+```ts
+images.getSimilarity(
+  imageA: ImageLike,
+  imageB: ImageLike,
+  options?: { metric?: 'psnr' | 'ssim' | 'mssim' | 'hist' | 'mse' | 'ncc' },
+): number
+```
+
+按名称分派到上面的指标，默认 `metric = 'mssim'`。指标名转为小写后反射查找；未知名称或返回类型不符合 `Double` 合同会抛出 `WrappedIllegalArgumentException`。
+
+```js
+const score = images.getSimilarity(
+  '/sdcard/Download/before.png',
+  '/sdcard/Download/after.png',
+  { metric: 'ssim' },
+)
+console.log(score)
+```
+
+## 权限、线程与版本
+
+- 屏幕捕获需要 Android MediaProjection 授权；同步 `requestScreenCapture` 禁止在 UI 线程调用，UI 场景使用异步入口。
+- URL 加载需要网络访问；共享存储路径受 Android 存储策略约束。模块不会自动弹出存储授权界面。
+- OpenCV 变换、找色找图、特征和相似度调用均同步占用调用线程，并可能分配较大的临时矩阵。
+- 输入为一次性图像时，运行时在 `finally` 中触发回收；普通输入不会自动回收，返回的新资源始终由调用方管理。
+- 本节描述 MonkeyKing 6.7.0 的公开入口；底层编码格式和 OpenCV 参数限制以应用内置版本为准。
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="images.adaptiveThreshold" version="6.7.0" -->
+`images.adaptiveThreshold` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.adaptiveThreshold);
+```
+
+<!-- api-member-contract id="images.bilateralFilter" version="6.7.0" -->
+`images.bilateralFilter` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.bilateralFilter);
+```
+
+<!-- api-member-contract id="images.blur" version="6.7.0" -->
+`images.blur` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.blur);
+```
+
+<!-- api-member-contract id="images.buildRegion" version="6.7.0" -->
+`images.buildRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.buildRegion);
+```
+
+<!-- api-member-contract id="images.captureScreen" version="6.7.0" -->
+`images.captureScreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.captureScreen);
+```
+
+<!-- api-member-contract id="images.clip" version="6.7.0" -->
+`images.clip` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.clip);
+```
+
+<!-- api-member-contract id="images.compress" version="6.7.0" -->
+`images.compress` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.compress);
+```
+
+<!-- api-member-contract id="images.compressToBytes" version="6.7.0" -->
+`images.compressToBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.compressToBytes);
+```
+
+<!-- api-member-contract id="images.concat" version="6.7.0" -->
+`images.concat` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.concat);
+```
+
+<!-- api-member-contract id="images.copy" version="6.7.0" -->
+`images.copy` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.copy);
+```
+
+<!-- api-member-contract id="images.cvtColor" version="6.7.0" -->
+`images.cvtColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.cvtColor);
+```
+
+<!-- api-member-contract id="images.detectAndComputeFeatures" version="6.7.0" -->
+`images.detectAndComputeFeatures` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.detectAndComputeFeatures);
+```
+
+<!-- api-member-contract id="images.detectColor" version="6.7.0" -->
+`images.detectColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.detectColor);
+```
+
+<!-- api-member-contract id="images.detectMultiColors" version="6.7.0" -->
+`images.detectMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.detectMultiColors);
+```
+
+<!-- api-member-contract id="images.detectsColor" version="6.7.0" -->
+`images.detectsColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.detectsColor);
+```
+
+<!-- api-member-contract id="images.detectsMultiColors" version="6.7.0" -->
+`images.detectsMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.detectsMultiColors);
+```
+
+<!-- api-member-contract id="images.downsample" version="6.7.0" -->
+`images.downsample` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.downsample);
+```
+
+<!-- api-member-contract id="images.findAllPointsForColor" version="6.7.0" -->
+`images.findAllPointsForColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findAllPointsForColor);
+```
+
+<!-- api-member-contract id="images.findCircles" version="6.7.0" -->
+`images.findCircles` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findCircles);
+```
+
+<!-- api-member-contract id="images.findColor" version="6.7.0" -->
+`images.findColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findColor);
+```
+
+<!-- api-member-contract id="images.findColorEquals" version="6.7.0" -->
+`images.findColorEquals` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findColorEquals);
+```
+
+<!-- api-member-contract id="images.findColorInRegion" version="6.7.0" -->
+`images.findColorInRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findColorInRegion);
+```
+
+<!-- api-member-contract id="images.findImage" version="6.7.0" -->
+`images.findImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findImage);
+```
+
+<!-- api-member-contract id="images.findImageInRegion" version="6.7.0" -->
+`images.findImageInRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findImageInRegion);
+```
+
+<!-- api-member-contract id="images.findMultiColors" version="6.7.0" -->
+`images.findMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findMultiColors);
+```
+
+<!-- api-member-contract id="images.findPointByColor" version="6.7.0" -->
+`images.findPointByColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointByColor);
+```
+
+<!-- api-member-contract id="images.findPointByColorExactly" version="6.7.0" -->
+`images.findPointByColorExactly` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointByColorExactly);
+```
+
+<!-- api-member-contract id="images.findPointByColors" version="6.7.0" -->
+`images.findPointByColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointByColors);
+```
+
+<!-- api-member-contract id="images.findPointByImage" version="6.7.0" -->
+`images.findPointByImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointByImage);
+```
+
+<!-- api-member-contract id="images.findPointsByColor" version="6.7.0" -->
+`images.findPointsByColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointsByColor);
+```
+
+<!-- api-member-contract id="images.findPointsByColors" version="6.7.0" -->
+`images.findPointsByColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.findPointsByColors);
+```
+
+<!-- api-member-contract id="images.flip" version="6.7.0" -->
+`images.flip` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.flip);
+```
+
+<!-- api-member-contract id="images.fromBase64" version="6.7.0" -->
+`images.fromBase64` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.fromBase64);
+```
+
+<!-- api-member-contract id="images.fromBytes" version="6.7.0" -->
+`images.fromBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.fromBytes);
+```
+
+<!-- api-member-contract id="images.gaussianBlur" version="6.7.0" -->
+`images.gaussianBlur` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.gaussianBlur);
+```
+
+<!-- api-member-contract id="images.getHeight" version="6.7.0" -->
+`images.getHeight` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getHeight);
+```
+
+<!-- api-member-contract id="images.getScreenCaptureOptions" version="6.7.0" -->
+`images.getScreenCaptureOptions` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getScreenCaptureOptions);
+```
+
+<!-- api-member-contract id="images.getSimilarity" version="6.7.0" -->
+`images.getSimilarity` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getSimilarity);
+```
+
+<!-- api-member-contract id="images.getSize" version="6.7.0" -->
+`images.getSize` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getSize);
+```
+
+<!-- api-member-contract id="images.getWidth" version="6.7.0" -->
+`images.getWidth` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getWidth);
+```
+
+<!-- api-member-contract id="images.grayscale" version="6.7.0" -->
+`images.grayscale` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.grayscale);
+```
+
+<!-- api-member-contract id="images.hist" version="6.7.0" -->
+`images.hist` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.hist);
+```
+
+<!-- api-member-contract id="images.imread" version="6.7.0" -->
+`images.imread` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.imread);
+```
+
+<!-- api-member-contract id="images.inRange" version="6.7.0" -->
+`images.inRange` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.inRange);
+```
+
+<!-- api-member-contract id="images.interval" version="6.7.0" -->
+`images.interval` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.interval);
+```
+
+<!-- api-member-contract id="images.invert" version="6.7.0" -->
+`images.invert` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.invert);
+```
+
+<!-- api-member-contract id="images.isEqual" version="6.7.0" -->
+`images.isEqual` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.isEqual);
+```
+
+<!-- api-member-contract id="images.isGrayscale" version="6.7.0" -->
+`images.isGrayscale` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.isGrayscale);
+```
+
+<!-- api-member-contract id="images.isRecycled" version="6.7.0" -->
+`images.isRecycled` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.isRecycled);
+```
+
+<!-- api-member-contract id="images.load" version="6.7.0" -->
+`images.load` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.load);
+```
+
+<!-- api-member-contract id="images.loadAsync" version="6.7.0" -->
+`images.loadAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.loadAsync);
+```
+
+<!-- api-member-contract id="images.matchFeatures" version="6.7.0" -->
+`images.matchFeatures` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.matchFeatures);
+```
+
+<!-- api-member-contract id="images.matchTemplate" version="6.7.0" -->
+`images.matchTemplate` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.matchTemplate);
+```
+
+<!-- api-member-contract id="images.matToImage" version="6.7.0" -->
+`images.matToImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.matToImage);
+```
+
+<!-- api-member-contract id="images.medianBlur" version="6.7.0" -->
+`images.medianBlur` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.medianBlur);
+```
+
+<!-- api-member-contract id="images.mse" version="6.7.0" -->
+`images.mse` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.mse);
+```
+
+<!-- api-member-contract id="images.mssim" version="6.7.0" -->
+`images.mssim` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.mssim);
+```
+
+<!-- api-member-contract id="images.ncc" version="6.7.0" -->
+`images.ncc` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.ncc);
+```
+
+<!-- api-member-contract id="images.pixel" version="6.7.0" -->
+`images.pixel` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.pixel);
+```
+
+<!-- api-member-contract id="images.psnr" version="6.7.0" -->
+`images.psnr` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.psnr);
+```
+
+<!-- api-member-contract id="images.read" version="6.7.0" -->
+`images.read` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.read);
+```
+
+<!-- api-member-contract id="images.readPixels" version="6.7.0" -->
+`images.readPixels` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.readPixels);
+```
+
+<!-- api-member-contract id="images.recycle" version="6.7.0" -->
+`images.recycle` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.recycle);
+```
+
+<!-- api-member-contract id="images.requestScreenCapture" version="6.7.0" -->
+`images.requestScreenCapture` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.requestScreenCapture);
+```
+
+<!-- api-member-contract id="images.requestScreenCaptureAsync" version="6.7.0" -->
+`images.requestScreenCaptureAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.requestScreenCaptureAsync);
+```
+
+<!-- api-member-contract id="images.resize" version="6.7.0" -->
+`images.resize` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.resize);
+```
+
+<!-- api-member-contract id="images.rotate" version="6.7.0" -->
+`images.rotate` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.rotate);
+```
+
+<!-- api-member-contract id="images.save" version="6.7.0" -->
+`images.save` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.save);
+```
+
+<!-- api-member-contract id="images.saveImage" version="6.7.0" -->
+`images.saveImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.saveImage);
+```
+
+<!-- api-member-contract id="images.scale" version="6.7.0" -->
+`images.scale` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.scale);
+```
+
+<!-- api-member-contract id="images.ssim" version="6.7.0" -->
+`images.ssim` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.ssim);
+```
+
+<!-- api-member-contract id="images.stopScreenCapture" version="6.7.0" -->
+`images.stopScreenCapture` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.stopScreenCapture);
+```
+
+<!-- api-member-contract id="images.threshold" version="6.7.0" -->
+`images.threshold` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.threshold);
+```
+
+<!-- api-member-contract id="images.toBase64" version="6.7.0" -->
+`images.toBase64` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.toBase64);
+```
+
+<!-- api-member-contract id="images.toBytes" version="6.7.0" -->
+`images.toBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.toBytes);
+```
+
+<!-- api-member-contract id="module:images" version="6.7.0" -->
+`module:images` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images);
+```

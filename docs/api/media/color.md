@@ -19,7 +19,7 @@ Monkey King 支持以下方式表示一个颜色:
     - 方法
         - [colors.toHex](#m-tohex) (如 `colors.toHex(0xFF0000)` 表示红色对应的颜色字符串, 结果为 `#FF0000`)
         - [colors.toFullHex](#m-tofullhex) (如 `colors.toFullHex(0xFF0000)` 表示红色对应的完全颜色字符串, 结果为 `#FFFF0000`)
-        - ... ...
+        - 其他颜色代码形式按同一 `toHex` 规则处理
 - [颜色整数 (ColorInt)](../types/data-types.md#colorint)
     - 字面量
         - `0xAARRGGBB` (如 `0x8000FF00` 在 `Java` 的 `Integer` 范围对应值表示半透明绿色)
@@ -32,24 +32,24 @@ Monkey King 支持以下方式表示一个颜色:
         - [colors.hsl](#m-hsl) (如 `colors.hsl(0, 1, 0.5)` 表示红色)
         - [colors.hsla](#m-hsla) (如 `colors.hsl(0, 1, 0.5, 0.5)` 表示半透明红色)
         - [colors.toInt](#m-toint) (如 `colors.toInt('#FF0000')` 表示红色对应的颜色整数, 结果为 `-65536`)
-        - ... ...
+        - 其他颜色整数转换入口见本页方法列表
     - 常量
         - [colors.android.RED](#p-android) ([Android 颜色列表](../../reference/color-table.md#android-颜色列表) 的红色颜色整数)
         - [colors.android.BLACK](#p-android) ([Android 颜色列表](../../reference/color-table.md#android-颜色列表) 的黑色颜色整数)
-        - ... ...
+        - 其他 Android 颜色常量见[颜色表](../../reference/color-table.md#android-颜色列表)
         - [colors.css.RED](#p-css) ([Css 颜色列表](../../reference/color-table.md#css-颜色列表) 的红色颜色整数)
         - [colors.css.BLACK](#p-css) ([Css 颜色列表](../../reference/color-table.md#css-颜色列表) 的黑色颜色整数)
-        - ... ...
+        - 其他 CSS 颜色常量见[颜色表](../../reference/color-table.md#css-颜色列表)
         - [colors.web.RED](#p-web) ([Web 颜色列表](../../reference/color-table.md#web-颜色列表) 的红色颜色整数)
         - [colors.web.BLACK](#p-web) ([Web 颜色列表](../../reference/color-table.md#web-颜色列表) 的黑色颜色整数)
-        - ... ...
+        - 其他 Web 颜色常量见[颜色表](../../reference/color-table.md#web-颜色列表)
         - [colors.material.ORANGE](#p-material) ([Material 颜色列表](../../reference/color-table.md#material-颜色列表) 的橙色颜色整数)
         - [colors.material.ORANGE_300](#p-material) ([Material 颜色列表](../../reference/color-table.md#material-颜色列表) 的 300 色号橙色颜色整数)
-        - ... ...
+        - 其他 Material 颜色常量见[颜色表](../../reference/color-table.md#material-颜色列表)
         - [colors.RED](#p-red) ([融合颜色列表](../../reference/color-table.md#融合颜色列表) 的红色颜色整数)
         - [colors.BLACK](#p-black) ([融合颜色列表](../../reference/color-table.md#融合颜色列表) 的黑色颜色整数)
         - [colors.ORANGE](#p-orange) ([融合颜色列表](../../reference/color-table.md#融合颜色列表) 的橙色颜色整数)
-        - ... ...
+        - 其他融合颜色常量见[颜色表](../../reference/color-table.md#融合颜色列表)
 - [颜色分量数组 (ColorComponents)](../types/data-types.md#colorcomponents)
     - 方法
         - [colors.toRgb](#m-torgb) (颜色分量数组 `[R,G,B]`)
@@ -59,13 +59,13 @@ Monkey King 支持以下方式表示一个颜色:
         - [colors.toHsva](#m-tohsva) (颜色分量数组 `[H,S,V,A]`)
         - [colors.toHsl](#m-tohsl) (颜色分量数组 `[H,S,L]`)
         - [colors.toHsla](#m-tohsla) (颜色分量数组 `[H,S,L,A]`)
-        - ... ...
+        - 其他颜色分量转换方法见下文
 - [颜色名称 (ColorName)](../types/data-types.md#colorname)
     - 常量
         - "red" (红色)
         - "black" (黑色)
         - "orange" (橙色)
-        - ... ...
+        - 其他颜色名称按大小写不敏感规则解析
 
 ## 黑色与 0
 
@@ -1678,16 +1678,16 @@ colors.isSimilar('#010101', '#020202', { similarity: 0.95 }); // true
 
 ## [m] isEqual
 
-### isEqual(colorA, colorB, alphaMatters?)
+### isEqual(colorA, colorB, thresholdOrOptions?)
 
 **`6.2.0`** **`Overload[1-2]/2`**
 
 - **colorA** { [OmniColor](../types/omni-types.md#omnicolor) } - 颜色参数
 - **colorB** { [OmniColor](../types/omni-types.md#omnicolor) } - 颜色参数
-- **[ alphaMatters = `false` ]** { [boolean](../types/data-types.md#boolean) } - 是否考虑 `A (alpha)` 分量
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 两个颜色是否相等
+- **[ thresholdOrOptions ]** { [number](../types/data-types.md#number) | [object](../types/data-types.md#object) } - 颜色匹配阈值，或包含 `threshold`、`similarity`、`algorithm` 的选项对象
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 两个颜色是否达到匹配条件
 
-判断两个颜色是否相等, 比较时由 `alphaMatters` 参数决定是否考虑 `A (alpha)` 分量:
+`isEqual` 是历史兼容入口，公开实现与 `isSimilar` 使用同一颜色检测器：省略第三个参数时采用默认阈值 `4` 和 `diff` 算法；传入数字时将其作为阈值；传入对象时读取 `threshold` 或 `similarity`，并可指定 `algorithm`。第三个参数不是 `alphaMatters`，也不会切换为按完整 ARGB 整数严格相等的比较。
 
 ```js
 /* Hex 代码. */
@@ -1702,9 +1702,10 @@ colors.isEqual('dark-gray', 'DARK_GRAY'); /* true, 连字符与下划线均被�
 /* 不同类型比较. */
 colors.isEqual('red', '#FF0000'); // true
 colors.isEqual('orange', '#FFA500'); // true
-/* A (alpha) 分量的不同情况. */
-colors.isEqual('#A1FF0000', '#A2FF0000'); /* true, 默认忽略 A 分量. */
-colors.isEqual('#A1FF0000', '#A2FF0000', true); /* false, 需考虑 A 分量. */
+/* 第三个参数沿用 isSimilar 的阈值/选项语义. */
+colors.isEqual('#A1FF0000', '#A2FF0000', 4); // true 或 false 取决于颜色检测算法
+colors.isEqual('#A1FF0000', '#A2FF0000', { threshold: 4, algorithm: 'diff' });
+colors.isEqual('#A1FF0000', '#A2FF0000', { similarity: 0.99 });
 ```
 
 ## [m] equals
@@ -1740,9 +1741,8 @@ colors.equals('dark-gray', '#444'); /* 抛出异常. */
 colors.equals('#FF0000', '#F00'); /* 抛出异常. */
 ```
 
-上述示例对于 [colors.isEqual](#m-isequal) 则全部返回 `true`.
-
-除非需要考虑多版本兼容, 否则建议始终使用 `colors.isEqual` 替代 `colors.equals`.
+需要颜色匹配阈值或算法时，请使用 [colors.isEqual](#m-isequal) 或
+[colors.isSimilar](#m-issimilar)；`colors.equals` 仅保留为兼容入口。
 
 ## [m] luminance
 
@@ -2100,7 +2100,7 @@ function setPaintColor(paint, color) {
 
 ## 融合颜色
 
-为节约篇幅, 本章节仅列出了常用的部分融合颜色, 融合颜色属性直接挂载于 colors 对象上, 使用 `colors.Xxx` 的形式访问:
+下方给出若干代表性融合颜色. 融合颜色属性直接挂载于 colors 对象上, 使用 `colors.Xxx` 的形式访问:
 
 ```js
 colors.toHex(colors.BLACK); /* 黑色. */
@@ -2111,3 +2111,708 @@ colors.toHex(colors.PURPLE_300); /* 材料紫色 (300 号). */
 ```
 
 更多融合颜色, 参阅 [融合颜色列表](../../reference/color-table.md#融合颜色列表) 小节.
+
+---
+
+## MonkeyKing 6.7.0 运行时入口补充
+
+本节记录由 6.7.0 Kotlin 运行时直接导出的入口。上文已有方法的详细颜色转换规则仍然适用；这里补齐模块、构造、动态颜色表和字符串格式化合同。
+
+<a id="api-symbol-bW9kdWxlOmNvbG9ycw"></a>
+
+### `colors` 模块
+
+`colors` 是全局对象，另有 `$colors` 同义入口。它公开颜色转换函数、四张命名颜色表、融合后的直接颜色属性，以及 `all`、`themeColor` 两个 getter。除读取当前主题色和首次构造懒加载颜色表外，本页颜色计算均为同步内存操作，不申请权限。
+
+<a id="api-symbol-ZHluYW1pYzpjb2xvcnMubWVyZ2VkLXRhYmxlLWVudHJpZXM"></a>
+
+### `colors.<COLOR_NAME>` 融合颜色属性
+
+```ts
+colors.<COLOR_NAME>: ColorInt
+```
+
+运行时把 Android、CSS、Web、Material 颜色表作为 `colors` 的原型链，并直接暴露其中的整数常量，例如 `colors.RED`、`colors.ORANGE_300`。完整名称和值见 [颜色列表](../../reference/color-table.md)。名称冲突按运行时原型链顺序解析；需要明确来源时使用 `colors.android`、`colors.css`、`colors.web` 或 `colors.material`。
+
+```js
+console.log(colors.toHex(colors.RED))
+console.log(colors.toHex(colors.material.PURPLE_300))
+```
+
+<a id="api-symbol-Y29sb3JzLmFsbA"></a>
+
+### `colors.all`
+
+```ts
+readonly colors.all: Record<string, ColorInt>
+```
+
+首次读取时反射合并四张颜色表并返回 Rhino 对象；同名项以 `android → css → web → material` 中最先出现的值为准。getter 本身标记为不可枚举，但返回对象中的颜色名可枚举。返回对象用于查表；不要把修改它当作更新 `colors.RED` 等运行时属性的方法。
+
+<a id="api-symbol-Y29sb3JzLnRoZW1lQ29sb3I"></a>
+
+### `colors.themeColor`
+
+```ts
+readonly colors.themeColor: ThemeColor
+```
+
+每次读取都返回 `ThemeColorManager.currentThemeColor`，反映当前 MonkeyKing 主题。它不是固定颜色整数；可传给 `colors.toInt`、`colors.build` 或 `Color(...)` 取得主色。
+
+```js
+const primary = colors.toHex(colors.themeColor)
+console.log(primary)
+```
+
+<a id="api-symbol-Y29sb3JzLnJlZA"></a>
+
+### `colors.red(color, options?)`
+
+```ts
+colors.red(color: OmniColor, options?: { max?: 1 | 255 }): number
+```
+
+返回红色分量。`max` 缺省或为 `255` 时返回 `0..255`；`max: 1` 时返回 `0..1`。其他 `max` 值抛出 `WrappedIllegalArgumentException`。`colors.getRed` 是同义入口。
+
+<a id="api-symbol-Y29sb3JzLmdyZWVu"></a>
+
+### `colors.green(color, options?)`
+
+```ts
+colors.green(color: OmniColor, options?: { max?: 1 | 255 }): number
+```
+
+与 `colors.red` 相同，但读取绿色分量。`colors.getGreen` 是同义入口。
+
+<a id="api-symbol-Y29sb3JzLmJsdWU"></a>
+
+### `colors.blue(color, options?)`
+
+```ts
+colors.blue(color: OmniColor, options?: { max?: 1 | 255 }): number
+```
+
+与 `colors.red` 相同，但读取蓝色分量。`colors.getBlue` 是同义入口。
+
+```js
+console.log(colors.red('#336699'))             // 51
+console.log(colors.green('#336699', { max: 1 })) // 0.4
+console.log(colors.blue('#336699'))            // 153
+```
+
+<a id="api-symbol-Y29sb3JzLlJHQlRvSFNW"></a>
+
+### `colors.RGBToHSV(red, green, blue, hsv)`
+
+```ts
+colors.RGBToHSV(red: number, green: number, blue: number, hsv: float[]): void
+```
+
+直接调用 Android `Color.RGBToHSV`，把结果写入长度至少为 3 的 Java `float[]`：`[hue, saturation, value]`。RGB 分量按 `0..255` 传入；该入口返回无意义的 `void`，应读取输出数组。无效数组和分量遵循 Android API 的异常/归一化行为。
+
+<a id="api-symbol-Y29sb3JzLmNvbG9yVG9IU1Y"></a>
+
+### `colors.colorToHSV(color, hsv)`
+
+```ts
+colors.colorToHSV(color: ColorInt, hsv: float[]): void
+```
+
+直接调用 Android `Color.colorToHSV`，把颜色整数转换结果写入 Java `float[]`。该低层入口要求真正的 Java 数组；需要普通 JavaScript 数组时优先使用上文 `colors.toHsv(color)`。
+
+<a id="api-symbol-Y29sb3JzLkhTVlRvQ29sb3I"></a>
+
+### `colors.HSVToColor(alpha?, hsv)`
+
+```ts
+colors.HSVToColor(hsv: float[]): ColorInt
+colors.HSVToColor(alpha: number, hsv: float[]): ColorInt
+```
+
+直接调用 Android `Color.HSVToColor`。一参数形式使用完全不透明 alpha；二参数形式的 `alpha` 为 `0..255`。返回 Android ARGB 颜色整数。
+
+```js
+const hsv = java.lang.reflect.Array.newInstance(java.lang.Float.TYPE, 3)
+colors.RGBToHSV(255, 0, 0, hsv)
+console.log(hsv[0], hsv[1], hsv[2])
+console.log(colors.toHex(colors.HSVToColor(hsv)))
+```
+
+<a id="api-symbol-Y29sb3JzLnRvUmdiU3RyaW5n"></a>
+
+### `colors.toRgbString(colorOrRed, green?, blue?)`
+
+```ts
+colors.toRgbString(color: OmniColor): string
+colors.toRgbString(red: number, green: number, blue: number): string
+```
+
+把分量四舍五入并限制到 `0..255`，返回带逗号和空格的 `rgb(r, g, b)`。
+
+<a id="api-symbol-Y29sb3JzLnRvUmdiYVN0cmluZw"></a>
+
+### `colors.toRgbaString(color, options?)`
+
+```ts
+colors.toRgbaString(color: OmniColor, options?: boolean | { keepTrailingZeroForFullAlpha?: boolean }): string
+```
+
+返回 `rgba(r, g, b, a)`。alpha 保留一位小数再移除多余零；完全不透明时默认写成 `1.0`。把布尔参数或对象属性 `keepTrailingZeroForFullAlpha` 设为 `false` 可输出 `1`。
+
+<a id="api-symbol-Y29sb3JzLnRvQXJnYlN0cmluZw"></a>
+
+### `colors.toArgbString(color, options?)`
+
+```ts
+colors.toArgbString(color: OmniColor, options?: boolean | { keepTrailingZeroForFullAlpha?: boolean }): string
+```
+
+与 `toRgbaString` 的格式规则相同，但返回 `argb(a, r, g, b)`。
+
+<a id="api-symbol-Y29sb3JzLnRvSHN2U3RyaW5n"></a>
+
+### `colors.toHsvString(colorOrRed, green?, blue?)`
+
+```ts
+colors.toHsvString(color: OmniColor): string
+colors.toHsvString(red: number, green: number, blue: number): string
+```
+
+返回 `hsv(h, s%, v%)`；色相四舍五入为整数，饱和度和值转换为百分比并最多保留一位小数。
+
+<a id="api-symbol-Y29sb3JzLnRvSHN2YVN0cmluZw"></a>
+
+### `colors.toHsvaString(color, options?)`
+
+```ts
+colors.toHsvaString(color: OmniColor, options?: boolean | { keepTrailingZeroForFullAlpha?: boolean }): string
+```
+
+返回 `hsva(h, s%, v%, a)`；前三项使用 `toHsvString` 规则，alpha 使用 `toRgbaString` 规则。
+
+<a id="api-symbol-Y29sb3JzLnRvSHNsU3RyaW5n"></a>
+
+### `colors.toHslString(colorOrRed, green?, blue?)`
+
+```ts
+colors.toHslString(color: OmniColor): string
+colors.toHslString(red: number, green: number, blue: number): string
+```
+
+返回 `hsl(h, s%, l%)`；色相四舍五入为整数，饱和度和亮度转换为百分比并最多保留一位小数。
+
+<a id="api-symbol-Y29sb3JzLnRvSHNsYVN0cmluZw"></a>
+
+### `colors.toHslaString(color, options?)`
+
+```ts
+colors.toHslaString(color: OmniColor, options?: boolean | { keepTrailingZeroForFullAlpha?: boolean }): string
+```
+
+返回 `hsla(h, s%, l%, a)`，格式化规则分别与 `toHslString` 和 `toRgbaString` 相同。
+
+```js
+console.log(colors.toRgbString('#80FF0000'))  // rgb(255, 0, 0)
+console.log(colors.toRgbaString('#80FF0000')) // rgba(255, 0, 0, 0.5)
+console.log(colors.toHsvString('red'))        // hsv(0, 100%, 100%)
+console.log(colors.toHslString('red'))        // hsl(0, 100%, 50%)
+```
+
+<a id="api-symbol-bW9kdWxlOmNvbG9y"></a>
+
+### `Color` 全局构造器
+
+`Color` 使用原始大小写名称导出，不带 `$` 别名。它既可通过 `new Color(...)` 构造，也可像普通函数一样调用；两种形式返回同一种 [Color 实例](../types/color.md)。构造器还通过颜色表原型暴露 `Color.RED` 等命名颜色。
+
+<a id="api-symbol-Y29uc3RydWN0OmNvbG9y"></a>
+
+### `new Color(...)`
+
+```ts
+new Color(): Color
+new Color(color: OmniColor | ThemeColor): Color
+new Color(red: number, green: number, blue: number): Color
+new Color(red: number, green: number, blue: number, alpha: number): Color
+```
+
+零参数使用黑色；一参数走 `colors.toInt` 的颜色转换；三、四参数分别走 `colors.rgb` 和 `colors.rgba`。不支持两个参数，参数数量必须是 `0`、`1`、`3` 或 `4`。
+
+<a id="api-symbol-Y2FsbDpjb2xvcg"></a>
+
+### `Color(...)`
+
+```ts
+Color(): Color
+Color(color: OmniColor | ThemeColor): Color
+Color(red: number, green: number, blue: number, alpha?: number): Color
+```
+
+省略 `new` 的调用与构造调用共用同一实现、返回相同对象。无效参数数量或无法转换的颜色会被运行时包装为调用/构造异常。
+
+```js
+const a = Color('orange')
+const b = new Color(255, 165, 0)
+console.log(a.toHex(), b.toHex())
+```
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="call:color" version="6.7.0" -->
+`call:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof color);
+```
+
+<!-- api-member-contract id="colors.all" version="6.7.0" -->
+`colors.all` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.all);
+```
+
+<!-- api-member-contract id="colors.alpha" version="6.7.0" -->
+`colors.alpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.alpha);
+```
+
+<!-- api-member-contract id="colors.alphaDouble" version="6.7.0" -->
+`colors.alphaDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.alphaDouble);
+```
+
+<!-- api-member-contract id="colors.android" version="6.7.0" -->
+`colors.android` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.android);
+```
+
+<!-- api-member-contract id="colors.argb" version="6.7.0" -->
+`colors.argb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.argb);
+```
+
+<!-- api-member-contract id="colors.blue" version="6.7.0" -->
+`colors.blue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.blue);
+```
+
+<!-- api-member-contract id="colors.blueDouble" version="6.7.0" -->
+`colors.blueDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.blueDouble);
+```
+
+<!-- api-member-contract id="colors.build" version="6.7.0" -->
+`colors.build` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.build);
+```
+
+<!-- api-member-contract id="colors.colorToHSV" version="6.7.0" -->
+`colors.colorToHSV` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.colorToHSV);
+```
+
+<!-- api-member-contract id="colors.css" version="6.7.0" -->
+`colors.css` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.css);
+```
+
+<!-- api-member-contract id="colors.equals" version="6.7.0" -->
+`colors.equals` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.equals);
+```
+
+<!-- api-member-contract id="colors.getAlpha" version="6.7.0" -->
+`colors.getAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getAlpha);
+```
+
+<!-- api-member-contract id="colors.getAlphaDouble" version="6.7.0" -->
+`colors.getAlphaDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getAlphaDouble);
+```
+
+<!-- api-member-contract id="colors.getBlue" version="6.7.0" -->
+`colors.getBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getBlue);
+```
+
+<!-- api-member-contract id="colors.getBlueDouble" version="6.7.0" -->
+`colors.getBlueDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getBlueDouble);
+```
+
+<!-- api-member-contract id="colors.getGreen" version="6.7.0" -->
+`colors.getGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getGreen);
+```
+
+<!-- api-member-contract id="colors.getGreenDouble" version="6.7.0" -->
+`colors.getGreenDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getGreenDouble);
+```
+
+<!-- api-member-contract id="colors.getRed" version="6.7.0" -->
+`colors.getRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getRed);
+```
+
+<!-- api-member-contract id="colors.getRedDouble" version="6.7.0" -->
+`colors.getRedDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.getRedDouble);
+```
+
+<!-- api-member-contract id="colors.green" version="6.7.0" -->
+`colors.green` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.green);
+```
+
+<!-- api-member-contract id="colors.greenDouble" version="6.7.0" -->
+`colors.greenDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.greenDouble);
+```
+
+<!-- api-member-contract id="colors.hsl" version="6.7.0" -->
+`colors.hsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.hsl);
+```
+
+<!-- api-member-contract id="colors.hsla" version="6.7.0" -->
+`colors.hsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.hsla);
+```
+
+<!-- api-member-contract id="colors.hsv" version="6.7.0" -->
+`colors.hsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.hsv);
+```
+
+<!-- api-member-contract id="colors.hsva" version="6.7.0" -->
+`colors.hsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.hsva);
+```
+
+<!-- api-member-contract id="colors.HSVToColor" version="6.7.0" -->
+`colors.HSVToColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.HSVToColor);
+```
+
+<!-- api-member-contract id="colors.isEqual" version="6.7.0" -->
+`colors.isEqual` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.isEqual);
+```
+
+<!-- api-member-contract id="colors.isSimilar" version="6.7.0" -->
+`colors.isSimilar` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.isSimilar);
+```
+
+<!-- api-member-contract id="colors.luminance" version="6.7.0" -->
+`colors.luminance` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.luminance);
+```
+
+<!-- api-member-contract id="colors.material" version="6.7.0" -->
+`colors.material` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.material);
+```
+
+<!-- api-member-contract id="colors.parseColor" version="6.7.0" -->
+`colors.parseColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.parseColor);
+```
+
+<!-- api-member-contract id="colors.red" version="6.7.0" -->
+`colors.red` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.red);
+```
+
+<!-- api-member-contract id="colors.redDouble" version="6.7.0" -->
+`colors.redDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.redDouble);
+```
+
+<!-- api-member-contract id="colors.removeAlpha" version="6.7.0" -->
+`colors.removeAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.removeAlpha);
+```
+
+<!-- api-member-contract id="colors.removeBlue" version="6.7.0" -->
+`colors.removeBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.removeBlue);
+```
+
+<!-- api-member-contract id="colors.removeGreen" version="6.7.0" -->
+`colors.removeGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.removeGreen);
+```
+
+<!-- api-member-contract id="colors.removeRed" version="6.7.0" -->
+`colors.removeRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.removeRed);
+```
+
+<!-- api-member-contract id="colors.rgb" version="6.7.0" -->
+`colors.rgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.rgb);
+```
+
+<!-- api-member-contract id="colors.rgba" version="6.7.0" -->
+`colors.rgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.rgba);
+```
+
+<!-- api-member-contract id="colors.RGBToHSV" version="6.7.0" -->
+`colors.RGBToHSV` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.RGBToHSV);
+```
+
+<!-- api-member-contract id="colors.setAlpha" version="6.7.0" -->
+`colors.setAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setAlpha);
+```
+
+<!-- api-member-contract id="colors.setAlphaRelative" version="6.7.0" -->
+`colors.setAlphaRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setAlphaRelative);
+```
+
+<!-- api-member-contract id="colors.setBlue" version="6.7.0" -->
+`colors.setBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setBlue);
+```
+
+<!-- api-member-contract id="colors.setBlueRelative" version="6.7.0" -->
+`colors.setBlueRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setBlueRelative);
+```
+
+<!-- api-member-contract id="colors.setGreen" version="6.7.0" -->
+`colors.setGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setGreen);
+```
+
+<!-- api-member-contract id="colors.setGreenRelative" version="6.7.0" -->
+`colors.setGreenRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setGreenRelative);
+```
+
+<!-- api-member-contract id="colors.setPaintColor" version="6.7.0" -->
+`colors.setPaintColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setPaintColor);
+```
+
+<!-- api-member-contract id="colors.setRed" version="6.7.0" -->
+`colors.setRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setRed);
+```
+
+<!-- api-member-contract id="colors.setRedRelative" version="6.7.0" -->
+`colors.setRedRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.setRedRelative);
+```
+
+<!-- api-member-contract id="colors.summary" version="6.7.0" -->
+`colors.summary` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.summary);
+```
+
+<!-- api-member-contract id="colors.themeColor" version="6.7.0" -->
+`colors.themeColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.themeColor);
+```
+
+<!-- api-member-contract id="colors.toArgb" version="6.7.0" -->
+`colors.toArgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toArgb);
+```
+
+<!-- api-member-contract id="colors.toArgbString" version="6.7.0" -->
+`colors.toArgbString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toArgbString);
+```
+
+<!-- api-member-contract id="colors.toColorStateList" version="6.7.0" -->
+`colors.toColorStateList` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toColorStateList);
+```
+
+<!-- api-member-contract id="colors.toFullHex" version="6.7.0" -->
+`colors.toFullHex` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toFullHex);
+```
+
+<!-- api-member-contract id="colors.toHex" version="6.7.0" -->
+`colors.toHex` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHex);
+```
+
+<!-- api-member-contract id="colors.toHsl" version="6.7.0" -->
+`colors.toHsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsl);
+```
+
+<!-- api-member-contract id="colors.toHsla" version="6.7.0" -->
+`colors.toHsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsla);
+```
+
+<!-- api-member-contract id="colors.toHslaString" version="6.7.0" -->
+`colors.toHslaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHslaString);
+```
+
+<!-- api-member-contract id="colors.toHslString" version="6.7.0" -->
+`colors.toHslString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHslString);
+```
+
+<!-- api-member-contract id="colors.toHsv" version="6.7.0" -->
+`colors.toHsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsv);
+```
+
+<!-- api-member-contract id="colors.toHsva" version="6.7.0" -->
+`colors.toHsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsva);
+```
+
+<!-- api-member-contract id="colors.toHsvaString" version="6.7.0" -->
+`colors.toHsvaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsvaString);
+```
+
+<!-- api-member-contract id="colors.toHsvString" version="6.7.0" -->
+`colors.toHsvString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toHsvString);
+```
+
+<!-- api-member-contract id="colors.toInt" version="6.7.0" -->
+`colors.toInt` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toInt);
+```
+
+<!-- api-member-contract id="colors.toRgb" version="6.7.0" -->
+`colors.toRgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toRgb);
+```
+
+<!-- api-member-contract id="colors.toRgba" version="6.7.0" -->
+`colors.toRgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toRgba);
+```
+
+<!-- api-member-contract id="colors.toRgbaString" version="6.7.0" -->
+`colors.toRgbaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toRgbaString);
+```
+
+<!-- api-member-contract id="colors.toRgbString" version="6.7.0" -->
+`colors.toRgbString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toRgbString);
+```
+
+<!-- api-member-contract id="colors.toString" version="6.7.0" -->
+`colors.toString` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors.toString);
+```
+
+<!-- api-member-contract id="colors.web" version="6.7.0" -->
+`colors.web` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(colors.web);
+```
+
+<!-- api-member-contract id="construct:color" version="6.7.0" -->
+`construct:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+var value = new Color('red');
+console.log(value.toStringReadable());
+```
+
+<!-- api-member-contract id="dynamic:colors.merged-table-entries" version="6.7.0" -->
+`dynamic:colors.merged-table-entries` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(Object.keys(colors)); // mergedTableEntries
+```
+
+<!-- api-member-contract id="module:color" version="6.7.0" -->
+`module:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof color);
+```
+
+<!-- api-member-contract id="module:colors" version="6.7.0" -->
+`module:colors` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof colors);
+```

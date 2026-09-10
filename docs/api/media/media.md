@@ -1,116 +1,252 @@
 # 多媒体 (Media)
 
----
+`media` 提供媒体库扫描和单路本地音乐播放。模块在脚本运行时创建；音乐在后台播放，但控制方法本身是同步调用。脚本退出时运行时会自动执行 `media.recycle()`，断开媒体扫描连接并释放播放器，因此需要等待播放完成的脚本必须主动保持运行。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+<a id="api-symbol-bW9kdWxlOm1lZGlh"></a>
 
----
+## `media` 模块
 
-media模块提供多媒体编程的支持. 目前仅支持音乐播放和媒体文件扫描. 后续会结合UI加入视频播放等功能.
+脚本运行时自动提供，无需导入。模块同时持有一个 Android `MediaScannerConnection` 和最多一个 `MediaPlayer`；再次调用 `playMusic` 会停止并重置之前的播放器，再加载新文件。
 
-需要注意是, 使用该模块播放音乐时是在后台异步播放的, 在脚本结束后会自动结束播放, 因此可能需要插入诸如`sleep()`的语句来使脚本保持运行. 例如：
+<a id="api-symbol-bWVkaWEuc2NhbkZpbGU"></a>
 
-```
-//播放音乐
-media.playMusic("/sdcard/1.mp3");
-//让音乐播放完
-sleep(media.getMusicDuration());
+## `media.scanFile(path)`
+
+```ts
+media.scanFile(path: string): void
 ```
 
-## media.scanFile(path)
+规范化 `path`，根据扩展名推断 MIME 类型，并异步通知 Android 媒体扫描器。该调用只提交扫描，不返回扫描结果；扫描完成后 Android 会调用 `onScanCompleted`。路径必须存在于脚本可访问的存储区域，写入或读取共享存储时仍需满足对应 Android 版本的存储权限与分区存储规则。
 
-* `path` {string} 媒体文件路径
-
-扫描路径path的媒体文件, 将它加入媒体库中；或者如果该文件以及被删除, 则通知媒体库移除该文件.
-
-媒体库包括相册、音乐库等, 因此该函数可以用于把某个图片文件加入相册.
-
-```
-//请求截图
-requestScreenCapture(false);
-//截图
-var im = captureScreen();
-var path = "/sdcard/screenshot.png";
-//保存图片
-im.saveTo(path);
-//把图片加入相册
-media.scanFile(path);
+```js
+const path = '/sdcard/Pictures/monkeyking-shot.png'
+const image = images.captureScreen()
+try {
+  images.save(image, path)
+  media.scanFile(path)
+} finally {
+  image.recycle()
+}
 ```
 
-## media.playMusic(path[, volume, looping])
+<a id="api-symbol-bWVkaWEub25NZWRpYVNjYW5uZXJDb25uZWN0ZWQ"></a>
 
-* `path` {string} 音乐文件路径
-* `volume` {number} 播放音量, 为0~1的浮点数, 默认为1
-* `looping` {boolean} 是否循环播放, 如果looping为`true`则循环播放, 默认为`false`
+## `media.onMediaScannerConnected()`
 
-播放音乐文件path. 该函数不会显示任何音乐播放界面. 如果文件不存在或者文件不是受支持的音乐格式, 则抛出`UncheckedIOException`异常.
-
-```
-//播放音乐
-media.playMusic("/sdcard/1.mp3");
-//让音乐播放完
-sleep(media.getMusicDuration());
+```ts
+media.onMediaScannerConnected(): void
 ```
 
-如果要循环播放音乐, 则使用looping参数：
+Android `MediaScannerConnectionClient` 的生命周期回调。当前实现为空，由系统在线程回调中调用；脚本不需要也不应手动调用它。它不表示某个文件已扫描完成。
 
-```
-```
+<a id="api-symbol-bWVkaWEub25TY2FuQ29tcGxldGVk"></a>
 
-//传递第三个参数为true以循环播放音乐
-media.playMusic("/sdcard/1.mp3", 1, true);
-//等待三次播放的时间
-sleep(media.getMusicDuration() * 3);
+## `media.onScanCompleted(path, uri)`
 
-```
+```ts
+media.onScanCompleted(path: string, uri: android.net.Uri | null): void
 ```
 
-如果要使用音乐播放器播放音乐, 调用`app.viewFile(path)`函数.
+Android 在一次媒体扫描结束后调用的生命周期回调。当前实现为空，不向脚本返回结果，也不保存 `path` 或 `uri`。需要业务级完成通知时，应使用应用自己的文件/媒体流程，而不是直接调用此方法。
 
-## media.musicSeekTo(msec)
+<a id="api-symbol-bWVkaWEucGxheU11c2lj"></a>
 
-* `msec` {number} 毫秒数, 表示音乐进度
+## `media.playMusic(path, volume?, looping?)`
 
-把当前播放进度调整到时间msec的位置. 如果当前没有在播放音乐, 则调用函数没有任何效果.
-
-例如, 要把音乐调到1分钟的位置, 为`media.musicSeekTo(60 * 1000)`.
-
-```
-//播放音乐
-media.playMusic("/sdcard/1.mp3");
-//调整到30秒的位置
-media.musicSeekTo(30 * 1000);
-//等待音乐播放完成
-sleep(media.getMusicDuration() - 30 * 1000);
+```ts
+media.playMusic(path: string, volume?: number, looping?: boolean): void
 ```
 
-## media.pauseMusic()
+- `volume`：同时设置左右声道，默认 `1.0`。
+- `looping`：是否循环，默认 `false`。
 
-暂停音乐播放. 如果当前没有在播放音乐, 则调用函数没有任何效果.
+方法同步完成路径规范化、数据源设置和 `prepare()`，然后开始播放。文件不可读或媒体格式无法准备时，I/O 异常会包装为 `UncheckedIOException`；播放器状态非法时可能抛出 `IllegalStateException`。调用成功后音频异步播放。
 
-## media.resumeMusic()
+```js
+media.playMusic('/sdcard/Music/notice.mp3', 0.7, false)
+sleep(media.getMusicDuration())
+```
 
-继续音乐播放. 如果当前没有播放过音乐, 则调用该函数没有任何效果.
+<a id="api-symbol-bWVkaWEubXVzaWNTZWVrVG8"></a>
 
-## media.stopMusic()
+## `media.musicSeekTo(msec)`
 
-停止音乐播放. 如果当前没有在播放音乐, 则调用函数没有任何效果.
+```ts
+media.musicSeekTo(msec: number): void
+```
 
-## media.isMusicPlaying()
+把当前播放器定位到毫秒位置。尚未创建播放器时静默返回；播放器已释放或处于不允许跳转的状态时，底层 `MediaPlayer` 可能抛出状态异常。
 
-* 返回 {boolean}
+```js
+media.playMusic('/sdcard/Music/lesson.mp3')
+media.musicSeekTo(30_000)
+```
 
-返回当前是否正在播放音乐.
+<a id="api-symbol-bWVkaWEuaXNNdXNpY1BsYXlpbmc"></a>
 
-## media.getMusicDuration()
+## `media.isMusicPlaying()`
 
-* 返回 {number}
+```ts
+media.isMusicPlaying(): boolean
+```
 
-返回当前音乐的时长. 单位毫秒.
+播放器存在且当前处于播放状态时返回 `true`，尚未创建播放器时返回 `false`。
 
-## media.getMusicCurrentPosition()
+<a id="api-symbol-bWVkaWEucGF1c2VNdXNpYw"></a>
 
-* 返回 {number}
+## `media.pauseMusic()`
 
-返回当前音乐的播放进度(已经播放的时间), 单位毫秒.
+```ts
+media.pauseMusic(): void
+```
+
+暂停当前播放器；尚未创建播放器时静默返回。只能在 Android `MediaPlayer` 允许暂停的状态调用。
+
+<a id="api-symbol-bWVkaWEucmVzdW1lTXVzaWM"></a>
+
+## `media.resumeMusic()`
+
+```ts
+media.resumeMusic(): void
+```
+
+调用播放器的 `start()` 继续播放；尚未创建播放器时静默返回。若播放器未准备、已停止或已释放，底层状态异常会向脚本传播。
+
+<a id="api-symbol-bWVkaWEuc3RvcE11c2lj"></a>
+
+## `media.stopMusic()`
+
+```ts
+media.stopMusic(): void
+```
+
+停止当前播放器；尚未创建播放器时静默返回。停止后如需再次播放，应重新调用 `playMusic`，该方法会重置并准备新的数据源。
+
+<a id="api-symbol-bWVkaWEuZ2V0TXVzaWNEdXJhdGlvbg"></a>
+
+## `media.getMusicDuration()`
+
+```ts
+media.getMusicDuration(): number
+```
+
+返回当前媒体总时长，单位毫秒。尚未创建播放器时返回 `0`；其他非法播放器状态遵循 Android `MediaPlayer.getDuration()` 的异常行为。
+
+<a id="api-symbol-bWVkaWEuZ2V0TXVzaWNDdXJyZW50UG9zaXRpb24"></a>
+
+## `media.getMusicCurrentPosition()`
+
+```ts
+media.getMusicCurrentPosition(): number
+```
+
+返回当前播放位置，单位毫秒。尚未创建播放器时返回 `-1`。
+
+<a id="api-symbol-bWVkaWEucmVjeWNsZQ"></a>
+
+## `media.recycle()`
+
+```ts
+media.recycle(): void
+```
+
+断开媒体扫描连接，并释放已创建的播放器。脚本退出清理阶段会自动调用；也可以在不再需要媒体功能时提前调用。该方法是终止性生命周期操作：释放后不要继续复用当前 `media` 实例的播放器状态。
+
+```js
+try {
+  media.playMusic('/sdcard/Music/preview.mp3')
+  sleep(5_000)
+} finally {
+  media.recycle()
+}
+```
+
+## 线程、权限与版本
+
+- `playMusic` 的准备阶段和所有控制方法在调用它们的脚本线程执行；实际音频播放由 Android 媒体栈异步完成。
+- `MediaScannerConnection` 的两个回调由 Android 驱动，不能假设与调用 `scanFile` 的脚本线程相同。
+- 模块不主动申请存储权限；路径能否访问取决于 MonkeyKing 文件解析和 Android 存储策略。
+- 本页合同对应 MonkeyKing 6.7.0；具体可播放格式与设备的 Android 媒体组件有关。
+
+
+## 逐符号版本与 Rhino 2.0 示例
+
+下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
+
+<!-- api-member-contract id="media.getMusicCurrentPosition" version="6.7.0" -->
+`media.getMusicCurrentPosition` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.getMusicCurrentPosition);
+```
+
+<!-- api-member-contract id="media.getMusicDuration" version="6.7.0" -->
+`media.getMusicDuration` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.getMusicDuration);
+```
+
+<!-- api-member-contract id="media.isMusicPlaying" version="6.7.0" -->
+`media.isMusicPlaying` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.isMusicPlaying);
+```
+
+<!-- api-member-contract id="media.musicSeekTo" version="6.7.0" -->
+`media.musicSeekTo` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.musicSeekTo);
+```
+
+<!-- api-member-contract id="media.onMediaScannerConnected" version="6.7.0" -->
+`media.onMediaScannerConnected` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.onMediaScannerConnected);
+```
+
+<!-- api-member-contract id="media.onScanCompleted" version="6.7.0" -->
+`media.onScanCompleted` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.onScanCompleted);
+```
+
+<!-- api-member-contract id="media.pauseMusic" version="6.7.0" -->
+`media.pauseMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.pauseMusic);
+```
+
+<!-- api-member-contract id="media.playMusic" version="6.7.0" -->
+`media.playMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.playMusic);
+```
+
+<!-- api-member-contract id="media.recycle" version="6.7.0" -->
+`media.recycle` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.recycle);
+```
+
+<!-- api-member-contract id="media.resumeMusic" version="6.7.0" -->
+`media.resumeMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.resumeMusic);
+```
+
+<!-- api-member-contract id="media.scanFile" version="6.7.0" -->
+`media.scanFile` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.scanFile);
+```
+
+<!-- api-member-contract id="media.stopMusic" version="6.7.0" -->
+`media.stopMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media.stopMusic);
+```
+
+<!-- api-member-contract id="module:media" version="6.7.0" -->
+`module:media` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof media);
+```

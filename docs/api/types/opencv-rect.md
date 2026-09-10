@@ -24,7 +24,7 @@ images.clip(img, regionB);
 images.clip(img, regionC);
 ```
 
-> 注: 本章节仅列出部分属性或方法.
+> 本页聚焦 MonkeyKing 区域参数所需的构造与边界属性；OpenCV 的其余 Java 方法请查阅上方官方类参考。
 
 ---
 

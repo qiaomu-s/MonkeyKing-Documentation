@@ -13,7 +13,7 @@ console.log(`${point.x}, ${point.y}`);
 
 - [UiSelector.pickup](../automation/ui-selector.md#m-pickup)
 
-> 注: 本章节仅列出部分属性或方法.
+> 本页聚焦 MonkeyKing 脚本中实际使用的构造与坐标属性；OpenCV 的其余 Java 方法请查阅上方官方类参考。
 
 ---
 

@@ -4,7 +4,7 @@ HttpRequestHeaders 是一个代表 [HTTP 请求头](../../reference/glossaries/h
 
 HTTP 标头字段是大小写 **不敏感** 的 (根据 [RFC 2616](http://www.ietf.org/rfc/rfc2616.txt)), 本章节采用 **全部小写** 的形式表示标头字段 (如 content-type).
 
-> 注: 本章节仅列出部分请求头字段信息, 更多信息可参阅 [HTTP 标头](../../reference/glossaries/http-headers.md#请求标头) 术语章节.
+> 本页给出常见请求头字段示例；其他合法字段同样可通过 `options.headers` 传入，协议语义可参阅 [HTTP 标头](../../reference/glossaries/http-headers.md#请求标头) 术语章节.
 
 ---
 
@@ -33,6 +33,8 @@ function setHeaders(request) {
     });
 }
 ```
+
+`Request.Builder.header` 会替换已有同名字段，因此数组值按顺序应用后，最后一项生效；它不会像响应头包装器那样保留为多值数组。请求头名称和值由 OkHttp 校验，无效字符会在构建阶段抛出异常。
 
 ## [p?] accept
 
@@ -155,7 +157,7 @@ connection: close
 |------------|------------------------------------------|
 | close      | 表明客户端或服务器想要关闭该网络连接. 这是 HTTP/1.0 请求的默认值   |
 | keep-alive | 表明客户端想要保持该网络连接打开. HTTP/1.1 的请求默认使用一个持久连接 |
-| ... ...    | ... ...                                  |
+| 其他首部     | 运行时继续保留未在本表列出的请求首部                 |
 
 > 参阅: [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Connection)
 
@@ -252,7 +254,7 @@ cache-control: no-cache
 cache-control: no-store
 cache-control: no-transform
 cache-control: only-if-cached
-... ...
+其他 cookie 属性由服务端按 RFC 6265 解析。
 ```
 
 | 指令                          | 含义                                          |
@@ -264,7 +266,7 @@ cache-control: only-if-cached
 | no-store                    | 不使用任何缓存                                     |
 | no-transform                | 不得对资源进行转换或转变                                |
 | only-if-cached              | 表明客户端只接受已缓存的响应, 且不要向原始服务器检查是否有更新的拷贝         |
-| ... ...                     | ... ...                                     |
+| 其他属性                     | 按协议原样传递并由服务端解释                         |
 
 > 参阅: [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control)
 
@@ -280,7 +282,7 @@ cookie 请求标头包含先前由服务器通过 set-cookie 标头投放或通�
 # 语法
 cookie: <cookie-list>
 cookie: name=value
-cookie: name=value; name2=value2; name3=value3 ...
+cookie: name=value; name2=value2; name3=value3
 
 # 示例
 cookie: PHPSESSID=298zf09hf012fh2; csrftoken=u32t4o3tb3gg43; _gat=1
