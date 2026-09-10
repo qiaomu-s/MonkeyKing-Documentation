@@ -13,6 +13,8 @@
     "migrate:content": "tsx scripts/migrate-content.ts",
     "json:build": "tsx scripts/json/build.ts",
     "check:content": "tsx scripts/check-content.ts",
+    "examples:check": "tsx scripts/examples/check.ts",
+    "api:smoke": "tsx scripts/smoke/api.ts",
     "check:links": "tsx scripts/check-links.ts",
     "build:web": "tsx scripts/build.ts web",
     "build:android": "tsx scripts/build.ts android",

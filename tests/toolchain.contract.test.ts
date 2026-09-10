@@ -100,11 +100,13 @@ describe('root toolchain contract', () => {
       'check:links': 'tsx scripts/check-links.ts',
       'build:web': 'tsx scripts/build.ts web',
       'build:android': 'tsx scripts/build.ts android',
+      'examples:check': 'tsx scripts/examples/check.ts',
+      'api:smoke': 'tsx scripts/smoke/api.ts',
       test: 'vitest run',
       'test:e2e': 'playwright test',
     }
 
-    expect(Object.keys(requiredPublicScripts)).toHaveLength(9)
+    expect(Object.keys(requiredPublicScripts)).toHaveLength(11)
     expect(scripts).toMatchObject(requiredPublicScripts)
     expect(scripts?.['migrate:content']).toBe('tsx scripts/migrate-content.ts')
   })
