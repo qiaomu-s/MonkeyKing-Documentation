@@ -285,7 +285,10 @@ function structuralErrors(code: string): string[] {
 
 function placeholderError(code: string): boolean {
   return (
-    /\b(?:TODO|FIXME|PENDING)\b/i.test(code) ||
+    /\bPENDING\b/i.test(code) ||
+    /(?:^|\n)\s*(?:(?:\/\/|\/\*+|\*)\s*)?(?:TODO|FIXME)\s*:/i.test(
+      code,
+    ) ||
     /待补充|待完善/.test(code) ||
     /(?:^|\n)\s*(?:\.\.\.|xxx(?:\s+事件)?)\s*(?:\n|$)/i.test(code)
   )

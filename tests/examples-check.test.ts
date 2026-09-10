@@ -107,6 +107,32 @@ describe('documentation example checks', () => {
     }
   })
 
+  test('accepts calls to the public TODO function', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-todo-example-'))
+    try {
+      writeFixture(
+        root,
+        'docs/api/example.md',
+        [
+          '# Example',
+          '',
+          '```js',
+          'function unfinishedFeature() {',
+          "    TODO('该功能尚未实现');",
+          '}',
+          '```',
+          '',
+        ].join('\n'),
+      )
+
+      expect(
+        checkJavaScriptExamples(root, ['docs/api/example.md']).errors,
+      ).toEqual([])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('reports missing documentation files', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-missing-example-'))
     try {
