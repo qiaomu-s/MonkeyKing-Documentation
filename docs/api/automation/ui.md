@@ -2,8 +2,7 @@
 
 ---
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+本页前半部分保留布局与控件属性教程，后半部分给出按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对的运行时 API 合同。
 
 ---
 
@@ -13,7 +12,7 @@ ui模块提供了编写用户界面的支持.
     View: https://developer.android.google.cn/reference/android/view/View?hl=cn
     Widget: https://developer.android.google.cn/reference/android/widget/package-summary?hl=cn
 
-带有ui的脚本的的最前面必须使用`"ui";`指定ui模式, 否则脚本将不会以ui模式运行. 正确示范:s
+带有ui的脚本的最前面必须使用`"ui";`指定ui模式, 否则脚本将不会以ui模式运行. 正确示范:
 
 ```
 "ui";
@@ -1080,32 +1079,14 @@ threads.start({
 ui.statusBarColor("#000000");
 ```
 
-## ui.useAndroidResources()
+## ui.useAndroidLayout([enabled])
 
-启用使用Android的布局(layout)、绘图(drawable)、动画(anim)、样式(style)等资源的特性. 启用该特性后, 在project.json中进行以下配置, 就可以像写Android原生一样写界面：
+切换原生 Android XML 与 Monkey King 简写布局的解析方式。省略参数或传 `null` 时恢复自动判断；传 `true` 强制使用原生布局。完整合同见本页后面的运行时 API 参考。
 
-```json
-{
-    // ...
-    androidResources: {
-        "resDir": "res",  // 资源文件夹
-        "manifest": "AndroidManifest.xml" // AndroidManifest文件路径
-    }
-}
+```javascript
+"ui";
+ui.useAndroidLayout(true);
 ```
-
-res文件夹通常为以下结构：
-
-```
-- res
-    - layout  // 布局资源
-    - drawable // 图片、形状等资源
-    - menu // 菜单资源
-    - values // 样式、字符串等资源
-    // ...
-```
-
-可参考示例->复杂界面->Android原生界面.
 
 # 尺寸的单位: Dimension
 
@@ -1113,4 +1094,283 @@ res文件夹通常为以下结构：
 
 # 颜色
 
-**(完善中...)**
+# 运行时 API 参考
+
+以下合同描述 Monkey King 6.7.0 固定提交中的 Rhino 运行时对象。尺寸返回值均为像素；需要 Activity 的成员只能在 UI 脚本已创建界面后使用。
+
+<a id="api-symbol-bW9kdWxlOnVp"></a>
+## [@] ui
+
+**`6.7.0`**
+
+- **入口 / 别名**：`ui`、`$ui`
+- <ins>**returns**</ins> { `UI` } - 绑定了布局、线程调度、窗口外观、控件查找及动态属性代理的对象
+- **权限**：模块本身不申请权限；具体 View、窗口或资源操作要求有效的 UI Activity
+- **线程 / 生命周期 / 副作用**：对象与当前脚本运行时绑定；初始化时把脚本顶层作用域设为布局表达式的默认绑定上下文
+
+```js
+"ui";
+console.log(ui === $ui); // true
+console.log(ui.getClassName()); // UI
+```
+
+<a id="api-symbol-ZHluYW1pYzp1aS5wcm94eS1wcm9wZXJ0aWVz"></a>
+### [dynamic] ui 动态代理属性
+
+**`6.7.0`**
+
+对任意脚本属性 `ui[key]` 赋非 nullish 值时，运行时把它保存到代理的 `mProperties`；赋 `null` 或 `undefined` 时删除该键。读取一个没有保存值的键时，如果 `ui.view` 已设置，运行时会把键当作布局 ID 调用 `ui.findById(key)`。因此可用键集合取决于脚本赋值和当前布局，而不是一张固定属性表。
+
+显式安装在 `ui` 上的方法与 getter 优先于代理查找。布局切换后，同一个键可能解析到不同 View；找不到 ID 时返回 nullish 值。
+
+```js
+ui.sessionName = 'demo';
+console.log(ui.sessionName); // demo
+ui.sessionName = null; // 删除动态键
+
+ui.layout('<text id="title" text="Monkey King"/>');
+console.log(ui.title === ui.findById('title')); // true
+```
+
+<a id="api-symbol-dWkuaXNBbmRyb2lkTGF5b3V0"></a>
+<a id="api-symbol-dWkud2lkZ2V0cw"></a>
+<a id="api-symbol-dWkudmlldw"></a>
+<a id="api-symbol-dWkuYmluZGluZ0NvbnRleHQ"></a>
+<a id="api-symbol-dWkucmVzb3VyY2VQYXJzZXI"></a>
+<a id="api-symbol-dWkubGF5b3V0SW5mbGF0ZXI"></a>
+### [p] ui 核心状态属性
+
+**`6.7.0`**
+
+| 属性 | 类型 | 合同 |
+| --- | --- | --- |
+| `ui.isAndroidLayout` | `boolean \| null` | `true` 强制原生 Android XML，`false` 强制 Monkey King 简写语法，`null` 自动判断；通常通过 `useAndroidLayout()` 修改。 |
+| `ui.widgets` | `Object` | 延迟创建的自定义控件构造器注册表；`registerWidget()` 会在此对象上定义名称。 |
+| `ui.view` | `android.view.View \| null` | 当前内容 View；只允许写入 View 或 null，否则抛出类型错误。 |
+| `ui.bindingContext` | `any` | `{{ expression }}` 动态属性求值上下文；写 nullish 值会移除绑定。 |
+| `ui.resourceParser` | `ResourceParser` | 解析布局资源；图片路径会先经当前脚本的 `files.path()` 解析。 |
+| `ui.layoutInflater` | `DynamicLayoutInflater` | 当前运行时的动态布局解析器；初始化时绑定脚本上下文与资源解析器。 |
+
+```js
+console.log(ui.isAndroidLayout, ui.view);
+console.log(ui.widgets === ui.__widgets__); // true
+ui.bindingContext = { title: 'Monkey King' };
+```
+
+<a id="api-symbol-dWkuZ2V0Q2xhc3NOYW1l"></a>
+<a id="api-symbol-dWkuZ2V0"></a>
+<a id="api-symbol-dWkucHV0"></a>
+<a id="api-symbol-dWkucmVjeWNsZQ"></a>
+<a id="api-symbol-dWkuZ2V0RGVmYXVsdFZhbHVl"></a>
+<a id="api-symbol-dWkuZ2V0V2l0aG91dFByb3h5"></a>
+### [m] ui 底层 Rhino 对象方法
+
+**`6.7.0`**
+
+| 方法 | 返回值 | 合同 |
+| --- | --- | --- |
+| `ui.getClassName()` | `string` | 固定返回 `UI`。 |
+| `ui.get(key, start)` | `any` | Rhino 属性读取钩子；优先处理 `view` 和内部属性，再进入代理读取。 |
+| `ui.put(key, start, value)` | `void` | Rhino 属性写入钩子；校验 `view`，更新内部属性，或进入动态代理写入。 |
+| `ui.recycle()` | `void` | 清除 `layoutInflater.privateContext`，释放该解析器持有的私有 Context。 |
+| `ui.getDefaultValue(typeHint?)` | `string` | Rhino 原始值转换钩子，返回对象的字符串形式。 |
+| `ui.getWithoutProxy(name, start)` | `any` | 绕过动态 getter，仅读取 NativeObject 自身属性；缺失时返回 Rhino 的 `NOT_FOUND`。 |
+
+这些成员主要供 Rhino 桥接层使用；普通脚本通常应使用属性语法。
+
+```js
+console.log(ui.getClassName()); // UI
+ui.runtimeTag = 'example'; // 经 put/proxy 写入
+console.log(ui.runtimeTag); // 经 get/proxy 读取
+```
+
+<a id="api-symbol-dWkuUg"></a>
+<a id="api-symbol-dWkuX193aWRnZXRzX18"></a>
+<a id="api-symbol-dWkucm9vdA"></a>
+<a id="api-symbol-dWkuZW1pdHRlcg"></a>
+<a id="api-symbol-dWkuc3RhdHVzQmFySGVpZ2h0"></a>
+<a id="api-symbol-dWkudmlzaWJsZVN0YXR1c0JhckhlaWdodA"></a>
+<a id="api-symbol-dWkubmF2aWdhdGlvbkJhckhlaWdodA"></a>
+<a id="api-symbol-dWkudmlzaWJsZU5hdmlnYXRpb25CYXJIZWlnaHQ"></a>
+### [p] ui 运行时 getter
+
+**`6.7.0`**
+
+| Getter | 类型 | 合同 |
+| --- | --- | --- |
+| `ui.R` | `Object` | 当前 Monkey King 运行时暴露的 Android 资源入口。 |
+| `ui.__widgets__` | `Object` | `ui.widgets` 的公开 getter；返回同一份自定义控件注册表。 |
+| `ui.root` | `android.view.View \| null` | UI Activity 的 `android.R.id.content` 根 View；非 UI Activity 时为 null。 |
+| `ui.emitter` | `EventEmitter \| null` | 当前 `ScriptExecuteActivity` 的事件发射器。 |
+| `ui.statusBarHeight` | `number` | 当前 Activity（无时用全局 Context）的状态栏高度，忽略可见性。 |
+| `ui.visibleStatusBarHeight` | `number` | 同上，但状态栏不可见时按可见性计算。 |
+| `ui.navigationBarHeight` | `number` | 导航栏高度，忽略可见性。 |
+| `ui.visibleNavigationBarHeight` | `number` | 导航栏当前可见高度。 |
+
+```js
+console.log(ui.R, ui.__widgets__);
+console.log(ui.statusBarHeight, ui.visibleStatusBarHeight);
+console.log(ui.navigationBarHeight, ui.visibleNavigationBarHeight);
+```
+
+<a id="api-symbol-dWkucnVu"></a>
+<a id="api-symbol-dWkuaXNVaVRocmVhZA"></a>
+<a id="api-symbol-dWkucG9zdA"></a>
+### [m] UI 线程调度
+
+**`6.7.0`**
+
+| 方法 | 参数与返回值 | 合同 |
+| --- | --- | --- |
+| `ui.run(action)` | `Function -> any` | 必须传 1 个函数。已在 UI 线程时立即执行，否则投递到 UI Handler、阻塞当前线程并返回结果；回调异常会重新抛出。 |
+| `ui.isUiThread()` | `() -> boolean` | 必须为 0 个参数；也安装为全局 `isUiThread()`。 |
+| `ui.post(action[, delay])` | `(Function, number?) -> boolean` | 接受 1..2 个参数；立即或延迟投递，返回 Handler 是否接受任务，并维持当前脚本 Looper 的等待状态直到回调结束。 |
+
+```js
+ui.post(() => {
+    console.log(ui.isUiThread()); // true
+}, 0);
+```
+
+<a id="api-symbol-dWkuX19pbmZsYXRlX18"></a>
+<a id="api-symbol-dWkuaW5mbGF0ZQ"></a>
+<a id="api-symbol-dWkudXNlQW5kcm9pZExheW91dA"></a>
+<a id="api-symbol-dWkubGF5b3V0"></a>
+<a id="api-symbol-dWkubGF5b3V0RmlsZQ"></a>
+<a id="api-symbol-dWkucmVnaXN0ZXJXaWRnZXQ"></a>
+<a id="api-symbol-dWkuc2V0Q29udGVudFZpZXc"></a>
+### [m] 布局解析与内容 View
+
+**`6.7.0`**
+
+| 方法 | 返回值 | 合同 |
+| --- | --- | --- |
+| `ui.__inflate__(ctx, xml[, parent[, attach]])` | `android.view.View` | 内部入口，要求 2..4 个参数；`ctx` 必须为 `InflateContext`，`parent` 必须为 `ViewGroup` 或 null。 |
+| `ui.inflate(xml[, parent[, attach]])` | `NativeView` | 接受 1..3 个参数；解析 XML/XML 字符串/DOM 并包装原生 View，父项必须为 `ViewGroup` 或 null。 |
+| `ui.useAndroidLayout([enabled])` | `undefined` | 最多 1 个参数；省略或传 null 设为自动判断，显式传 `undefined` 设为 true，其他值转为 boolean。 |
+| `ui.layout(xml)` | `undefined` | 必须传 1 个布局；在 UI Activity 的 decor ViewGroup 中解析，并设为当前内容 View。 |
+| `ui.layoutFile(path)` | `undefined` | 必须传 1 个路径；先用 `files.read()` 读取，再委托给 `layout()`。 |
+| `ui.registerWidget(name, widget)` | `undefined` | 必须传非空名称和构造函数，并写入 `ui.widgets` 注册表。 |
+| `ui.setContentView(view)` | `undefined` | 必须传原生 View；在 UI 线程设置 Activity 内容，同时更新 `ui.view`。 |
+
+```js
+"ui";
+ui.useAndroidLayout(false);
+const content = ui.inflate('<vertical><text id="title" text="Hello"/></vertical>');
+ui.setContentView(content);
+```
+
+<a id="api-symbol-dWkuc3RhdHVzQmFyQ29sb3I"></a>
+<a id="api-symbol-dWkuc3RhdHVzQmFySWNvbkxpZ2h0"></a>
+<a id="api-symbol-dWkuc3RhdHVzQmFySWNvbkxpZ2h0Qnk"></a>
+<a id="api-symbol-dWkuYmFja2dyb3VuZENvbG9y"></a>
+<a id="api-symbol-dWkubmF2aWdhdGlvbkJhckNvbG9y"></a>
+<a id="api-symbol-dWkubmF2aWdhdGlvbkJhckljb25MaWdodA"></a>
+<a id="api-symbol-dWkubmF2aWdhdGlvbkJhckljb25MaWdodEJ5"></a>
+### [m] 窗口与系统栏外观
+
+**`6.7.0`**
+
+| 方法 | 参数 | 合同 |
+| --- | --- | --- |
+| `ui.statusBarColor(color)` | 1 个颜色值 | 在 UI 线程设置状态栏背景色。 |
+| `ui.statusBarIconLight([isLight])` | 0..1 个 boolean | 默认 true；设置状态栏图标明暗模式。 |
+| `ui.statusBarIconLightBy(refColor)` | 1 个颜色值 | 按参考色是否为暗色计算图标明暗模式。 |
+| `ui.backgroundColor(color)` | 1 个颜色值 | 把颜色 alpha 强制为 1 后设置 Activity 窗口背景。 |
+| `ui.navigationBarColor(color)` | 1 个颜色值 | 设置导航栏背景色。 |
+| `ui.navigationBarIconLight([isLight])` | 0..1 个 boolean | 默认 true；Android 8.0 以下抛出版本要求异常。 |
+| `ui.navigationBarIconLightBy(refColor)` | 1 个颜色值 | 按参考色计算导航栏图标模式；Android 8.0 以下抛出。 |
+
+所有方法返回 `undefined`，并要求有效的 `ScriptExecuteActivity`。
+
+```js
+ui.statusBarColor('#202124');
+ui.statusBarIconLightBy('#202124');
+ui.navigationBarColor('#202124');
+ui.navigationBarIconLightBy('#202124');
+```
+
+<a id="api-symbol-dWkuZmluZEJ5SWQ"></a>
+<a id="api-symbol-dWkuZmluZEJ5U3RyaW5nSWQ"></a>
+<a id="api-symbol-dWkuZmluZFZpZXc"></a>
+<a id="api-symbol-dWkuZmluaXNo"></a>
+<a id="api-symbol-dWkua2VlcFNjcmVlbk9u"></a>
+### [m] View 查找与 Activity 生命周期
+
+**`6.7.0`**
+
+| 方法 | 返回值 | 合同 |
+| --- | --- | --- |
+| `ui.findById(id)` | `NativeView \| null` | 必须传 1 个 ID，在 `ui.view` 下按字符串 ID 查找；尚未设置内容或未找到时返回 null。 |
+| `ui.findByStringId(view, id)` | `NativeView \| null` | 必须传 2 个参数；首参必须为原生 View，并从该子树开始查找。 |
+| `ui.findView(id)` | `NativeView \| null` | `findById(id)` 的同语义公开入口。 |
+| `ui.finish()` | `undefined` | 必须为 0 个参数；在 UI 线程结束当前 `ScriptExecuteActivity`。 |
+| `ui.keepScreenOn()` | `undefined` | 必须为 0 个参数；给当前窗口添加 `FLAG_KEEP_SCREEN_ON`。 |
+
+```js
+ui.layout('<text id="title" text="loading"/>');
+const title = ui.findView('title');
+if (title) title.attr('text', 'ready');
+ui.keepScreenOn();
+```
+
+<a id="api-symbol-dWkuZ2V0U3RhdHVzQmFySGVpZ2h0"></a>
+<a id="api-symbol-dWkuZ2V0VmlzaWJsZVN0YXR1c0JhckhlaWdodA"></a>
+<a id="api-symbol-dWkuZ2V0TmF2aWdhdGlvbkJhckhlaWdodA"></a>
+<a id="api-symbol-dWkuZ2V0VmlzaWJsZU5hdmlnYXRpb25CYXJIZWlnaHQ"></a>
+### [m] 系统栏高度函数
+
+**`6.7.0`**
+
+四个函数均接受 0..1 个 options 对象并返回像素整数。`withComputed` 与 `withDimen` 默认 true；普通函数的 `ignoreVisibility` 默认 true，可见高度函数则固定为 false。
+
+| 方法 | 可见性规则 |
+| --- | --- |
+| `ui.getStatusBarHeight(options?)` | 读取 `ignoreVisibility`，默认忽略可见性。 |
+| `ui.getVisibleStatusBarHeight(options?)` | 始终考虑状态栏是否可见。 |
+| `ui.getNavigationBarHeight(options?)` | 读取 `ignoreVisibility`，默认忽略可见性。 |
+| `ui.getVisibleNavigationBarHeight(options?)` | 始终考虑导航栏是否可见。 |
+
+```js
+const status = ui.getStatusBarHeight({
+    withComputed: true,
+    withDimen: true,
+    ignoreVisibility: false,
+});
+console.log(status, ui.getVisibleNavigationBarHeight());
+```
+
+<a id="api-symbol-dWkuV2lkZ2V0Ll9fYXR0cnNfXw"></a>
+<a id="api-symbol-dWkuV2lkZ2V0LnJlbmRlckludGVybmFs"></a>
+<a id="api-symbol-dWkuV2lkZ2V0LmRlZmluZUF0dHI"></a>
+<a id="api-symbol-dWkuV2lkZ2V0Lmhhc0F0dHI"></a>
+<a id="api-symbol-dWkuV2lkZ2V0LnNldEF0dHI"></a>
+<a id="api-symbol-dWkuV2lkZ2V0LmdldEF0dHI"></a>
+<a id="api-symbol-dWkuV2lkZ2V0Lm5vdGlmeVZpZXdDcmVhdGVk"></a>
+<a id="api-symbol-dWkuV2lkZ2V0Lm5vdGlmeUFmdGVySW5mbGF0aW9u"></a>
+## ui.Widget 原型合同
+
+**`6.7.0`**
+
+`new ui.Widget()` 创建一个带独立 `__attrs__` 表和以下七个永久原型函数的对象。布局解析器在遇到已注册的自定义控件时调用这些函数；脚本通常覆写 `render`、`onViewCreated` 或 `onFinishInflation`，而不覆写内部通知函数。
+
+| 成员 | 合同 |
+| --- | --- |
+| `widget.__attrs__` | 非枚举的属性合同表；每项保存 `{ getter, setter }`。 |
+| `widget.renderInternal()` | 必须为 0 个参数；有 `render()` 时调用并要求非 null 返回，否则返回空布局字符串 `< />`。 |
+| `widget.defineAttr(name[, aliasOrGetter[, applierOrSetter]])` | 接受 1..3 个参数；可声明属性别名、应用器，或显式 getter/setter 函数对。name 不得 nullish。 |
+| `widget.hasAttr([name])` | 最多 1 个参数；检查 `__attrs__` 是否含该属性。 |
+| `widget.setAttr(view, name, value, defaultSetter)` | 调用已注册属性的 setter；属性项或 setter 不是脚本对象/函数时抛出。 |
+| `widget.getAttr(view, name, defaultGetter)` | 调用已注册属性的 getter，并返回其结果。 |
+| `widget.notifyViewCreated(view)` | 必须传原生 View；若定义了 `onViewCreated` 则调用它。 |
+| `widget.notifyAfterInflation(view)` | 必须传原生 View；若定义了 `onFinishInflation` 则调用它。 |
+
+```js
+const widget = new ui.Widget();
+widget.defineAttr('title');
+widget.render = function () {
+    return '<text text="custom widget"/>';
+};
+console.log(widget.hasAttr('title')); // true
+console.log(widget.renderInternal());
+```

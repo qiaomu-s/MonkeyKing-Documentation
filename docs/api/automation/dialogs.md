@@ -1,13 +1,26 @@
 # 对话框 (Dialogs)
 
----
+`dialogs` 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+<a id="api-symbol-bW9kdWxlOmRpYWxvZ3M"></a>
+## [@] dialogs
 
----
+**`≤ 6.6.4`**
 
-dialogs 模块提供了简单的对话框支持, 可以通过对话框和用户进行交互. 最简单的例子如下：
+- **入口 / 别名**：`dialogs`、`$dialogs`；`rawInput`、`prompt`、`alert`、`confirm` 还会安装同名全局入口
+- **参数**：模块对象不可调用
+- <ins>**returns**</ins> { `Dialogs` }
+- **异常**：读取模块本身不抛出异常
+- **权限**：无额外 Android 权限
+- **线程 / 生命周期**：对话框 UI 在主线程创建；无回调时，UI 脚本返回 Promise，普通脚本走同步等待
+- **副作用**：成员调用会创建窗口并等待或异步接收用户输入
+
+```js
+console.log(dialogs === $dialogs); // true
+console.log(typeof dialogs.build); // "function"
+```
+
+最简单的例子如下：
 
 ```
 alert("您好");
@@ -43,7 +56,22 @@ confirm("要清除所有缓存吗?")
     });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5hbGVydA"></a>
 ## dialogs.alert(title[, content, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.alert(...)`、全局 `alert(...)`
+- **title** { [string](../types/data-types.md#string) } - 必填并转换为字符串
+- **[ content = `''` ]** { [string](../types/data-types.md#string) }
+- **[ callback ]** { [function](../types/data-types.md#function) } - 可作为第 2 或第 3 个参数
+- <ins>**returns**</ins> { `void | Promise<any> | JsDialog` } - UI 线程且未给回调时返回 Promise；普通线程无回调时同步等待
+- **异常**：参数数量不在 1..3、callback 不是函数时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；在 UI 线程显示一个确定按钮对话框，关闭后对应等待或回调完成
+
+```js
+dialogs.alert('同步完成', '所有文件已经写入');
+```
 
 * `title` {string} 对话框的标题.
 * `content` {string} 可选, 对话框的内容. 默认为空.
@@ -66,7 +94,23 @@ alert("嘿嘿嘿").then(()=>{
 });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5jb25maXJt"></a>
 ## dialogs.confirm(title[, content, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.confirm(...)`、全局 `confirm(...)`
+- **title** { [string](../types/data-types.md#string) } - 必填
+- **[ content = `''` ]** { [string](../types/data-types.md#string) }
+- **[ callback ]** { [function](../types/data-types.md#function) } - 接收布尔选择结果
+- <ins>**returns**</ins> { `boolean | Promise<boolean> | JsDialog` }
+- **异常**：参数数量不在 1..3、callback 类型错误时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；UI 线程无回调时返回 Promise，普通线程无回调时阻塞到确认或取消
+
+```js
+const accepted = dialogs.confirm('删除缓存？');
+console.log(accepted);
+```
 
 * `title` {string} 对话框的标题.
 * `content` {string} 可选, 对话框的内容. 默认为空.
@@ -85,7 +129,23 @@ confirm("确定吗").then(value=>{
 });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5yYXdJbnB1dA"></a>
 ## dialogs.rawInput(title[, prefill, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.rawInput(...)`、全局 `rawInput(...)`
+- **title** { [string](../types/data-types.md#string) } - 必填
+- **[ prefill = `''` ]** { [string](../types/data-types.md#string) }
+- **[ callback ]** { [function](../types/data-types.md#function) } - 可作为第 2 个参数省略 prefill
+- <ins>**returns**</ins> { `string | null | Promise<string | null> | JsDialog` }
+- **异常**：参数数量不在 1..3 或 callback 不是函数时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；普通线程无回调时同步等待，UI 线程无回调时返回 Promise
+
+```js
+const name = dialogs.rawInput('姓名', 'Monkey');
+console.log(name);
+```
 
 * `title` {string} 对话框的标题.
 * `prefill` {string} 输入框的初始内容, 可选, 默认为空.
@@ -117,7 +177,23 @@ rawInput("请输入您的名字", "小明", name => {
 });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5pbnB1dA"></a>
 ## dialogs.input(title[, prefill, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.input(...)`
+- **title** { [string](../types/data-types.md#string) } - 必填
+- **[ prefill = `''` ]** { [string](../types/data-types.md#string) }
+- **[ callback ]** { [function](../types/data-types.md#function) } - 接收求值后的结果
+- <ins>**returns**</ins> { `any | Promise<any> | JsDialog` } - 对输入字符串执行 Rhino `eval`
+- **异常**：参数数量不在 1..3、callback 类型错误或输入表达式求值失败时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；线程路径与 `rawInput` 相同，并会在顶级作用域执行输入文本
+
+```js
+const count = dialogs.input('数量', '1 + 2');
+console.log(count); // 3
+```
 
 等效于 `eval(dialogs.rawInput(title, prefill, callback))`, 该函数和rawInput的区别在于, 会把输入的字符串用eval计算一遍再返回, 返回的可能不是字符串.
 
@@ -140,11 +216,42 @@ dialogs.input("请输入您的年龄", "18").then(age => {
 });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5wcm9tcHQ"></a>
 ## dialogs.prompt(title[, prefill, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.prompt(...)`、全局 `prompt(...)`
+- **title** { [string](../types/data-types.md#string) }
+- **[ prefill = `''` ]** { [string](../types/data-types.md#string) }
+- **[ callback ]** { [function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `string | null | Promise<string | null> | JsDialog` }
+- **异常**：与 `dialogs.rawInput` 相同
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；完整委托给 `rawInput`，不是会执行 `eval` 的 `input`
+
+```js
+console.log(dialogs.prompt('备注', '无'));
+```
 
 相当于 `dialogs.rawInput()`;
 
-## dialogs.select(title, items, callback)
+<a id="api-symbol-ZGlhbG9ncy5zZWxlY3Q"></a>
+## dialogs.select(title, items[, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.select(...)`
+- **title** { [string](../types/data-types.md#string) } - 至少需要此参数
+- **items** { [string](../types/data-types.md#string)[] | `...string` } - 数组形式支持可选 callback；非数组形式把 title 后所有参数都转换为选项
+- **[ callback ]** { [function](../types/data-types.md#function) } - 数组形式的第 3 个参数
+- <ins>**returns**</ins> { `number | Promise<number> | JsDialog` } - 选择索引；取消通常为 `-1`
+- **异常**：没有 title、callback 类型错误或底层对话框失败时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；UI 线程数组形式且无回调时返回 Promise，否则按同步/回调路径显示列表
+
+```js
+const index = dialogs.select('颜色', ['红', '绿', '蓝']);
+console.log(index);
+```
 
 * `title` {string} 对话框的标题.
 * `items` {Array} 对话框的选项列表, 是一个字符串数组.
@@ -172,7 +279,24 @@ dialogs.select("请选择一个选项", ["选项A", "选项B", "选项C", "选�
     });
 ```
 
+<a id="api-symbol-ZGlhbG9ncy5zaW5nbGVDaG9pY2U"></a>
 ## dialogs.singleChoice(title, items[, index, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.singleChoice(...)`
+- **title** { [string](../types/data-types.md#string) }
+- **items** { [string](../types/data-types.md#string)[] } - 必须为 JavaScript 数组
+- **[ index = `0` ]** { [number](../types/data-types.md#number) } - 初始选中索引
+- **[ callback ]** { [function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `number | Promise<number> | JsDialog` }
+- **异常**：参数数量不在 2..4、items 不是数组或 callback 类型错误时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；显示单选列表并在结束时返回或回调索引
+
+```js
+const index = dialogs.singleChoice('环境', ['测试', '生产'], 0);
+console.log(index);
+```
 
 * `title` {string} 对话框的标题.
 * `items` {Array} 对话框的选项列表, 是一个字符串数组.
@@ -183,7 +307,24 @@ dialogs.select("请选择一个选项", ["选项A", "选项B", "选项C", "选�
 
 在ui模式下该函数返回一个`Promise`.
 
+<a id="api-symbol-ZGlhbG9ncy5tdWx0aUNob2ljZQ"></a>
 ## dialogs.multiChoice(title, items[, indices, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.multiChoice(...)`
+- **title** { [string](../types/data-types.md#string) }
+- **items** { [string](../types/data-types.md#string)[] } - 必须为 JavaScript 数组
+- **[ indices = `[]` ]** { [number](../types/data-types.md#number)[] } - 初始选中索引数组
+- **[ callback ]** { [function](../types/data-types.md#function) }
+- <ins>**returns**</ins> { `number[] | null | Promise<number[] | null> | JsDialog` }
+- **异常**：参数数量不在 2..4、items/indices/callback 类型非法时抛出异常
+- **权限 / 线程 / 生命周期 / 副作用**：无额外权限；Java 结果会转换为 Rhino 数组，取消可能返回 `null`
+
+```js
+const selected = dialogs.multiChoice('同步内容', ['图片', '视频'], [0]);
+console.log(selected);
+```
 
 * `title` {string} 对话框的标题.
 * `items` {Array} 对话框的选项列表, 是一个字符串数组.
@@ -194,7 +335,27 @@ dialogs.select("请选择一个选项", ["选项A", "选项B", "选项C", "选�
 
 在ui模式下该函数返回一个`Promise`.
 
-## dialogs.build(properties)
+<a id="api-symbol-ZGlhbG9ncy5idWlsZA"></a>
+## dialogs.build(properties?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`dialogs.build(properties?)`
+- **[ properties ]** { [Object](../types/data-types.md#object) } - 最多 1 个对象；省略或 nullish 时启用内置 preset 标题、内容及三个按钮
+- <ins>**returns**</ins> { `JsDialog` } - 已构建但仍需按对象 API 调用 `show()` 的对话框
+- **异常**：参数超过 1 个、properties 非对象、属性名无法映射到 builder 或属性值非法时抛出异常
+- **权限**：无额外 Android 权限
+- **线程 / 生命周期**：记录当前脚本线程，并通过 `ui.run` 在 UI 线程构建；事件监听器随对话框存活
+- **副作用**：创建对话框对象并安装颜色、按钮、选择、输入、返回键及窗口属性；调用 `show()` 后显示
+
+```js
+dialogs.build({
+    title: '确认',
+    content: '继续执行？',
+    positive: '继续',
+    negative: '取消',
+}).show();
+```
 
 * `properties` {Object} 对话框属性, 用于配置对话框.
 * 返回 {Dialog}

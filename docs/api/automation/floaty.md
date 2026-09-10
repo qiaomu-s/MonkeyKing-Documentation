@@ -1,217 +1,163 @@
 # 悬浮窗 (Floaty)
 
----
+`floaty` 创建覆盖在其他应用之上的脚本窗口。窗口依赖“显示在其他应用上层”权限，并与当前脚本运行时绑定；脚本结束时运行时会关闭其窗口。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+<a id="api-symbol-bW9kdWxlOmZsb2F0eQ"></a>
+## [@] floaty
 
----
+**`≤ 6.6.4`**
 
-floaty模块提供了悬浮窗的相关函数, 可以在屏幕上显示自定义悬浮窗, 控制悬浮窗大小、位置等.
+- **入口 / 别名**：`floaty`、`$floaty`
+- **参数**：模块对象不可调用
+- <ins>**returns**</ins> { `Floaty` }
+- **异常**：读取模块本身不抛出异常
+- **权限**：创建窗口和读取剪贴板辅助窗口需要悬浮窗权限
+- **线程 / 生命周期**：每个脚本运行时维护自己的窗口集合；窗口 UI 变更会在 UI 线程执行
+- **副作用**：调用创建、权限或关闭方法会启动设置页、创建系统窗口或关闭窗口
 
-悬浮窗在脚本停止运行时会自动关闭, 因此, 要保持悬浮窗不被关闭, 可以用一个空的setInterval来实现, 例如：
-
+```js
+console.log(floaty === $floaty); // true
+console.log(floaty.hasPermission());
 ```
-setInterval(()=>{}, 1000);
-```
 
-## floaty.window(layout)
+<a id="api-symbol-ZmxvYXR5LndpbmRvdw"></a>
+## [m] floaty.window(xml)
 
-* `layout` {xml} | {View} 悬浮窗界面的XML或者View
+**`≤ 6.6.4`**
 
-指定悬浮窗的布局, 创建并**显示**一个悬浮窗, 返回一个`FloatyWindow`对象.
+- **入口 / 别名**：`floaty.window(xml)`、`$floaty.window(xml)`
+- **xml** { `XML | string` } - 恰好一个 Rhino XML 或 XML 字符串；普通 Android `View` 不属于该增强入口的合法参数
+- <ins>**returns**</ins> { `JsResizableWindow` } - 经代理包装的可调整悬浮窗；可用 `window.id` 查找布局控件
+- **异常**：参数数量不为 1、布局类型或 XML 无效时抛出异常；等待权限被中断时抛出 `ScriptInterruptedException`
+- **权限**：需要悬浮窗权限；未授权时打开授权界面并最多等待约 60 秒
+- **线程 / 生命周期**：窗口在 UI 线程创建；从脚本线程调用时等待创建完成；关闭或脚本退出后不可复用
+- **副作用**：启动悬浮窗服务并立即显示带调整控件的窗口
 
-该悬浮窗自带关闭、调整大小、调整位置按键, 可根据需要调用`setAdjustEnabled()`函数来显示或隐藏.
-
-其中layout参数可以是xml布局或者一个View, 更多信息参见ui模块的说明.
-
-例子：
-
-```
-var w = floaty.window(
-    <frame gravity="center">
-        <text id="text">悬浮文字</text>
-    </frame>
+```js
+const window = floaty.window(
+    '<frame><text id="status" text="运行中"/></frame>',
 );
-setTimeout(()=>{
-    w.close();
-}, 2000);
+setTimeout(() => window.close(), 2000);
 ```
 
-这段代码运行后将会在屏幕上显示悬浮文字, 并在两秒后消失.
+<a id="api-symbol-ZmxvYXR5LnJhd1dpbmRvdw"></a>
+## [m] floaty.rawWindow(xml)
 
-另外, 因为脚本运行的线程不是UI线程, 而所有对控件的修改操作需要在UI线程执行, 此时需要用`ui.run`, 例如:
+**`≤ 6.6.4`**
 
-```
-ui.run(function(){
-    w.text.setText("文本");
-});
-```
+- **入口 / 别名**：`floaty.rawWindow(xml)`、`$floaty.rawWindow(xml)`
+- **xml** { `XML | string` } - 恰好一个 Rhino XML 或 XML 字符串
+- <ins>**returns**</ins> { `JsRawWindow` } - 无内置拖动/缩放装饰的代理窗口
+- **异常**：参数数量、XML 类型或布局无效时抛出异常；权限等待被中断时抛出 `ScriptInterruptedException`
+- **权限**：需要悬浮窗权限；未授权时打开授权界面并等待授权
+- **线程 / 生命周期**：UI 线程创建；关闭后底层窗口引用被清空
+- **副作用**：启动悬浮窗服务并显示原始窗口，可覆盖状态栏区域
 
-有关返回的`FloatyWindow`对象的说明, 参见下面的`FloatyWindow`章节.
-
-## floaty.rawWindow(layout)
-
-* `layout` {xml} | {View} 悬浮窗界面的XML或者View
-
-指定悬浮窗的布局, 创建并**显示**一个原始悬浮窗, 返回一个`FloatyRawWindow`对象.
-
-与`floaty.window()`函数不同的是, 该悬浮窗不会增加任何额外设施（例如调整大小、位置按钮）, 您可以根据自己需要编写任何布局.
-
-而且, 该悬浮窗支持完全全屏, 可以覆盖状态栏, 因此可以做护眼模式之类的应用.
-
-```
-var w = floaty.rawWindow(
-    <frame gravity="center">
-        <text id="text">悬浮文字</text>
-    </frame>
-);
-
-w.setPosition(500, 500);
-
-setTimeout(()=>{
-    w.close();
-}, 2000);
+```js
+const shade = floaty.rawWindow('<frame bg="#66000000"/>');
+shade.setSize(-1, -1);
+shade.setTouchable(false);
 ```
 
-这段代码运行后将会在屏幕上显示悬浮文字, 并在两秒后消失.
+<a id="api-symbol-ZmxvYXR5Lmhhc1Blcm1pc3Npb24"></a>
+## [m] floaty.hasPermission()
 
-有关返回的`FloatyRawWindow`对象的说明, 参见下面的`FloatyRawWindow`章节.
+**`≤ 6.6.4`**
 
-## floaty.closeAll()
+- **入口 / 别名**：`floaty.hasPermission()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 当前应用是否可以显示悬浮窗
+- **异常**：传入参数时抛出异常
+- **权限**：只读检查，不请求权限
+- **线程 / 生命周期 / 副作用**：任意脚本线程可调用；不改变系统状态
 
-关闭所有本脚本的悬浮窗.
-
-# FloatyWindow
-
-悬浮窗对象, 可通过`FloatyWindow.{id}`获取悬浮窗界面上的元素. 例如, 悬浮窗window上一个控件的id为aaa, 那么`window.aaa`即可获取到该控件, 类似于ui.
-
-## window.setAdjustEnabled(enabled)
-
-* `enabled` {boolean} 是否启用悬浮窗调整(大小、位置)
-
-如果enabled为true, 则在悬浮窗左上角、右上角显示可供位置、大小调整的标示, 就像控制台一样；
-如果enabled为false, 则隐藏上述标示.
-
-## window.setPosition(x, y)
-
-* `x` {number} x
-* `x` {number} y
-
-设置悬浮窗位置.
-
-## window.getX()
-
-返回悬浮窗位置的X坐标.
-
-## window.getY()
-
-返回悬浮窗位置的Y坐标.
-
-## window.setSize(width, height)
-
-* `width` {number} 宽度
-* `height` {number} 高度
-
-设置悬浮窗宽高.
-
-## window.getWidth()
-
-返回悬浮窗宽度.
-
-## window.getHeight()
-
-返回悬浮窗高度.
-
-## window.close()
-
-关闭悬浮窗. 如果悬浮窗已经是关闭状态, 则此函数将不执行任何操作.
-
-被关闭后的悬浮窗不能再显示.
-
-## window.exitOnClose()
-
-使悬浮窗被关闭时自动结束脚本运行.
-
-# FloatyRawWindow
-
-原始悬浮窗对象, 可通过`window.{id}`获取悬浮窗界面上的元素. 例如, 悬浮窗window上一个控件的id为aaa, 那么`window.aaa`即可获取到该控件, 类似于ui.
-
-## window.setTouchable(touchable)
-
-* `touchable` {Boolean} 是否可触摸
-
-设置悬浮窗是否可触摸, 如果为true, 则悬浮窗将接收到触摸、点击等事件并且无法继续传递到悬浮窗下面；如果为false, 悬浮窗上的触摸、点击等事件将被直接传递到悬浮窗下面. 处于安全考虑, 被悬浮窗接收的触摸事情无法再继续传递到下层.
-
-可以用此特性来制作护眼模式脚本.
-
-```
-var w = floaty.rawWindow(
-    <frame gravity="center" bg="#44ffcc00"/>
-);
-
-w.setSize(-1, -1);
-w.setTouchable(false);
-
-setTimeout(()=>{
-    w.close();
-}, 4000);
-
+```js
+if (!floaty.hasPermission()) {
+    console.warn('尚未授予悬浮窗权限');
+}
 ```
 
-## window.setPosition(x, y)
+<a id="api-symbol-ZmxvYXR5LnJlcXVlc3RQZXJtaXNzaW9u"></a>
+## [m] floaty.requestPermission()
 
-* `x` {number} x
-* `x` {number} y
+**`≤ 6.6.4`**
 
-设置悬浮窗位置.
+- **入口 / 别名**：`floaty.requestPermission()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：传入参数时抛出异常；启动系统悬浮窗设置失败时会回退到应用详情设置
+- **权限**：发起悬浮窗权限配置，但不会替用户授予权限
+- **线程 / 生命周期**：立即返回，不等待用户操作完成
+- **副作用**：打开系统悬浮窗设置页；失败时尝试打开应用详情页
 
-## window.getX()
-
-返回悬浮窗位置的X坐标.
-
-## window.getY()
-
-返回悬浮窗位置的Y坐标.
-
-## window.setSize(width, height)
-
-* `width` {number} 宽度
-* `height` {number} 高度
-
-设置悬浮窗宽高.
-
-特别地, 如果设置为-1, 则为占满全屏；设置为-2则为根据悬浮窗内容大小而定. 例如：
-
-```
-var w = floaty.rawWindow(
-    <frame gravity="center" bg="#77ff0000">
-        <text id="text">悬浮文字</text>
-    </frame>
-);
-
-w.setSize(-1, -1);
-
-setTimeout(()=>{
-    w.close();
-}, 2000);
-
+```js
+if (!floaty.hasPermission()) {
+    floaty.requestPermission();
+}
 ```
 
-## window.getWidth()
+<a id="api-symbol-ZmxvYXR5LmVuc3VyZVBlcm1pc3Npb24"></a>
+## [m] floaty.ensurePermission()
 
-返回悬浮窗宽度.
+**`≤ 6.6.4`**
 
-## window.getHeight()
+- **入口 / 别名**：`floaty.ensurePermission()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：未获悬浮窗权限时抛出 `Exception`；传入参数时抛出异常
+- **权限**：只检查权限，不打开设置页
+- **线程 / 生命周期 / 副作用**：同步检查；无系统状态副作用
 
-返回悬浮窗高度.
+```js
+try {
+    floaty.ensurePermission();
+} catch (error) {
+    console.error('请先授予悬浮窗权限');
+}
+```
 
-## window.close()
+<a id="api-symbol-ZmxvYXR5LmNsb3NlQWxs"></a>
+## [m] floaty.closeAll()
 
-关闭悬浮窗. 如果悬浮窗已经是关闭状态, 则此函数将不执行任何操作.
+**`≤ 6.6.4`**
 
-被关闭后的悬浮窗不能再显示.
+- **入口 / 别名**：`floaty.closeAll()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { `kotlin.Unit` } - 固定提交的增强包装直接返回底层 Kotlin `Unit`
+- **异常**：传入参数时抛出异常；各窗口关闭异常由内部 `runCatching` 吞掉
+- **权限**：无需新增权限
+- **线程 / 生命周期**：UI 线程同步关闭；其他线程投递到 UI 线程并最多等待 1500 ms，然后清空当前脚本窗口集合
+- **副作用**：关闭并注销当前脚本创建的全部悬浮窗
 
-## window.exitOnClose()
+```js
+floaty.closeAll();
+```
 
-使悬浮窗被关闭时自动结束脚本运行.
+<a id="api-symbol-ZmxvYXR5LmdldENsaXA"></a>
+## [m] floaty.getClip(maxDelayAfterWindowReady?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`floaty.getClip(maxDelayAfterWindowReady?)`
+- **[ maxDelayAfterWindowReady = `500` ]** { [number](../types/data-types.md#number) } - 临时窗口就绪后继续轮询非空剪贴板文本的最长毫秒数；显式 nullish 使用 500，其余值转换为长整数
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 当前剪贴板文本，超时仍可为空字符串
+- **异常**：参数超过 1 个时抛出异常；权限等待或阻塞被中断时抛出 `ScriptInterruptedException`
+- **权限**：需要悬浮窗权限；通过临时可聚焦原始窗口辅助读取剪贴板
+- **线程 / 生命周期**：最多等待窗口附着约 1000 ms，再按 10 ms 间隔轮询；非主线程会投递到 UI 线程并阻塞等待结果
+- **副作用**：短暂创建、聚焦并关闭一个透明原始悬浮窗
+
+```js
+const text = floaty.getClip(300);
+console.log(text);
+```
+
+## 返回的窗口对象
+
+`window()` 返回 `JsResizableWindow`，公开 `x`、`y`、`width`、`height`、`setPosition(x, y)`、`setSize(width, height)`、`isAdjustEnabled`、`requestFocus()`、`disableFocus()`、`exitOnClose()` 与 `close()`。`rawWindow()` 返回 `JsRawWindow`，除坐标和尺寸接口外还提供 `setTouchable(boolean)`。这些对象通过代理把未知属性名当作布局 ID 查找；找不到时返回 `undefined`，脚本自行写入的同名属性优先于视图查找。
+
+```js
+const window = floaty.rawWindow('<text id="message" text="hello"/>');
+console.log(window.message); // 对应 id 为 message 的原生视图包装
+window.setPosition(100, 200);
+window.close();
+```

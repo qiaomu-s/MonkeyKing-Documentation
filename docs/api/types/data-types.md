@@ -1421,20 +1421,15 @@ test('utf-8'); /* 字符串小写形式. */
 
 > 参阅: [Oracle Docs](https://docs.oracle.com/javase/8/docs/api/java/nio/charset/StandardCharsets.html)
 
-## ExtendModulesNames
+## ExtendModulesNames（历史类型）
 
-Monkey King [内置扩展插件](../core/plugins.md#内置扩展插件) 的插件名称.
+旧版 Monkey King 文档曾用此类型表示[内置扩展插件](../core/plugins.md#内置扩展插件)名称：`Arrayx`/`Array`、`Numberx`/`Number`、`Mathx`/`Math`。
 
-支持的字符串常量:
-
-- `'Arrayx'`' 或 `'Array'`
-- `'Numberx'`' 或 `'Number'`
-- `'Mathx'`' 或 `'Math'`
+Monkey King 6.7.0 的 `plugins` 公开表面已不包含 `extend`、`extendAll` 或 `extendAllBut`，因此当前 API 不再接受此类型。它只保留为阅读旧脚本和旧文档时的术语说明。
 
 ```js
-/* 启用 Array 内置扩展插件. */
-plugins.extend('Arrayx');
-plugins.extend('Arrayx'); /* 同上. */
+const legacyExtendModuleNames = ['Arrayx', 'Numberx', 'Mathx'];
+console.log(legacyExtendModuleNames.join(', '));
 ```
 
 ## ActivityShortForm

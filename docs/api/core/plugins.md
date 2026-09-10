@@ -1,150 +1,69 @@
 # 插件 (Plugins)
 
-在 Monkey King 中, 插件分为 [ 应用插件 / 项目插件 / 内置扩展插件 ].
+`plugins` 用于装载应用插件或当前项目根目录下的 JavaScript 插件。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对；旧文档中的 `extend`、`extendAll` 与 `extendAllBut` 不在该提交的公开 `plugins` 表面中，因而不再作为现行接口列出。
 
-plugins 模块主要用于插件及扩展模块的加载并使其功能生效.
+<a id="内置扩展插件"></a>
+## 旧版“内置扩展插件”名称
 
-## 应用插件
+**`≤ 6.6.4`**
 
-应用插件通常是一个由开发者编写的可安装的 APK 文件, 安装插件后可由 Monkey King 通过 [plugins.load](#m-load) 方法加载并使用插件.
-
-应用插件的使用步骤:
-
-- 按需寻找或自行开发插件 (APK 格式)
-- 安装到指定设备
-- 脚本中将插件包名以字符串形式传入 plugins.load 方法并赋值给一个变量
-- 这个变量即指向插件的导出对象 (module.exports)
-
-加载及使用方式:
+旧版文档曾把 `Arrayx`、`Numberx`、`Mathx` 称为“内置扩展插件”，并通过 `plugins.extend*` 启用。Monkey King 6.7.0 的固定源码仍分别提供这些全局增强模块，但 `plugins` 已不公开 `extend`、`extendAll` 或 `extendAllBut`；旧类型名称只用于解释历史文档，不能作为当前 `plugins` API 调用。
 
 ```js
-let { exp } = plugins.load('com.qiaomu.monkeyking.plugin.demo');
-exp.test('hello');
+console.log(typeof Arrayx, typeof Numberx, typeof Mathx);
 ```
 
-## 项目插件
+<a id="api-symbol-bW9kdWxlOnBsdWdpbnM"></a>
+## [@] plugins
 
-项目插件是依附于项目的一组 JavaScript 模块, 它们位于项目根目录的 `plugins` 文件夹中, 由 Monkey King 通过 [plugins.load](#m-load) 方法加载并使用.
+**`≤ 6.6.4`**
 
-例如项目结构 (部分) 如下:
-
-```text
-┌ modules ┬ moduleA.js
-│         └ moduleB.js
-│         ┌ pluginA.js
-├ plugins ┼ pluginB.js
-│         └ pluginC.js
-└ main.js
-```
-
-对于此项目, `pluginA.js`, `pluginB.js` 及 `pluginC.js` 均称为项目插件, 加载方式如下:
+- **入口 / 别名**：`plugins`、`$plugins`
+- **参数**：模块对象本身不接收参数；它同时是可调用对象
+- <ins>**returns**</ins> { `Plugins` }
+- **异常**：读取模块本身不抛出异常
+- **权限**：无额外 Android 权限；应用插件必须已经安装
+- **线程 / 生命周期**：与当前脚本运行时绑定；加载结果和模块副作用保留到脚本结束
+- **副作用**：只有调用加载接口时才解析并执行插件代码
 
 ```js
-plugins.load('pluginA');
-plugins.load('pluginA.js'); /* 同上. */
+console.log(plugins === $plugins); // true
+console.log(typeof plugins.load); // "function"
 ```
 
-## 内置扩展插件
+<a id="api-symbol-Y2FsbDpwbHVnaW5z"></a>
+## [f] plugins(name)
 
-内置扩展插件相当于内置的项目插件, 它们是内置于 Monkey King 软件中的, 可通过调用 [plugins.extend](#m-extend) 等方法选择性地启用部分或全部内置扩展插件, 也称作内置扩展模块.
+**`≤ 6.6.4`**
 
-加载方式:
+- **入口 / 别名**：`plugins(name)`；等价于 `plugins.load(name)`
+- **name** { [string](../types/data-types.md#string) } - 应用插件包名或项目插件名称；严格要求 1 个参数并按字符串转换
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 插件入口导出的值
+- **异常**：参数数量不是 1 时抛出异常；项目插件目录不存在、模块解析失败或插件入口执行失败时传播异常
+- **权限**：无额外 Android 权限；应用插件路径要求对应 APK 已安装且可由 Monkey King 插件管理器读取
+- **线程 / 生命周期**：在当前脚本线程同步加载并执行入口；返回对象的生命周期由插件和脚本共同决定
+- **副作用**：执行应用插件主脚本或项目插件模块的顶层代码
 
 ```js
-/* 启用 Array 内置扩展插件. */
-plugins.extend('Arrayx');
-
-/* 启用全部内置扩展插件. */
-plugins.extendAll();
+const demo = plugins('demo.js');
+console.log(demo);
 ```
 
-截至 2023 年 2 月, Monkey King 内置了以下扩展插件:
+<a id="api-symbol-cGx1Z2lucy5sb2Fk"></a>
+## [m] plugins.load(name)
 
-* [Arrayx - Array 扩展](../utilities/arrayx.md)
-* [Numberx - Number 扩展](../utilities/numberx.md)
-* [Mathx - Math 扩展](../utilities/mathx.md)
+**`≤ 6.6.4`**
 
----
-
-<p style="font: bold 2em sans-serif; color: #FF7043">plugins</p>
-
----
-
-## [m] load
-
-### load(appPluginPackageName)
-
-**`[6.2.0]`** **`Overload 1/2`**
-
-- **packageName** { [string](../types/data-types.md#string) } - 应用插件的包名
-- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-
-加载 [应用插件](#应用插件).
+- **入口 / 别名**：`plugins.load(name)`、`$plugins.load(name)`
+- **name** { [string](../types/data-types.md#string) } - 恰好一个名称参数
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 应用插件主模块函数的返回值，或项目插件的 `require` 结果
+- **异常**：名称包含 `.` 且不是以 `.js` 结尾（忽略大小写）时按应用包名加载，插件不存在或入口失败会传播异常；其他名称按项目插件处理，当前项目根目录没有 `plugins` 目录时抛出 `WrappedIllegalArgumentException`
+- **权限**：应用插件必须已安装；项目插件只读取当前项目文件
+- **线程 / 生命周期**：同步执行；应用插件入口以顶级作用域为全局对象，并接收解包后的插件对象
+- **副作用**：应用插件会解析其 `mainScriptPath` 并调用导出函数；项目插件会执行 `require('./plugins/' + name)`
 
 ```js
-/* 一个可能的样例. */
-plugins.load('com.qiaomu.monkeyking.plugin.demo');
-```
-
-### load(projectPluginName)
-
-**`6.2.0`** **`Overload 2/2`**
-
-- **packageName** { [string](../types/data-types.md#string) } - 项目插件名称
-- <ins>**returns**</ins> { [any](../types/data-types.md#any) }
-
-加载 [项目插件](#项目插件).
-
-## [m] extend
-
-### extend(...moduleNames)
-
-**`6.2.0`**
-
-- **moduleNames** { [...](../../project/about.md#可变参数)[ExtendModulesNames](../types/data-types.md#extendmodulesnames)[[]](../../project/about.md#可变参数) } - 内置扩展插件名称
-- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-
-加载指定的 [内置扩展插件](#内置扩展插件).
-
-```js
-/* 启用 Array 内置扩展插件. */
-plugins.extend('Arrayx');
-
-/* 启用 Array 和 Number 内置扩展插件. */
-plugins.extend('Arrayx', 'Numberx');
-```
-
-## [m] extendAll
-
-### extendAll()
-
-**`6.2.0`**
-
-- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-
-加载所有的 [内置扩展插件](#内置扩展插件).
-
-```js
-plugins.extendAll();
-```
-
-如需在所有脚本均自动加载所有内置扩展插件, 而无需每次使用 `plugins.extendAll()`, 可对 Monkey King 进行如下设置:
-
-```text
-Monkey King 应用设置 - 扩展性 - JavaScript 内置对象扩展 - [ 启用 ]
-```
-
-## [m] extendAllBut
-
-### extendAllBut(...moduleNames)
-
-**`6.2.0`**
-
-- **moduleNames** { [...](../../project/about.md#可变参数)[ExtendModulesNames](../types/data-types.md#extendmodulesnames)[[]](../../project/about.md#可变参数) } - 内置扩展插件名称
-- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
-
-加载所有的 [内置扩展插件](#内置扩展插件), 但排除指定的插件.
-
-```js
-plugins.extendAllBut('Mathx'); /* 加载除 Math 外的全部内置扩展插件. */
+// 当前项目应存在 ./plugins/format.js。
+const format = plugins.load('format.js');
+console.log(format);
 ```

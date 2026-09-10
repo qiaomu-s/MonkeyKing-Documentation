@@ -1,534 +1,1087 @@
 # 自动化 (Automator)
 
----
+本页覆盖三组运行时入口：`auto` 管理 Monkey King 无障碍服务，`automator` 执行控件、坐标、手势与系统全局动作，`RootAutomator` 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
+<a id="api-symbol-bW9kdWxlOmF1dG8"></a>
+## [@] auto
 
----
+**`≤ 6.6.4`**
 
-## 简易自动化 (SimpleActionAutomator)
+- **入口 / 别名**：`auto`、`$auto`
+- **参数**：模块同时可调用，详见 `auto(...)`
+- <ins>**returns**</ins> { `Auto` }
+- **异常**：读取模块本身不抛出异常
+- **权限**：服务启停可能使用 WRITE_SECURE_SETTINGS 或 root；否则打开系统无障碍设置
+- **线程 / 生命周期**：与当前脚本运行时和进程内无障碍桥接绑定
+- **副作用**：成员可启停服务、改变查找模式/标志、注册事件或打开设置
 
-待补充...
-
-## 高权限自动化 (RootAutomator)
-
-待补充...
-
-## 自动化配置 (AutomatorConfiguration)
-
-待补充...
-
-## 选择器 (UiSelector)
-
-UiSelector (选择器), 亦可看作是 [控件节点](ui-object.md) 的条件筛选器, 用于通过附加不同的条件, 筛选出一个或一组活动窗口中的 `控件节点`, 并做进一步处理, 如 [ 执行 [控件行为](ui-object-actions.md) (点击, 长按, 设置文本等) / 判断位置 / 获取文本内容 / 获取控件特定状态 / 在 [控件层级](../../reference/glossaries/glossary.md#控件层级) 中进行 [罗盘](ui-object.md#m-compass) 导航 ] 等.
-
-详情参阅 [选择器 (UiSelector)](ui-selector.md) 章节.
-
-## 控件节点 (UiObject)
-
-UiObject 通常被称为 [ 控件 / 节点 / 控件节点 ], 可看做是一个通过安卓无障碍服务包装的 [AccessibilityNodeInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) 对象, 代表一个当前活动窗口中的节点, 通过此节点可收集控件信息或执行控件行为, 进而实现一系列自动化操作.
-
-详情参阅 [控件节点 (UiObject)](ui-object.md) 章节.
-
-## 控件集合 (UiObjectCollection)
-
-UiObjectCollection 代表 [控件节点 (UiObject)](ui-object.md) 的对象集合.
-
-详情参阅 [控件集合 (UiObjectCollection)](ui-object-collection.md) 章节.
-
-## 控件节点行为 (UiObjectActions)
-
-UiObjectActions 是一个 Java 接口, 代表 [控件节点 (UiObject)](ui-object.md) 的行为集合.
-
-详情参阅 [控件节点行为 (UiObjectActions)](ui-object-actions.md) 章节.
-
----
-
-# 基于坐标的触摸模拟
-
-本章节介绍了一些使用坐标进行点击、滑动的函数. 这些函数有的需要安卓7.0以上, 有的需要root权限.
-
-要获取要点击的位置的坐标, 可以在开发者选项中开启"指针位置".
-
-基于坐标的脚本通常会有分辨率的问题, 这时可以通过`setScreenMetrics()`函数来进行自动坐标放缩. 这个函数会影响本章节的所有点击、长按、滑动等函数. 通过设定脚本设计时的分辨率, 使得脚本在其他分辨率下自动放缩坐标.
-
-控件和坐标也可以相互结合. 一些控件是无法点击的(clickable为false), 无法通过`.click()`函数来点击, 这时如果安卓版本在7.0以上或者有root权限, 就可以通过以下方式来点击：
-
-```
-//获取这个控件
-var widget = id("xxx").findOne();
-//获取其中心位置并点击
-click(widget.bounds().centerX(), widget.bounds().centerY());
-//如果用root权限则用Tap
+```js
+console.log(auto === $auto); // true
+console.log(auto.state);
 ```
 
-## setScreenMetrics(width, height)
+<a id="api-symbol-Y2FsbDphdXRv"></a>
+### [f] auto(modeOrRestart?[, isForcibleRestart])
 
-* width {number} 屏幕宽度, 单位像素
-* height {number} 屏幕高度, 单位像素
+**`≤ 6.6.4`**
 
-设置脚本坐标点击所适合的屏幕宽高. 如果脚本运行时, 屏幕宽度不一致会自动放缩坐标.
+- **入口 / 别名**：`auto(...)`、`$auto(...)`
+- **[ modeOrRestart ]** { `string | boolean | null` } - 无参数/nullish 等价于 `false`；布尔值用于确保服务，字符串仅设置 `normal` 或 `fast`
+- **[ isForcibleRestart ]** { [boolean](../types/data-types.md#boolean) } - 两参数形式先设置 mode，再确保服务
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：超过 2 个参数、未知 mode 或布尔参数类型错误时包装为运行时异常
+- **权限 / 线程 / 生命周期 / 副作用**：可能重启/等待无障碍服务；单独传字符串不会启动服务
 
-例如在1920*1080的设备中, 某个操作的代码为
-
-```
-setScreenMetrics(1080, 1920);
-click(800, 200);
-longClick(300, 500);
-```
-
-那么在其他设备上Monkey King会自动放缩坐标以便脚本仍然有效. 例如在540 * 960的屏幕中`click(800, 200)`实际上会点击位置(400, 100).
-
-# 安卓7.0以上的触摸和手势模拟
-
-**注意以下命令只有Android7.0及以上才有效**
-
-## click(x, y)
-
-* `x` {number} 要点击的坐标的x值
-* `y` {number} 要点击的坐标的y值
-
-模拟点击坐标(x, y), 并返回是否点击成功. 只有在点击执行完成后脚本才继续执行.
-
-一般而言, 只有点击过程(大约150毫秒)中被其他事件中断(例如用户自行点击)才会点击失败.
-
-使用该函数模拟连续点击时可能有点击速度过慢的问题, 这时可以用`press()`函数代替.
-
-## longClick(x, y)
-
-* `x` {number} 要长按的坐标的x值
-* `y` {number} 要长按的坐标的y值
-
-模拟长按坐标(x, y), 并返回是否成功. 只有在长按执行完成（大约600毫秒）时脚本才会继续执行.
-
-一般而言, 只有长按过程中被其他事件中断(例如用户自行点击)才会长按失败.
-
-## press(x, y, duration)
-
-* `x` {number} 要按住的坐标的x值
-* `y` {number} 要按住的坐标的y值
-* `duration` {number} 按住时长, 单位毫秒
-
-模拟按住坐标(x, y), 并返回是否成功. 只有按住操作执行完成时脚本才会继续执行.
-
-如果按住时间过短, 那么会被系统认为是点击；如果时长超过500毫秒, 则认为是长按.
-
-一般而言, 只有按住过程中被其他事件中断才会操作失败.
-
-一个连点器的例子如下：
-
-```
-//循环100次
-for(var i = 0; i < 100; i++){
-  //点击位置(500, 1000), 每次用时1毫秒
-  press(500, 1000, 1);
-}
+```js
+auto('normal', false);
 ```
 
-## swipe(x1, y1, x2, y2, duration)
+<a id="api-symbol-YXV0by5zZXJ2aWNl"></a>
+### [p] auto.service
 
-* `x1` {number} 滑动的起始坐标的x值
-* `y1` {number} 滑动的起始坐标的y值
-* `x2` {number} 滑动的结束坐标的x值
-* `y2` {number} 滑动的结束坐标的y值
-* `duration` {number} 滑动时长, 单位毫秒
+**`≤ 6.6.4`**
 
-模拟从坐标(x1, y1)滑动到坐标(x2, y2), 并返回是否成功. 只有滑动操作执行完成时脚本才会继续执行.
+- **入口 / 别名**：`auto.service`
+- **参数**：无
+- <ins>**returns**</ins> { [android.accessibilityservice.AccessibilityService](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService) | [null](../types/data-types.md#null) } - 当前进程的服务实例
+- **异常 / 权限**：读取无异常；未启动服务时为 null
+- **线程 / 生命周期 / 副作用**：实例随 Android 服务连接变化；读取无副作用
 
-一般而言, 只有滑动过程中被其他事件中断才会滑动失败.
-
-## gesture(duration, [x1, y1], [x2, y2], ...)
-
-* `duration` {number} 手势的时长
-* [x, y] ... 手势滑动路径的一系列坐标
-
-模拟手势操作. 例如`gesture(1000, [0, 0], [500, 500], [500, 1000])`为模拟一个从(0, 0)到(500, 500)到(500, 100)的手势操作, 时长为2秒.
-
-## gestures([delay1, duration1, [x1, y1], [x2, y2], ...], [delay2, duration2, [x3, y3], [x4, y4], ...], ...)
-
-同时模拟多个手势. 每个手势的参数为\[delay, duration, 坐标\], delay为延迟多久(毫秒)才执行该手势；duration为手势执行时长；坐标为手势经过的点的坐标. 其中delay参数可以省略, 默认为0.
-
-例如手指捏合：
-
-```
-gestures([0, 500, [800, 300], [500, 1000]],
-         [0, 500, [300, 1500], [500, 1000]]);
+```js
+console.log(auto.service === null ? 'stopped' : 'connected');
 ```
 
-# RootAutomator
+<a id="api-symbol-YXV0by5zZXJ2aWNlcw"></a>
+### [p] auto.services
 
-RootAutomator是一个使用root权限来模拟触摸的对象, 用它可以完成触摸与多点触摸, 并且这些动作的执行没有延迟.
+**`≤ 6.6.4`**
 
-一个脚本中最好只存在一个RootAutomator, 并且保证脚本结束退出他. 可以在exit事件中退出RootAutomator, 例如：
+- **入口 / 别名**：`auto.services`
+- **参数**：无
+- <ins>**returns**</ins> { [string](../types/data-types.md#string)[] } - 系统已启用的无障碍服务组件名
+- **异常**：底层读取失败通常返回空数组
+- **权限**：仅在安全设置访问已授权或 root 可用时读取；否则返回空数组
+- **线程 / 生命周期 / 副作用**：每次读取当前系统设置，不修改服务
 
-```
-var ra = new RootAutomator();
-events.on('exit', function(){
-  ra.exit();
-});
-//执行一些点击操作
-...
-
-```
-
-**注意以下命令需要root权限**
-
-## RootAutomator.tap(x, y[, id])
-
-* `x` {number} 横坐标
-* `y` {number} 纵坐标
-* `id` {number} 多点触摸id, 可选, 默认为1, 可以通过setDefaultId指定.
-
-点击位置(x, y). 其中id是一个整数值, 用于区分多点触摸, 不同的id表示不同的"手指", 例如：
-
-```
-var ra = new RootAutomator();
-//让"手指1"点击位置(100, 100)
-ra.tap(100, 100, 1);
-//让"手指2"点击位置(200, 200);
-ra.tap(200, 200, 2);
-ra.exit();
+```js
+console.log(auto.services.join('\n'));
 ```
 
-如果不需要多点触摸, 则不需要id这个参数.
-多点触摸通常用于手势或游戏操作, 例如模拟双指捏合、双指上滑等.
+<a id="api-symbol-YXV0by53aW5kb3dz"></a>
+### [p] auto.windows
 
-某些情况下可能存在tap点击无反应的情况, 这时可以用`RootAutomator.press()`函数代替.
+**`≤ 6.6.4`**
 
-## RootAutomator.swipe(x1, x2, y1, y2[, duration, id])
+- **入口 / 别名**：`auto.windows`
+- **参数**：无
+- <ins>**returns**</ins> { [android.view.accessibility.AccessibilityWindowInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo)[] } - 当前服务窗口的 Rhino 数组
+- **异常**：无服务时返回空数组
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：窗口对象是系统快照；读取不改变过滤器
 
-* `x1` {number} 滑动起点横坐标
-* `y1` {number} 滑动起点纵坐标
-* `x2` {number} 滑动终点横坐标
-* `y2` {number} 滑动终点纵坐标
-* `duration` {number} 滑动时长, 单位毫秒, 默认值为300
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟一次从(x1, y1)到(x2, y2)的时间为duration毫秒的滑动.
-
-## RootAutomator.press(x, y, duration[, id])
-
-* `x` {number} 横坐标
-* `y` {number} 纵坐标
-* `duration` {number} 按下时长
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟按下位置(x, y), 时长为duration毫秒.
-
-## RootAutomator.longPress(x, y[\, id\])
-
-* `x` {number} 横坐标
-* `y` {number} 纵坐标
-* `duration` {number} 按下时长
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟长按位置(x, y).
-
-以上为简单模拟触摸操作的函数. 如果要模拟一些复杂的手势, 需要更底层的函数.
-
-## RootAutomator.touchDown(x, y[, id])
-
-* `x` {number} 横坐标
-* `y` {number} 纵坐标
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟手指按下位置(x, y).
-
-## RootAutomator.touchMove(x, y[, id])
-
-* `x` {number} 横坐标
-* `y` {number} 纵坐标
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟移动手指到位置(x, y).
-
-## RootAutomator.touchUp([id])
-
-* `id` {number} 多点触摸id, 可选, 默认为1
-
-模拟手指弹起.
-
-# 使用root权限点击和滑动的简单命令
-
-注意：本章节的函数在后续版本很可能有改动！请勿过分依赖本章节函数的副作用. 推荐使用`RootAutomator`代替本章节的触摸函数.
-
-以下函数均需要root权限, 可以实现任意位置的点击、滑动等.
-
-* 这些函数通常首字母大写以表示其特殊的权限.
-* 这些函数均不返回任何值.
-* 并且, 这些函数的执行是异步的、非阻塞的, 在不同机型上所用的时间不同. 脚本不会等待动作执行完成才继续执行. 因此最好在每个函数之后加上适当的sleep来达到期望的效果.
-
-例如:
-
-```
-Tap(100, 100);
-sleep(500);
+```js
+console.log(auto.windows.length);
 ```
 
-注意, 动作的执行可能无法被停止, 例如：
+<a id="api-symbol-YXV0by5yb290"></a>
+### [p] auto.root
 
-```
-for(var i = 0; i < 100; i++){
-  Tap(100, 100);
-}
-```
+**`≤ 6.6.4`**
 
-这段代码执行后可能会出现在任务管理中停止脚本后点击仍然继续的情况.
-因此, 强烈建议在每个动作后加上延时：
+- **入口 / 别名**：`auto.root`
+- **参数**：无
+- <ins>**returns**</ins> { [UiObject](ui-object.md) | [null](../types/data-types.md#null) } - 当前过滤窗口的根节点
+- **异常**：服务或根节点不可用时返回 null
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：受 `setWindowFilter` 影响；节点会随界面变化失效
 
-```
-for(var i = 0; i < 100; i++){
-  Tap(100, 100);
-  sleep(500);
-}
-```
-
-## Tap(x, y)
-
-* x, y {number} 要点击的坐标.
-
-点击位置(x, y), 您可以通过"开发者选项"开启指针位置来确定点击坐标.
-
-## Swipe(x1, y1, x2, y2, \[duration\])
-
-* x1, y1 {number} 滑动起点的坐标
-* x2, y2 {number} 滑动终点的坐标
-* duration {number} 滑动动作所用的时间
-
-滑动. 从(x1, y1)位置滑动到(x2, y2)位置.
-
-# 基于控件的操作
-
-基于控件的操作指的是选择屏幕上的控件, 获取其信息或对其进行操作. 对于一般软件而言, 基于控件的操作对不同机型有很好的兼容性；但是对于游戏而言, 由于游戏界面并不是由控件构成, 无法采用本章节的方法, 也无法使用本章节的函数. 有关游戏脚本的编写, 请参考《基于坐标的操作》.
-
-基于控件的操作依赖于无障碍服务, 因此最好在脚本开头使用`auto()`函数来确保无障碍服务已经启用. 如果运行到某个需要权限的语句无障碍服务并没启动, 则会抛出异常并跳转到无障碍服务界面. 这样的用户体验并不好, 因为需要重新运行脚本, 后续会加入等待无障碍服务启动并让脚本继续运行的函数.
-
-您也可以在脚本开头使用`"auto";`表示这个脚本需要无障碍服务, 但是不推荐这种做法, 因为这个标记必须在脚本的最开头(前面不能有注释或其他语句、空格等), 我们推荐使用`auto()`函数来确保无障碍服务已启用.
-
-## auto([mode])
-
-* `mode` {string} 模式
-
-检查无障碍服务是否已经启用, 如果没有启用则抛出异常并跳转到无障碍服务启用界面；同时设置无障碍模式为mode. mode的可选值为：
-
-* `fast` 快速模式. 该模式下会启用控件缓存, 从而选择器获取屏幕控件更快. 对于需要快速的控件操作的脚本可以使用该模式, 一般脚本则没有必要使用该函数.
-* `normal` 正常模式, 默认.
-
-如果不加mode参数, 则为正常模式.
-
-建议使用`auto.waitFor()`和`auto.setMode()`代替该函数, 因为`auto()`函数如果无障碍服务未启动会停止脚本；而`auto.waitFor()`则会在在无障碍服务启动后继续运行.
-
-示例：
-
-```
-auto("fast");
+```js
+const root = auto.root;
+console.log(root === null ? 'no root' : root.className());
 ```
 
-示例2：
+<a id="api-symbol-YXV0by5yb290SW5BY3RpdmVXaW5kb3c"></a>
+### [p] auto.rootInActiveWindow
 
-```
-auto();
-```
+**`≤ 6.6.4`**
 
-## auto.waitFor()
+- **入口 / 别名**：`auto.rootInActiveWindow`
+- **参数**：无
+- <ins>**returns**</ins> { [UiObject](ui-object.md) | [null](../types/data-types.md#null) } - 系统当前活动窗口根节点
+- **异常**：服务或根节点不可用时返回 null
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：不采用自定义窗口过滤器；返回节点可能很快失效
 
-检查无障碍服务是否已经启用, 如果没有启用则跳转到无障碍服务启用界面, 并等待无障碍服务启动；当无障碍服务启动后脚本会继续运行.
-
-因为该函数是阻塞的, 因此除非是有协程特性, 否则不能在ui模式下运行该函数, 建议在ui模式下使用`auto()`函数.
-
-## auto.setMode(mode)
-
-* `mode` {string} 模式
-
-设置无障碍模式为mode. mode的可选值为：
-
-* `fast` 快速模式. 该模式下会启用控件缓存, 从而选择器获取屏幕控件更快. 对于需要快速的控件查看和操作的脚本可以使用该模式, 一般脚本则没有必要使用该函数.
-* `normal` 正常模式, 默认.
-
-## auto.setFlags(flags)
-
-**[v4.1.0新增]**
-
-* `flags` {string} | {Array} 一些标志, 来启用和禁用某些特性, 包括：
-    * `findOnUiThread` 使用该特性后, 选择器搜索时会在主进程进行. 该特性用于解决线程安全问题导致的次生问题, 不过目前貌似已知问题并不是线程安全问题.
-    * `useUsageStats` 使用该特性后, 将会以"使用情况统计"服务的结果来检测当前正在运行的应用包名（需要授予"查看使用情况统计"权限). 如果觉得currentPackage()返回的结果不太准确, 可以尝试该特性.
-    * `useShell` 使用该特性后, 将使用shell命令获取当前正在运行的应用的包名、活动名称, 但是需要root权限.
-
-启用有关automator的一些特性. 例如：
-
-```
-auto.setFlags(["findOnUiThread", "useShell"]);
+```js
+console.log(auto.rootInActiveWindow);
 ```
 
-## auto.service
+<a id="api-symbol-YXV0by53aW5kb3dSb290cw"></a>
+### [p] auto.windowRoots
 
-**[v4.1.0新增]**
+**`≤ 6.6.4`**
 
-* [AccessibilityService](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService/)
+- **入口 / 别名**：`auto.windowRoots`
+- **参数**：无
+- <ins>**returns**</ins> { [UiObject](ui-object.md)[] } - 过滤后窗口的根节点数组
+- **异常**：服务不可用时通常为空数组
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：受 `setWindowFilter` 影响；读取不保活节点
 
-获取无障碍服务. 如果无障碍服务没有启动, 则返回`null`.
-
-参见[AccessibilityService](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService/).
-
-## auto.windows
-
-**[v4.1.0新增]**
-
-* {Array}
-
-当前所有窗口([AccessibilityWindowInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo/))的数组, 可能包括状态栏、输入法、当前应用窗口, 弹出窗口、悬浮窗、分屏应用窗口等. 可以分别获取每个窗口的布局信息.
-
-该函数需要Android 5.0以上才能运行.
-
-## auto.root
-
-**[v4.1.0新增]**
-
-* {UiObject}
-
-当前窗口的布局根元素. 如果无障碍服务未启动或者WindowFilter均返回false, 则会返回`null`.
-
-如果不设置windowFilter, 则当前窗口即为活跃的窗口（获取到焦点、正在触摸的窗口）；如果设置了windowFilter, 则获取的是过滤的窗口中的第一个窗口.
-
-如果系统是Android5.0以下, 则始终返回当前活跃的窗口的布局根元素.
-
-## auto.rootInActiveWindow
-
-**[v4.1.0新增]**
-
-* {UiObject}
-
-当前活跃的窗口（获取到焦点、正在触摸的窗口）的布局根元素. 如果无障碍服务未启动则为`null`.
-
-## auto.setWindowFilter(filter)
-
-**[v4.1.0新增]**
-
-* `filter` {Function} 参数为窗口([AccessibilityWindowInfo](https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo/)), 返回值为Boolean的函数.
-
-设置窗口过滤器. 这个过滤器可以决定哪些窗口是目标窗口, 并影响选择器的搜索. 例如, 如果想要选择器在所有窗口（包括状态栏、输入法等）中搜索, 只需要使用以下代码：
-
+```js
+auto.windowRoots.forEach(root => console.log(root.packageName()));
 ```
-auto.setWindowFilter(function(window){
-    //不管是如何窗口, 都返回true, 表示在该窗口中搜索
-    return true;
+
+<a id="api-symbol-YXV0by5zdGF0ZQ"></a>
+### [p] auto.state
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.state`
+- **参数**：无
+- <ins>**returns**</ins> { [Object](../types/data-types.md#object) } - 含 `hasInstance/hasService/isRunning/isOperational` 四个布尔快照
+- **异常 / 权限**：无额外异常；读取系统启用状态
+- **线程 / 生命周期 / 副作用**：每次创建新对象，不是实时监听器
+
+```js
+const state = auto.state;
+console.log(state.hasService, state.isOperational);
+```
+
+<a id="api-symbol-YXV0by5zdGFydA"></a>
+### [m] auto.start()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.start()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 服务已运行或通过 root/安全设置成功启用时为 true
+- **异常**：传入参数时抛出
+- **权限**：可使用 root 或 WRITE_SECURE_SETTINGS；均不可用时打开系统无障碍设置
+- **线程 / 生命周期 / 副作用**：同步尝试启用服务；失败会显示引导并返回 false
+
+```js
+console.log(auto.start());
+```
+
+<a id="api-symbol-YXV0by5lbmFibGU"></a>
+### [m] auto.enable()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.enable()`；完整委托给 `auto.start()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：传入参数时抛出
+- **权限**：与 `auto.start()` 相同
+- **线程 / 生命周期 / 副作用**：可能修改系统无障碍设置或打开设置页
+
+```js
+auto.enable();
+```
+
+<a id="api-symbol-YXV0by5zdG9w"></a>
+### [m] auto.stop()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.stop()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - root、安全设置或 `disableSelf` 成功停用时为 true
+- **异常**：传入参数时抛出
+- **权限**：可使用 root/WRITE_SECURE_SETTINGS；失败时打开无障碍设置
+- **线程 / 生命周期 / 副作用**：停止服务会使节点、窗口和监听器失效
+
+```js
+console.log(auto.stop());
+```
+
+<a id="api-symbol-YXV0by5kaXNhYmxl"></a>
+### [m] auto.disable()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.disable()`；完整委托给 `auto.stop()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：传入参数时抛出
+- **权限**：与 `auto.stop()` 相同
+- **线程 / 生命周期 / 副作用**：可能停用系统服务或打开设置页
+
+```js
+auto.disable();
+```
+
+<a id="api-symbol-YXV0by5oYXNJbnN0YW5jZQ"></a>
+### [m] auto.hasInstance()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.hasInstance()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 当前进程是否持有服务实例
+- **异常 / 权限**：传入参数时抛出；不请求权限
+- **线程 / 生命周期 / 副作用**：只读当前进程状态
+
+```js
+console.log(auto.hasInstance());
+```
+
+<a id="api-symbol-YXV0by5oYXNTZXJ2aWNl"></a>
+### [m] auto.hasService()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.hasService()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统设置是否列出 Monkey King 服务
+- **异常 / 权限**：传入参数时抛出；只读安全设置
+- **线程 / 生命周期 / 副作用**：不保证进程内实例已连接
+
+```js
+console.log(auto.hasService());
+```
+
+<a id="api-symbol-YXV0by5leGlzdHM"></a>
+### [m] auto.exists()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.exists()`；与 `auto.hasService()` 同义
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常 / 权限**：传入参数时抛出；不请求权限
+- **线程 / 生命周期 / 副作用**：只读系统启用状态
+
+```js
+console.log(auto.exists() === auto.hasService());
+```
+
+<a id="api-symbol-YXV0by5pc1J1bm5pbmc"></a>
+### [m] auto.isRunning()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.isRunning()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - `hasService && hasInstance`
+- **异常 / 权限**：传入参数时抛出；不请求权限
+- **线程 / 生命周期 / 副作用**：只读组合状态
+
+```js
+console.log(auto.isRunning());
+```
+
+<a id="api-symbol-YXV0by5pc09wZXJhdGlvbmFs"></a>
+### [m] auto.isOperational()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.isOperational()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 服务已启用、实例已连接且当前进程确认可工作
+- **异常 / 权限**：传入参数时抛出；不请求权限
+- **线程 / 生命周期 / 副作用**：比 `isRunning` 更严格的只读状态
+
+```js
+if (!auto.isOperational()) console.warn('无障碍桥接尚未就绪');
+```
+
+<a id="api-symbol-YXV0by5zdGF0ZUxpc3RlbmVy"></a>
+### [m] auto.stateListener(listener?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.stateListener(listener?)`
+- **[ listener ]** { `AccessibilityServiceCallback | Object | null` } - 对象可实现 `onConnected()`、`onDisconnected()`；nullish 清除监听器
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：超过 1 个参数或 listener 无法适配接口时抛出
+- **权限**：监听本身不请求权限
+- **线程 / 生命周期 / 副作用**：替换桥接层单一状态监听器；回调线程由服务连接过程决定
+
+```js
+auto.stateListener({
+    onConnected() { console.log('connected'); },
+    onDisconnected() { console.log('disconnected'); },
 });
 ```
 
-又例如, 当前使用了分屏功能, 屏幕上有Monkey King和QQ两个应用, 但我们只想选择器对QQ界面进行搜索, 则：
+<a id="api-symbol-YXV0by5yZWdpc3RlckV2ZW50"></a>
+### [m] auto.registerEvent(name, listener)
 
-```
-auto.setWindowFilter(function(window){
-    // 对于应用窗口, 他的title属性就是应用的名称, 因此可以通过title属性来判断一个应用
-    return window.title == "QQ";
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.registerEvent(name, listener)`
+- **name** { [string](../types/data-types.md#string) } - 非 nullish 的事件键
+- **listener** { `AccessibilityEventCallback | Object | null` } - 对象实现 `onAccessibilityEvent(event)`；nullish 删除同名监听
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：参数不是 2 个、name 为 nullish 或 listener 无法适配时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：会先确保服务；监听按当前脚本 ownerId 隔离并在脚本退出时清理
+
+```js
+auto.registerEvent('window-change', {
+    onAccessibilityEvent(event) { console.log(event); },
 });
 ```
 
-选择器默认是在当前活跃的窗口中搜索, 不会搜索诸如悬浮窗、状态栏之类的, 使用WindowFilter则可以控制搜索的窗口.
+<a id="api-symbol-YXV0by5yZWdpc3RlckV2ZW50cw"></a>
+### [m] auto.registerEvents(name, listener)
 
-需要注意的是, 如果WindowFilter返回的结果均为false, 则选择器的搜索结果将为空.
+**`≤ 6.6.4`**
 
-另外setWindowFilter函数也会影响`auto.windowRoots`的结果.
+- **入口 / 别名**：`auto.registerEvents(name, listener)`；固定提交直接委托给单数方法，不接受事件映射表
+- **name** { [string](../types/data-types.md#string) }
+- **listener** { `AccessibilityEventCallback | Object | null` }
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常 / 权限**：与 `registerEvent` 相同
+- **线程 / 生命周期 / 副作用**：只注册一个 name；会确保服务并替换该脚本同名监听
 
-该函数需要Android 5.0以上才有效.
-
-## auto.windowRoots
-
-**[v4.1.0新增]**
-
-* {Array}
-
-返回当前被WindowFilter过滤的窗口的布局根元素组成的数组.
-
-如果系统是Android5.0以下, 则始终返回当前活跃的窗口的布局根元素的数组.
-
-# SimpleActionAutomator
-
-SimpleActionAutomator提供了一些模拟简单操作的函数, 例如点击文字、模拟按键等. 这些函数可以直接作为全局函数使用.
-
-## click(text[, i])
-
-* `text` {string} 要点击的文本
-* `i` {number} 如果相同的文本在屏幕中出现多次, 则i表示要点击第几个文本, i从0开始计算
-
-返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.
-
-该函数可以点击大部分包含文字的按钮. 例如微信主界面下方的"微信", "联系人", "发现", "我"的按钮.<br>
-通常与while同时使用以便点击按钮直至成功. 例如:
-
-```
-while(!click("扫一扫"));
+```js
+auto.registerEvents('content-change', {
+    onAccessibilityEvent(event) { console.log(event); },
+});
 ```
 
-当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部点击成功.
+<a id="api-symbol-YXV0by5yZW1vdmVFdmVudA"></a>
+### [m] auto.removeEvent(name)
 
-i是从0开始计算的, 也就是, `click("啦啦啦", 0)`表示点击屏幕上第一个"啦啦啦", `click("啦啦啦", 1)`表示点击屏幕上第二个"啦啦啦".
+**`≤ 6.6.4`**
 
-> 文本所在区域指的是, 从文本处向其父视图寻找, 直至发现一个可点击的部件为止.
+- **入口 / 别名**：`auto.removeEvent(name)`
+- **name** { [string](../types/data-types.md#string) } - 非 nullish 事件键
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：参数数量不是 1 或 name 为 nullish 时抛出
+- **权限**：不请求权限
+- **线程 / 生命周期 / 副作用**：只删除当前脚本 ownerId 下的同名监听
 
-## click(left, top, bottom, right)
+```js
+auto.removeEvent('window-change');
+```
 
-* `left` {number} 要点击的长方形区域左边与屏幕左边的像素距离
-* `top` {number} 要点击的长方形区域上边与屏幕上边的像素距离
-* `bottom` {number} 要点击的长方形区域下边与屏幕下边的像素距离
-* `right` {number} 要点击的长方形区域右边与屏幕右边的像素距离
+<a id="api-symbol-YXV0by5yZW1vdmVFdmVudHM"></a>
+### [m] auto.removeEvents(name)
 
-**注意, 该函数一般只用于录制的脚本中使用, 在自己写的代码中使用该函数一般不要使用该函数. **
+**`≤ 6.6.4`**
 
-点击在指定区域的控件. 当屏幕中并未包含与该区域严格匹配的区域, 或者该区域不能点击时返回false, 否则返回true.
+- **入口 / 别名**：`auto.removeEvents(name)`；固定提交直接委托给 `removeEvent`
+- **name** { [string](../types/data-types.md#string) } - 仍然只接受一个名称
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常 / 权限**：与 `removeEvent` 相同
+- **线程 / 生命周期 / 副作用**：不会一次清除全部事件，只删除一个同名监听
 
-有些按钮或者部件是图标而不是文字（例如发送朋友圈的照相机图标以及QQ下方的消息、联系人、动态图标）, 这时不能通过`click(text, i)`来点击, 可以通过描述图标所在的区域来点击. left, bottom, top, right描述的就是点击的区域.
+```js
+auto.removeEvents('content-change');
+```
 
-至于要定位点击的区域, 可以在悬浮窗使用布局分析工具查看控件的bounds属性.
+<a id="api-symbol-YXV0by53YWl0Rm9y"></a>
+### [m] auto.waitFor(timeout?)
 
-通过无障碍服务录制脚本会生成该语句.
+**`≤ 6.6.4`**
 
-## longClick(text[, i]))
+- **入口 / 别名**：`auto.waitFor(timeout?)`
+- **[ timeout = `-1` ]** { [number](../types/data-types.md#number) } - 等待服务启动的毫秒数；nullish 转为 -1
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：超过 1 个参数时抛出；启动/等待失败或线程中断时抛出 `ScriptInterruptedException`
+- **权限**：优先尝试 root/安全设置，否则打开系统无障碍设置
+- **线程 / 生命周期 / 副作用**：阻塞当前脚本线程直到服务启动；不要在 UI 线程无 continuation 地调用
 
-* `text` {string} 要长按的文本
-* `i` {number} 如果相同的文本在屏幕中出现多次, 则i表示要长按第几个文本, i从0开始计算
+```js
+auto.waitFor(5000);
+```
 
-返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.
+<a id="api-symbol-YXV0by5zZXRNb2Rl"></a>
+### [m] auto.setMode(mode)
 
-当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部长按成功.
+**`≤ 6.6.4`**
 
-## scrollUp([i])
+- **入口 / 别名**：`auto.setMode(mode)`
+- **mode** { [string](../types/data-types.md#string) } - 合法值为 `normal`、`fast`，忽略大小写
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：参数数量不是 1、类型非字符串或未知值时抛出
+- **权限**：不单独启动服务
+- **线程 / 生命周期 / 副作用**：修改当前运行时 AccessibilityBridge 的查找模式
 
-* `i` {number} 要滑动的控件序号
+```js
+auto.setMode('fast');
+```
 
-找到第i+1个可滑动控件上滑或**左滑**. 返回是否操作成功. 屏幕上没有可滑动的控件时返回false.
+<a id="api-symbol-YXV0by5zZXRGbGFncw"></a>
+### [m] auto.setFlags(flags)
 
-另外不加参数时`scrollUp()`会寻找面积最大的可滑动的控件上滑或左滑, 例如微信消息列表等.
+**`≤ 6.6.4`**
 
-参数为一个整数i时会找到第i + 1个可滑动控件滑动. 例如`scrollUp(0)`为滑动第一个可滑动控件.
+- **入口 / 别名**：`auto.setFlags(flags)`
+- **flags** { [string](../types/data-types.md#string) | [string](../types/data-types.md#string)[] } - `findOnUiThread`、`useUsageStats`、`useShell`
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：参数数量不是 1、类型非法或含未知标志时抛出
+- **权限**：`useUsageStats` 需要使用情况访问权，`useShell` 通常需要 root
+- **线程 / 生命周期 / 副作用**：每次调用从 0 重新组合并覆盖桥接 flags
 
-## scrollDown([i])
+```js
+auto.setFlags(['findOnUiThread', 'useUsageStats']);
+```
 
-* `i` {number} 要滑动的控件序号
+<a id="api-symbol-YXV0by5zZXRXaW5kb3dGaWx0ZXI"></a>
+### [m] auto.setWindowFilter(filter?)
 
-找到第i+1个可滑动控件下滑或**右滑**. 返回是否操作成功. 屏幕上没有可滑动的控件时返回false.
+**`≤ 6.6.4`**
 
-另外不加参数时`scrollUp()`会寻找面积最大的可滑动的控件下滑或右滑.
+- **入口 / 别名**：`auto.setWindowFilter(filter?)`
+- **[ filter ]** { `boolean | WindowFilter | function | null` } - nullish/省略表示所有窗口通过；布尔值建立恒定结果
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：超过 1 个参数或类型非法时抛出
+- **权限**：读取窗口需要无障碍服务
+- **线程 / 生命周期 / 副作用**：改变 `auto.root`、`auto.windowRoots` 和选择器的搜索窗口
 
-参数为一个整数i时会找到第i + 1个可滑动控件滑动. 例如`scrollUp(0)`为滑动第一个可滑动控件.
+```js
+auto.setWindowFilter(window => String(window.getTitle()) === 'QQ');
+```
 
-## setText([i, ]text)
+<a id="api-symbol-YXV0by5sYXVuY2hTZXR0aW5ncw"></a>
+### [m] auto.launchSettings()
 
-* i {number} 表示要输入的为第i + 1个输入框
-* text {string} 要输入的文本
+**`≤ 6.6.4`**
 
-返回是否输入成功. 当找不到对应的文本框时返回false.
+- **入口 / 别名**：`auto.launchSettings()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：传入参数时抛出；设置页启动失败被安全启动逻辑处理
+- **权限**：不直接修改权限
+- **线程 / 生命周期 / 副作用**：显示选择 Monkey King 的提示并打开系统无障碍设置
 
-不加参数i则会把所有输入框的文本都置为text. 例如`setText("测试")`.
+```js
+auto.launchSettings();
+```
 
-这里的输入文本的意思是, 把输入框的文本置为text, 而不是在原来的文本上追加.
+<a id="api-symbol-YXV0by5jbGVhckNhY2hl"></a>
+### [m] auto.clearCache()
 
-## input([i, ]text)
+**`≤ 6.6.4`**
 
-* i {number} 表示要输入的为第i + 1个输入框
-* text {string} 要输入的文本
+- **入口 / 别名**：`auto.clearCache()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - Android 13+ 仅在服务实例成功清缓存时为 true
+- **异常**：传入参数时抛出
+- **权限**：Android 13+ 需要服务实例；旧版本调用进程级 AccessibilityInteractionClient
+- **线程 / 生命周期 / 副作用**：清除无障碍节点交互缓存，现有 UiObject 可能失效
 
-返回是否输入成功. 当找不到对应的文本框时返回false.
+```js
+console.log(auto.clearCache());
+```
 
-不加参数i则会把所有输入框的文本追加内容text. 例如`input("测试")`.
+<a id="api-symbol-YXV0by5jdXJyZW50UGFja2FnZQ"></a>
+### [m] auto.currentPackage()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.currentPackage()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 运行时记录的最近包名，未知时为空字符串
+- **异常 / 权限**：传入参数时抛出；准确性取决于无障碍/usage stats/shell 配置
+- **线程 / 生命周期 / 副作用**：读取最近事件快照
+
+```js
+console.log(auto.currentPackage());
+```
+
+<a id="api-symbol-YXV0by5jdXJyZW50QWN0aXZpdHk"></a>
+### [m] auto.currentActivity()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.currentActivity()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - 最近 Activity 类名，未知时为空字符串
+- **异常 / 权限**：传入参数时抛出；数据来源依赖当前自动化配置
+- **线程 / 生命周期 / 副作用**：只读运行时快照
+
+```js
+console.log(auto.currentActivity());
+```
+
+<a id="api-symbol-YXV0by5jdXJyZW50Q29tcG9uZW50"></a>
+### [m] auto.currentComponent()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`auto.currentComponent()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [string](../types/data-types.md#string) } - `package/activity`，任一部分未知时为空字符串
+- **异常 / 权限**：传入参数时抛出；不请求新权限
+- **线程 / 生命周期 / 副作用**：组合最近包名与 Activity 快照
+
+```js
+console.log(auto.currentComponent());
+```
+
+<a id="api-symbol-bW9kdWxlOmF1dG9tYXRvcg"></a>
+## [@] automator
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator`、`$automator`；若干方法同时安装为全局函数
+- **参数**：模块对象不可调用
+- <ins>**returns**</ins> { `Automator` }
+- **异常**：读取模块本身不抛出
+- **权限**：全部动作依赖 Monkey King 无障碍服务；坐标手势依赖 Android 手势分发能力
+- **线程 / 生命周期**：同步动作等待完成，异步手势通过回调结束；对象随脚本运行时存活
+- **副作用**：操纵屏幕控件、系统界面、输入文本或截图
+
+```js
+console.log(automator === $automator); // true
+console.log(automator.isServiceRunning());
+```
+
+<a id="click-x-y"></a>
+<a id="api-symbol-YXV0b21hdG9yLmNsaWNr"></a>
+### [m] automator.click(target[, index])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.click(...)`、全局 `click(...)`
+- **target** { `number,number | [x,y] | {x,y} | Point | Rect | UiObject | string` } - 坐标、点、矩形、控件或文本；文本可配可选 index；还支持四边界数字
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 手势/控件动作完成且所有目标窗口成功时为 true
+- **异常**：空参数、坐标对象缺 x/y、重载不匹配、负坐标或服务不可用时抛出
+- **权限**：需要无障碍服务；坐标点击需要 Android 7.0+ 的手势能力
+- **线程 / 生命周期 / 副作用**：坐标路径同步等待手势完成；UiObject 不可点击时回退到 bounds 中心
+
+```js
+console.log(automator.click(300, 600));
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmxvbmdDbGljaw"></a>
+### [m] automator.longClick(target[, index])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.longClick(...)`、全局 `longClick(...)`
+- **target** { `number,number | [x,y] | {x,y} | Point | Rect | UiObject | string` } - 重载规则与 `click` 相同
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：空参数、对象/坐标或重载非法、服务不可用时抛出
+- **权限**：需要无障碍服务；坐标长按需要手势能力
+- **线程 / 生命周期 / 副作用**：同步等待；UiObject 不可长按时回退到 bounds 中心手势
+
+```js
+console.log(automator.longClick([300, 600]));
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnByZXNz"></a>
+### [m] automator.press(point[, duration])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.press(...)`、全局 `press(...)`
+- **point / duration** { `(x, y[, duration]) | ([x,y][, duration]) | (duration, [x,y])` } - 两坐标未给时长时使用 `ViewConfiguration.getTapTimeout()`
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：参数数量不在 1..3、形态非法、数值转换或负坐标失败时抛出
+- **权限**：需要无障碍服务和手势分发能力
+- **线程 / 生命周期 / 副作用**：同步派发单点按压并等待完成
+
+```js
+console.log(automator.press([300, 600], 800));
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnN3aXBl"></a>
+### [m] automator.swipe(points, duration)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.swipe(...)`、全局 `swipe(...)`
+- **points / duration** { `(x1,y1,x2,y2,duration) | ([x1,y1],[x2,y2],duration) | ([[x1,y1],[x2,y2]],duration)` } - duration 也可放在数组参数前
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：仅接受 2、3 或 5 个参数；数组形态、数值或负坐标非法时抛出
+- **权限**：需要无障碍服务和手势分发能力
+- **线程 / 生命周期 / 副作用**：同步缩放坐标、派发滑动并等待完成
+
+```js
+console.log(automator.swipe([100, 800], [700, 800], 500));
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmdlc3R1cmU"></a>
+### [m] automator.gesture(duration, ...points)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.gesture(...)`、全局 `gesture(...)`
+- **duration** { [number](../types/data-types.md#number) } - 毫秒
+- **points** { `...[x,y] | [[x,y], ...] | number[]` } - 至少一个路径点
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：空参数、点数组/数字非法、负坐标或服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要无障碍服务；从 start=0 同步派发并等待，最长内部等待约 128 秒
+
+```js
+automator.gesture(500, [100, 500], [700, 500]);
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmdlc3R1cmVBc3luYw"></a>
+### [m] automator.gestureAsync(duration, ...points[, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.gestureAsync(...)`
+- **duration** { [number](../types/data-types.md#number) }；**points** { `[x,y][]` }
+- **[ callback ]** { `GestureResultCallbackLike` } - 最后一个参数可实现 `onCompleted/onCancelled`
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：空参数、点/回调适配失败或服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要无障碍服务；提交后立即返回，回调由 Android 手势结果线程触发
+
+```js
+automator.gestureAsync(300, [100, 400], [500, 400], {
+    onCompleted() { console.log('done'); },
+});
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmdlc3R1cmVz"></a>
+### [m] automator.gestures(...strokes)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.gestures(...)`、全局 `gestures(...)`
+- **strokes** { `StrokeParams[]` } - 每项为 `[duration, [x,y], ...]` 或 `[start, duration, [x,y], ...]`
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：任一 stroke 不是数组、参数位置/数值/坐标非法时抛出
+- **权限**：需要无障碍服务和手势分发能力
+- **线程 / 生命周期 / 副作用**：把全部 stroke 构成一个 GestureDescription，同步等待完成
+
+```js
+automator.gestures(
+    [500, [200, 800], [500, 500]],
+    [500, [800, 800], [500, 500]],
+);
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmdlc3R1cmVzQXN5bmM"></a>
+### [m] automator.gesturesAsync(...strokes[, callback])
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.gesturesAsync(...)`
+- **strokes** { `StrokeParams[]` }；**[ callback ]** { `GestureResultCallbackLike` } - 最后一项可为回调
+- <ins>**returns**</ins> { [void](../types/data-types.md#void) }
+- **异常**：没有参数、stroke 不是数组或回调无法适配时抛出
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：异步调用 `dispatchGesture` 并立即返回
+
+```js
+automator.gesturesAsync([300, [100, 100], [300, 300]]);
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmlzU2VydmljZVJ1bm5pbmc"></a>
+### [m] automator.isServiceRunning()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.isServiceRunning()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 固定提交只检查当前进程是否有服务实例
+- **异常 / 权限**：传入参数时抛出；不请求权限
+- **线程 / 生命周期 / 副作用**：只读状态；不等同于 `auto.isOperational()`
+
+```js
+console.log(automator.isServiceRunning());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmVuc3VyZVNlcnZpY2U"></a>
+### [m] automator.ensureService()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.ensureService()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：传入参数或服务无法启动时抛出
+- **权限**：可能打开无障碍设置或使用已配置的便捷启用方式
+- **线程 / 生命周期 / 副作用**：同步确保 AccessibilityBridge 服务已启动
+
+```js
+automator.ensureService();
+```
+
+<a id="api-symbol-YXV0b21hdG9yLndhaXRGb3JTZXJ2aWNl"></a>
+### [m] automator.waitForService(timeout?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.waitForService(timeout?)`
+- **[ timeout = `-1` ]** { [number](../types/data-types.md#number) } - 毫秒
+- <ins>**returns**</ins> { `kotlin.Unit` }
+- **异常**：超过 1 个参数、等待失败或线程中断时抛出 `ScriptInterruptedException`
+- **权限**：优先便捷启用，否则打开系统无障碍设置
+- **线程 / 生命周期 / 副作用**：阻塞当前脚本线程直到服务启动；避免在无 continuation 的 UI 线程使用
+
+```js
+automator.waitForService(5000);
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnNjcm9sbERvd24"></a>
+### [m] automator.scrollDown(target?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.scrollDown(...)`、全局 `scrollDown(...)`
+- **[ target ]** { `number | string[,index] | bounds` } - 无参数滚动面积最大的可滚动控件；数字选择第 N 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：目标重载非法或服务不可用时抛出
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：执行 ACTION_SCROLL_FORWARD；对所有过滤窗口要求动作成功
+
+```js
+console.log(automator.scrollDown());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnNjcm9sbFVw"></a>
+### [m] automator.scrollUp(target?)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.scrollUp(...)`、全局 `scrollUp(...)`
+- **[ target ]** { `number | string[,index] | bounds` } - 无参数滚动面积最大的可滚动控件
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：目标重载非法或服务不可用时抛出
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：执行 ACTION_SCROLL_BACKWARD
+
+```js
+console.log(automator.scrollUp(0));
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmlucHV0"></a>
+### [m] automator.input([index,] text)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.input(...)`、全局 `input(...)`
+- **[ index = `-1` ]** { [number](../types/data-types.md#number) } - 可编辑控件索引；省略时匹配默认目标
+- **text** { [string](../types/data-types.md#string) } - 追加文本
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：参数数量不在 1..2、索引转换或服务失败时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要无障碍服务；执行 UiObject ACTION_APPEND_TEXT
+
+```js
+automator.input(0, 'hello');
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnNldFRleHQ"></a>
+### [m] automator.setText([index,] text)
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.setText(...)`、全局 `setText(...)`
+- **[ index = `-1` ]** { [number](../types/data-types.md#number) }；**text** { [string](../types/data-types.md#string) }
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+- **异常**：参数数量不在 1..2、索引转换或服务失败时抛出
+- **权限**：需要无障碍服务
+- **线程 / 生命周期 / 副作用**：执行 ACTION_SET_TEXT，替换而不是追加现有内容
+
+```js
+automator.setText('replacement');
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmNhcHR1cmVTY3JlZW4"></a>
+### [m] automator.captureScreen()
+
+**`≤ 6.6.4`**
+
+- **入口 / 别名**：`automator.captureScreen()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [ImageWrapper](../types/image-wrapper.md) } - 默认显示器截图
+- **异常**：传入参数、Android 低于 11、服务不可用、截图失败返回 null 后解包或等待中断时抛出
+- **权限**：需要无障碍服务；使用 Android 11+ `AccessibilityService.takeScreenshot`
+- **线程 / 生命周期 / 副作用**：内部通过 ResultAdapter 等待 Promise；硬件 Bitmap 会复制为可读 ARGB_8888，调用方负责按图像 API 回收
+
+```js
+const image = automator.captureScreen();
+console.log(image.getWidth(), image.getHeight());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmxvY2tTY3JlZW4"></a>
+### [m] automator.lockScreen()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.lockScreen()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受锁屏全局动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_LOCK_SCREEN`，成功时立即锁定设备
+
+```js
+console.log(automator.lockScreen());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnRha2VTY3JlZW5zaG90"></a>
+### [m] automator.takeScreenshot()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.takeScreenshot()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受截图全局动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_TAKE_SCREENSHOT`；它触发系统截图界面，不返回图像数据，读取图像请用 `captureScreen()`
+
+```js
+if (!automator.takeScreenshot()) console.warn('系统未接受截图动作');
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmhlYWRzZXRob29r"></a>
+### [m] automator.headsethook()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.headsethook()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受耳机键全局动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_KEYCODE_HEADSETHOOK`，可能播放、暂停或接听当前媒体/通话
+
+```js
+console.log(automator.headsethook());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b24"></a>
+### [m] automator.accessibilityButton()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.accessibilityButton()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍按钮动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON`
+
+```js
+console.log(automator.accessibilityButton());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b25DaG9vc2Vy"></a>
+### [m] automator.accessibilityButtonChooser()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.accessibilityButtonChooser()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍按钮选择器动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON_CHOOSER`，成功时显示无障碍快捷功能选择器
+
+```js
+console.log(automator.accessibilityButtonChooser());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlTaG9ydGN1dA"></a>
+### [m] automator.accessibilityShortcut()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.accessibilityShortcut()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍快捷方式动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_SHORTCUT`
+
+```js
+console.log(automator.accessibilityShortcut());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlBbGxBcHBz"></a>
+### [m] automator.accessibilityAllApps()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.accessibilityAllApps()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍“所有应用”动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_ALL_APPS`，具体呈现由系统实现决定
+
+```js
+console.log(automator.accessibilityAllApps());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmRpc21pc3NOb3RpZmljYXRpb25TaGFkZQ"></a>
+### [m] automator.dismissNotificationShade()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.dismissNotificationShade()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受收起通知栏动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false
+- **权限**：需要已连接的无障碍服务
+- **线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE`
+
+```js
+console.log(automator.dismissNotificationShade());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmJhY2s"></a>
+### [m] automator.back()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.back()`、全局 `back()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受返回动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_BACK`
+
+```js
+console.log(back());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLmhvbWU"></a>
+### [m] automator.home()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.home()`、全局 `home()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受主页动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_HOME`
+
+```js
+console.log(home());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnBvd2VyRGlhbG9n"></a>
+### [m] automator.powerDialog()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.powerDialog()`、全局 `powerDialog()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受电源菜单动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_POWER_DIALOG`，成功时显示系统电源菜单
+
+```js
+console.log(powerDialog());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM"></a>
+### [m] automator.notifications()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.notifications()`、全局 `notifications()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受展开通知栏动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_NOTIFICATIONS`
+
+```js
+console.log(notifications());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnF1aWNrU2V0dGluZ3M"></a>
+### [m] automator.quickSettings()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.quickSettings()`、全局 `quickSettings()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受展开快捷设置动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_QUICK_SETTINGS`
+
+```js
+console.log(quickSettings());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnJlY2VudHM"></a>
+### [m] automator.recents()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.recents()`、全局 `recents()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受最近任务动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_RECENTS`
+
+```js
+console.log(recents());
+```
+
+<a id="api-symbol-YXV0b21hdG9yLnNwbGl0U2NyZWVu"></a>
+### [m] automator.splitScreen()
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.splitScreen()`、全局 `splitScreen()`
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受切换分屏动作时为 true
+- **异常**：传入参数或无障碍服务不可用时抛出
+- **权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN`，设备或系统版本不支持时可返回 false
+
+```js
+console.log(splitScreen());
+```
+
+<a id="api-symbol-bW9kdWxlOnJvb3RBdXRvbWF0b3I"></a>
+## [@] RootAutomator
+
+**`6.7.0`**
+
+- **入口 / 别名**：全局构造器 `RootAutomator`
+- **参数**：模块本身通过构造器使用，详见 `new RootAutomator(...)`
+- <ins>**returns**</ins> { `RootAutomator` 构造器 }
+- **异常**：读取入口本身不抛出
+- **权限**：实例化必须具有 root，或已运行且可访问可写触摸设备的 Shizuku
+- **线程 / 生命周期 / 副作用**：每个实例维护独立触点槽位、默认触点 ID 与底层 root shell 或 Shizuku 命令缓冲区
+
+```js
+console.log(typeof RootAutomator); // function
+```
+
+<a id="api-symbol-Y29uc3RydWN0OnJvb3RBdXRvbWF0b3I"></a>
+### [c] new RootAutomator(waitForReady?)
+
+**`6.7.0`**
+
+- **[ waitForReady = `false` ]** { [boolean](../types/data-types.md#boolean) | [number](../types/data-types.md#number) } - 布尔 true 最多等待 5000 ms 就绪，false 不等待；数字直接作为等待超时毫秒数，负数不等待
+- <ins>**returns**</ins> { `RootAutomator` } - 将核心输入设备对象包装成 Rhino 原生代理
+- **异常**：超过 1 个参数、root 与 Shizuku 都不可用、Shizuku 无法访问可写输入设备、初始化失败或等待超时时抛出
+- **权限**：需要 root 或 operational Shizuku；Shizuku 后端还必须解析到可写输入设备
+- **线程 / 生命周期 / 副作用**：root 后端启动输入事件进程；Shizuku 后端映射屏幕坐标并批量执行 `sendevent`；结束使用时应调用 `exit()`
+
+```js
+const ra = new RootAutomator(true);
+try {
+    ra.tap(300, 600);
+} finally {
+    ra.exit();
+}
+```
+
+<a id="api-symbol-ZHluYW1pYzpyb290QXV0b21hdG9yLmluc3RhbmNlLmZvcndhcmRlZC1tZXRob2Rz"></a>
+### [dynamic] RootAutomator 实例转发方法
+
+**`6.7.0`**
+
+- **入口 / 别名**：`ra.<publicMethod>(...)`；方法来自核心 `RootAutomator` Java 对象
+- **参数**：依具体 public 方法而定；常用方法包括 `sendEvent`、`touch`、`setScreenMetrics`、`tap`、`swipe`、`press`、`longPress`、`touchDown`、`touchUp`、`touchMove`、`getDefaultId`、`setDefaultId` 与 `exit`
+- <ins>**returns**</ins> { `any` } - 保留对应 Java 方法的返回值
+- **异常**：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出
+- **权限**：沿用构造实例时选择的 root 或 Shizuku 后端
+- **线程 / 生命周期 / 副作用**：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；固定提交未采用旧 JavaScript 模块的名称过滤器
+
+```js
+const ra = new RootAutomator(5000);
+const tap = ra.tap; // 已绑定内部 receiver
+try {
+    ra.setScreenMetrics(device.width, device.height);
+    tap(320, 640);
+} finally {
+    ra.exit();
+}
+```

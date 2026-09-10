@@ -61,6 +61,39 @@ console.log(sel.click()); /* 执行控件行为的动作. */
 
 ---
 
+<a id="api-symbol-bW9kdWxlOnNlbGVjdG9y"></a>
+## [@] selector
+
+**`6.7.0`** **`Global`**
+
+`selector` 是创建空 [UiSelector](#uiselector) 的全局可调用入口。模块初始化时还会反射 `UiSelector` 的公开方法，并把可用的选择器构建方法安装为全局函数；每次调用全局构建方法都会从一个新的选择器开始，不会复用或污染上一次的条件。
+
+全局安装会排除 Java `Object` 方法、作用域中已经存在的名称、`plus`、`append`，以及已由 `automator` 提供的 `click`、`longClick`、`scrollDown`、`scrollUp`、`setText`。因此，实际可见的全局名称也受脚本作用域现有属性影响。
+
+```js
+console.log(typeof selector); // function
+console.log(text('确定').clickable(true) instanceof UiSelector); // true
+```
+
+<a id="api-symbol-Y2FsbDpzZWxlY3Rvcg"></a>
+### [f] selector()
+
+**`6.7.0`** **`Global`**
+
+- **参数**：必须为 0 个
+- <ins>**returns**</ins> { [UiSelector](ui-selector.md) } - 新建且不包含筛选条件的选择器
+- **异常**：传入任意参数时抛出参数数量异常
+- **权限**：创建选择器不要求无障碍权限；执行查找或动作时才需要相应服务
+- **线程 / 生命周期 / 副作用**：每次调用返回独立实例，不向此前的选择器追加条件
+
+```js
+const empty = selector();
+const target = empty.text('立即开始').clickable(true);
+console.log(target instanceof UiSelector); // true
+```
+
+---
+
 <p style="font: bold 2em sans-serif; color: #FF7043">UiSelector</p>
 
 ---

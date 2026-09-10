@@ -2,36 +2,14 @@
   "gaps": [
     {
       "kind": "alias",
-      "name": "$auto",
+      "name": "$colors",
       "owner": "global",
-      "reason": "Canonical symbol module:auto has no documented target.",
+      "reason": "Canonical symbol module:colors has no documented target.",
       "source": {
-        "line": 741,
+        "line": 757,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "alias:$auto"
-    },
-    {
-      "kind": "alias",
-      "name": "$automator",
-      "owner": "global",
-      "reason": "Canonical symbol module:automator has no documented target.",
-      "source": {
-        "line": 742,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "alias:$automator"
-    },
-    {
-      "kind": "alias",
-      "name": "$dialogs",
-      "owner": "global",
-      "reason": "Canonical symbol module:dialogs has no documented target.",
-      "source": {
-        "line": 760,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "alias:$dialogs"
+      "symbolId": "alias:$colors"
     },
     {
       "kind": "alias",
@@ -68,36 +46,14 @@
     },
     {
       "kind": "alias",
-      "name": "$floaty",
+      "name": "$images",
       "owner": "global",
-      "reason": "Canonical symbol module:floaty has no documented target.",
+      "reason": "Canonical symbol module:images has no documented target.",
       "source": {
-        "line": 782,
+        "line": 747,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "alias:$floaty"
-    },
-    {
-      "kind": "alias",
-      "name": "$keys",
-      "owner": "global",
-      "reason": "Canonical symbol module:keys has no documented target.",
-      "source": {
-        "line": 745,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "alias:$keys"
-    },
-    {
-      "kind": "alias",
-      "name": "$selector",
-      "owner": "global",
-      "reason": "Canonical symbol module:selector has no documented target.",
-      "source": {
-        "line": 743,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "alias:$selector"
+      "symbolId": "alias:$images"
     },
     {
       "kind": "alias",
@@ -133,395 +89,6 @@
       "symbolId": "alias:$threads"
     },
     {
-      "kind": "alias",
-      "name": "$ui",
-      "owner": "global",
-      "reason": "Canonical symbol module:ui has no documented target.",
-      "source": {
-        "line": 756,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "alias:$ui"
-    },
-    {
-      "kind": "alias",
-      "name": "launchDualSettings",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.launchDualSettings"
-    },
-    {
-      "kind": "alias",
-      "name": "launchSettings",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.launchSettings"
-    },
-    {
-      "kind": "alias",
-      "name": "openAppSetting",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.openAppSetting"
-    },
-    {
-      "kind": "alias",
-      "name": "openAppSettings",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.openAppSettings"
-    },
-    {
-      "kind": "alias",
-      "name": "openDualAppSetting",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.openDualAppSetting"
-    },
-    {
-      "kind": "alias",
-      "name": "openDualAppSettings",
-      "owner": "app",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "alias:app.openDualAppSettings"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "property",
-      "name": "currentActivity",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.currentActivity in docs/api/core/app.md.",
-      "source": {
-        "line": 104,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.currentActivity"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "ensureInstalled",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.ensureInstalled in docs/api/core/app.md.",
-      "source": {
-        "line": 128,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.ensureInstalled"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "property",
-      "name": "fileProviderAuthority",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.fileProviderAuthority in docs/api/core/app.md.",
-      "source": {
-        "line": 37,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.fileProviderAuthority"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "getAppByAlias",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.getAppByAlias in docs/api/core/app.md.",
-      "source": {
-        "line": 586,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.getAppByAlias"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "isActivityShortForm",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.isActivityShortForm in docs/api/core/app.md.",
-      "source": {
-        "line": 256,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.isActivityShortForm"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "isBroadcastShortForm",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.isBroadcastShortForm in docs/api/core/app.md.",
-      "source": {
-        "line": 251,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.isBroadcastShortForm"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "isDualInstalled",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.isDualInstalled in docs/api/core/app.md.",
-      "source": {
-        "line": 802,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.isDualInstalled"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "isInstalled",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.isInstalled in docs/api/core/app.md.",
-      "source": {
-        "line": 112,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.isInstalled"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "isInstalledAndEnabled",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.isInstalledAndEnabled in docs/api/core/app.md.",
-      "source": {
-        "line": 148,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.isInstalledAndEnabled"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "kill",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.kill in docs/api/core/app.md.",
-      "source": {
-        "line": 771,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.kill"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "killDual",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.killDual in docs/api/core/app.md.",
-      "source": {
-        "line": 787,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.killDual"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchAppDetailsSettings",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchAppDetailsSettings in docs/api/core/app.md.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.launchAppDetailsSettings"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchDual",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchDual in docs/api/core/app.md.",
-      "source": {
-        "line": 598,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.launchDual"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchDualApp",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchDualApp in docs/api/core/app.md.",
-      "source": {
-        "line": 640,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.launchDualApp"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchDualAppDetailsSettings",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchDualAppDetailsSettings in docs/api/core/app.md.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.launchDualAppDetailsSettings"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchDualPackage",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchDualPackage in docs/api/core/app.md.",
-      "source": {
-        "line": 614,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.launchDualPackage"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "launchSettings",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.launchSettings in docs/api/core/app.md.",
-      "source": {
-        "line": 102,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.launchSettings"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "openDualUrl",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.openDualUrl in docs/api/core/app.md.",
-      "source": {
-        "line": 537,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.openDualUrl"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "sendBroadcast",
-      "owner": "app",
-      "reason": "More than one equally specific member section matches app.sendBroadcast in docs/api/core/app.md.",
-      "source": {
-        "line": 444,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.sendBroadcast"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "sendLocalBroadcastSync",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.sendLocalBroadcastSync in docs/api/core/app.md.",
-      "source": {
-        "line": 70,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.sendLocalBroadcastSync"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "setCurrentActivity",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.setCurrentActivity in docs/api/core/app.md.",
-      "source": {
-        "line": 185,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/AppUtils.kt"
-      },
-      "symbolId": "app.setCurrentActivity"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "startActivity",
-      "owner": "app",
-      "reason": "More than one equally specific member section matches app.startActivity in docs/api/core/app.md.",
-      "source": {
-        "line": 136,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.startActivity"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "startDualActivity",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.startDualActivity in docs/api/core/app.md.",
-      "source": {
-        "line": 202,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.startDualActivity"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "function",
-      "name": "uninstallDual",
-      "owner": "app",
-      "reason": "No addressable member section exists for app.uninstallDual in docs/api/core/app.md.",
-      "source": {
-        "line": 716,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.uninstallDual"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "property",
-      "name": "versionCode",
-      "owner": "app",
-      "reason": "More than one equally specific member section matches app.versionCode in docs/api/core/app.md.",
-      "source": {
-        "line": 61,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.versionCode"
-    },
-    {
-      "expectedPage": "docs/api/core/app.md",
-      "kind": "property",
-      "name": "versionName",
-      "owner": "app",
-      "reason": "More than one equally specific member section matches app.versionName in docs/api/core/app.md.",
-      "source": {
-        "line": 62,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "app.versionName"
-    },
-    {
       "expectedPage": "docs/api/utilities/arrayx.md",
       "kind": "function",
       "name": "differ",
@@ -546,556 +113,76 @@
       "symbolId": "Arrayx.subtract"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/barcode.md",
       "kind": "function",
-      "name": "clearCache",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.clearCache in docs/api/automation/automator.md.",
+      "name": "detect",
+      "owner": "barcode",
+      "reason": "No addressable member section exists for barcode.detect in docs/api/media/barcode.md.",
       "source": {
-        "line": 314,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 68,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/Barcode.kt"
       },
-      "symbolId": "auto.clearCache"
+      "symbolId": "barcode.detect"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/barcode.md",
       "kind": "function",
-      "name": "currentActivity",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.currentActivity in docs/api/automation/automator.md.",
+      "name": "detectAll",
+      "owner": "barcode",
+      "reason": "No addressable member section exists for barcode.detectAll in docs/api/media/barcode.md.",
       "source": {
-        "line": 326,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 74,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/Barcode.kt"
       },
-      "symbolId": "auto.currentActivity"
+      "symbolId": "barcode.detectAll"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/barcode.md",
       "kind": "function",
-      "name": "currentComponent",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.currentComponent in docs/api/automation/automator.md.",
+      "name": "recognizeText",
+      "owner": "barcode",
+      "reason": "No addressable member section exists for barcode.recognizeText in docs/api/media/barcode.md.",
       "source": {
-        "line": 332,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 56,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/Barcode.kt"
       },
-      "symbolId": "auto.currentComponent"
+      "symbolId": "barcode.recognizeText"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/barcode.md",
       "kind": "function",
-      "name": "currentPackage",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.currentPackage in docs/api/automation/automator.md.",
+      "name": "recognizeTexts",
+      "owner": "barcode",
+      "reason": "No addressable member section exists for barcode.recognizeTexts in docs/api/media/barcode.md.",
       "source": {
-        "line": 320,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 62,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/Barcode.kt"
       },
-      "symbolId": "auto.currentPackage"
+      "symbolId": "barcode.recognizeTexts"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "disable",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.disable in docs/api/automation/automator.md.",
+      "expectedPage": "docs/api/media/barcode.md",
+      "kind": "callable",
+      "name": "barcode",
+      "owner": "barcode",
+      "reason": "No addressable member section exists for call:barcode in docs/api/media/barcode.md.",
       "source": {
-        "line": 150,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 33,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/Barcode.kt"
       },
-      "symbolId": "auto.disable"
+      "symbolId": "call:barcode"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "enable",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.enable in docs/api/automation/automator.md.",
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "callable",
+      "name": "color",
+      "owner": "color",
+      "reason": "No addressable member section exists for call:color in docs/api/media/color.md.",
       "source": {
-        "line": 138,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
+        "line": 13,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Color.kt"
       },
-      "symbolId": "auto.enable"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "exists",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.exists in docs/api/automation/automator.md.",
-      "source": {
-        "line": 168,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.exists"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "hasInstance",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.hasInstance in docs/api/automation/automator.md.",
-      "source": {
-        "line": 156,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.hasInstance"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "hasService",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.hasService in docs/api/automation/automator.md.",
-      "source": {
-        "line": 162,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.hasService"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "isOperational",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.isOperational in docs/api/automation/automator.md.",
-      "source": {
-        "line": 180,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.isOperational"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "isRunning",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.isRunning in docs/api/automation/automator.md.",
-      "source": {
-        "line": 174,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.isRunning"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "launchSettings",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.launchSettings in docs/api/automation/automator.md.",
-      "source": {
-        "line": 308,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.launchSettings"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "registerEvent",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.registerEvent in docs/api/automation/automator.md.",
-      "source": {
-        "line": 209,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.registerEvent"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "registerEvents",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.registerEvents in docs/api/automation/automator.md.",
-      "source": {
-        "line": 230,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.registerEvents"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "removeEvent",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.removeEvent in docs/api/automation/automator.md.",
-      "source": {
-        "line": 236,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.removeEvent"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "removeEvents",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.removeEvents in docs/api/automation/automator.md.",
-      "source": {
-        "line": 243,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.removeEvents"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "getter",
-      "name": "services",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.services in docs/api/automation/automator.md.",
-      "source": {
-        "line": 69,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.services"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "start",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.start in docs/api/automation/automator.md.",
-      "source": {
-        "line": 132,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.start"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "getter",
-      "name": "state",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.state in docs/api/automation/automator.md.",
-      "source": {
-        "line": 84,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.state"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "stateListener",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.stateListener in docs/api/automation/automator.md.",
-      "source": {
-        "line": 186,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.stateListener"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "stop",
-      "owner": "auto",
-      "reason": "No addressable member section exists for auto.stop in docs/api/automation/automator.md.",
-      "source": {
-        "line": 144,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Auto.kt"
-      },
-      "symbolId": "auto.stop"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "accessibilityAllApps",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.accessibilityAllApps in docs/api/automation/automator.md.",
-      "source": {
-        "line": 554,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.accessibilityAllApps"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "accessibilityButton",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.accessibilityButton in docs/api/automation/automator.md.",
-      "source": {
-        "line": 536,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.accessibilityButton"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "accessibilityButtonChooser",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.accessibilityButtonChooser in docs/api/automation/automator.md.",
-      "source": {
-        "line": 542,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.accessibilityButtonChooser"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "accessibilityShortcut",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.accessibilityShortcut in docs/api/automation/automator.md.",
-      "source": {
-        "line": 548,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.accessibilityShortcut"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "back",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.back in docs/api/automation/automator.md.",
-      "source": {
-        "line": 566,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.back"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "captureScreen",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.captureScreen in docs/api/automation/automator.md.",
-      "source": {
-        "line": 496,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.captureScreen"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "click",
-      "owner": "automator",
-      "reason": "More than one equally specific member section matches automator.click in docs/api/automation/automator.md.",
-      "source": {
-        "line": 92,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.click"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "dismissNotificationShade",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.dismissNotificationShade in docs/api/automation/automator.md.",
-      "source": {
-        "line": 560,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.dismissNotificationShade"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "ensureService",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.ensureService in docs/api/automation/automator.md.",
-      "source": {
-        "line": 377,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.ensureService"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "gestureAsync",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.gestureAsync in docs/api/automation/automator.md.",
-      "source": {
-        "line": 305,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.gestureAsync"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "gesturesAsync",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.gesturesAsync in docs/api/automation/automator.md.",
-      "source": {
-        "line": 351,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.gesturesAsync"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "headsethook",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.headsethook in docs/api/automation/automator.md.",
-      "source": {
-        "line": 530,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.headsethook"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "home",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.home in docs/api/automation/automator.md.",
-      "source": {
-        "line": 572,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.home"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "isServiceRunning",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.isServiceRunning in docs/api/automation/automator.md.",
-      "source": {
-        "line": 371,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.isServiceRunning"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "lockScreen",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.lockScreen in docs/api/automation/automator.md.",
-      "source": {
-        "line": 518,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.lockScreen"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "longClick",
-      "owner": "automator",
-      "reason": "More than one equally specific member section matches automator.longClick in docs/api/automation/automator.md.",
-      "source": {
-        "line": 141,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.longClick"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "notifications",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.notifications in docs/api/automation/automator.md.",
-      "source": {
-        "line": 584,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.notifications"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "powerDialog",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.powerDialog in docs/api/automation/automator.md.",
-      "source": {
-        "line": 578,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.powerDialog"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "press",
-      "owner": "automator",
-      "reason": "More than one equally specific member section matches automator.press in docs/api/automation/automator.md.",
-      "source": {
-        "line": 187,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.press"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "quickSettings",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.quickSettings in docs/api/automation/automator.md.",
-      "source": {
-        "line": 590,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.quickSettings"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "recents",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.recents in docs/api/automation/automator.md.",
-      "source": {
-        "line": 596,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.recents"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "splitScreen",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.splitScreen in docs/api/automation/automator.md.",
-      "source": {
-        "line": 602,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.splitScreen"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "swipe",
-      "owner": "automator",
-      "reason": "More than one equally specific member section matches automator.swipe in docs/api/automation/automator.md.",
-      "source": {
-        "line": 224,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.swipe"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "takeScreenshot",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.takeScreenshot in docs/api/automation/automator.md.",
-      "source": {
-        "line": 524,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.takeScreenshot"
-    },
-    {
-      "expectedPage": "docs/api/automation/automator.md",
-      "kind": "function",
-      "name": "waitForService",
-      "owner": "automator",
-      "reason": "No addressable member section exists for automator.waitForService in docs/api/automation/automator.md.",
-      "source": {
-        "line": 383,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "automator.waitForService"
+      "symbolId": "call:color"
     },
     {
       "expectedPage": "docs/api/system/notice.md",
@@ -1110,28 +197,76 @@
       "symbolId": "call:notice"
     },
     {
-      "expectedPage": "docs/api/core/plugins.md",
+      "expectedPage": "docs/api/media/ocr.md",
       "kind": "callable",
-      "name": "plugins",
-      "owner": "plugins",
-      "reason": "No addressable member section exists for call:plugins in docs/api/core/plugins.md.",
+      "name": "ocr",
+      "owner": "ocr",
+      "reason": "More than one equally specific member section matches call:ocr in docs/api/media/ocr.md.",
       "source": {
-        "line": 22,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/plugins/Plugins.kt"
+        "line": 50,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/Ocr.kt"
       },
-      "symbolId": "call:plugins"
+      "symbolId": "call:ocr"
     },
     {
-      "expectedPage": "docs/api/automation/ui-selector.md",
+      "expectedPage": "docs/api/media/ocr.md",
       "kind": "callable",
-      "name": "selector",
-      "owner": "selector",
-      "reason": "No addressable member section exists for call:selector in docs/api/automation/ui-selector.md.",
+      "name": "mlkit",
+      "owner": "ocr.mlkit",
+      "reason": "No addressable member section exists for call:ocr.mlkit in docs/api/media/ocr.md.",
       "source": {
-        "line": 105,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/selector/Selector.kt"
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrMLKit.kt"
       },
-      "symbolId": "call:selector"
+      "symbolId": "call:ocr.mlkit"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "callable",
+      "name": "paddle",
+      "owner": "ocr.paddle",
+      "reason": "No addressable member section exists for call:ocr.paddle in docs/api/media/ocr.md.",
+      "source": {
+        "line": 44,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrPaddle.kt"
+      },
+      "symbolId": "call:ocr.paddle"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "callable",
+      "name": "rapid",
+      "owner": "ocr.rapid",
+      "reason": "No addressable member section exists for call:ocr.rapid in docs/api/media/ocr.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrRapid.kt"
+      },
+      "symbolId": "call:ocr.rapid"
+    },
+    {
+      "expectedPage": "docs/api/media/qr-code.md",
+      "kind": "callable",
+      "name": "qrcode",
+      "owner": "qrcode",
+      "reason": "No addressable member section exists for call:qrcode in docs/api/media/qr-code.md.",
+      "source": {
+        "line": 34,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/QrCode.kt"
+      },
+      "symbolId": "call:qrcode"
+    },
+    {
+      "expectedPage": "docs/api/media/recorder.md",
+      "kind": "callable",
+      "name": "recorder",
+      "owner": "recorder",
+      "reason": "More than one equally specific member section matches call:recorder in docs/api/media/recorder.md.",
+      "source": {
+        "line": 9,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/recorder/Recorder.kt"
+      },
+      "symbolId": "call:recorder"
     },
     {
       "expectedPage": "docs/api/system/shizuku.md",
@@ -1180,6 +315,198 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/util/MorseCode.kt"
       },
       "symbolId": "call:util.morseCode"
+    },
+    {
+      "expectedPage": "docs/api/types/color.md",
+      "kind": "function",
+      "name": "toStringReadable",
+      "owner": "color.result",
+      "reason": "No addressable member section exists for color.result.toStringReadable in docs/api/types/color.md.",
+      "source": {
+        "line": 101,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/ColorNativeObject.kt"
+      },
+      "symbolId": "color.result.toStringReadable"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "getter",
+      "name": "all",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.all in docs/api/media/color.md.",
+      "source": {
+        "line": 154,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.all"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "blue",
+      "owner": "colors",
+      "reason": "More than one equally specific member section matches colors.blue in docs/api/media/color.md.",
+      "source": {
+        "line": 512,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.blue"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "colorToHSV",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.colorToHSV in docs/api/media/color.md.",
+      "source": {
+        "line": 32,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/image/Colors.kt"
+      },
+      "symbolId": "colors.colorToHSV"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "green",
+      "owner": "colors",
+      "reason": "More than one equally specific member section matches colors.green in docs/api/media/color.md.",
+      "source": {
+        "line": 421,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.green"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "HSVToColor",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.HSVToColor in docs/api/media/color.md.",
+      "source": {
+        "line": 35,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/image/Colors.kt"
+      },
+      "symbolId": "colors.HSVToColor"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "red",
+      "owner": "colors",
+      "reason": "More than one equally specific member section matches colors.red in docs/api/media/color.md.",
+      "source": {
+        "line": 330,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.red"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "RGBToHSV",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.RGBToHSV in docs/api/media/color.md.",
+      "source": {
+        "line": 29,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/image/Colors.kt"
+      },
+      "symbolId": "colors.RGBToHSV"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "getter",
+      "name": "themeColor",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.themeColor in docs/api/media/color.md.",
+      "source": {
+        "line": 155,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.themeColor"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toArgbString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toArgbString in docs/api/media/color.md.",
+      "source": {
+        "line": 1472,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toArgbString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toHslaString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toHslaString in docs/api/media/color.md.",
+      "source": {
+        "line": 1569,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toHslaString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toHslString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toHslString in docs/api/media/color.md.",
+      "source": {
+        "line": 1541,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toHslString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toHsvaString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toHsvaString in docs/api/media/color.md.",
+      "source": {
+        "line": 1520,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toHsvaString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toHsvString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toHsvString in docs/api/media/color.md.",
+      "source": {
+        "line": 1492,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toHsvString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toRgbaString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toRgbaString in docs/api/media/color.md.",
+      "source": {
+        "line": 1454,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toRgbaString"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "function",
+      "name": "toRgbString",
+      "owner": "colors",
+      "reason": "No addressable member section exists for colors.toRgbString in docs/api/media/color.md.",
+      "source": {
+        "line": 1428,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "colors.toRgbString"
     },
     {
       "expectedPage": "docs/api/system/console.md",
@@ -1650,16 +977,28 @@
       "symbolId": "console.write"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/canvas.md",
       "kind": "constructor",
-      "name": "rootAutomator",
-      "owner": "rootAutomator",
-      "reason": "No addressable member section exists for construct:rootAutomator in docs/api/automation/automator.md.",
+      "name": "canvas",
+      "owner": "canvas",
+      "reason": "No addressable member section exists for construct:canvas in docs/api/media/canvas.md.",
       "source": {
-        "line": 18,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/RootAutomator.kt"
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/canvas/Canvas.kt"
       },
-      "symbolId": "construct:rootAutomator"
+      "symbolId": "construct:canvas"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "constructor",
+      "name": "color",
+      "owner": "color",
+      "reason": "No addressable member section exists for construct:color in docs/api/media/color.md.",
+      "source": {
+        "line": 7,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Color.kt"
+      },
+      "symbolId": "construct:color"
     },
     {
       "expectedPage": "docs/api/utilities/crypto.md",
@@ -2178,28 +1517,75 @@
       "symbolId": "device.toString"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/types/color.md",
       "kind": "dynamic",
-      "name": "forwardedMethods",
-      "owner": "rootAutomator.instance",
-      "reason": "No addressable member section exists for dynamic:rootAutomator.instance.forwarded-methods in docs/api/automation/automator.md.",
+      "name": "forwardedFunctions",
+      "owner": "color.result",
+      "reason": "No addressable member section exists for dynamic:color.result.forwarded-functions in docs/api/types/color.md.",
       "source": {
-        "line": 31,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/RootAutomatorNativeObject.kt"
+        "line": 30,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/ColorNativeObject.kt"
       },
-      "symbolId": "dynamic:rootAutomator.instance.forwarded-methods"
+      "symbolId": "dynamic:color.result.forwarded-functions"
     },
     {
-      "expectedPage": "docs/api/automation/ui.md",
       "kind": "dynamic",
-      "name": "proxyProperties",
-      "owner": "ui",
-      "reason": "No addressable member section exists for dynamic:ui.proxy-properties in docs/api/automation/ui.md.",
+      "name": "tableEntries",
+      "owner": "color",
+      "reason": "Canonical symbol dynamic:colors.merged-table-entries has no documented target.",
       "source": {
-        "line": 176,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
+        "line": 9,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/image/ColorTable.kt"
       },
-      "symbolId": "dynamic:ui.proxy-properties"
+      "symbolId": "dynamic:color.table-entries"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "dynamic",
+      "name": "mergedTableEntries",
+      "owner": "colors",
+      "reason": "No addressable member section exists for dynamic:colors.merged-table-entries in docs/api/media/color.md.",
+      "source": {
+        "line": 149,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/colors/Colors.kt"
+      },
+      "symbolId": "dynamic:colors.merged-table-entries"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "dynamic",
+      "name": "forwardedMembers",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for dynamic:http.response.body.forwarded-members in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 49,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "dynamic:http.response.body.forwarded-members"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "dynamic",
+      "name": "headerFields",
+      "owner": "http.response",
+      "reason": "No addressable member section exists for dynamic:http.response.headers in docs/api/types/http-response.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
+      },
+      "symbolId": "dynamic:http.response.headers"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "dynamic",
+      "name": "metadata",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for dynamic:mediainfo.result.metadata in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "dynamic:mediainfo.result.metadata"
     },
     {
       "expectedPage": "docs/api/system/engines.md",
@@ -2478,54 +1864,6 @@
       "symbolId": "files.write"
     },
     {
-      "expectedPage": "docs/api/automation/floaty.md",
-      "kind": "function",
-      "name": "ensurePermission",
-      "owner": "floaty",
-      "reason": "No addressable member section exists for floaty.ensurePermission in docs/api/automation/floaty.md.",
-      "source": {
-        "line": 76,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/floaty/Floaty.kt"
-      },
-      "symbolId": "floaty.ensurePermission"
-    },
-    {
-      "expectedPage": "docs/api/automation/floaty.md",
-      "kind": "function",
-      "name": "getClip",
-      "owner": "floaty",
-      "reason": "No addressable member section exists for floaty.getClip in docs/api/automation/floaty.md.",
-      "source": {
-        "line": 88,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/floaty/Floaty.kt"
-      },
-      "symbolId": "floaty.getClip"
-    },
-    {
-      "expectedPage": "docs/api/automation/floaty.md",
-      "kind": "function",
-      "name": "hasPermission",
-      "owner": "floaty",
-      "reason": "No addressable member section exists for floaty.hasPermission in docs/api/automation/floaty.md.",
-      "source": {
-        "line": 64,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/floaty/Floaty.kt"
-      },
-      "symbolId": "floaty.hasPermission"
-    },
-    {
-      "expectedPage": "docs/api/automation/floaty.md",
-      "kind": "function",
-      "name": "requestPermission",
-      "owner": "floaty",
-      "reason": "No addressable member section exists for floaty.requestPermission in docs/api/automation/floaty.md.",
-      "source": {
-        "line": 70,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/floaty/Floaty.kt"
-      },
-      "symbolId": "floaty.requestPermission"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "AccessibilityBridge",
@@ -2620,17 +1958,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Global.kt"
       },
       "symbolId": "global:axios"
-    },
-    {
-      "kind": "global",
-      "name": "back",
-      "owner": "global",
-      "reason": "Canonical symbol automator.back has no documented target.",
-      "source": {
-        "line": 566,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:back"
     },
     {
       "expectedPage": "docs/api/system/shell.md",
@@ -2753,6 +2080,17 @@
       "symbolId": "global:Camera"
     },
     {
+      "kind": "global",
+      "name": "captureScreen",
+      "owner": "global",
+      "reason": "Canonical symbol images.captureScreen has no documented target.",
+      "source": {
+        "line": 287,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "global:captureScreen"
+    },
+    {
       "expectedPage": "docs/api/core/global.md",
       "kind": "getter",
       "name": "cheerio",
@@ -2775,17 +2113,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
       },
       "symbolId": "global:clearConsole"
-    },
-    {
-      "kind": "global",
-      "name": "click",
-      "owner": "global",
-      "reason": "Canonical symbol automator.click has no documented target.",
-      "source": {
-        "line": 92,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:click"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -3088,17 +2415,6 @@
       "symbolId": "global:FormBody"
     },
     {
-      "kind": "global",
-      "name": "gestureAsync",
-      "owner": "global",
-      "reason": "Canonical symbol automator.gestureAsync has no documented target.",
-      "source": {
-        "line": 305,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:gestureAsync"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "GestureResultCallback",
@@ -3109,17 +2425,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:GestureResultCallback"
-    },
-    {
-      "kind": "global",
-      "name": "gesturesAsync",
-      "owner": "global",
-      "reason": "Canonical symbol automator.gesturesAsync has no documented target.",
-      "source": {
-        "line": 351,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:gesturesAsync"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -3156,17 +2461,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:Handler"
-    },
-    {
-      "kind": "global",
-      "name": "home",
-      "owner": "global",
-      "reason": "Canonical symbol automator.home has no documented target.",
-      "source": {
-        "line": 572,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:home"
     },
     {
       "expectedPage": "docs/api/system/shell.md",
@@ -3299,28 +2593,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:IntentUtils"
-    },
-    {
-      "kind": "global",
-      "name": "isDualInstalled",
-      "owner": "global",
-      "reason": "Canonical symbol app.isDualInstalled has no documented target.",
-      "source": {
-        "line": 802,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:isDualInstalled"
-    },
-    {
-      "kind": "global",
-      "name": "isInstalled",
-      "owner": "global",
-      "reason": "Canonical symbol app.isInstalled has no documented target.",
-      "source": {
-        "line": 795,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:isInstalled"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -3791,39 +3063,6 @@
       "symbolId": "global:KeyEvent"
     },
     {
-      "kind": "global",
-      "name": "kill",
-      "owner": "global",
-      "reason": "Canonical symbol app.kill has no documented target.",
-      "source": {
-        "line": 771,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:kill"
-    },
-    {
-      "kind": "global",
-      "name": "killDual",
-      "owner": "global",
-      "reason": "Canonical symbol app.killDual has no documented target.",
-      "source": {
-        "line": 787,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:killDual"
-    },
-    {
-      "kind": "global",
-      "name": "launchAppDetailsSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchAppDetailsSettings"
-    },
-    {
       "expectedPage": "docs/api/system/console.md",
       "kind": "function",
       "name": "launchConsole",
@@ -3834,72 +3073,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
       },
       "symbolId": "global:launchConsole"
-    },
-    {
-      "kind": "global",
-      "name": "launchDual",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDual has no documented target.",
-      "source": {
-        "line": 598,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchDual"
-    },
-    {
-      "kind": "global",
-      "name": "launchDualApp",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualApp has no documented target.",
-      "source": {
-        "line": 640,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchDualApp"
-    },
-    {
-      "kind": "global",
-      "name": "launchDualAppDetailsSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchDualAppDetailsSettings"
-    },
-    {
-      "kind": "global",
-      "name": "launchDualPackage",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualPackage has no documented target.",
-      "source": {
-        "line": 614,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchDualPackage"
-    },
-    {
-      "kind": "global",
-      "name": "launchDualSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchDualSettings"
-    },
-    {
-      "kind": "global",
-      "name": "launchSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:launchSettings"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -3996,17 +3169,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:LogManager"
-    },
-    {
-      "kind": "global",
-      "name": "longClick",
-      "owner": "global",
-      "reason": "Canonical symbol automator.longClick has no documented target.",
-      "source": {
-        "line": 141,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:longClick"
     },
     {
       "expectedPage": "docs/api/system/timers.md",
@@ -4189,17 +3351,6 @@
       "symbolId": "global:NotificationManager"
     },
     {
-      "kind": "global",
-      "name": "notifications",
-      "owner": "global",
-      "reason": "Canonical symbol automator.notifications has no documented target.",
-      "source": {
-        "line": 584,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:notifications"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "NotificationUtils",
@@ -4236,28 +3387,6 @@
       "symbolId": "global:OkHttpClient"
     },
     {
-      "kind": "global",
-      "name": "openAppSetting",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:openAppSetting"
-    },
-    {
-      "kind": "global",
-      "name": "openAppSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 677,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:openAppSettings"
-    },
-    {
       "expectedPage": "docs/api/system/console.md",
       "kind": "function",
       "name": "openConsole",
@@ -4268,28 +3397,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/console/Console.kt"
       },
       "symbolId": "global:openConsole"
-    },
-    {
-      "kind": "global",
-      "name": "openDualAppSetting",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:openDualAppSetting"
-    },
-    {
-      "kind": "global",
-      "name": "openDualAppSettings",
-      "owner": "global",
-      "reason": "Canonical symbol app.launchDualAppDetailsSettings has no documented target.",
-      "source": {
-        "line": 689,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:openDualAppSettings"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -4364,17 +3471,6 @@
       "symbolId": "global:Power"
     },
     {
-      "kind": "global",
-      "name": "powerDialog",
-      "owner": "global",
-      "reason": "Canonical symbol automator.powerDialog has no documented target.",
-      "source": {
-        "line": 578,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:powerDialog"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "Pref",
@@ -4385,17 +3481,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:Pref"
-    },
-    {
-      "kind": "global",
-      "name": "press",
-      "owner": "global",
-      "reason": "Canonical symbol automator.press has no documented target.",
-      "source": {
-        "line": 187,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:press"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -4423,17 +3508,6 @@
     },
     {
       "kind": "global",
-      "name": "quickSettings",
-      "owner": "global",
-      "reason": "Canonical symbol automator.quickSettings has no documented target.",
-      "source": {
-        "line": 590,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:quickSettings"
-    },
-    {
-      "kind": "global",
       "name": "randomFloat",
       "owner": "global",
       "reason": "Canonical symbol Mathx.randomFloat has no documented target.",
@@ -4453,17 +3527,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Mathx.kt"
       },
       "symbolId": "global:randomInt"
-    },
-    {
-      "kind": "global",
-      "name": "recents",
-      "owner": "global",
-      "reason": "Canonical symbol automator.recents has no documented target.",
-      "source": {
-        "line": 596,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:recents"
     },
     {
       "expectedPage": "docs/reference/android/scripting-java.md",
@@ -4500,6 +3563,17 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:RequestBody"
+    },
+    {
+      "kind": "global",
+      "name": "requestScreenCaptureAsync",
+      "owner": "global",
+      "reason": "Canonical symbol images.requestScreenCaptureAsync has no documented target.",
+      "source": {
+        "line": 322,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "global:requestScreenCaptureAsync"
     },
     {
       "expectedPage": "docs/api/core/global.md",
@@ -4658,28 +3732,6 @@
       "symbolId": "global:SecurityException"
     },
     {
-      "kind": "global",
-      "name": "sendBroadcast",
-      "owner": "global",
-      "reason": "Canonical symbol app.sendBroadcast has no documented target.",
-      "source": {
-        "line": 444,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:sendBroadcast"
-    },
-    {
-      "kind": "global",
-      "name": "sendLocalBroadcastSync",
-      "owner": "global",
-      "reason": "Canonical symbol app.sendLocalBroadcastSync has no documented target.",
-      "source": {
-        "line": 470,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:sendLocalBroadcastSync"
-    },
-    {
       "expectedPage": "docs/api/system/shell.md",
       "kind": "function",
       "name": "SetScreenMetrics",
@@ -4739,17 +3791,6 @@
       "symbolId": "global:Snackbar"
     },
     {
-      "kind": "global",
-      "name": "splitScreen",
-      "owner": "global",
-      "reason": "Canonical symbol automator.splitScreen has no documented target.",
-      "source": {
-        "line": 602,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:splitScreen"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "StandardCharsets",
@@ -4762,28 +3803,6 @@
       "symbolId": "global:StandardCharsets"
     },
     {
-      "kind": "global",
-      "name": "startActivity",
-      "owner": "global",
-      "reason": "Canonical symbol app.startActivity has no documented target.",
-      "source": {
-        "line": 136,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:startActivity"
-    },
-    {
-      "kind": "global",
-      "name": "startDualActivity",
-      "owner": "global",
-      "reason": "Canonical symbol app.startDualActivity has no documented target.",
-      "source": {
-        "line": 202,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:startDualActivity"
-    },
-    {
       "expectedPage": "docs/reference/android/scripting-java.md",
       "kind": "class",
       "name": "StringUtils",
@@ -4794,17 +3813,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/global/Classes.kt"
       },
       "symbolId": "global:StringUtils"
-    },
-    {
-      "kind": "global",
-      "name": "swipe",
-      "owner": "global",
-      "reason": "Canonical symbol automator.swipe has no documented target.",
-      "source": {
-        "line": 224,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/automator/Automator.kt"
-      },
-      "symbolId": "global:swipe"
     },
     {
       "expectedPage": "docs/api/system/shell.md",
@@ -5035,17 +4043,6 @@
       "symbolId": "global:UiSelector"
     },
     {
-      "kind": "global",
-      "name": "uninstallDual",
-      "owner": "global",
-      "reason": "Canonical symbol app.uninstallDual has no documented target.",
-      "source": {
-        "line": 716,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/app/App.kt"
-      },
-      "symbolId": "global:uninstallDual"
-    },
-    {
       "expectedPage": "docs/api/system/shell.md",
       "kind": "function",
       "name": "Up",
@@ -5178,112 +4175,904 @@
       "symbolId": "global:WindowManager"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
+      "expectedPage": "docs/api/network/http.md",
       "kind": "property",
-      "name": "back",
-      "owner": "keys",
-      "reason": "More than one equally specific member section matches keys.back in docs/api/automation/keys.md.",
+      "name": "__okhttp__",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.__okhttp__ in docs/api/network/http.md.",
       "source": {
-        "line": 16,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
       },
-      "symbolId": "keys.back"
+      "symbolId": "http.__okhttp__"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "BACK",
-      "owner": "keys",
-      "reason": "More than one equally specific member section matches keys.BACK in docs/api/automation/keys.md.",
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "client",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.client in docs/api/network/http.md.",
       "source": {
-        "line": 17,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 9,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Http.kt"
       },
-      "symbolId": "keys.BACK"
+      "symbolId": "http.client"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "home",
-      "owner": "keys",
-      "reason": "More than one equally specific member section matches keys.home in docs/api/automation/keys.md.",
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "del",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.del in docs/api/network/http.md.",
       "source": {
-        "line": 10,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 327,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
       },
-      "symbolId": "keys.home"
+      "symbolId": "http.del"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "HOME",
-      "owner": "keys",
-      "reason": "More than one equally specific member section matches keys.HOME in docs/api/automation/keys.md.",
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "delAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.delAsync in docs/api/network/http.md.",
       "source": {
-        "line": 11,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 341,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
       },
-      "symbolId": "keys.HOME"
+      "symbolId": "http.delAsync"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "MENU",
-      "owner": "keys",
-      "reason": "docs/api/automation/keys.md#menu is already assigned to keys.menu; distinct symbols need distinct anchors.",
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "delete",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.delete in docs/api/network/http.md.",
       "source": {
-        "line": 14,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 320,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
       },
-      "symbolId": "keys.MENU"
+      "symbolId": "http.delete"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "deleteAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.deleteAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 334,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.deleteAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "getAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.getAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 255,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.getAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "head",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.head in docs/api/network/http.md.",
+      "source": {
+        "line": 221,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.head"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "headAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.headAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 228,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.headAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
       "kind": "property",
-      "name": "volume_down",
-      "owner": "keys",
-      "reason": "No addressable member section exists for keys.volume_down in docs/api/automation/keys.md.",
+      "name": "okhttp",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.okhttp in docs/api/network/http.md.",
+      "source": {
+        "line": 7,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Http.kt"
+      },
+      "symbolId": "http.okhttp"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "postAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.postAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 379,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.postAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "postJsonAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.postJsonAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 417,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.postJsonAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "postMultipartAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.postMultipartAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 451,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.postMultipartAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "put",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.put in docs/api/network/http.md.",
+      "source": {
+        "line": 282,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.put"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "putAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.putAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 289,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.putAsync"
+    },
+    {
+      "expectedPage": "docs/api/network/http.md",
+      "kind": "function",
+      "name": "requestAsync",
+      "owner": "http",
+      "reason": "No addressable member section exists for http.requestAsync in docs/api/network/http.md.",
+      "source": {
+        "line": 176,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/Http.kt"
+      },
+      "symbolId": "http.requestAsync"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "body",
+      "owner": "http.response",
+      "reason": "More than one equally specific member section matches http.response.body in docs/api/types/http-response.md.",
       "source": {
         "line": 24,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
       },
-      "symbolId": "keys.volume_down"
+      "symbolId": "http.response.body"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "VOLUME_DOWN",
-      "owner": "keys",
-      "reason": "No addressable member section exists for keys.VOLUME_DOWN in docs/api/automation/keys.md.",
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "bytes",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.bytes in docs/api/types/http-response-body.md.",
       "source": {
-        "line": 25,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 109,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
       },
-      "symbolId": "keys.VOLUME_DOWN"
+      "symbolId": "http.response.body.bytes"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
-      "kind": "property",
-      "name": "volume_up",
-      "owner": "keys",
-      "reason": "No addressable member section exists for keys.volume_up in docs/api/automation/keys.md.",
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "close",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.close in docs/api/types/http-response-body.md.",
       "source": {
-        "line": 20,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "line": 193,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
       },
-      "symbolId": "keys.volume_up"
+      "symbolId": "http.response.body.close"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
+      "expectedPage": "docs/api/types/http-response-body.md",
       "kind": "property",
-      "name": "VOLUME_UP",
-      "owner": "keys",
-      "reason": "No addressable member section exists for keys.VOLUME_UP in docs/api/automation/keys.md.",
+      "name": "contentType",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.contentType in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 49,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "http.response.body.contentType"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "json",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.json in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 127,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "http.response.body.json"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "saveToFile",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.saveToFile in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 150,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "http.response.body.saveToFile"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "stream",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.stream in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 138,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "http.response.body.stream"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response-body.md",
+      "kind": "function",
+      "name": "string",
+      "owner": "http.response.body",
+      "reason": "No addressable member section exists for http.response.body.string in docs/api/types/http-response-body.md.",
+      "source": {
+        "line": 90,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseBodyNativeObject.kt"
+      },
+      "symbolId": "http.response.body.string"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "method",
+      "owner": "http.response",
+      "reason": "More than one equally specific member section matches http.response.method in docs/api/types/http-response.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
+      },
+      "symbolId": "http.response.method"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "statusCode",
+      "owner": "http.response",
+      "reason": "More than one equally specific member section matches http.response.statusCode in docs/api/types/http-response.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
+      },
+      "symbolId": "http.response.statusCode"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "statusMessage",
+      "owner": "http.response",
+      "reason": "More than one equally specific member section matches http.response.statusMessage in docs/api/types/http-response.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
+      },
+      "symbolId": "http.response.statusMessage"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "url",
+      "owner": "http.response",
+      "reason": "More than one equally specific member section matches http.response.url in docs/api/types/http-response.md.",
+      "source": {
+        "line": 24,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/ResponseWrapper.kt"
+      },
+      "symbolId": "http.response.url"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "bytesCopied",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.bytesCopied in docs/api/types/http-response.md.",
       "source": {
         "line": 21,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/events/Keys.kt"
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
       },
-      "symbolId": "keys.VOLUME_UP"
+      "symbolId": "http.saveResult.bytesCopied"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "code",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.code in docs/api/types/http-response.md.",
+      "source": {
+        "line": 21,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
+      },
+      "symbolId": "http.saveResult.code"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "error",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.error in docs/api/types/http-response.md.",
+      "source": {
+        "line": 21,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
+      },
+      "symbolId": "http.saveResult.error"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "function",
+      "name": "isSuccess",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.isSuccess in docs/api/types/http-response.md.",
+      "source": {
+        "line": 54,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
+      },
+      "symbolId": "http.saveResult.isSuccess"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "path",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.path in docs/api/types/http-response.md.",
+      "source": {
+        "line": 21,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
+      },
+      "symbolId": "http.saveResult.path"
+    },
+    {
+      "expectedPage": "docs/api/types/http-response.md",
+      "kind": "property",
+      "name": "success",
+      "owner": "http.saveResult",
+      "reason": "No addressable member section exists for http.saveResult.success in docs/api/types/http-response.md.",
+      "source": {
+        "line": 21,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/http/HttpSaveResult.kt"
+      },
+      "symbolId": "http.saveResult.success"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "bilateralFilter",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.bilateralFilter in docs/api/media/image.md.",
+      "source": {
+        "line": 586,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.bilateralFilter"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "buildRegion",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.buildRegion in docs/api/media/image.md.",
+      "source": {
+        "line": 1409,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.buildRegion"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "captureScreen",
+      "owner": "images",
+      "reason": "More than one equally specific member section matches images.captureScreen in docs/api/media/image.md.",
+      "source": {
+        "line": 287,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.captureScreen"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "compress",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.compress in docs/api/media/image.md.",
+      "source": {
+        "line": 1287,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.compress"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "compressToBytes",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.compressToBytes in docs/api/media/image.md.",
+      "source": {
+        "line": 1323,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.compressToBytes"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "detectAndComputeFeatures",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.detectAndComputeFeatures in docs/api/media/image.md.",
+      "source": {
+        "line": 1194,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.detectAndComputeFeatures"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "detectColor",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.detectColor in docs/api/media/image.md.",
+      "source": {
+        "line": 787,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.detectColor"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "detectMultiColors",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.detectMultiColors in docs/api/media/image.md.",
+      "source": {
+        "line": 819,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.detectMultiColors"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "detectsMultiColors",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.detectsMultiColors in docs/api/media/image.md.",
+      "source": {
+        "line": 854,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.detectsMultiColors"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "downsample",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.downsample in docs/api/media/image.md.",
+      "source": {
+        "line": 1340,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.downsample"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findAllPointsForColor",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findAllPointsForColor in docs/api/media/image.md.",
+      "source": {
+        "line": 958,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findAllPointsForColor"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findCircles",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findCircles in docs/api/media/image.md.",
+      "source": {
+        "line": 625,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findCircles"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointByColor",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointByColor in docs/api/media/image.md.",
+      "source": {
+        "line": 861,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointByColor"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointByColorExactly",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointByColorExactly in docs/api/media/image.md.",
+      "source": {
+        "line": 911,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointByColorExactly"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointByColors",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointByColors in docs/api/media/image.md.",
+      "source": {
+        "line": 965,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointByColors"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointByImage",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointByImage in docs/api/media/image.md.",
+      "source": {
+        "line": 1030,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointByImage"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointsByColor",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointsByColor in docs/api/media/image.md.",
+      "source": {
+        "line": 930,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointsByColor"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "findPointsByColors",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.findPointsByColors in docs/api/media/image.md.",
+      "source": {
+        "line": 1005,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.findPointsByColors"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "flip",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.flip in docs/api/media/image.md.",
+      "source": {
+        "line": 719,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.flip"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "getScreenCaptureOptions",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.getScreenCaptureOptions in docs/api/media/image.md.",
+      "source": {
+        "line": 337,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.getScreenCaptureOptions"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "getSimilarity",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.getSimilarity in docs/api/media/image.md.",
+      "source": {
+        "line": 1480,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.getSimilarity"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "getSize",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.getSize in docs/api/media/image.md.",
+      "source": {
+        "line": 1367,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.getSize"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "hist",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.hist in docs/api/media/image.md.",
+      "source": {
+        "line": 1443,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.hist"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "imread",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.imread in docs/api/media/image.md.",
+      "source": {
+        "line": 203,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.imread"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "invert",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.invert in docs/api/media/image.md.",
+      "source": {
+        "line": 381,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.invert"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "isEqual",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.isEqual in docs/api/media/image.md.",
+      "source": {
+        "line": 1461,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.isEqual"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "isGrayscale",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.isGrayscale in docs/api/media/image.md.",
+      "source": {
+        "line": 406,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.isGrayscale"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "isRecycled",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.isRecycled in docs/api/media/image.md.",
+      "source": {
+        "line": 1275,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.isRecycled"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "loadAsync",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.loadAsync in docs/api/media/image.md.",
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.loadAsync"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "matchFeatures",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.matchFeatures in docs/api/media/image.md.",
+      "source": {
+        "line": 1214,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.matchFeatures"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "mse",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.mse in docs/api/media/image.md.",
+      "source": {
+        "line": 1449,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.mse"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "mssim",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.mssim in docs/api/media/image.md.",
+      "source": {
+        "line": 1437,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.mssim"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "ncc",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.ncc in docs/api/media/image.md.",
+      "source": {
+        "line": 1455,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.ncc"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "pixel",
+      "owner": "images",
+      "reason": "More than one equally specific member section matches images.pixel in docs/api/media/image.md.",
+      "source": {
+        "line": 274,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.pixel"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "psnr",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.psnr in docs/api/media/image.md.",
+      "source": {
+        "line": 1425,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.psnr"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "readPixels",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.readPixels in docs/api/media/image.md.",
+      "source": {
+        "line": 1163,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.readPixels"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "recycle",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.recycle in docs/api/media/image.md.",
+      "source": {
+        "line": 1281,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.recycle"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "requestScreenCaptureAsync",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.requestScreenCaptureAsync in docs/api/media/image.md.",
+      "source": {
+        "line": 322,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.requestScreenCaptureAsync"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "saveImage",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.saveImage in docs/api/media/image.md.",
+      "source": {
+        "line": 362,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.saveImage"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "ssim",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.ssim in docs/api/media/image.md.",
+      "source": {
+        "line": 1431,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.ssim"
+    },
+    {
+      "expectedPage": "docs/api/media/image.md",
+      "kind": "function",
+      "name": "stopScreenCapture",
+      "owner": "images",
+      "reason": "No addressable member section exists for images.stopScreenCapture in docs/api/media/image.md.",
+      "source": {
+        "line": 331,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/images/Images.kt"
+      },
+      "symbolId": "images.stopScreenCapture"
     },
     {
       "expectedPage": "docs/api/utilities/mathx.md",
@@ -5440,6 +5229,174 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Mathx.kt"
       },
       "symbolId": "Mathx.roundPow"
+    },
+    {
+      "expectedPage": "docs/api/media/media.md",
+      "kind": "function",
+      "name": "onMediaScannerConnected",
+      "owner": "media",
+      "reason": "No addressable member section exists for media.onMediaScannerConnected in docs/api/media/media.md.",
+      "source": {
+        "line": 30,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Media.java"
+      },
+      "symbolId": "media.onMediaScannerConnected"
+    },
+    {
+      "expectedPage": "docs/api/media/media.md",
+      "kind": "function",
+      "name": "onScanCompleted",
+      "owner": "media",
+      "reason": "No addressable member section exists for media.onScanCompleted in docs/api/media/media.md.",
+      "source": {
+        "line": 101,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Media.java"
+      },
+      "symbolId": "media.onScanCompleted"
+    },
+    {
+      "expectedPage": "docs/api/media/media.md",
+      "kind": "function",
+      "name": "recycle",
+      "owner": "media",
+      "reason": "No addressable member section exists for media.recycle in docs/api/media/media.md.",
+      "source": {
+        "line": 105,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Media.java"
+      },
+      "symbolId": "media.recycle"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "audio",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.audio in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.audio"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "general",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.general in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.general"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "image",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.image in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.image"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "property",
+      "name": "inform",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.inform in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.inform"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "max",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.max in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.max"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "menu",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.menu in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.menu"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "other",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.other in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.other"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "property",
+      "name": "path",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.path in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.path"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "text",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.text in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.text"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "toString",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.toString in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 106,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.toString"
+    },
+    {
+      "expectedPage": "docs/api/media/mediainfo.md",
+      "kind": "function",
+      "name": "video",
+      "owner": "mediainfo.result",
+      "reason": "No addressable member section exists for mediainfo.result.video in docs/api/media/mediainfo.md.",
+      "source": {
+        "line": 52,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/mediainfo/MediainfoNativeObject.kt"
+      },
+      "symbolId": "mediainfo.result.video"
     },
     {
       "expectedPage": "docs/api/utilities/mime.md",
@@ -5778,28 +5735,40 @@
       "symbolId": "mime.unregisterMimeDetector"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/canvas.md",
       "kind": "module",
-      "name": "auto",
-      "owner": "auto",
-      "reason": "No addressable member section exists for module:auto in docs/api/automation/automator.md.",
+      "name": "canvas",
+      "owner": "canvas",
+      "reason": "More than one equally specific member section matches module:canvas in docs/api/media/canvas.md.",
       "source": {
-        "line": 741,
+        "line": 746,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "module:auto"
+      "symbolId": "module:canvas"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/color.md",
       "kind": "module",
-      "name": "automator",
-      "owner": "automator",
-      "reason": "No addressable member section exists for module:automator in docs/api/automation/automator.md.",
+      "name": "color",
+      "owner": "color",
+      "reason": "No addressable member section exists for module:color in docs/api/media/color.md.",
       "source": {
-        "line": 742,
+        "line": 758,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "module:automator"
+      "symbolId": "module:color"
+    },
+    {
+      "expectedPage": "docs/api/media/color.md",
+      "kind": "module",
+      "name": "colors",
+      "owner": "colors",
+      "reason": "No addressable member section exists for module:colors in docs/api/media/color.md.",
+      "source": {
+        "line": 757,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
+      },
+      "symbolId": "module:colors"
     },
     {
       "expectedPage": "docs/api/utilities/converter.md",
@@ -5812,18 +5781,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
       "symbolId": "module:cvt.bytes"
-    },
-    {
-      "expectedPage": "docs/api/automation/dialogs.md",
-      "kind": "module",
-      "name": "dialogs",
-      "owner": "dialogs",
-      "reason": "More than one equally specific member section matches module:dialogs in docs/api/automation/dialogs.md.",
-      "source": {
-        "line": 760,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "module:dialogs"
     },
     {
       "expectedPage": "docs/api/system/engines.md",
@@ -5862,18 +5819,6 @@
       "symbolId": "module:files"
     },
     {
-      "expectedPage": "docs/api/automation/floaty.md",
-      "kind": "module",
-      "name": "floaty",
-      "owner": "floaty",
-      "reason": "More than one equally specific member section matches module:floaty in docs/api/automation/floaty.md.",
-      "source": {
-        "line": 782,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "module:floaty"
-    },
-    {
       "expectedPage": "docs/api/utilities/formatter.md",
       "kind": "module",
       "name": "bytes",
@@ -5886,40 +5831,52 @@
       "symbolId": "module:fmt.bytes"
     },
     {
-      "expectedPage": "docs/api/automation/keys.md",
+      "expectedPage": "docs/api/media/image.md",
       "kind": "module",
-      "name": "keys",
-      "owner": "keys",
-      "reason": "More than one equally specific member section matches module:keys in docs/api/automation/keys.md.",
+      "name": "images",
+      "owner": "images",
+      "reason": "More than one equally specific member section matches module:images in docs/api/media/image.md.",
       "source": {
-        "line": 745,
+        "line": 747,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "module:keys"
+      "symbolId": "module:images"
     },
     {
-      "expectedPage": "docs/api/automation/automator.md",
+      "expectedPage": "docs/api/media/ocr.md",
       "kind": "module",
-      "name": "rootAutomator",
-      "owner": "rootAutomator",
-      "reason": "No addressable member section exists for module:rootAutomator in docs/api/automation/automator.md.",
+      "name": "mlkit",
+      "owner": "ocr.mlkit",
+      "reason": "No addressable member section exists for module:ocr.mlkit in docs/api/media/ocr.md.",
       "source": {
-        "line": 780,
+        "line": 749,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "module:rootAutomator"
+      "symbolId": "module:ocr.mlkit"
     },
     {
-      "expectedPage": "docs/api/automation/ui-selector.md",
+      "expectedPage": "docs/api/media/ocr.md",
       "kind": "module",
-      "name": "selector",
-      "owner": "selector",
-      "reason": "More than one equally specific member section matches module:selector in docs/api/automation/ui-selector.md.",
+      "name": "paddle",
+      "owner": "ocr.paddle",
+      "reason": "No addressable member section exists for module:ocr.paddle in docs/api/media/ocr.md.",
       "source": {
-        "line": 743,
+        "line": 750,
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
-      "symbolId": "module:selector"
+      "symbolId": "module:ocr.paddle"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "module",
+      "name": "rapid",
+      "owner": "ocr.rapid",
+      "reason": "No addressable member section exists for module:ocr.rapid in docs/api/media/ocr.md.",
+      "source": {
+        "line": 751,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
+      },
+      "symbolId": "module:ocr.rapid"
     },
     {
       "expectedPage": "docs/api/system/sensors.md",
@@ -5956,18 +5913,6 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
       },
       "symbolId": "module:threads"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "module",
-      "name": "ui",
-      "owner": "ui",
-      "reason": "More than one equally specific member section matches module:ui in docs/api/automation/ui.md.",
-      "source": {
-        "line": 756,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
-      },
-      "symbolId": "module:ui"
     },
     {
       "expectedPage": "docs/api/utilities/util.md",
@@ -6030,6 +5975,18 @@
       "symbolId": "module:util.versionCodes"
     },
     {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "module",
+      "name": "webSocket",
+      "owner": "webSocket",
+      "reason": "docs/api/network/web-socket.md#c-websocket is already assigned to construct:webSocket; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 764,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt"
+      },
+      "symbolId": "module:webSocket"
+    },
+    {
       "expectedPage": "docs/api/core/monkeyking.md",
       "kind": "property",
       "name": "name",
@@ -6064,6 +6021,90 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Numberx.kt"
       },
       "symbolId": "Numberx.ensureNumbersLike"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "detect",
+      "owner": "ocr.mlkit",
+      "reason": "docs/api/media/ocr.md#m-detect is already assigned to ocr.detect; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 37,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrMLKit.kt"
+      },
+      "symbolId": "ocr.mlkit.detect"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "detect",
+      "owner": "ocr.paddle",
+      "reason": "docs/api/media/ocr.md#m-detect is already assigned to ocr.detect; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 66,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrPaddle.kt"
+      },
+      "symbolId": "ocr.paddle.detect"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "recognizeText",
+      "owner": "ocr.paddle",
+      "reason": "docs/api/media/ocr.md#m-recognizetext is already assigned to ocr.mlkit.recognizeText; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 60,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrPaddle.kt"
+      },
+      "symbolId": "ocr.paddle.recognizeText"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "detect",
+      "owner": "ocr.rapid",
+      "reason": "docs/api/media/ocr.md#m-detect is already assigned to ocr.detect; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 36,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrRapid.kt"
+      },
+      "symbolId": "ocr.rapid.detect"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "recognizeText",
+      "owner": "ocr.rapid",
+      "reason": "docs/api/media/ocr.md#m-recognizetext is already assigned to ocr.mlkit.recognizeText; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 30,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/OcrRapid.kt"
+      },
+      "symbolId": "ocr.rapid.recognizeText"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "recognizeText",
+      "owner": "ocr",
+      "reason": "docs/api/media/ocr.md#m-recognizetext is already assigned to ocr.mlkit.recognizeText; distinct symbols need distinct anchors.",
+      "source": {
+        "line": 65,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/Ocr.kt"
+      },
+      "symbolId": "ocr.recognizeText"
+    },
+    {
+      "expectedPage": "docs/api/media/ocr.md",
+      "kind": "function",
+      "name": "toString",
+      "owner": "ocr",
+      "reason": "No addressable member section exists for ocr.toString in docs/api/media/ocr.md.",
+      "source": {
+        "line": 88,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ocr/Ocr.kt"
+      },
+      "symbolId": "ocr.toString"
     },
     {
       "expectedPage": "docs/api/utilities/opencc.md",
@@ -6208,6 +6249,66 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt"
       },
       "symbolId": "pinyin.STYLE_TONE2"
+    },
+    {
+      "expectedPage": "docs/api/media/qr-code.md",
+      "kind": "function",
+      "name": "detect",
+      "owner": "qrcode",
+      "reason": "No addressable member section exists for qrcode.detect in docs/api/media/qr-code.md.",
+      "source": {
+        "line": 59,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/QrCode.kt"
+      },
+      "symbolId": "qrcode.detect"
+    },
+    {
+      "expectedPage": "docs/api/media/qr-code.md",
+      "kind": "function",
+      "name": "detectAll",
+      "owner": "qrcode",
+      "reason": "No addressable member section exists for qrcode.detectAll in docs/api/media/qr-code.md.",
+      "source": {
+        "line": 65,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/QrCode.kt"
+      },
+      "symbolId": "qrcode.detectAll"
+    },
+    {
+      "expectedPage": "docs/api/media/qr-code.md",
+      "kind": "function",
+      "name": "recognizeText",
+      "owner": "qrcode",
+      "reason": "No addressable member section exists for qrcode.recognizeText in docs/api/media/qr-code.md.",
+      "source": {
+        "line": 47,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/QrCode.kt"
+      },
+      "symbolId": "qrcode.recognizeText"
+    },
+    {
+      "expectedPage": "docs/api/media/qr-code.md",
+      "kind": "function",
+      "name": "recognizeTexts",
+      "owner": "qrcode",
+      "reason": "No addressable member section exists for qrcode.recognizeTexts in docs/api/media/qr-code.md.",
+      "source": {
+        "line": 53,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/barcode/QrCode.kt"
+      },
+      "symbolId": "qrcode.recognizeTexts"
+    },
+    {
+      "expectedPage": "docs/api/media/recorder.md",
+      "kind": "function",
+      "name": "shortcut",
+      "owner": "recorder",
+      "reason": "No addressable member section exists for recorder.shortcut in docs/api/media/recorder.md.",
+      "source": {
+        "line": 54,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/Recorder.kt"
+      },
+      "symbolId": "recorder.shortcut"
     },
     {
       "expectedPage": "docs/api/utilities/s13n.md",
@@ -8718,546 +8819,6 @@
       "symbolId": "timers.timerForCurrentThread"
     },
     {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "__inflate__",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.__inflate__ in docs/api/automation/ui.md.",
-      "source": {
-        "line": 371,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.__inflate__"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "__widgets__",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.__widgets__ in docs/api/automation/ui.md.",
-      "source": {
-        "line": 140,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.__widgets__"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "backgroundColor",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.backgroundColor in docs/api/automation/ui.md.",
-      "source": {
-        "line": 590,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.backgroundColor"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "bindingContext",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.bindingContext in docs/api/automation/ui.md.",
-      "source": {
-        "line": 25,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.bindingContext"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "emitter",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.emitter in docs/api/automation/ui.md.",
-      "source": {
-        "line": 145,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.emitter"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "findById",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.findById in docs/api/automation/ui.md.",
-      "source": {
-        "line": 647,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.findById"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "findByStringId",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.findByStringId in docs/api/automation/ui.md.",
-      "source": {
-        "line": 663,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.findByStringId"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "get",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.get in docs/api/automation/ui.md.",
-      "source": {
-        "line": 47,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.get"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getClassName",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getClassName in docs/api/automation/ui.md.",
-      "source": {
-        "line": 45,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.getClassName"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getDefaultValue",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getDefaultValue in docs/api/automation/ui.md.",
-      "source": {
-        "line": 62,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
-      },
-      "symbolId": "ui.getDefaultValue"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getNavigationBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getNavigationBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 731,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.getNavigationBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getStatusBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getStatusBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 710,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.getStatusBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getVisibleNavigationBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getVisibleNavigationBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 742,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.getVisibleNavigationBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getVisibleStatusBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getVisibleStatusBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 721,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.getVisibleStatusBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getWithoutProxy",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.getWithoutProxy in docs/api/automation/ui.md.",
-      "source": {
-        "line": 64,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/rhino/ProxyObject.kt"
-      },
-      "symbolId": "ui.getWithoutProxy"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "isAndroidLayout",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.isAndroidLayout in docs/api/automation/ui.md.",
-      "source": {
-        "line": 18,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.isAndroidLayout"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "isUiThread",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.isUiThread in docs/api/automation/ui.md.",
-      "source": {
-        "line": 462,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.isUiThread"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "keepScreenOn",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.keepScreenOn in docs/api/automation/ui.md.",
-      "source": {
-        "line": 701,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.keepScreenOn"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "layoutInflater",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.layoutInflater in docs/api/automation/ui.md.",
-      "source": {
-        "line": 37,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.layoutInflater"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "navigationBarColor",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.navigationBarColor in docs/api/automation/ui.md.",
-      "source": {
-        "line": 603,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.navigationBarColor"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "navigationBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.navigationBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 159,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.navigationBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "navigationBarIconLight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.navigationBarIconLight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 614,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.navigationBarIconLight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "navigationBarIconLightBy",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.navigationBarIconLightBy in docs/api/automation/ui.md.",
-      "source": {
-        "line": 630,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.navigationBarIconLightBy"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "put",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.put in docs/api/automation/ui.md.",
-      "source": {
-        "line": 53,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.put"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "R",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.R in docs/api/automation/ui.md.",
-      "source": {
-        "line": 139,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.R"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "recycle",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.recycle in docs/api/automation/ui.md.",
-      "source": {
-        "line": 66,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.recycle"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "registerWidget",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.registerWidget in docs/api/automation/ui.md.",
-      "source": {
-        "line": 514,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.registerWidget"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "resourceParser",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.resourceParser in docs/api/automation/ui.md.",
-      "source": {
-        "line": 31,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.resourceParser"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "root",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.root in docs/api/automation/ui.md.",
-      "source": {
-        "line": 141,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.root"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "statusBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.statusBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 149,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.statusBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "statusBarIconLight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.statusBarIconLight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 567,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.statusBarIconLight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "statusBarIconLightBy",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.statusBarIconLightBy in docs/api/automation/ui.md.",
-      "source": {
-        "line": 579,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.statusBarIconLightBy"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "useAndroidLayout",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.useAndroidLayout in docs/api/automation/ui.md.",
-      "source": {
-        "line": 415,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.useAndroidLayout"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "view",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.view in docs/api/automation/ui.md.",
-      "source": {
-        "line": 23,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.view"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "visibleNavigationBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.visibleNavigationBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 164,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.visibleNavigationBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "getter",
-      "name": "visibleStatusBarHeight",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.visibleStatusBarHeight in docs/api/automation/ui.md.",
-      "source": {
-        "line": 154,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UI.kt"
-      },
-      "symbolId": "ui.visibleStatusBarHeight"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "__attrs__",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.__attrs__ in docs/api/automation/ui.md.",
-      "source": {
-        "line": 28,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.__attrs__"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "defineAttr",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.defineAttr in docs/api/automation/ui.md.",
-      "source": {
-        "line": 42,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.defineAttr"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "getAttr",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.getAttr in docs/api/automation/ui.md.",
-      "source": {
-        "line": 107,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.getAttr"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "hasAttr",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.hasAttr in docs/api/automation/ui.md.",
-      "source": {
-        "line": 82,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.hasAttr"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "notifyAfterInflation",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.notifyAfterInflation in docs/api/automation/ui.md.",
-      "source": {
-        "line": 137,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.notifyAfterInflation"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "notifyViewCreated",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.notifyViewCreated in docs/api/automation/ui.md.",
-      "source": {
-        "line": 124,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.notifyViewCreated"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "renderInternal",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.renderInternal in docs/api/automation/ui.md.",
-      "source": {
-        "line": 32,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.renderInternal"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "function",
-      "name": "setAttr",
-      "owner": "ui.Widget",
-      "reason": "No addressable member section exists for ui.Widget.setAttr in docs/api/automation/ui.md.",
-      "source": {
-        "line": 89,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/ui/UIWidget.kt"
-      },
-      "symbolId": "ui.Widget.setAttr"
-    },
-    {
-      "expectedPage": "docs/api/automation/ui.md",
-      "kind": "property",
-      "name": "widgets",
-      "owner": "ui",
-      "reason": "No addressable member section exists for ui.widgets in docs/api/automation/ui.md.",
-      "source": {
-        "line": 21,
-        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/UI.kt"
-      },
-      "symbolId": "ui.widgets"
-    },
-    {
       "expectedPage": "docs/api/utilities/util.md",
       "kind": "function",
       "name": "__assignFunctions__",
@@ -10012,6 +9573,222 @@
         "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/util/VersionCodes.kt"
       },
       "symbolId": "util.versionCodes.toString"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "get",
+      "owner": "webSocket",
+      "reason": "No addressable member section exists for webSocket.get in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 17,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/web/WebSocketFields.kt"
+      },
+      "symbolId": "webSocket.get"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "addListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.addListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 133,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.addListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "property",
+      "name": "client",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.client in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 17,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      },
+      "symbolId": "webSocket.instance.client"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "property",
+      "name": "defaultMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.defaultMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 110,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.defaultMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "emit",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.emit in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 137,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.emit"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "emitSticky",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.emitSticky in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 146,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.emitSticky"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "eventNames",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.eventNames in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 152,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.eventNames"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "getMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.getMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 156,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.getMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "getTimer",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.getTimer in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 160,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.getTimer"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "listenerCount",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.listenerCount in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 164,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.listenerCount"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "listeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.listeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 169,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.listeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "once",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.once in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 73,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      },
+      "symbolId": "webSocket.instance.once"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "prependListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.prependListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 185,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.prependListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "prependOnceListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.prependOnceListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 191,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.prependOnceListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "removeAllListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.removeAllListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 197,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.removeAllListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "removeListener",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.removeListener in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 219,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.removeListener"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "function",
+      "name": "setMaxListeners",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.setMaxListeners in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 227,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/eventloop/EventEmitter.java"
+      },
+      "symbolId": "webSocket.instance.setMaxListeners"
+    },
+    {
+      "expectedPage": "docs/api/network/web-socket.md",
+      "kind": "property",
+      "name": "url",
+      "owner": "webSocket.instance",
+      "reason": "No addressable member section exists for webSocket.instance.url in docs/api/network/web-socket.md.",
+      "source": {
+        "line": 18,
+        "path": "app/src/main/java/com/qiaomu/monkeyking/core/web/WebSocket.kt"
+      },
+      "symbolId": "webSocket.instance.url"
     },
     {
       "expectedPage": "docs/api/utilities/zip.md",
