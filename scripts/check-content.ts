@@ -17,6 +17,7 @@ import {
   validateContentCatalog,
 } from './content/catalog'
 import { collectMarkdownImageTargets } from './content/markdown-images'
+import { inspectContentQuality } from './content/quality'
 import {
   expectedBrandLogoSha256,
   migratedImageNames,
@@ -298,6 +299,19 @@ function inspectCanonicalLayout(
     } catch (error) {
       errors.push(error instanceof Error ? error.message : String(error))
     }
+  }
+
+  const quality = inspectContentQuality(
+    publishedMarkdown.flatMap((source) => {
+      const path = resolve(rootDirectory, source)
+      if (!existsSync(path) || !lstatSync(path).isFile()) return []
+      return [{ source, markdown: readFileSync(path, 'utf8') }]
+    }),
+  )
+  for (const issue of quality.issues) {
+    errors.push(
+      `Placeholder content in ${issue.source}:${issue.line}: ${issue.marker}`,
+    )
   }
 
   return { canonicalMarkdownCount, imageCount: imageNames.length }

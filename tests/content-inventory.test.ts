@@ -332,6 +332,24 @@ describe('content inventory', () => {
     }
   })
 
+  test('rejects placeholder prose in the canonical documentation corpus', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-placeholder-content-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(
+        root,
+        contentEntries[0].source,
+        '# Overview\n\n此章节待补充或完善...\n',
+      )
+
+      expect(checkContent(root).errors.join('\n')).toMatch(
+        /placeholder content.*待补充\/待完善/i,
+      )
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('rejects a drifted committed brand logo', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-brand-logo-'))
     try {
