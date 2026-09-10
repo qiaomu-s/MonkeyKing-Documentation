@@ -4,12 +4,12 @@
     {
       "textRaw": "全局对象 (Global)",
       "name": "全局对象_(global)",
-      "desc": "<p>在 JavaScript 中, <a href=\"https://stackoverflow.com/questions/9108925/how-is-almost-everything-in-javascript-an-object/\">几乎一切都是对象</a>.<br>\n此处的全局 &quot;对象&quot; 包括 [ 变量 / 方法 / 构造器 ] 等.<br>\n全局对象随处可用, 包括 ECMA 标准内置对象 (如 [ Number / RegExp / String ] 等).</p>\n<p>Monkey King 的内置模块均支持全局使用, 如 <code>app</code>, <code>images</code>, <code>device</code> 等.</p>\n<p>为便于使用, 一些 Monkey King 模块中的方法也被全局化,<br>\n如 <code>images.captureScreen()</code>, <code>dialogs.alert()</code>, <code>app.launch()</code> 等.<br>\n全局化方法均以 <code>Global</code> 标签标注.</p>\n<p>脚本文件可直接运行使用, 也可作为模块被导入使用 (<code>require</code> 方法).<br>\n当作为模块使用时, <code>exports</code> 和 <code>module</code> 可作为全局对象使用.<br>\n另在 UI 模式下也有一些专属全局对象, 如 <code>activity</code>.</p>\n",
+      "desc": "<p>在 JavaScript 中, <a href=\"https://stackoverflow.com/questions/9108925/how-is-almost-everything-in-javascript-an-object/\">几乎一切都是对象</a>.<br>\n此处的全局 &quot;对象&quot; 包括 [ 变量 / 方法 / 构造器 ] 等.<br>\n全局对象随处可用, 包括 ECMA 标准内置对象 (如 [ Number / RegExp / String ] 等).</p>\n<p>Monkey King 的内置模块均支持全局使用, 如 <code>app</code>, <code>images</code>, <code>device</code> 等.</p>\n<p>为便于使用, 一些 Monkey King 模块中的方法也被全局化,<br>\n如 <code>images.captureScreen()</code>, <code>dialogs.alert()</code>, <code>app.launch()</code> 等.<br>\n全局化方法均以 <code>Global</code> 标签标注.</p>\n<p>脚本文件可直接运行使用, 也可作为模块被导入使用 (<code>require</code> 方法).<br>\n当作为模块使用时, <code>exports</code> 和 <code>module</code> 可作为全局对象使用.<br>\n另在 UI 模式下也有一些专属全局对象, 如 <code>activity</code>.</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n",
       "modules": [
         {
           "textRaw": "覆写保护",
           "name": "覆写保护",
-          "desc": "<p>Monkey King 对部分全局对象及内置模块增加了覆写保护.<br>\n以下全局声明或赋值将导致异常或非预期结果:</p>\n<pre><code class=\"lang-js\">/* 以全局对象 selector 为例. */\n\n/* 声明无效. */\nlet selector = 1; /* 异常: 变量 selector 重复声明. */\nconst selector = 1; /* 同上. */\nvar selector = 1; /* 同上. */\n\n/* 覆写无效 (非严格模式). */\nselector = 1;\ntypeof selector; // &quot;function&quot; - 静默失败, 覆写未生效.\n\n/* 覆写无效 (严格模式). */\n&quot;use strict&quot;;\nselector = 1; /* 异常: 无法修改只读属性: selector. */\n</code></pre>\n<p>局部作用域不受上述情况影响:</p>\n<pre><code class=\"lang-js\">(function () {\n    let selector = 1;\n    return typeof selector;\n})(); // &quot;number&quot;\n</code></pre>\n<p>截至目前 (2022/10) 受覆写保护的对象有:</p>\n<pre><code class=\"lang-text\">selector\ncontinuation\n</code></pre>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">global</p>\n\n<hr>\n",
+          "desc": "<p>Monkey King 对部分全局对象及内置模块增加了覆写保护.<br>\n以下全局声明或赋值将导致异常或非预期结果:</p>\n<pre><code class=\"lang-js\">/* 以全局对象 selector 为例. */\n\n/* 声明无效. */\nlet selector = 1; /* 异常: 变量 selector 重复声明. */\nconst selector = 1; /* 同上. */\nvar selector = 1; /* 同上. */\n\n/* 覆写无效 (非严格模式). */\nselector = 1;\ntypeof selector; // &quot;function&quot; - 静默失败, 覆写未生效.\n\n/* 覆写无效 (严格模式). */\n&quot;use strict&quot;;\nselector = 1; /* 异常: 无法修改只读属性: selector. */\n</code></pre>\n<p>局部作用域不受上述情况影响:</p>\n<pre><code class=\"lang-js\">(function () {\n    let selector = 1;\n    return typeof selector;\n})(); // &quot;number&quot;\n</code></pre>\n<p>Monkey King 6.7.0 中至少以下对象带只读或永久属性保护:</p>\n<pre><code class=\"lang-text\">selector\ncontinuation\nPromise\nResultAdapter\nModule\nrequire\n__engine__\n</code></pre>\n<p>不同对象使用的 Rhino 属性标志不同；不要依赖对内置全局重新赋值或删除后的行为。</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">global</p>\n\n<hr>\n",
           "type": "module",
           "displayName": "覆写保护"
         },
@@ -21,8 +21,430 @@
           "displayName": "[@] global"
         },
         {
+          "textRaw": "[m] toString",
+          "name": "[m]_tostring",
+          "methods": [
+            {
+              "textRaw": "global.toString()",
+              "type": "method",
+              "name": "toString",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 固定为 <code>[object global]</code></li>\n<li><strong>异常 / 权限 / 副作用</strong>：传入参数时抛出异常；同步纯查询</li>\n</ul>\n<p>Monkey King 为顶级作用域安装了字面量 <code>toString</code> 实现，因此直接调用全局 <code>toString()</code> 与 <code>global.toString()</code> 结果相同。</p>\n<pre><code class=\"lang-js\">console.log(global.toString()); // [object global]\nconsole.log(toString()); // [object global]\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] toString"
+        },
+        {
+          "textRaw": "引擎全局变量",
+          "name": "引擎全局变量",
+          "desc": "<p>Monkey King 在 Rhino 引擎初始化过程中注入以下核心变量：</p>\n<table>\n<thead>\n<tr>\n<th>名称</th>\n<th>类型</th>\n<th>可写性</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>runtime</code></td>\n<td><code>ScriptRuntime</code></td>\n<td>普通全局属性</td>\n<td>当前脚本运行时，持有模块实现与生命周期资源</td>\n</tr>\n<tr>\n<td><code>global</code></td>\n<td><code>Object</code></td>\n<td>永久属性</td>\n<td>当前顶级作用域自身</td>\n</tr>\n<tr>\n<td><code>__engine__</code></td>\n<td><code>RhinoJavaScriptEngine</code></td>\n<td>只读、不可枚举、永久</td>\n<td>当前脚本引擎；属于底层接口</td>\n</tr>\n<tr>\n<td><code>Promise</code></td>\n<td><code>Function</code></td>\n<td>只读、永久</td>\n<td>Monkey King 的 continuation 兼容 Promise</td>\n</tr>\n<tr>\n<td><code>ResultAdapter</code></td>\n<td><code>Function</code></td>\n<td>只读、永久</td>\n<td>回调、原生异步结果和同步等待之间的适配器</td>\n</tr>\n<tr>\n<td><code>Module</code></td>\n<td><code>Function</code></td>\n<td>永久</td>\n<td>CommonJS 模块构造器</td>\n</tr>\n<tr>\n<td><code>require</code></td>\n<td><code>Function</code></td>\n<td>永久</td>\n<td>CommonJS 模块加载函数</td>\n</tr>\n<tr>\n<td><code>crash</code></td>\n<td><code>Function</code></td>\n<td>普通全局属性</td>\n<td>崩溃处理测试入口，不应在业务脚本中调用</td>\n</tr>\n</tbody>\n</table>\n<p><code>context</code>、<code>activity</code> 等 Android 对象由具体运行场景提供，不能假设后台脚本一定存在 Activity。模块系统详见 <a href=\"modules.md\">模块</a>。</p>\n<pre><code class=\"lang-js\">console.log(runtime.engines.myEngine().id);\nconsole.log(global === runtime.topLevelScope);\nconsole.log(typeof Promise, typeof require);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "引擎全局变量"
+        },
+        {
+          "textRaw": "[m] isNullish",
+          "name": "[m]_isnullish",
+          "methods": [
+            {
+              "textRaw": "isNullish(...values)",
+              "type": "method",
+              "name": "isNullish",
+              "desc": "<p><strong><code>6.0.1</code></strong> <strong><code>Global</code></strong> <strong><code>v6.6.0: variadic</code></strong></p>\n<ul>\n<li><strong>values</strong> { <a href=\"../types/data-types.md#any\">...any[]</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：不抛出参数异常，不需要权限，只进行同步值判断</li>\n</ul>\n<p>仅当所有参数都是 <code>undefined</code>、<code>null</code> 或 Rhino 的“属性不存在”哨兵值时返回 <code>true</code>。不传参数时按空集合规则返回 <code>true</code>；<code>false</code>、<code>0</code>、<code>NaN</code> 和空字符串都不是 nullish。</p>\n<pre><code class=\"lang-js\">isNullish();                    // true\nisNullish(null, undefined);     // true\nisNullish(0);                   // false\nisNullish(global.missingValue); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "...values"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isNullish"
+        },
+        {
+          "textRaw": "[m] structuredClone",
+          "name": "[m]_structuredclone",
+          "methods": [
+            {
+              "textRaw": "structuredClone(value?)",
+              "type": "method",
+              "name": "structuredClone",
+              "desc": "<p><strong><code>v6.7.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>[ value = <code>undefined</code> ]</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - 深复制结果</li>\n<li><strong>异常</strong>：值或任意后代包含函数时抛出带 <code>DataCloneError</code> 文本的 Error；属性描述复制失败时也会抛出异常</li>\n<li><strong>权限 / 线程 / 副作用</strong>：不需要权限，同步遍历对象图，不转移源缓冲区所有权</li>\n</ul>\n<p>在引擎初始化末尾由应用内置兼容实现注入。支持循环引用、普通对象、数组、<code>Date</code>、<code>RegExp</code>、<code>Map</code>、<code>Set</code>、<code>ArrayBuffer</code>、<code>DataView</code>、常见 TypedArray 和 <code>Error</code>。</p>\n<p>函数不能被克隆，会抛出包含 <code>DataCloneError</code> 的错误。该实现没有浏览器版的 transfer list 参数，也不会转移原缓冲区所有权。</p>\n<pre><code class=\"lang-js\">const source = {\n    createdAt: new Date(),\n    labels: new Set([&#39;a&#39;, &#39;b&#39;]),\n};\nsource.self = source;\n\nconst copy = structuredClone(source);\nconsole.log(copy !== source);\nconsole.log(copy.self === copy);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] structuredClone"
+        },
+        {
+          "textRaw": "[p] isMonkeyKing",
+          "name": "[p]_ismonkeyking",
+          "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 固定为 <code>true</code></li>\n<li><strong>异常 / 权限 / 副作用</strong>：无</li>\n</ul>\n<p>用于判断脚本是否运行在 Monkey King 的增强全局环境。</p>\n<pre><code class=\"lang-js\">console.log(isMonkeyKing); // true\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] isMonkeyKing"
+        },
+        {
+          "textRaw": "[m] TODO",
+          "name": "[m]_todo",
+          "methods": [
+            {
+              "textRaw": "TODO(reason?)",
+              "type": "method",
+              "name": "TODO",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>[ reason ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>never</code> }</li>\n<li><strong>异常 / 副作用</strong>：始终抛出 <code>NotImplementedError</code>；不需要 Android 权限</li>\n</ul>\n<pre><code class=\"lang-js\">function unfinishedFeature() {\n    TODO(&#39;该功能尚未实现&#39;);\n}\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "reason?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] TODO"
+        },
+        {
+          "textRaw": "[m] isUiThread",
+          "name": "[m]_isuithread",
+          "methods": [
+            {
+              "textRaw": "isUiThread()",
+              "type": "method",
+              "name": "isUiThread",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：参数不为空时抛出异常；不需要权限，只查询当前线程</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isUiThread());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isUiThread"
+        },
+        {
+          "textRaw": "[m] isJavaObject",
+          "name": "[m]_isjavaobject",
+          "methods": [
+            {
+              "textRaw": "isJavaObject(value)",
+              "type": "method",
+              "name": "isJavaObject",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isJavaObject(new java.io.File(&#39;/sdcard&#39;))); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isJavaObject"
+        },
+        {
+          "textRaw": "[m] isInteger",
+          "name": "[m]_isinteger",
+          "methods": [
+            {
+              "textRaw": "isInteger(value)",
+              "type": "method",
+              "name": "isInteger",
+              "desc": "<p><strong><code>6.0.1</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isInteger(42)); // true\nconsole.log(isInteger(4.2)); // false\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isInteger"
+        },
+        {
+          "textRaw": "[m] isBigInt",
+          "name": "[m]_isbigint",
+          "methods": [
+            {
+              "textRaw": "isBigInt(value)",
+              "type": "method",
+              "name": "isBigInt",
+              "desc": "<p><strong><code>6.1.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isBigInt(42n)); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isBigInt"
+        },
+        {
+          "textRaw": "[m] isPrimitive",
+          "name": "[m]_isprimitive",
+          "methods": [
+            {
+              "textRaw": "isPrimitive(value)",
+              "type": "method",
+              "name": "isPrimitive",
+              "desc": "<p><strong><code>6.0.1</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isPrimitive(&#39;text&#39;)); // true\nconsole.log(isPrimitive({})); // false\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isPrimitive"
+        },
+        {
+          "textRaw": "[m] isReference",
+          "name": "[m]_isreference",
+          "methods": [
+            {
+              "textRaw": "isReference(value)",
+              "type": "method",
+              "name": "isReference",
+              "desc": "<p><strong><code>6.0.1</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isReference({ key: &#39;value&#39; })); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isReference"
+        },
+        {
+          "textRaw": "[m] isObjectSpecies",
+          "name": "[m]_isobjectspecies",
+          "methods": [
+            {
+              "textRaw": "isObjectSpecies(value)",
+              "type": "method",
+              "name": "isObjectSpecies",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Global</code></strong> <strong><code>Legacy alias</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断</li>\n</ul>\n<p><code>isObjectSpecies(value)</code> 是旧式宽泛对象判断：只要 JavaScript <code>typeof</code> 为 <code>object</code> 且值不是 <code>null</code> 就返回 <code>true</code>，因此数组、日期和 Map 等也会通过。若要严格判断 Rhino <code>className</code> 是否为 <code>Object</code>，使用 <code>species.isObject(value)</code>。</p>\n<pre><code class=\"lang-js\">console.log(isObjectSpecies({ key: &#39;value&#39; })); // true\nconsole.log(isObjectSpecies([])); // true\nconsole.log(species.isObject([])); // false\nconsole.log(isObjectSpecies(null)); // false\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isObjectSpecies"
+        },
+        {
+          "textRaw": "[m] isEmptyObject",
+          "name": "[m]_isemptyobject",
+          "methods": [
+            {
+              "textRaw": "isEmptyObject(value)",
+              "type": "method",
+              "name": "isEmptyObject",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 时抛出异常；同步检查对象自身属性</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(isEmptyObject({})); // true\nconsole.log(isEmptyObject({ key: 1 })); // false\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isEmptyObject"
+        },
+        {
+          "textRaw": "[m] unwrapJavaObject",
+          "name": "[m]_unwrapjavaobject",
+          "methods": [
+            {
+              "textRaw": "unwrapJavaObject(value)",
+              "type": "method",
+              "name": "unwrapJavaObject",
+              "desc": "<p><strong><code>6.1.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - Java 包装对象的底层值，或原值</li>\n<li><strong>异常</strong>：参数数量不为 1 时抛出异常</li>\n<li><strong>副作用</strong>：无；返回值可能是原生 Java 对象</li>\n</ul>\n<pre><code class=\"lang-js\">const file = new java.io.File(&#39;/sdcard&#39;);\nconsole.log(unwrapJavaObject(file));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] unwrapJavaObject"
+        },
+        {
+          "textRaw": "[m] toastVerbose",
+          "name": "[m]_toastverbose",
+          "methods": [
+            {
+              "textRaw": "toastVerbose(message, isLong?, isForcible?)",
+              "type": "method",
+              "name": "toastVerbose",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong> <strong><code>Alias: toastverbose</code></strong></p>\n<ul>\n<li><strong>message</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>[ isLong ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>[ isForcible ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1 至 3 之间时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：显示 toast，并把首个参数写入 verbose 日志</li>\n</ul>\n<pre><code class=\"lang-js\">toastVerbose(&#39;verbose message&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "message"
+                    },
+                    {
+                      "name": "isLong?"
+                    },
+                    {
+                      "name": "isForcible?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] toastVerbose"
+        },
+        {
+          "textRaw": "[m] toastInfo",
+          "name": "[m]_toastinfo",
+          "methods": [
+            {
+              "textRaw": "toastInfo(message, isLong?, isForcible?)",
+              "type": "method",
+              "name": "toastInfo",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong> <strong><code>Alias: toastinfo</code></strong></p>\n<ul>\n<li><strong>参数与返回</strong>：同 <code>toastVerbose</code></li>\n<li><strong>异常 / 权限 / 副作用</strong>：同 <code>toastVerbose</code>，日志级别为 info</li>\n</ul>\n<pre><code class=\"lang-js\">toastInfo(&#39;information&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "message"
+                    },
+                    {
+                      "name": "isLong?"
+                    },
+                    {
+                      "name": "isForcible?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] toastInfo"
+        },
+        {
+          "textRaw": "[m] toastWarn",
+          "name": "[m]_toastwarn",
+          "methods": [
+            {
+              "textRaw": "toastWarn(message, isLong?, isForcible?)",
+              "type": "method",
+              "name": "toastWarn",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong> <strong><code>Alias: toastwarn</code></strong></p>\n<ul>\n<li><strong>参数与返回</strong>：同 <code>toastVerbose</code></li>\n<li><strong>异常 / 权限 / 副作用</strong>：同 <code>toastVerbose</code>，日志级别为 warn</li>\n</ul>\n<pre><code class=\"lang-js\">toastWarn(&#39;warning&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "message"
+                    },
+                    {
+                      "name": "isLong?"
+                    },
+                    {
+                      "name": "isForcible?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] toastWarn"
+        },
+        {
+          "textRaw": "[m] toastError",
+          "name": "[m]_toasterror",
+          "methods": [
+            {
+              "textRaw": "toastError(message, isLong?, isForcible?)",
+              "type": "method",
+              "name": "toastError",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong> <strong><code>Alias: toasterror</code></strong></p>\n<ul>\n<li><strong>参数与返回</strong>：同 <code>toastVerbose</code></li>\n<li><strong>异常 / 权限 / 副作用</strong>：同 <code>toastVerbose</code>，日志级别为 error</li>\n</ul>\n<pre><code class=\"lang-js\">toastError(&#39;error message&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "message"
+                    },
+                    {
+                      "name": "isLong?"
+                    },
+                    {
+                      "name": "isForcible?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] toastError"
+        },
+        {
           "textRaw": "[m] sleep",
           "name": "[m]_sleep",
+          "desc": "<p>所有重载都会同步阻塞当前脚本线程，不需要 Android 权限，且不能在 UI 线程调用。参数数量不在 1 至 2 之间、第二参数类型不受支持或数值转换失败时抛出异常；负的最短时长会被收敛到 <code>0</code>。</p>\n",
           "methods": [
             {
               "textRaw": "sleep(millis)",
@@ -61,7 +483,7 @@
               "textRaw": "sleep(millis, bounds)",
               "type": "method",
               "name": "sleep",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>millis</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 休眠时间 (毫秒)</li>\n<li><strong>bounds</strong> { <a href=\"../types/data-types.md#numberstring\">NumberString</a> | <a href=\"../types/data-types.md#string\">string</a> } - 浮动值</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>使当前线程休眠一段时间, 该时间随机落在 millis ± bounds 之间.<br>\nbounds 参数为 <a href=\"../types/data-types.md#numberstring\">数字字符串</a> 类型 (如 &quot;12&quot;), 或在字符串开头附加 &quot;±&quot; 明确参数含义 (如 &quot;±12&quot;).</p>\n<pre><code class=\"lang-js\">/* 随机休眠 3 - 5 秒钟 (即 4 ± 1 秒钟). */\nsleep(4e3, &quot;1e3&quot;);\nsleep(4e3, &quot;±1e3&quot;); /* 同上. */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>millis</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 休眠时间 (毫秒)</li>\n<li><strong>bounds</strong> { <a href=\"../types/data-types.md#numberstring\">NumberString</a> | <a href=\"../types/data-types.md#string\">string</a> } - 浮动值</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>使当前线程休眠一段时间, 该时间随机落在 millis ± bounds 之间.<br>\nbounds 参数为 <a href=\"../types/data-types.md#numberstring\">数字字符串</a> 类型 (如 &quot;12&quot;), 或在字符串开头附加 &quot;±&quot; 明确参数含义 (如 &quot;±12&quot;).</p>\n<pre><code class=\"lang-js\">/* 随机休眠 3 - 5 秒钟 (即 4 ± 1 秒钟). */\nsleep(4e3, &quot;1000&quot;);\nsleep(4e3, &quot;±1000&quot;); /* 同上. */\n</code></pre>\n<p>固定提交先从字符串中提取普通十进制整数，再调用 Java <code>toLong()</code>；不要在 bounds 字符串中使用 <code>1e3</code> 或小数形式。</p>\n",
               "signatures": [
                 {
                   "params": [
@@ -95,7 +517,7 @@
               "textRaw": "toastLog(text)",
               "type": "method",
               "name": "toastLog",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text\">toast(text)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text\">toast(text)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">toastLog(&#39;任务开始&#39;);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -110,7 +532,7 @@
               "textRaw": "toastLog(text, isLong)",
               "type": "method",
               "name": "toastLog",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容\n<strong>isLong = false</strong> { <code>&#39;long&#39;</code> | <code>&#39;l&#39;</code> | <code>&#39;short&#39;</code> | <code>&#39;s&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否以较长时间显示</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-islong\">toast(text, isLong)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容\n<strong>isLong = false</strong> { <code>&#39;long&#39;</code> | <code>&#39;l&#39;</code> | <code>&#39;short&#39;</code> | <code>&#39;s&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否以较长时间显示</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-islong\">toast(text, isLong)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">toastLog(&#39;需要较长时间阅读&#39;, true);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -128,7 +550,7 @@
               "textRaw": "toastLog(text, isLong, isForcible)",
               "type": "method",
               "name": "toastLog",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容\n<strong>isLong = false</strong> { <code>&#39;long&#39;</code> | <code>&#39;l&#39;</code> | <code>&#39;short&#39;</code> | <code>&#39;s&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否以较长时间显示\n<strong>isForcible = false</strong> { <code>&#39;forcible&#39;</code> | <code>&#39;f&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否强制覆盖显示</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-islong-isforcible\">toast(text, isLong, isForcible)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容\n<strong>isLong = false</strong> { <code>&#39;long&#39;</code> | <code>&#39;l&#39;</code> | <code>&#39;short&#39;</code> | <code>&#39;s&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否以较长时间显示\n<strong>isForcible = false</strong> { <code>&#39;forcible&#39;</code> | <code>&#39;f&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否强制覆盖显示</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-islong-isforcible\">toast(text, isLong, isForcible)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">toastLog(&#39;替换当前浮动消息&#39;, true, true);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -149,7 +571,7 @@
               "textRaw": "toastLog(text, isForcible)",
               "type": "method",
               "name": "toastLog",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容</li>\n<li><strong>isForcible</strong> { <code>&#39;forcible&#39;</code> | <code>&#39;f&#39;</code> } - 强制覆盖显示 (字符标识)</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-isforcible\">toast(text, isForcible)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 消息内容</li>\n<li><strong>isForcible</strong> { <code>&#39;forcible&#39;</code> | <code>&#39;f&#39;</code> } - 强制覆盖显示 (字符标识)</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"../system/toast.md#toast-text-isforcible\">toast(text, isForcible)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">toastLog(&#39;强制显示&#39;, &#39;forcible&#39;);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -177,12 +599,13 @@
         {
           "textRaw": "[m] random",
           "name": "[m]_random",
+          "desc": "<p>该方法同步使用 <code>Math.random()</code>，不需要权限且没有外部副作用。参数超过 2 个时抛出异常；只传 1 个参数时固定提交返回 <code>NaN</code>，不会把它解释为上限。</p>\n",
           "methods": [
             {
               "textRaw": "random()",
               "type": "method",
               "name": "random",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>与 Math.random() 相同, 返回落在 [0, 1) 区间的随机数字.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>与 Math.random() 相同, 返回落在 [0, 1) 区间的随机数字.</p>\n<pre><code class=\"lang-js\">const ratio = random();\nconsole.log(ratio &gt;= 0 &amp;&amp; ratio &lt; 1); // true\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -193,7 +616,7 @@
               "textRaw": "random(min, max)",
               "type": "method",
               "name": "random",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>min</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 随机数下限</li>\n<li><strong>max</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 随机数上限</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>返回落在 [min, max] 区间的随机数字.</p>\n<blockquote>\n<p>注: random(min, max) 右边界闭合, 而 random() 右边界开放.</p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>min</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 随机数下限</li>\n<li><strong>max</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 随机数上限</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>返回落在 [min, max] 区间的随机数字.</p>\n<pre><code class=\"lang-js\">console.log(random(1, 6)); // 1 至 6 的整数\nconsole.log(Number.isNaN(random(6))); // true\n</code></pre>\n<blockquote>\n<p>注: random(min, max) 右边界闭合, 而 random() 右边界开放.</p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -214,6 +637,7 @@
         {
           "textRaw": "[m] wait",
           "name": "[m]_wait",
+          "desc": "<p>所有重载都在当前线程同步轮询，可能调用无障碍选择器，不得在 UI 回调中执行。参数数量不在 1 至 4 之间、condition 直接传入 <code>UiObject</code>、limit 为负数、interval 为负数或无穷大、callback 不是对象，或 <code>then</code> / <code>else</code> 存在但不是函数时抛出异常。函数条件本身抛出的错误会直接传播。</p>\n",
           "methods": [
             {
               "textRaw": "wait(condition)",
@@ -291,7 +715,7 @@
               "textRaw": "wait(condition, limit, callback)",
               "type": "method",
               "name": "wait",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>condition</strong> { <a href=\"../types/data-types.md#function\">(() =&gt; T)</a> | <a href=\"../automation/ui-selector.md#m-pickup\">PickupSelector</a> } - 结束等待条件</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<p><a href=\"#wait-condition-callback\">wait(condition, callback)</a> 增加条件检测限制.</p>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>condition</strong> { <a href=\"../types/data-types.md#function\">(() =&gt; T)</a> | <a href=\"../automation/ui-selector.md#m-pickup\">PickupSelector</a> } - 结束等待条件</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<p><a href=\"#wait-condition-callback\">wait(condition, callback)</a> 增加条件检测限制.</p>\n<pre><code class=\"lang-js\">wait(() =&gt; device.isScreenOff(), 5e3, {\n    then: () =&gt; console.log(&#39;屏幕已关闭&#39;),\n    else: () =&gt; console.log(&#39;等待超时&#39;),\n});\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -312,7 +736,7 @@
               "textRaw": "wait(condition, limit, interval, callback)",
               "type": "method",
               "name": "wait",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>condition</strong> { <a href=\"../types/data-types.md#function\">(() =&gt; T)</a> | <a href=\"../automation/ui-selector.md#m-pickup\">PickupSelector</a> } - 结束等待条件</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<p><a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a> 增加条件检测间隔.</p>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>condition</strong> { <a href=\"../types/data-types.md#function\">(() =&gt; T)</a> | <a href=\"../automation/ui-selector.md#m-pickup\">PickupSelector</a> } - 结束等待条件</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<p><a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a> 增加条件检测间隔.</p>\n<pre><code class=\"lang-js\">wait(() =&gt; device.isScreenOff(), 5e3, 250, {\n    then: () =&gt; console.log(&#39;屏幕已关闭&#39;),\n    else: () =&gt; console.log(&#39;等待超时&#39;),\n});\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -339,13 +763,13 @@
         {
           "textRaw": "[m] waitForActivity",
           "name": "[m]_waitforactivity",
-          "desc": "<p>等待指定名称的 Activity 出现 (前置).<br>\n此方法相当于 <code>wait(() =&gt; currentActivity() === activityName, ...args)</code>,<br>\n因此其所有重载方法的结构与 wait 一致.<br>\n为节约篇幅, 将仅列出方法签名等重要信息.</p>\n",
+          "desc": "<p>等待指定名称的 Activity 出现 (前置).<br>\n此方法相当于 <code>wait(() =&gt; currentActivity() === activityName, ...args)</code>,<br>\n因此其所有重载方法的结构与 wait 一致.<br>\n为节约篇幅, 将仅列出方法签名等重要信息.</p>\n<p>所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 <code>currentActivity()</code>；参数校验、limit、interval、callback、权限与返回规则继承 <a href=\"#m-wait\">wait</a>。Activity 名称会转换为字符串后进行全等比较。</p>\n",
           "methods": [
             {
               "textRaw": "waitForActivity(activityName)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition\">wait(condition)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition\">wait(condition)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -360,7 +784,7 @@
               "textRaw": "waitForActivity(activityName, limit)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;, 5e3);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -378,7 +802,7 @@
               "textRaw": "waitForActivity(activityName, limit, interval)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;, 5e3, 250);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -399,7 +823,7 @@
               "textRaw": "waitForActivity(activityName, callback)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-callback\">wait(condition, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-callback\">wait(condition, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;, {\n    then: () =&gt; console.log(&#39;Activity 已出现&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -417,7 +841,7 @@
               "textRaw": "waitForActivity(activityName, limit, callback)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;, 5e3, {\n    else: () =&gt; console.log(&#39;等待超时&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -438,7 +862,7 @@
               "textRaw": "waitForActivity(activityName, limit, interval, callback)",
               "type": "method",
               "name": "waitForActivity",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval-callback\">wait(condition, limit, interval, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>activityName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标活动名称</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval-callback\">wait(condition, limit, interval, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForActivity(&#39;com.example.MainActivity&#39;, 5e3, 250, {\n    then: () =&gt; console.log(&#39;Activity 已出现&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -465,13 +889,13 @@
         {
           "textRaw": "[m] waitForPackage",
           "name": "[m]_waitforpackage",
-          "desc": "<p>等待指定包名的应用出现 (前置).<br>\n此方法相当于 <code>wait(() =&gt; currentPackage() === packageName, ...args)</code>,<br>\n因此其所有重载方法的结构与 wait 一致.<br>\n为节约篇幅, 将仅列出方法签名等重要信息.</p>\n",
+          "desc": "<p>等待指定包名的应用出现 (前置).<br>\n此方法相当于 <code>wait(() =&gt; currentPackage() === packageName, ...args)</code>,<br>\n因此其所有重载方法的结构与 wait 一致.<br>\n为节约篇幅, 将仅列出方法签名等重要信息.</p>\n<p>所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 <code>currentPackage()</code>；参数校验、limit、interval、callback、权限与返回规则继承 <a href=\"#m-wait\">wait</a>。包名会转换为字符串后进行全等比较。</p>\n",
           "methods": [
             {
               "textRaw": "waitForPackage(packageName)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition\">wait(condition)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition\">wait(condition)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -486,7 +910,7 @@
               "textRaw": "waitForPackage(packageName, limit)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit\">wait(condition, limit)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;, 5e3);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -504,7 +928,7 @@
               "textRaw": "waitForPackage(packageName, limit, interval)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<blockquote>\n<p>参阅:<a href=\"#wait-condition-limit-interval\">wait(condition, limit, interval)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;, 5e3, 250);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -525,7 +949,7 @@
               "textRaw": "waitForPackage(packageName, callback)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-callback\">wait(condition, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-callback\">wait(condition, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;, {\n    then: () =&gt; console.log(&#39;设置应用已前置&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -543,7 +967,7 @@
               "textRaw": "waitForPackage(packageName, limit, callback)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 5/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-callback\">wait(condition, limit, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;, 5e3, {\n    else: () =&gt; console.log(&#39;等待超时&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -564,7 +988,7 @@
               "textRaw": "waitForPackage(packageName, limit, interval, callback)",
               "type": "method",
               "name": "waitForPackage",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval-callback\">wait(condition, limit, interval, callback)</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 6/6</code></strong> <strong><code>A11Y?</code></strong> <strong><code>Non-UI</code></strong></p>\n<ul>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 目标应用包名</li>\n<li><strong>limit</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测限制</li>\n<li><strong>interval</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待条件检测间隔</li>\n<li><strong>callback</strong> &#123;&#123;<ul>\n<li>then(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n<li>else(result?: <a href=\"../types/data-types.md#generic\">T</a>)?: <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n</li>\n<li>&#125;&#125; - 等待结束回调对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#generic\">R</a> extends <a href=\"../types/data-types.md#void\">void</a> ? <a href=\"../types/data-types.md#boolean\">boolean</a> : <a href=\"../types/data-types.md#generic\">R</a> }</li>\n<li><ins><strong>template</strong></ins> <a href=\"../types/data-types.md#generic\">T</a>, <a href=\"../types/data-types.md#generic\">R</a></li>\n</ul>\n<blockquote>\n<p>参阅: <a href=\"#wait-condition-limit-interval-callback\">wait(condition, limit, interval, callback)</a></p>\n</blockquote>\n<pre><code class=\"lang-js\">waitForPackage(&#39;com.android.settings&#39;, 5e3, 250, {\n    then: () =&gt; console.log(&#39;设置应用已前置&#39;),\n});\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -597,7 +1021,7 @@
               "textRaw": "exit()",
               "type": "method",
               "name": "exit",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>通过抛出 <code>ScriptInterruptedException</code> 异常实现脚本停止.<br>\n因此用 <code>try</code> 包裹 <code>exit()</code> 语句将会使脚本继续运行片刻:</p>\n<pre><code class=\"lang-js\">try {\n    log(&#39;exit now&#39;);\n    exit();\n    log(&quot;after&quot;); /* 控制台不会打印 &quot;after&quot;. */\n} catch (e) {\n    e.javaException instanceof ScriptInterruptedException; // true\n}\nwhile (true) log(&quot;hello&quot;); /* 控制台将打印一定数量的 &quot;hello&quot;. */\n</code></pre>\n<p>如果编写的脚本对 &quot;是否停止&quot; 的状态十分敏感,<br>\n即要求 exit() 之后的代码一定不被执行,<br>\n则可通过附加状态判断实现上述需求:</p>\n<pre><code class=\"lang-js\">if (!isStopped()) {\n    // 其他代码...\n}\n</code></pre>\n<p>因此上述示例如果加上状态判断, &quot;hello&quot; 将不会被打印:</p>\n<pre><code class=\"lang-js\">try {\n    log(&#39;exit now&#39;);\n    exit();\n} catch (_) {\n    // Ignored.\n}\nif (!isStopped()) {\n    while (true) {\n        /* 控制台不会打印 &quot;hello&quot;. */\n        log(&quot;hello&quot;);\n    }\n}\n</code></pre>\n<p>除了 <a href=\"#isstopped\">isStopped</a>, 还可通过 <code>threads</code> 或 <code>engines</code> 模块获取停止状态:</p>\n<pre><code class=\"lang-js\">/* threads. */\nif (!threads.currentThread().isInterrupted()) {\n    // 其他代码...\n}\n\n/* engines. */\nif (!engines.myEngine().isStopped()) {\n    // 其他代码...\n}\n</code></pre>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>通过抛出 <code>ScriptInterruptedException</code> 异常实现脚本停止.<br>\n因此用 <code>try</code> 包裹 <code>exit()</code> 语句将会使脚本继续运行片刻:</p>\n<pre><code class=\"lang-js\">try {\n    log(&#39;exit now&#39;);\n    exit();\n    log(&quot;after&quot;); /* 控制台不会打印 &quot;after&quot;. */\n} catch (e) {\n    e.javaException instanceof ScriptInterruptedException; // true\n}\nwhile (true) log(&quot;hello&quot;); /* 控制台将打印一定数量的 &quot;hello&quot;. */\n</code></pre>\n<p>如果编写的脚本对 &quot;是否停止&quot; 的状态十分敏感,<br>\n即要求 exit() 之后的代码一定不被执行,<br>\n则可通过附加状态判断实现上述需求:</p>\n<pre><code class=\"lang-js\">if (!isStopped()) {\n    console.log(&#39;脚本仍在运行&#39;);\n}\n</code></pre>\n<p>因此上述示例如果加上状态判断, &quot;hello&quot; 将不会被打印:</p>\n<pre><code class=\"lang-js\">try {\n    log(&#39;exit now&#39;);\n    exit();\n} catch (_) {\n    // Ignored.\n}\nif (!isStopped()) {\n    while (true) {\n        /* 控制台不会打印 &quot;hello&quot;. */\n        log(&quot;hello&quot;);\n    }\n}\n</code></pre>\n<p>除了 <a href=\"#isstopped\">isStopped</a>, 还可通过 <code>threads</code> 或 <code>engines</code> 模块获取停止状态:</p>\n<pre><code class=\"lang-js\">/* threads. */\nif (!threads.currentThread().isInterrupted()) {\n    console.log(&#39;当前线程未中断&#39;);\n}\n\n/* engines. */\nif (!engines.myEngine().isStopped()) {\n    console.log(&#39;当前引擎未停止&#39;);\n}\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -631,7 +1055,7 @@
               "textRaw": "stop()",
               "type": "method",
               "name": "stop",
-              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</p>\n<p>停止脚本运行.</p>\n<p><a href=\"#exit\">exit()</a> 的别名方法.</p>\n<blockquote>\n<p>注: stop 方法不存在 <a href=\"#exit-e\">exit(e)</a> 对应的重载方法.</p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</p>\n<ul>\n<li><strong>异常 / 生命周期 / 副作用</strong>：传入参数时抛出异常；与 <code>exit()</code> 相同，会结束当前脚本引擎</li>\n</ul>\n<p>停止脚本运行.</p>\n<p><a href=\"#exit\">exit()</a> 的别名方法.</p>\n<blockquote>\n<p>注: stop 方法不存在 <a href=\"#exit-e\">exit(e)</a> 对应的重载方法.</p>\n</blockquote>\n<pre><code class=\"lang-js\">if (!isStopped()) {\n    stop();\n}\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -650,7 +1074,7 @@
               "textRaw": "isStopped()",
               "type": "method",
               "name": "isStopped",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>检测脚本主线程是否已中断.</p>\n<p>即 <code>runtime.isInterrupted()</code>.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<p>检测脚本主线程是否已中断.</p>\n<p>即 <code>runtime.isInterrupted()</code>.</p>\n<pre><code class=\"lang-js\">console.log(isStopped());\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -669,7 +1093,7 @@
               "textRaw": "isShuttingDown()",
               "type": "method",
               "name": "isShuttingDown",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>检测脚本主线程是否已中断.</p>\n<p>因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 <a href=\"#m-isstopped\">isStopped()</a> 或 <code>runtime.isInterrupted()</code> 替代.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<p>检测脚本主线程是否已中断.</p>\n<p>因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 <a href=\"#m-isstopped\">isStopped()</a> 或 <code>runtime.isInterrupted()</code> 替代.</p>\n<pre><code class=\"lang-js\">console.log(isShuttingDown());\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -688,7 +1112,7 @@
               "textRaw": "isRunning()",
               "type": "method",
               "name": "isRunning",
-              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</p>\n<p>检测脚本主线程是否未被中断.</p>\n<p>即 <code>!runtime.isInterrupted()</code>.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</p>\n<ul>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<p>检测脚本主线程是否未被中断.</p>\n<p>即 <code>!runtime.isInterrupted()</code>.</p>\n<pre><code class=\"lang-js\">console.log(isRunning());\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -707,7 +1131,7 @@
               "textRaw": "notStopped()",
               "type": "method",
               "name": "notStopped",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>检测脚本主线程是否未被中断.</p>\n<p>因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 <a href=\"#m-isrunning\">isRunning()</a> 或 <code>!runtime.isInterrupted()</code> 替代.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>DEPRECATED</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<p>检测脚本主线程是否未被中断.</p>\n<p>因方法名称易造成歧义及混淆, 因此被弃用, 建议使用 <a href=\"#m-isrunning\">isRunning()</a> 或 <code>!runtime.isInterrupted()</code> 替代.</p>\n<pre><code class=\"lang-js\">console.log(notStopped());\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -742,14 +1166,14 @@
           "displayName": "[m] requiresApi"
         },
         {
-          "textRaw": "[m] requiresAutojsVersion",
-          "name": "[m]_requiresautojsversion",
+          "textRaw": "[m] requiresMonkeykingVersion",
+          "name": "[m]_requiresmonkeykingversion",
           "methods": [
             {
-              "textRaw": "requiresAutojsVersion(versionName)",
+              "textRaw": "requiresMonkeykingVersion(versionName)",
               "type": "method",
-              "name": "requiresAutojsVersion",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>versionName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - Monkey King 版本名称</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>脚本运行的最低 Monkey King 版本要求 (版本名称).</p>\n<pre><code class=\"lang-js\">requiresAutojsVersion(&quot;6.2.0&quot;);\n</code></pre>\n<p>可通过 <code>monkeyking.versionName</code> 查看 Monkey King 版本名称.</p>\n<blockquote>\n<p>参阅: <a href=\"monkeyking.md#p-versionname\">monkeyking.versionName</a></p>\n</blockquote>\n",
+              "name": "requiresMonkeykingVersion",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>versionName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - Monkey King 版本名称</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>脚本运行的最低 Monkey King 版本要求 (版本名称).</p>\n<pre><code class=\"lang-js\">requiresMonkeykingVersion(&quot;6.2.0&quot;);\n</code></pre>\n<p>可通过 <code>monkeyking.versionName</code> 查看 Monkey King 版本名称.</p>\n<blockquote>\n<p>参阅: <a href=\"monkeyking.md#p-versionname\">monkeyking.versionName</a></p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -761,10 +1185,10 @@
               ]
             },
             {
-              "textRaw": "requiresAutojsVersion(versionCode)",
+              "textRaw": "requiresMonkeykingVersion(versionCode)",
               "type": "method",
-              "name": "requiresAutojsVersion",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>versionCode</strong> { <a href=\"../types/data-types.md#number\">number</a> } - Monkey King 版本号</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>脚本运行的最低 Monkey King 版本要求 (版本号).</p>\n<pre><code class=\"lang-js\">requiresAutojsVersion(1024);\n</code></pre>\n<p>可通过 <code>monkeyking.versionCode</code> 查看 Monkey King 版本号.</p>\n<blockquote>\n<p>参阅: <a href=\"monkeyking.md#p-versioncode\">monkeyking.versionCode</a></p>\n</blockquote>\n",
+              "name": "requiresMonkeykingVersion",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>versionCode</strong> { <a href=\"../types/data-types.md#number\">number</a> } - Monkey King 版本号</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>脚本运行的最低 Monkey King 版本要求 (版本号).</p>\n<pre><code class=\"lang-js\">requiresMonkeykingVersion(1024);\n</code></pre>\n<p>可通过 <code>monkeyking.versionCode</code> 查看 Monkey King 版本号.</p>\n<blockquote>\n<p>参阅: <a href=\"monkeyking.md#p-versioncode\">monkeyking.versionCode</a></p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -777,7 +1201,7 @@
             }
           ],
           "type": "module",
-          "displayName": "[m] requiresAutojsVersion"
+          "displayName": "[m] requiresMonkeykingVersion"
         },
         {
           "textRaw": "[m] importPackage",
@@ -830,13 +1254,17 @@
           "name": "[m]_currentpackage",
           "methods": [
             {
-              "textRaw": "currentPackage()",
+              "textRaw": "currentPackage(mode?)",
               "type": "method",
               "name": "currentPackage",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>A11Y</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取最近一次监测到的应用包名, 并视为当前正在运行的应用包名.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>v6.6.1: mode</code></strong></p>\n<ul>\n<li><strong>[ mode = <code>&quot;auto&quot;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#object\">Object</a> } - 获取方式，或 <code>{ by }</code> / <code>{ mode }</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>异常</strong>：参数超过 1 个或 mode 未知时抛出异常</li>\n<li><strong>权限 / 线程 / 副作用</strong>：<code>accessibility</code> 依赖无障碍服务，<code>shizuku</code> 与 <code>root</code> 依赖相应能力；查询可能执行同步系统命令</li>\n</ul>\n<p>获取当前应用包名。mode 支持 <code>auto</code>、<code>a11y</code> / <code>accessibility</code>、<code>shizuku</code> 与 <code>root</code>；自动模式按 Shizuku、Root、无障碍的顺序返回第一个非空结果。</p>\n<pre><code class=\"lang-js\">console.log(currentPackage());\nconsole.log(currentPackage({ by: &#39;accessibility&#39; }));\n</code></pre>\n",
               "signatures": [
                 {
-                  "params": []
+                  "params": [
+                    {
+                      "name": "mode?"
+                    }
+                  ]
                 }
               ]
             }
@@ -849,19 +1277,46 @@
           "name": "[m]_currentactivity",
           "methods": [
             {
-              "textRaw": "currentActivity()",
+              "textRaw": "currentActivity(mode?)",
               "type": "method",
               "name": "currentActivity",
-              "desc": "<p><strong><code>Global</code></strong> <strong><code>A11Y</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取最近一次监测到的活动名称, 并视为当前正在运行的活动名称.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> <strong><code>v6.6.1: mode</code></strong></p>\n<ul>\n<li><strong>[ mode = <code>&quot;auto&quot;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>异常、权限、线程与副作用</strong>：与 <a href=\"#currentpackage-mode\">currentPackage</a> 相同</li>\n</ul>\n<p>获取当前 Activity 类名；无法取得时返回空字符串。</p>\n<pre><code class=\"lang-js\">console.log(currentActivity(&#39;auto&#39;));\n</code></pre>\n",
               "signatures": [
                 {
-                  "params": []
+                  "params": [
+                    {
+                      "name": "mode?"
+                    }
+                  ]
                 }
               ]
             }
           ],
           "type": "module",
           "displayName": "[m] currentActivity"
+        },
+        {
+          "textRaw": "[m] currentComponent",
+          "name": "[m]_currentcomponent",
+          "methods": [
+            {
+              "textRaw": "currentComponent(mode?)",
+              "type": "method",
+              "name": "currentComponent",
+              "desc": "<p><strong><code>6.6.1</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>[ mode = <code>&quot;auto&quot;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 当前组件，无法取得时为空字符串</li>\n<li><strong>异常、权限、线程与副作用</strong>：与 <a href=\"#currentpackage-mode\">currentPackage</a> 相同</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(currentComponent({ mode: &#39;shizuku&#39; }));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "mode?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] currentComponent"
         },
         {
           "textRaw": "[m] setClip",
@@ -871,7 +1326,7 @@
               "textRaw": "setClip(text)",
               "type": "method",
               "name": "setClip",
-              "desc": "<p><strong><code>Global</code></strong> - <strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 剪贴板内容</p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>设置系统剪贴板内容.</p>\n<blockquote>\n<p>参阅: <a href=\"#m-getclip\">getClip</a></p>\n</blockquote>\n",
+              "desc": "<p><strong><code>Global</code></strong> - <strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 剪贴板内容</p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不为 1 时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：同步写入系统剪贴板；Android 版本和前后台状态可能影响系统可见性</li>\n</ul>\n<p>设置系统剪贴板内容.</p>\n<pre><code class=\"lang-js\">setClip(&#39;copied from Monkey King&#39;);\n</code></pre>\n<blockquote>\n<p>参阅: <a href=\"#m-getclip\">getClip</a></p>\n</blockquote>\n",
               "signatures": [
                 {
                   "params": [
@@ -913,7 +1368,7 @@
               "textRaw": "selector()",
               "type": "method",
               "name": "selector",
-              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../automation/ui-selector.md\">UiSelector</a> }</p>\n<p>构建一个 &quot;空&quot; <a href=\"../automation/ui-selector.md\">选择器</a>.</p>\n",
+              "desc": "<p><strong><code>Global</code></strong> - <ins><strong>returns</strong></ins> { <a href=\"../automation/ui-selector.md\">UiSelector</a> }</p>\n<ul>\n<li><strong>异常 / 权限 / 副作用</strong>：传入参数时抛出异常；只创建选择器，不立即查询无障碍窗口</li>\n</ul>\n<p>构建一个 &quot;空&quot; <a href=\"../automation/ui-selector.md\">选择器</a>.</p>\n<pre><code class=\"lang-js\">const emptySelector = selector();\nconsole.log(typeof emptySelector.findOne); // function\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -985,15 +1440,170 @@
           "displayName": "[m] existsOne"
         },
         {
+          "textRaw": "[m] setScreenMetrics",
+          "name": "[m]_setscreenmetrics",
+          "methods": [
+            {
+              "textRaw": "setScreenMetrics(width, height)",
+              "type": "method",
+              "name": "setScreenMetrics",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Global</code></strong> <strong><code>Legacy scale API</code></strong></p>\n<ul>\n<li><strong>width</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 脚本设计宽度</li>\n<li><strong>height</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 脚本设计高度</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不为 2 或数值不能转换为整数时抛出异常</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步修改当前脚本运行时的旧式 <code>ScreenMetrics</code>；影响之后使用该度量对象的坐标缩放，脚本结束后失效</li>\n</ul>\n<p>设置旧式自动化坐标缩放的设计分辨率。宽或高为 <code>0</code> 时，对应轴的旧式缩放保持原坐标。此方法不会修改 <code>cX</code>、<code>cY</code> 使用的 720 × 1280 默认基数；后者应通过 <code>setScaleBases</code> 配置。</p>\n<pre><code class=\"lang-js\">setScreenMetrics(1080, 1920);\nclick(540, 960); // 由使用 ScreenMetrics 的自动化实现按设备分辨率换算\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "width"
+                    },
+                    {
+                      "name": "height"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] setScreenMetrics"
+        },
+        {
+          "textRaw": "[m] getScaleBases",
+          "name": "[m]_getscalebases",
+          "methods": [
+            {
+              "textRaw": "getScaleBases()",
+              "type": "method",
+              "name": "getScaleBases",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#object\">Object</a> } - <code>{ x, y }</code> 当前缩放基数的快照</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(getScaleBases()); // 默认 { x: 720, y: 1280 }\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] getScaleBases"
+        },
+        {
+          "textRaw": "[m] getScaleBaseX",
+          "name": "[m]_getscalebasex",
+          "methods": [
+            {
+              "textRaw": "getScaleBaseX()",
+              "type": "method",
+              "name": "getScaleBaseX",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - 当前横坐标缩放基数</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(getScaleBaseX()); // 默认 720\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] getScaleBaseX"
+        },
+        {
+          "textRaw": "[m] getScaleBaseY",
+          "name": "[m]_getscalebasey",
+          "methods": [
+            {
+              "textRaw": "getScaleBaseY()",
+              "type": "method",
+              "name": "getScaleBaseY",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - 当前纵坐标缩放基数</li>\n<li><strong>异常 / 副作用</strong>：传入参数时抛出异常；同步只读查询</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(getScaleBaseY()); // 默认 1280\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] getScaleBaseY"
+        },
+        {
+          "textRaw": "[m] setScaleBases",
+          "name": "[m]_setscalebases",
+          "methods": [
+            {
+              "textRaw": "setScaleBases(baseX, baseY)",
+              "type": "method",
+              "name": "setScaleBases",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>baseX</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 正整数横坐标基数</li>\n<li><strong>baseY</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 正整数纵坐标基数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不为 2、参数不能转换为整数、基数不为正整数，或任一轴在当前运行时已设置过时抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：按 X、Y 顺序同步写入当前运行时基数；每个轴最多设置一次，脚本结束后失效</li>\n</ul>\n<p>应在首次调用 <code>cX</code>、<code>cY</code>、<code>cYx</code> 或 <code>cXy</code> 前统一配置。若 X 写入成功后 Y 校验失败，X 不会自动回滚，因此不要捕获异常后尝试用另一组值重复设置。</p>\n<pre><code class=\"lang-js\">setScaleBases(1080, 1920);\nconsole.log(cX(540)); // 当前设备宽度的一半\nconsole.log(cY(960)); // 当前设备高度的一半\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "baseX"
+                    },
+                    {
+                      "name": "baseY"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] setScaleBases"
+        },
+        {
+          "textRaw": "[m] setScaleBaseX",
+          "name": "[m]_setscalebasex",
+          "methods": [
+            {
+              "textRaw": "setScaleBaseX(baseX)",
+              "type": "method",
+              "name": "setScaleBaseX",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>baseX</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 正整数横坐标基数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不为 1、参数不能转换为整数、值不为正整数，或当前运行时已经设置过 X 基数时抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：同步修改之后 <code>cX</code> 的默认基数；每个运行时最多成功调用一次，并参与两轴均已设置后的 <code>cYx</code> / <code>cXy</code> 换算</li>\n</ul>\n<p>只设置 X 会使两轴状态不一致，期间调用 <code>cYx</code> 或 <code>cXy</code> 会抛出异常；需要跨轴换算时应继续设置 Y，或直接使用 <code>setScaleBases</code>。</p>\n<pre><code class=\"lang-js\">setScaleBaseX(1080);\nconsole.log(getScaleBaseX()); // 1080\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "baseX"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] setScaleBaseX"
+        },
+        {
+          "textRaw": "[m] setScaleBaseY",
+          "name": "[m]_setscalebasey",
+          "methods": [
+            {
+              "textRaw": "setScaleBaseY(baseY)",
+              "type": "method",
+              "name": "setScaleBaseY",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li><strong>baseY</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 正整数纵坐标基数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不为 1、参数不能转换为整数、值不为正整数，或当前运行时已经设置过 Y 基数时抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：同步修改之后 <code>cY</code> 的默认基数；每个运行时最多成功调用一次，并参与两轴均已设置后的 <code>cYx</code> / <code>cXy</code> 换算</li>\n</ul>\n<p>只设置 Y 会使两轴状态不一致，期间调用 <code>cYx</code> 或 <code>cXy</code> 会抛出异常；需要跨轴换算时应继续设置 X，或直接使用 <code>setScaleBases</code>。</p>\n<pre><code class=\"lang-js\">setScaleBaseY(1920);\nconsole.log(getScaleBaseY()); // 1920\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "baseY"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] setScaleBaseY"
+        },
+        {
           "textRaw": "[m] cX",
           "name": "[m]_cx",
-          "desc": "<p>横坐标标度.</p>\n",
+          "desc": "<p>横坐标标度.</p>\n<p>所有重载均同步读取当前设备宽度，不需要额外权限。参数超过 3 个、数值无法转换，或显式 <code>base</code> 不是整数时抛出异常；调用本身不修改缩放基数。</p>\n",
           "methods": [
             {
               "textRaw": "cX()",
               "type": "method",
               "name": "cX",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/5</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>无参时, 返回当前设备宽度.</p>\n<pre><code class=\"lang-js\">console.log(cX() === device.width); // true\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>无参时, 返回当前设备宽度.</p>\n<pre><code class=\"lang-js\">console.log(cX() === device.width); // true\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -1022,7 +1632,7 @@
               "textRaw": "cX(x, isRatio)",
               "type": "method",
               "name": "cX",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>x</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>x</code> 参数的范围自动决定 <code>x</code> 是否视为百分比,<br>\n即当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, <code>x</code> 将视为屏幕宽度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>x</code> 参数将强制视为百分比, 如 <code>cX(2, true)</code> 意味着两倍屏幕宽度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>x</code> 参数将强制视为绝对坐标值, 如 <code>cX(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>x</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>x</code> 参数的范围自动决定 <code>x</code> 是否视为百分比,<br>\n即当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, <code>x</code> 将视为屏幕宽度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>x</code> 参数将强制视为百分比, 如 <code>cX(2, true)</code> 意味着两倍屏幕宽度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>x</code> 参数将强制视为绝对坐标值, 如 <code>cX(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n<pre><code class=\"lang-js\">console.log(cX(0.5, true));  // 当前设备宽度的 50%\nconsole.log(cX(0.5, false)); // 按绝对值和当前 X 基数换算\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1040,7 +1650,7 @@
               "textRaw": "cX(x)",
               "type": "method",
               "name": "cX",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, 相当于 <code>cX(x, /* isRatio = */ true)</code>, 即 <code>x</code> 将视为屏幕宽度百分比.</p>\n<p>当参数 <code>x</code> 满足 <code>x &lt;= -1 | x &gt;= 1</code> 时, 相当于 <code>cX(x, /* base = */ 720)</code>, 即 <code>x</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseX</code> 等方法修改, <code>720</code> 为其默认值.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, 相当于 <code>cX(x, /* isRatio = */ true)</code>, 即 <code>x</code> 将视为屏幕宽度百分比.</p>\n<p>当参数 <code>x</code> 满足 <code>x &lt;= -1 | x &gt;= 1</code> 时, 相当于 <code>cX(x, /* base = */ 720)</code>, 即 <code>x</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseX</code> 等方法修改, <code>720</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">console.log(cX(0.25)); // 当前设备宽度的 25%\nconsole.log(cX(360));  // 默认设计宽度 720 中的 360\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1058,13 +1668,13 @@
         {
           "textRaw": "[m] cY",
           "name": "[m]_cy",
-          "desc": "<p>横坐标标度.</p>\n",
+          "desc": "<p>纵坐标标度.</p>\n<p>所有重载均同步读取当前设备高度，不需要额外权限。参数超过 3 个、数值无法转换，或显式 <code>base</code> 不是整数时抛出异常；调用本身不修改缩放基数。</p>\n",
           "methods": [
             {
               "textRaw": "cY()",
               "type": "method",
               "name": "cY",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/5</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>无参时, 返回当前设备高度.</p>\n<pre><code class=\"lang-js\">console.log(cY() === device.width); // true\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 1/4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>无参时, 返回当前设备高度.</p>\n<pre><code class=\"lang-js\">console.log(cY() === device.height); // true\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -1093,7 +1703,7 @@
               "textRaw": "cY(y, isRatio)",
               "type": "method",
               "name": "cY",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>y</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>y</code> 参数的范围自动决定 <code>y</code> 是否视为百分比,<br>\n即当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, <code>y</code> 将视为屏幕高度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>y</code> 参数将强制视为百分比, 如 <code>cY(2, true)</code> 意味着两倍屏幕高度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>y</code> 参数将强制视为绝对坐标值, 如 <code>cY(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/4</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>y</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>y</code> 参数的范围自动决定 <code>y</code> 是否视为百分比,<br>\n即当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, <code>y</code> 将视为屏幕高度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>y</code> 参数将强制视为百分比, 如 <code>cY(2, true)</code> 意味着两倍屏幕高度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>y</code> 参数将强制视为绝对坐标值, 如 <code>cY(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n<pre><code class=\"lang-js\">console.log(cY(0.5, true));  // 当前设备高度的 50%\nconsole.log(cY(0.5, false)); // 按绝对值和当前 Y 基数换算\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1111,7 +1721,7 @@
               "textRaw": "cY(y)",
               "type": "method",
               "name": "cY",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, 相当于 <code>cY(y, /* isRatio = */ true)</code>, 即 <code>y</code> 将视为屏幕高度百分比.</p>\n<p>当参数 <code>y</code> 满足 <code>y &lt;= -1 | y &gt;= 1</code> 时, 相当于 <code>cY(y, /* base = */ 1280)</code>, 即 <code>y</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseY</code> 等方法修改, <code>1280</code> 为其默认值.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 4/4</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, 相当于 <code>cY(y, /* isRatio = */ true)</code>, 即 <code>y</code> 将视为屏幕高度百分比.</p>\n<p>当参数 <code>y</code> 满足 <code>y &lt;= -1 | y &gt;= 1</code> 时, 相当于 <code>cY(y, /* base = */ 1280)</code>, 即 <code>y</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseY</code> 等方法修改, <code>1280</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">console.log(cY(0.25)); // 当前设备高度的 25%\nconsole.log(cY(640));  // 默认设计高度 1280 中的 640\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1129,7 +1739,7 @@
         {
           "textRaw": "[m] cYx",
           "name": "[m]_cyx",
-          "desc": "<p>以横坐标度量的纵坐标标度.</p>\n<p>与设备高度无关, 与设备宽度相关的坐标标度.</p>\n<p>如 <code>cYx(0.5, &#39;9:16&#39;)</code> 对于以下 5 个设备 (以分辨率区分) 得到的结果是完全一致的:</p>\n<pre><code class=\"lang-text\">1. 1080 × 1920\n4. 1080 × 2160\n5. 1080 × 2340\n3. 1080 × 2520\n2. 1080 × 2560\n</code></pre>\n<p>因为所有设备宽度相同, <code>cYx</code> 的结果是高度无关的.</p>\n<p>计算结果:</p>\n<pre><code class=\"lang-js\">1080 * 0.5 * 16 / 9; // 960\n</code></pre>\n<p>设想如下场景, 某个应用页面是可以向下滚动窗口显示更多内容的, 在屏幕上半部分有一个按钮 <code>BTN</code>, 距离屏幕上边缘 <code>H</code> 距离, 另一台设备与当前设备屏幕宽度相同, 但高度更大, 相当于屏幕纵向变长, 此时按钮 <code>BTN</code> 距离屏幕上边缘依然是 <code>H</code> 距离, 仅仅是屏幕下方显示了更多内容.<br>\n因此可使用 <code>cYx</code> 标度表示按钮 <code>BTN</code> 的位置, 如 <code>cYx(0.2, 1080 / 1920)</code> 或 <code>cYx(0.2, 9 / 16)</code> 或 <code>cYx(0.2, &#39;9:16&#39;)</code>.</p>\n<p>上述示例的 <code>0.2</code> 是一个相对值, 是相对于当前设备屏幕高度的, 因此第 2 个参数对应设备宽高比例值.<br>\n如果使用绝对坐标值 (<code>Y</code> 坐标值), 如 <code>384</code>, 则第 2 个参数对应的是设备屏幕宽度值:</p>\n<table>\n<thead>\n<tr>\n<th style=\"text-align:center\">第 1 个参数</th>\n<th style=\"text-align:center\">第 2 个参数</th>\n<th style=\"text-align:center\">示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:center\">Y 坐标百分比</td>\n<td style=\"text-align:center\">设备宽高比</td>\n<td style=\"text-align:center\">cYx(0.2, &#39;9:16&#39;)</td>\n</tr>\n<tr>\n<td style=\"text-align:center\">Y 坐标值</td>\n<td style=\"text-align:center\">设备宽度值</td>\n<td style=\"text-align:center\">cYx(384, 1096)</td>\n</tr>\n</tbody>\n</table>\n",
+          "desc": "<p>以横坐标度量的纵坐标标度.</p>\n<p>所有重载均同步读取当前显示尺寸，不需要额外权限。参数超过 3 个、比例字符串无效、数值无法转换，或只设置了一个缩放轴导致 X/Y 基数状态不一致时抛出异常；调用本身不修改基数。</p>\n<p>与设备高度无关, 与设备宽度相关的坐标标度.</p>\n<p>如 <code>cYx(0.5, &#39;9:16&#39;)</code> 对于以下 5 个设备 (以分辨率区分) 得到的结果是完全一致的:</p>\n<pre><code class=\"lang-text\">1. 1080 × 1920\n4. 1080 × 2160\n5. 1080 × 2340\n3. 1080 × 2520\n2. 1080 × 2560\n</code></pre>\n<p>因为所有设备宽度相同, <code>cYx</code> 的结果是高度无关的.</p>\n<p>计算结果:</p>\n<pre><code class=\"lang-js\">1080 * 0.5 * 16 / 9; // 960\n</code></pre>\n<p>设想如下场景, 某个应用页面是可以向下滚动窗口显示更多内容的, 在屏幕上半部分有一个按钮 <code>BTN</code>, 距离屏幕上边缘 <code>H</code> 距离, 另一台设备与当前设备屏幕宽度相同, 但高度更大, 相当于屏幕纵向变长, 此时按钮 <code>BTN</code> 距离屏幕上边缘依然是 <code>H</code> 距离, 仅仅是屏幕下方显示了更多内容.<br>\n因此可使用 <code>cYx</code> 标度表示按钮 <code>BTN</code> 的位置, 如 <code>cYx(0.2, 1080 / 1920)</code> 或 <code>cYx(0.2, 9 / 16)</code> 或 <code>cYx(0.2, &#39;9:16&#39;)</code>.</p>\n<p>上述示例的 <code>0.2</code> 是一个相对值, 是相对于当前设备屏幕高度的, 因此第 2 个参数对应设备宽高比例值.<br>\n如果使用绝对坐标值 (<code>Y</code> 坐标值), 如 <code>384</code>, 则第 2 个参数对应的是设备屏幕宽度值:</p>\n<table>\n<thead>\n<tr>\n<th style=\"text-align:center\">第 1 个参数</th>\n<th style=\"text-align:center\">第 2 个参数</th>\n<th style=\"text-align:center\">示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:center\">Y 坐标百分比</td>\n<td style=\"text-align:center\">设备宽高比</td>\n<td style=\"text-align:center\">cYx(0.2, &#39;9:16&#39;)</td>\n</tr>\n<tr>\n<td style=\"text-align:center\">Y 坐标值</td>\n<td style=\"text-align:center\">设备宽度值</td>\n<td style=\"text-align:center\">cYx(384, 1096)</td>\n</tr>\n</tbody>\n</table>\n",
           "methods": [
             {
               "textRaw": "cYx(coordinateY, baseX)",
@@ -1171,7 +1781,7 @@
               "textRaw": "cYx(y, isRatio)",
               "type": "method",
               "name": "cYx",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/3</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>y</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>y</code> 参数的范围自动决定 <code>y</code> 是否视为百分比,<br>\n即当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, <code>y</code> 将视为屏幕高度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>y</code> 参数将强制视为百分比, 如 <code>cYx(2, true)</code> 意味着两倍屏幕高度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>y</code> 参数将强制视为绝对坐标值, 如 <code>cYx(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/3</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>y</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>y</code> 参数的范围自动决定 <code>y</code> 是否视为百分比,<br>\n即当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, <code>y</code> 将视为屏幕高度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>y</code> 参数将强制视为百分比, 如 <code>cYx(2, true)</code> 意味着两倍屏幕高度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>y</code> 参数将强制视为绝对坐标值, 如 <code>cYx(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n<pre><code class=\"lang-js\">console.log(cYx(0.5, true));  // 按默认宽高比换算 50% 高度\nconsole.log(cYx(384, false)); // 按当前 X 基数换算绝对纵坐标\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1189,7 +1799,7 @@
               "textRaw": "cYx(y)",
               "type": "method",
               "name": "cYx",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, 相当于 <code>cY(y, /* isRatio = */ true)</code>, 即 <code>y</code> 将视为屏幕高度百分比.</p>\n<p>当参数 <code>y</code> 满足 <code>y &lt;= -1 | y &gt;= 1</code> 时, 相当于 <code>cY(y, /* base = */ 720)</code>, 即 <code>y</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseX</code> 等方法修改, <code>720</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">cYx(0.3); /* 相当于 cYx(0.3, &#39;9:16&#39;) . */\ncYx(384); /* 相当于 cYx(384, 720) . */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong></p>\n<ul>\n<li><strong>y</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕高度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>y</code> 满足 <code>-1 &lt; y &lt; 1</code> 时, 相当于 <code>cYx(y, /* isRatio = */ true)</code>, 即 <code>y</code> 将视为屏幕高度百分比.</p>\n<p>当参数 <code>y</code> 满足 <code>y &lt;= -1 | y &gt;= 1</code> 时, 相当于 <code>cYx(y, /* base = */ 720)</code>, 即 <code>y</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseX</code> 等方法修改, <code>720</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">cYx(0.3); /* 相当于 cYx(0.3, &#39;9:16&#39;) . */\ncYx(384); /* 相当于 cYx(384, 720) . */\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1207,7 +1817,7 @@
         {
           "textRaw": "[m] cXy",
           "name": "[m]_cxy",
-          "desc": "<p>以纵坐标度量的横坐标标度.</p>\n<p>与设备宽度无关, 与设备高度相关的坐标标度.</p>\n<p>如 <code>cXy(0.5, &#39;9:16&#39;)</code> 对于以下 5 个设备 (以分辨率区分) 得到的结果是完全一致的:</p>\n<pre><code class=\"lang-text\">1. 1080 × 1920\n4. 1096 × 1920\n5. 720 × 1920\n3. 540 × 1920\n2. 960 × 1920\n</code></pre>\n<p>因为所有设备高度相同, <code>cXy</code> 的结果是宽度无关的.</p>\n<p>计算结果:</p>\n<pre><code class=\"lang-js\">1920 * 0.5 * 9 / 16; // 540\n</code></pre>\n<p>设想如下场景, 某个应用页面是可以向右滚动窗口显示更多内容的, 在屏幕左半部分有一个按钮 <code>BTN</code>, 距离屏幕左边缘 <code>W</code> 距离, 另一台设备与当前设备屏幕高度相同, 但宽度更大, 相当于屏幕横向变长, 此时按钮 <code>BTN</code> 距离屏幕左边缘依然是 <code>W</code> 距离, 仅仅是屏幕右方显示了更多内容.<br>\n因此可使用 <code>cXy</code> 标度表示按钮 <code>BTN</code> 的位置, 如 <code>cXy(0.2, 1080 / 1920)</code> 或 <code>cXy(0.2, 9 / 16)</code> 或 <code>cXy(0.2, &#39;9:16&#39;)</code>.</p>\n<p>上述示例的 <code>0.2</code> 是一个相对值, 是相对于当前设备屏幕宽度的, 因此第 2 个参数对应设备宽高比例值.<br>\n如果使用绝对坐标值 (<code>X</code> 坐标值), 如 <code>384</code>, 则第 2 个参数对应的是设备屏幕高度值:</p>\n<table>\n<thead>\n<tr>\n<th style=\"text-align:center\">第 1 个参数</th>\n<th style=\"text-align:center\">第 2 个参数</th>\n<th style=\"text-align:center\">示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:center\">X 坐标百分比</td>\n<td style=\"text-align:center\">设备宽高比</td>\n<td style=\"text-align:center\">cXy(0.2, &#39;9:16&#39;)</td>\n</tr>\n<tr>\n<td style=\"text-align:center\">X 坐标值</td>\n<td style=\"text-align:center\">设备高度值</td>\n<td style=\"text-align:center\">cXy(384, 2560)</td>\n</tr>\n</tbody>\n</table>\n",
+          "desc": "<p>以纵坐标度量的横坐标标度.</p>\n<p>所有重载均同步读取当前显示尺寸，不需要额外权限。参数超过 3 个、比例字符串无效、数值无法转换，或只设置了一个缩放轴导致 X/Y 基数状态不一致时抛出异常；调用本身不修改基数。</p>\n<p>与设备宽度无关, 与设备高度相关的坐标标度.</p>\n<p>如 <code>cXy(0.5, &#39;9:16&#39;)</code> 对于以下 5 个设备 (以分辨率区分) 得到的结果是完全一致的:</p>\n<pre><code class=\"lang-text\">1. 1080 × 1920\n4. 1096 × 1920\n5. 720 × 1920\n3. 540 × 1920\n2. 960 × 1920\n</code></pre>\n<p>因为所有设备高度相同, <code>cXy</code> 的结果是宽度无关的.</p>\n<p>计算结果:</p>\n<pre><code class=\"lang-js\">1920 * 0.5 * 9 / 16; // 540\n</code></pre>\n<p>设想如下场景, 某个应用页面是可以向右滚动窗口显示更多内容的, 在屏幕左半部分有一个按钮 <code>BTN</code>, 距离屏幕左边缘 <code>W</code> 距离, 另一台设备与当前设备屏幕高度相同, 但宽度更大, 相当于屏幕横向变长, 此时按钮 <code>BTN</code> 距离屏幕左边缘依然是 <code>W</code> 距离, 仅仅是屏幕右方显示了更多内容.<br>\n因此可使用 <code>cXy</code> 标度表示按钮 <code>BTN</code> 的位置, 如 <code>cXy(0.2, 1080 / 1920)</code> 或 <code>cXy(0.2, 9 / 16)</code> 或 <code>cXy(0.2, &#39;9:16&#39;)</code>.</p>\n<p>上述示例的 <code>0.2</code> 是一个相对值, 是相对于当前设备屏幕宽度的, 因此第 2 个参数对应设备宽高比例值.<br>\n如果使用绝对坐标值 (<code>X</code> 坐标值), 如 <code>384</code>, 则第 2 个参数对应的是设备屏幕高度值:</p>\n<table>\n<thead>\n<tr>\n<th style=\"text-align:center\">第 1 个参数</th>\n<th style=\"text-align:center\">第 2 个参数</th>\n<th style=\"text-align:center\">示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:center\">X 坐标百分比</td>\n<td style=\"text-align:center\">设备宽高比</td>\n<td style=\"text-align:center\">cXy(0.2, &#39;9:16&#39;)</td>\n</tr>\n<tr>\n<td style=\"text-align:center\">X 坐标值</td>\n<td style=\"text-align:center\">设备高度值</td>\n<td style=\"text-align:center\">cXy(384, 2560)</td>\n</tr>\n</tbody>\n</table>\n",
           "methods": [
             {
               "textRaw": "cXy(coordinateX, baseY)",
@@ -1249,7 +1859,7 @@
               "textRaw": "cXy(x, isRatio)",
               "type": "method",
               "name": "cXy",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/3</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>x</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>x</code> 参数的范围自动决定 <code>x</code> 是否视为百分比,<br>\n即当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, <code>x</code> 将视为屏幕宽度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>x</code> 参数将强制视为百分比, 如 <code>cXy(2, true)</code> 意味着两倍屏幕宽度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>x</code> 参数将强制视为绝对坐标值, 如 <code>cXy(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 2/3</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><strong>[ isRatio = &#39;auto&#39; ]</strong> { <code>&#39;auto&#39;</code> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否将 <code>x</code> 参数强制作为百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p><code>isRatio</code> 参数默认为 <code>auto</code>, 即由 <code>x</code> 参数的范围自动决定 <code>x</code> 是否视为百分比,<br>\n即当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, <code>x</code> 将视为屏幕宽度百分比, 否则将视为绝对坐标值.</p>\n<p><code>isRatio</code> 参数为 <code>true</code> 时, <code>x</code> 参数将强制视为百分比, 如 <code>cXy(2, true)</code> 意味着两倍屏幕宽度, <code>2</code> 的意义不再是像素值.</p>\n<p><code>isRatio</code> 参数为 <code>false</code> 时, <code>x</code> 参数将强制视为绝对坐标值, 如 <code>cXy(0.5, false)</code> 意味着 <code>0.5</code> 像素值, 其意义不再是百分比.</p>\n<pre><code class=\"lang-js\">console.log(cXy(0.5, true));   // 按默认宽高比换算 50% 宽度\nconsole.log(cXy(384, false));  // 按当前 Y 基数换算绝对横坐标\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1267,7 +1877,7 @@
               "textRaw": "cXy(x)",
               "type": "method",
               "name": "cXy",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, 相当于 <code>cY(x, /* isRatio = */ true)</code>, 即 <code>x</code> 将视为屏幕宽度百分比.</p>\n<p>当参数 <code>x</code> 满足 <code>x &lt;= -1 | x &gt;= 1</code> 时, 相当于 <code>cY(x, /* base = */ 720)</code>, 即 <code>x</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseX</code> 等方法修改, <code>720</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">cXy(0.3); /* 相当于 cXy(0.3, &#39;9:16&#39;) . */\ncXy(384); /* 相当于 cXy(384, 720) . */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Global</code></strong> <strong><code>Overload 3/3</code></strong></p>\n<ul>\n<li><strong>x</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 绝对坐标值或屏幕宽度百分比</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>当参数 <code>x</code> 满足 <code>-1 &lt; x &lt; 1</code> 时, 相当于 <code>cXy(x, /* isRatio = */ true)</code>, 即 <code>x</code> 将视为屏幕宽度百分比.</p>\n<p>当参数 <code>x</code> 满足 <code>x &lt;= -1 | x &gt;= 1</code> 时, 相当于 <code>cXy(x, /* base = */ 1280)</code>, 即 <code>x</code> 将视为绝对坐标值, 另 <code>base</code> 参数可能由 <code>setScaleBaseY</code> 等方法修改, <code>1280</code> 为其默认值.</p>\n<pre><code class=\"lang-js\">cXy(0.3); /* 相当于 cXy(0.3, &#39;9:16&#39;) . */\ncXy(384); /* 相当于 cXy(384, 1280) . */\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -1290,7 +1900,7 @@
               "textRaw": "species(o)",
               "type": "method",
               "name": "species",
-              "desc": "<p><strong><code>Global</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>查看任意对象的 &quot;种类&quot;, 如 <code>Object</code>, <code>Array</code>, <code>Number</code>, <code>String</code>, <code>RegExp</code> 等.</p>\n<p>内部实现代码摘要:</p>\n<pre><code class=\"lang-js\">Object.prototype.toString.call(o).slice(&#39;[Object\\x20&#39;.length, &#39;]&#39;.length * -1);\n</code></pre>\n<p>示例:</p>\n<pre><code class=\"lang-js\">species(&#39;xyz&#39;); // String\nspecies(20); // Number\nspecies(20n); // BigInt\nspecies(true); // Boolean\nspecies(undefined); // Undefined\nspecies(null); // Null\nspecies(() =&gt; null); // Function\nspecies({ a: &#39;Apple&#39; }); // Object\nspecies([ 5, 10, 15 ]); // Array\nspecies(/^\\d{8,11}$/); // RegExp\nspecies(new Date()); // Date\nspecies(new TypeError()); // Error\nspecies(new Map()); // Map\nspecies(new Set()); // Set\nspecies(&lt;text/&gt;); // XML\nspecies(com.qiaomu.monkeyking); // JavaPackage\nspecies(com.qiaomu.monkeyking.R); // JavaClass\n</code></pre>\n<p>如需判断某个对象是否为特定的 &quot;种类&quot;, 可使用形如 <code>species.isXxx</code> 的扩展方法:</p>\n<pre><code class=\"lang-js\">species.isObject(23); // false\nspecies.isNumber(23); // true\nspecies.isRegExp(/test$/); // true\n</code></pre>\n",
+              "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Global</code></strong> <strong><code>Alias: $species</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>异常</strong>：参数数量不为 1 时抛出异常；对象转换或种类识别失败时返回 <code>Unknown</code></li>\n<li><strong>线程 / 权限 / 副作用</strong>：同步纯判断，不需要 Android 权限，也不修改传入对象</li>\n</ul>\n<p>查看任意对象经 Rhino <code>Context.javaToJS</code> 转换后的种类。JavaScript 对象返回其 Rhino <code>className</code>；Java 原生值先转换再判断。无法识别或转换失败时返回 <code>Unknown</code>，不会把异常传给调用方。</p>\n<p>示例:</p>\n<pre><code class=\"lang-js\">species(&#39;xyz&#39;); // String\nspecies(20); // Number\nspecies(20n); // BigInt\nspecies(true); // Boolean\nspecies(undefined); // Undefined\nspecies(null); // Null\nspecies(() =&gt; null); // Function\nspecies({ a: &#39;Apple&#39; }); // Object\nspecies([ 5, 10, 15 ]); // Array\nspecies(/^\\d{8,11}$/); // RegExp\nspecies(new Date()); // Date\nspecies(new TypeError()); // Error\nspecies(new Map()); // Map\nspecies(new Set()); // Set\nspecies(&lt;text/&gt;); // XML\nspecies(com.qiaomu.monkeyking); // JavaPackage\nspecies(com.qiaomu.monkeyking.R); // JavaClass\n</code></pre>\n<p>如需判断某个对象是否为特定的 &quot;种类&quot;, 可使用形如 <code>species.isXxx</code> 的扩展方法:</p>\n<pre><code class=\"lang-js\">species.isObject(23); // false\nspecies.isNumber(23); // true\nspecies.isRegExp(/test$/); // true\n</code></pre>\n<p><code>isJavaClass</code>、<code>isJavaPackage</code> 和 <code>isObject</code> 同时作为全局函数导出；其余判断器通过 <code>species.isXxx</code> 调用。</p>\n",
               "signatures": [
                 {
                   "params": [
@@ -1311,22 +1921,8 @@
                   "textRaw": "isArray(o)",
                   "type": "method",
                   "name": "isArray",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isArray([])); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1334,8 +1930,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1349,22 +1944,8 @@
                   "textRaw": "isArrayBuffer(o)",
                   "type": "method",
                   "name": "isArrayBuffer",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>ArrayBuffer</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isArrayBuffer(new ArrayBuffer(8))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1372,8 +1953,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>ArrayBuffer</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1387,22 +1967,8 @@
                   "textRaw": "isBigInt(o)",
                   "type": "method",
                   "name": "isBigInt",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>BigInt</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isBigInt(1n)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1410,8 +1976,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>BigInt</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1425,22 +1990,8 @@
                   "textRaw": "isBoolean(o)",
                   "type": "method",
                   "name": "isBoolean",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Boolean</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isBoolean(true)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1448,8 +1999,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Boolean</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1463,22 +2013,8 @@
                   "textRaw": "isContinuation(o)",
                   "type": "method",
                   "name": "isContinuation",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Continuation</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isContinuation({})); // false\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1486,8 +2022,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Continuation</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1501,22 +2036,8 @@
                   "textRaw": "isDataView(o)",
                   "type": "method",
                   "name": "isDataView",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>DataView</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isDataView(new DataView(new ArrayBuffer(8)))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1524,8 +2045,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>DataView</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1539,22 +2059,8 @@
                   "textRaw": "isDate(o)",
                   "type": "method",
                   "name": "isDate",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Date</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isDate(new Date())); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1562,8 +2068,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Date</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1577,22 +2082,8 @@
                   "textRaw": "isError(o)",
                   "type": "method",
                   "name": "isError",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Error</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isError(new Error(&#39;failed&#39;))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1600,8 +2091,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Error</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1615,22 +2105,8 @@
                   "textRaw": "isFloat32Array(o)",
                   "type": "method",
                   "name": "isFloat32Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Float32Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isFloat32Array(new Float32Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1638,8 +2114,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Float32Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1653,22 +2128,8 @@
                   "textRaw": "isFloat64Array(o)",
                   "type": "method",
                   "name": "isFloat64Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Float64Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isFloat64Array(new Float64Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1676,8 +2137,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Float64Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1691,22 +2151,8 @@
                   "textRaw": "isFunction(o)",
                   "type": "method",
                   "name": "isFunction",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Function</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isFunction(() =&gt; null)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1714,50 +2160,11 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Function</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
               "displayName": "[m] isFunction"
-            },
-            {
-              "textRaw": "[m] isHTMLDocument",
-              "name": "[m]_ishtmldocument",
-              "methods": [
-                {
-                  "textRaw": "isHTMLDocument(o)",
-                  "type": "method",
-                  "name": "isHTMLDocument",
-                  "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
-                    {
-                      "params": [
-                        {
-                          "name": "o"
-                        }
-                      ]
-                    }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>HTMLDocument</code>.</p>\n"
-                }
-              ],
-              "type": "module",
-              "displayName": "[m] isHTMLDocument"
             },
             {
               "textRaw": "[m] isInt16Array",
@@ -1767,22 +2174,8 @@
                   "textRaw": "isInt16Array(o)",
                   "type": "method",
                   "name": "isInt16Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Int16Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isInt16Array(new Int16Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1790,8 +2183,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Int16Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1805,22 +2197,8 @@
                   "textRaw": "isInt32Array(o)",
                   "type": "method",
                   "name": "isInt32Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Int32Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isInt32Array(new Int32Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1828,8 +2206,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Int32Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1843,22 +2220,8 @@
                   "textRaw": "isInt8Array(o)",
                   "type": "method",
                   "name": "isInt8Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Int8Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isInt8Array(new Int8Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1866,8 +2229,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Int8Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1881,22 +2243,8 @@
                   "textRaw": "isJavaObject(o)",
                   "type": "method",
                   "name": "isJavaObject",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>JavaObject</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isJavaObject(new java.io.File(&#39;/sdcard&#39;))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1904,12 +2252,34 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>JavaObject</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
               "displayName": "[m] isJavaObject"
+            },
+            {
+              "textRaw": "[m] isJavaClass",
+              "name": "[m]_isjavaclass",
+              "methods": [
+                {
+                  "textRaw": "isJavaClass(o)",
+                  "type": "method",
+                  "name": "isJavaClass",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>JavaClass</code>。此方法也以全局函数 <code>isJavaClass(o)</code> 暴露。</p>\n<pre><code class=\"lang-js\">console.log(species.isJavaClass(java.lang.String)); // true\n</code></pre>\n",
+                  "signatures": [
+                    {
+                      "params": [
+                        {
+                          "name": "o"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "type": "module",
+              "displayName": "[m] isJavaClass"
             },
             {
               "textRaw": "[m] isJavaPackage",
@@ -1919,22 +2289,8 @@
                   "textRaw": "isJavaPackage(o)",
                   "type": "method",
                   "name": "isJavaPackage",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>JavaPackage</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isJavaPackage(java.lang)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1942,8 +2298,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>JavaPackage</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1957,22 +2312,8 @@
                   "textRaw": "isMap(o)",
                   "type": "method",
                   "name": "isMap",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Map</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isMap(new Map())); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -1980,8 +2321,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Map</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -1995,22 +2335,8 @@
                   "textRaw": "isNamespace(o)",
                   "type": "method",
                   "name": "isNamespace",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Namespace</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isNamespace(new Namespace(&#39;urn:example&#39;))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2018,8 +2344,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Namespace</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2033,22 +2358,8 @@
                   "textRaw": "isNull(o)",
                   "type": "method",
                   "name": "isNull",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Null</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isNull(null)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2056,8 +2367,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Null</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2071,22 +2381,8 @@
                   "textRaw": "isNumber(o)",
                   "type": "method",
                   "name": "isNumber",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Number</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isNumber(42)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2094,8 +2390,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Number</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2109,22 +2404,8 @@
                   "textRaw": "isObject(o)",
                   "type": "method",
                   "name": "isObject",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Object</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isObject({ key: &#39;value&#39; })); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2132,8 +2413,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Object</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2147,22 +2427,8 @@
                   "textRaw": "isQName(o)",
                   "type": "method",
                   "name": "isQName",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>QName</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isQName(new QName(&#39;urn:example&#39;, &#39;name&#39;))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2170,8 +2436,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>QName</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2185,22 +2450,8 @@
                   "textRaw": "isRegExp(o)",
                   "type": "method",
                   "name": "isRegExp",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>RegExp</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isRegExp(/test$/)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2208,8 +2459,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>RegExp</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2223,22 +2473,8 @@
                   "textRaw": "isSet(o)",
                   "type": "method",
                   "name": "isSet",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Set</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isSet(new Set())); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2246,8 +2482,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Set</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2261,22 +2496,8 @@
                   "textRaw": "isString(o)",
                   "type": "method",
                   "name": "isString",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>String</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isString(&#39;text&#39;)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2284,8 +2505,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>String</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2299,22 +2519,8 @@
                   "textRaw": "isUint16Array(o)",
                   "type": "method",
                   "name": "isUint16Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint16Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isUint16Array(new Uint16Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2322,8 +2528,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint16Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2337,22 +2542,8 @@
                   "textRaw": "isUint32Array(o)",
                   "type": "method",
                   "name": "isUint32Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint32Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isUint32Array(new Uint32Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2360,8 +2551,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint32Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2375,22 +2565,8 @@
                   "textRaw": "isUint8Array(o)",
                   "type": "method",
                   "name": "isUint8Array",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint8Array</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isUint8Array(new Uint8Array(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2398,8 +2574,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint8Array</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2413,22 +2588,8 @@
                   "textRaw": "isUint8ClampedArray(o)",
                   "type": "method",
                   "name": "isUint8ClampedArray",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint8ClampedArray</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isUint8ClampedArray(new Uint8ClampedArray(1))); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2436,8 +2597,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Uint8ClampedArray</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2451,22 +2611,8 @@
                   "textRaw": "isUndefined(o)",
                   "type": "method",
                   "name": "isUndefined",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>Undefined</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isUndefined(undefined)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2474,8 +2620,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Undefined</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2489,22 +2634,8 @@
                   "textRaw": "isWeakMap(o)",
                   "type": "method",
                   "name": "isWeakMap",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>WeakMap</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isWeakMap(new WeakMap())); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2512,8 +2643,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>WeakMap</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2527,22 +2657,8 @@
                   "textRaw": "isWeakSet(o)",
                   "type": "method",
                   "name": "isWeakSet",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>WeakSet</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isWeakSet(new WeakSet())); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2550,50 +2666,11 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>WeakSet</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
               "displayName": "[m] isWeakSet"
-            },
-            {
-              "textRaw": "[m] isWindow",
-              "name": "[m]_iswindow",
-              "methods": [
-                {
-                  "textRaw": "isWindow(o)",
-                  "type": "method",
-                  "name": "isWindow",
-                  "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
-                    {
-                      "params": [
-                        {
-                          "name": "o"
-                        }
-                      ]
-                    }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>Window</code>.</p>\n"
-                }
-              ],
-              "type": "module",
-              "displayName": "[m] isWindow"
             },
             {
               "textRaw": "[m] isXML",
@@ -2603,22 +2680,8 @@
                   "textRaw": "isXML(o)",
                   "type": "method",
                   "name": "isXML",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>XML</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isXML(&lt;root/&gt;)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2626,8 +2689,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>XML</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",
@@ -2641,22 +2703,8 @@
                   "textRaw": "isXMLList(o)",
                   "type": "method",
                   "name": "isXMLList",
+                  "desc": "<p><strong><code>6.6.0</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 任意对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：参数数量不为 1 时抛出异常；同步纯判断，不需要 Android 权限</li>\n</ul>\n<p>判断对象的 &quot;种类&quot; 是否为 <code>XMLList</code>.</p>\n<pre><code class=\"lang-js\">console.log(species.isXMLList(&lt;&gt;&lt;a/&gt;&lt;b/&gt;&lt;/&gt;)); // true\n</code></pre>\n",
                   "signatures": [
-                    {
-                      "params": [
-                        {
-                          "textRaw": "**o** { [any](../types/data-types.md#any) } - 任意对象 ",
-                          "name": "**o**",
-                          "type": " [any](../types/data-types.md#any) ",
-                          "desc": "任意对象"
-                        },
-                        {
-                          "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } ",
-                          "name": "<ins>**returns**</ins>",
-                          "type": " [boolean](../types/data-types.md#boolean) "
-                        }
-                      ]
-                    },
                     {
                       "params": [
                         {
@@ -2664,8 +2712,7 @@
                         }
                       ]
                     }
-                  ],
-                  "desc": "<p>判断对象的 &quot;种类&quot; 是否为 <code>XMLList</code>.</p>\n"
+                  ]
                 }
               ],
               "type": "module",

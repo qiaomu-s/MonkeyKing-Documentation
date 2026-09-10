@@ -584,7 +584,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 46, uniqueLines: 44, occurrences: 69 })
+    }).toEqual({ lines: 41, uniqueLines: 39, occurrences: 64 })
     expect(
       remaining.filter(({ legacySource }) => legacySource === 'docs/index.md'),
     ).toEqual([])

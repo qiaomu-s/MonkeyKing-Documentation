@@ -4,7 +4,65 @@
     {
       "textRaw": "Monkey King 使用手册 (Manual)",
       "name": "monkey_king_使用手册_(manual)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Mar 2, 2023.</p>\n\n<hr>\n",
+      "desc": "<p>本页给出 Monkey King 6.7.0 的最小可运行工作流。API 细节以各分类页面为准；运行环境为 Android 上的 Rhino 2.0，而不是浏览器或 Node.js。</p>\n<p>示例于 2026-09-10 按源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 复核。</p>\n",
+      "modules": [
+        {
+          "textRaw": "创建并运行脚本",
+          "name": "创建并运行脚本",
+          "desc": "<ol>\n<li>在 Monkey King 文件页新建 <code>.js</code> 文件。</li>\n<li>输入脚本并保存。</li>\n<li>点击运行按钮；脚本日志显示在控制台或底部日志面板。</li>\n<li>需要停止时，从运行任务列表结束对应引擎。</li>\n</ol>\n<pre><code class=\"lang-js\">&#39;use strict&#39;;\n\ntoast(&#39;Hello, Monkey King&#39;);\nconsole.log({ version: monkeyking.versionName });\n</code></pre>\n<p>脚本默认可使用 <code>console</code>、<code>files</code>、<code>app</code>、<code>device</code>、<code>images</code> 等全局模块，也可以用 <code>$console</code>、<code>$files</code> 等兼容别名访问大部分模块。</p>\n",
+          "type": "module",
+          "displayName": "创建并运行脚本"
+        },
+        {
+          "textRaw": "权限准备",
+          "name": "权限准备",
+          "desc": "<ul>\n<li>控件查找和普通手势：启用无障碍服务，调用 <code>auto.waitFor()</code> 等待服务可用。</li>\n<li>截图和图像识别：先调用 <code>images.requestScreenCapture()</code>，并处理用户拒绝授权的情况。</li>\n<li>悬浮窗：在系统设置中授予“显示在其他应用上层”权限。</li>\n<li>Root、Shizuku、写系统设置和安全设置：只在确实需要时启用，并在调用前检查能力。</li>\n<li>通知：Android 13 及以上可能需要通知权限；渠道行为由系统管理。</li>\n</ul>\n<p>权限请求会显示系统界面或跳转设置页，是有用户可见副作用的操作。</p>\n",
+          "type": "module",
+          "displayName": "权限准备"
+        },
+        {
+          "textRaw": "文件与工作目录",
+          "name": "文件与工作目录",
+          "desc": "<p>相对路径以当前脚本引擎的工作目录为基准。使用 <code>files.path()</code> 或 <code>files.join()</code> 构造路径，不要假设进程工作目录与脚本目录永远相同。</p>\n<pre><code class=\"lang-js\">const configPath = files.join(files.cwd(), &#39;config.json&#39;);\n\nif (!files.exists(configPath)) {\n    files.write(configPath, JSON.stringify({ firstRun: false }, null, 2));\n}\n</code></pre>\n<p>文件、网络和模块加载通常是同步操作；不要在 UI 线程执行耗时调用。</p>\n",
+          "type": "module",
+          "displayName": "文件与工作目录"
+        },
+        {
+          "textRaw": "UI 脚本与普通脚本",
+          "name": "ui_脚本与普通脚本",
+          "desc": "<p>UI 脚本需要声明 UI 模式，并且视图修改应在 UI 线程完成。普通脚本中的阻塞等待、<code>sleep()</code> 和 Promise <code>wait()</code> 不得直接放到 UI 回调中。</p>\n<pre><code class=\"lang-js\">&#39;ui&#39;;\n\nui.layout(\n    &lt;vertical padding=&quot;16&quot;&gt;\n        &lt;text id=&quot;status&quot; text=&quot;Ready&quot; /&gt;\n        &lt;button id=&quot;start&quot; text=&quot;Run&quot; /&gt;\n    &lt;/vertical&gt;\n);\n\nui.start.on(&#39;click&#39;, () =&gt; {\n    threads.start(() =&gt; {\n        const value = http.get(&#39;https://example.com&#39;).body.string();\n        ui.run(() =&gt; ui.status.setText(String(value.length)));\n    });\n});\n</code></pre>\n",
+          "type": "module",
+          "displayName": "UI 脚本与普通脚本"
+        },
+        {
+          "textRaw": "模块与依赖",
+          "name": "模块与依赖",
+          "desc": "<p>本地模块使用 CommonJS：通过 <code>require()</code> 加载，通过 <code>module.exports</code> 导出。Monkey King 支持 JavaScript、JSON、目录包和部分 <code>node_modules</code>，但不承诺兼容 Node.js 原生模块。</p>\n<pre><code class=\"lang-js\">// lib/greet.js\nmodule.exports = name =&gt; `Hello, ${name}`;\n\n// main.js\nconst greet = require(&#39;./lib/greet&#39;);\nconsole.log(greet(&#39;Monkey King&#39;));\n</code></pre>\n<p>详见 <a href=\"../api/core/modules.md\">模块系统</a>。</p>\n",
+          "type": "module",
+          "displayName": "模块与依赖"
+        },
+        {
+          "textRaw": "生命周期与资源释放",
+          "name": "生命周期与资源释放",
+          "desc": "<p>脚本停止时会清理该运行时注册的事件、线程、定时器、传感器、悬浮窗、截图器和 OCR 资源。仍建议主动释放长生命周期资源：</p>\n<pre><code class=\"lang-js\">events.on(&#39;exit&#39;, () =&gt; {\n    sensors.unregisterAll();\n    floaty.closeAll();\n});\n</code></pre>\n<p>图片包装对象占用原生内存，用完应调用 <code>recycle()</code>；网络响应体应及时读取或关闭；事件监听器不再需要时应移除。</p>\n",
+          "type": "module",
+          "displayName": "生命周期与资源释放"
+        },
+        {
+          "textRaw": "错误处理",
+          "name": "错误处理",
+          "desc": "<p>参数数量、类型、权限、线程和文件状态不符合要求时，API 可能抛出 Java 或 Rhino 异常。对外部输入、文件和网络调用使用 <code>try/catch</code>，不要把异常仅写入日志后继续使用无效结果。</p>\n<pre><code class=\"lang-js\">try {\n    const response = http.get(&#39;https://example.com/api&#39;);\n    if (response.statusCode &lt; 200 || response.statusCode &gt;= 300) {\n        throw new Error(`HTTP ${response.statusCode}`);\n    }\n    console.log(response.body.string());\n} catch (error) {\n    console.error(error.stack || error);\n}\n</code></pre>\n",
+          "type": "module",
+          "displayName": "错误处理"
+        },
+        {
+          "textRaw": "下一步",
+          "name": "下一步",
+          "desc": "<ul>\n<li><a href=\"overview.md\">综述</a>：运行环境和文档导航。</li>\n<li><a href=\"../api/core/global.md\">全局对象</a>：全局函数、全局变量与类型判断。</li>\n<li><a href=\"../api/automation/automator.md\">自动化</a>：无障碍、坐标和 Root 输入。</li>\n<li><a href=\"../api/core/modules.md\">模块</a>：<code>require</code>、<code>Module</code>、<code>Promise</code> 与 <code>ResultAdapter</code>。</li>\n<li><a href=\"troubleshooting.md\">疑难解答</a>：常见环境和权限问题。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "下一步"
+        }
+      ],
       "type": "module",
       "displayName": "Monkey King 使用手册 (Manual)"
     }

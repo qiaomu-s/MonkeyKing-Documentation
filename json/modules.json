@@ -4,7 +4,543 @@
     {
       "textRaw": "模块 (Module)",
       "name": "模块_(module)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>Monkey King 有一个简单的模块加载系统.  在 Monkey King 中, 文件和模块是一一对应的（每个文件被视为一个独立的模块）.</p>\n<p>例子, 假设有一个名为 foo.js 的文件：</p>\n<pre><code>var circle = require(&#39;circle.js&#39;);\nconsole.log(&quot;半径为 4 的圆的面积是 %d&quot;, circle.area(4));\n</code></pre><p>在第一行中, foo.js 加载了同一目录下的 circle.js 模块.</p>\n<p>circle.js 文件的内容为：</p>\n<pre><code>const PI = Math.PI;\n\nvar circle = {};\n\ncircle.area = function (r) {\n  return PI * r * r;\n};\n\ncircle.circumference = (r) =&gt; 2 * PI * r;\n\nmodule.exports = circle;\n</code></pre><p>circle.js 模块导出了 area() 和 circumference() 两个函数.  通过在特殊的 exports 对象上指定额外的属性, 函数和对象可以被添加到模块的根部.</p>\n<p>模块内的本地变量是私有的.  在这个例子中, 变量 PI 是 circle.js 私有的, 不会影响到加载他的脚本的变量环境.</p>\n<p>module.exports属性可以被赋予一个新的值（例如函数或对象）.</p>\n<p>如下, bar.js 会用到 square 模块, square 导出一个构造函数：</p>\n<pre><code>const square = require(&#39;square.js&#39;);\nconst mySquare = square(2);\nconsole.log(&quot;正方形的面积是 %d&quot;, mySquare.area());\nsquare 模块定义在 square.js 中：\n\n// 赋值给 `exports` 不会修改模块, 必须使用 `module.exports`\nmodule.exports = function(width) {\n  return {\n    area: () =&gt; width ** 2\n  };\n};\n</code></pre>",
+      "desc": "<p>Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 <code>require.cache</code> 返回同一真值导出。固定提交对假值导出的缓存例外见 <a href=\"#p-require-cache\">require.cache</a>。</p>\n<p>模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 <code>node_modules</code>，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<hr>\n",
+      "modules": [
+        {
+          "textRaw": "[p] module",
+          "name": "[p]_module",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>MODULE_LOCAL</code></strong></p>\n<ul>\n<li>{ <a href=\"#module-对象\">Module</a> }</li>\n</ul>\n<p>当前文件的模块对象。它只在模块作用域内使用，不是普通脚本的全局变量。</p>\n",
+          "type": "module",
+          "displayName": "[p] module"
+        },
+        {
+          "textRaw": "[p] exports",
+          "name": "[p]_exports",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>MODULE_LOCAL</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n</ul>\n<p>初始时等价于 <code>module.exports</code>。给 <code>exports</code> 增加属性会修改默认导出对象；把 <code>exports</code> 本身重新赋值不会替换模块导出，替换导出必须赋值给 <code>module.exports</code>。</p>\n<pre><code class=\"lang-js\">// math.js\nexports.square = value =&gt; value * value;\n\n// factory.js\nmodule.exports = name =&gt; ({ name });\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] exports"
+        },
+        {
+          "textRaw": "[m] require",
+          "name": "[m]_require",
+          "methods": [
+            {
+              "textRaw": "require(id, parent?)",
+              "type": "method",
+              "name": "require",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>id</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 模块标识或路径</li>\n<li><strong>[ parent ]</strong> { <a href=\"#module-对象\">Module</a> } - 解析相对路径时使用的父模块；普通脚本通常省略</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - 模块的 <code>module.exports</code></li>\n<li><strong>异常</strong>：找不到模块、文件读取失败、JSON 或包描述解析失败时抛出异常</li>\n<li><strong>线程 / 副作用</strong>：同步解析、读取并执行首次加载的模块；可能产生文件、网络和模块初始化副作用</li>\n</ul>\n<p>同步解析并加载模块。省略扩展名时依次尝试 JavaScript 和 JSON；目录会读取 <code>package.json</code> 的 <code>main</code>，否则尝试 <code>index.js</code>。相对路径按调用模块所在目录解析，顶层脚本按当前工作目录解析。</p>\n<p>加载失败时抛出带 <code>code</code> 的模块错误，常见值包括 <code>MODULE_NOT_FOUND</code>、<code>IO_ERROR</code> 和 <code>PARSE_ERROR</code>。HTTP/HTTPS 标识交给原生加载器处理，可能执行同步网络访问；不要在 UI 线程加载慢速模块。</p>\n<pre><code class=\"lang-js\">const local = require(&#39;./lib/math&#39;);\nconst settings = require(&#39;./settings.json&#39;);\n\nconsole.log(local.square(6));\nconsole.log(settings.theme);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "id"
+                    },
+                    {
+                      "name": "parent?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] require"
+        },
+        {
+          "textRaw": "Module 对象",
+          "name": "module_对象",
+          "ctors": [
+            {
+              "textRaw": "new Module(id, parent?, core?)",
+              "type": "ctor",
+              "name": "Module",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>id</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ parent ]</strong> { <a href=\"#module-对象\">Module</a> }</li>\n<li><strong>[ core ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 省略时实际值为 <code>undefined</code>，按假值处理</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#module-对象\">Module</a> }</li>\n<li><strong>异常</strong>：构造器本身不校验路径；后续加载失败由 require 抛出</li>\n<li><strong>副作用 / 生命周期</strong>：有 parent 时把新模块追加到 <code>parent.children</code>，并为初始 exports 写入缓存</li>\n</ul>\n<p><code>Module</code> 是永久全局构造器，主要由加载器使用。普通脚本通常只需使用当前文件的 <code>module</code> 和 <code>require</code>。</p>\n<pre><code class=\"lang-js\">const child = new Module(&#39;virtual.js&#39;, module, false);\nconsole.log(child.id); // virtual.js\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "id"
+                    },
+                    {
+                      "name": "parent?"
+                    },
+                    {
+                      "name": "core?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "modules": [
+            {
+              "textRaw": "Module#id",
+              "name": "module#id",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> } - 构造时的模块标识</li>\n<li><strong>副作用</strong>：可写；修改后会影响以该模块为 parent 时的根目录计算</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.id);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#id"
+            },
+            {
+              "textRaw": "Module#filename",
+              "name": "module#filename",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> } - 初始值与 id 相同，加载后通常为解析路径</li>\n<li><strong>副作用</strong>：exports setter 使用该值作为 <code>require.cache</code> 的键</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.filename);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#filename"
+            },
+            {
+              "textRaw": "Module#exports",
+              "name": "module#exports",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt; / &lt;set&gt;</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常</strong>：无类型限制</li>\n<li><strong>副作用 / 生命周期</strong>：赋值同时更新 <code>require.cache[module.filename]</code></li>\n</ul>\n<pre><code class=\"lang-js\">module.exports = value =&gt; value * 2;\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#exports"
+            },
+            {
+              "textRaw": "Module#parent",
+              "name": "module#parent",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"#module-对象\">Module</a> | <a href=\"../types/data-types.md#undefined\">undefined</a> }</li>\n<li><strong>副作用</strong>：可写，但手动修改不会自动维护原父模块的 children</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.parent &amp;&amp; module.parent.filename);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#parent"
+            },
+            {
+              "textRaw": "Module#children",
+              "name": "module#children",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"#module-对象\">Module</a>[] }</li>\n<li><strong>副作用 / 生命周期</strong>：加载子模块或显式构造带 parent 的 Module 时追加成员</li>\n</ul>\n<pre><code class=\"lang-js\">require(&#39;./child&#39;);\nconsole.log(module.children.length);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#children"
+            },
+            {
+              "textRaw": "Module#loaded",
+              "name": "module#loaded",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 构造时为 <code>false</code></li>\n<li><strong>副作用</strong>：可写；固定提交的 <code>jvm-npm.js</code> 不会自行把它改为 <code>true</code>，不应将它当作可靠加载完成信号</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.loaded);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#loaded"
+            },
+            {
+              "textRaw": "Module#core",
+              "name": "module#core",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否为应用内置资源模块</li>\n<li><strong>副作用</strong>：读取无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(Boolean(module.core));\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Module#core"
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "Module#require(id)",
+              "type": "method",
+              "name": "Module#require",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>id</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常、线程与副作用</strong>：与全局 require 相同，但相对路径从当前 Module 解析</li>\n</ul>\n<pre><code class=\"lang-js\">const sibling = module.require(&#39;./sibling&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "id"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Module.require(id, parent?)",
+              "type": "method",
+              "name": "require",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>id</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ parent ]</strong> { <a href=\"#module-对象\">Module</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常、线程与副作用</strong>：代理全局 require</li>\n</ul>\n<pre><code class=\"lang-js\">const value = Module.require(&#39;./lib/math&#39;, module);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "id"
+                    },
+                    {
+                      "name": "parent?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Module.runMain(main)",
+              "type": "method",
+              "name": "runMain",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li><strong>main</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常</strong>：入口无法解析或执行失败时抛出异常</li>\n<li><strong>副作用</strong>：解析并通过原生加载器执行入口文件</li>\n</ul>\n<pre><code class=\"lang-js\">// 独立启动入口时使用；普通依赖请使用 require。\nconst exported = Module.runMain(&#39;./main.js&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "main"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Module._load(file)",
+              "type": "method",
+              "name": "_load",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Internal</code></strong></p>\n<ul>\n<li><strong>file</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常 / 副作用</strong>：直接调用原生加载器，绕过 jvm-npm 的常规解析与缓存判断</li>\n</ul>\n<pre><code class=\"lang-js\">// 仅用于调试原生模块加载，不作为常规依赖入口。\nconsole.log(typeof Module._load);\n</code></pre>\n<hr>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "file"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "Module 对象"
+        },
+        {
+          "textRaw": "Promise",
+          "name": "promise",
+          "desc": "<p>Monkey King 在引擎初始化时把内置 <code>promise.js</code> 以只读永久全局 <code>Promise</code> 注入。它基于 Promise polyfill，并增加 <code>await</code> 与 <code>wait</code>。回调经 <code>setImmediate</code> 或 <code>setTimeout(..., 0)</code> 调度；Promise 没有取消接口，生命周期持续到完成且引用被释放。</p>\n",
+          "ctors": [
+            {
+              "textRaw": "new Promise(executor)",
+              "type": "ctor",
+              "name": "Promise",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>executor</strong> { <a href=\"../types/data-types.md#function\">Function</a> } - <code>(resolve, reject) =&gt; void</code></li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常</strong>：缺少 new 或 executor 不是函数时抛出 <code>TypeError</code>；executor 抛出的错误会转为拒绝</li>\n<li><strong>副作用 / 生命周期</strong>：立即同步执行 executor，完成回调异步调度</li>\n</ul>\n<pre><code class=\"lang-js\">const promise = new Promise(resolve =&gt; resolve(42));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "executor"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "Promise#then(onFulfilled?, onRejected?)",
+              "type": "method",
+              "name": "Promise#then",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>onFulfilled / onRejected</strong> { <a href=\"../types/data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> } - 新的链式 Promise</li>\n<li><strong>异常</strong>：处理器抛出的错误会拒绝返回的 Promise</li>\n<li><strong>副作用</strong>：注册完成处理器</li>\n</ul>\n<pre><code class=\"lang-js\">Promise.resolve(21).then(value =&gt; value * 2);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "onFulfilled?"
+                    },
+                    {
+                      "name": "onRejected?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise#catch(onRejected)",
+              "type": "method",
+              "name": "Promise#catch",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>onRejected</strong> { <a href=\"../types/data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常 / 副作用</strong>：等价于 <code>then(null, onRejected)</code></li>\n</ul>\n<pre><code class=\"lang-js\">Promise.reject(new Error(&#39;failed&#39;)).catch(error =&gt; console.warn(error.message));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "onRejected"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise#finally(callback)",
+              "type": "method",
+              "name": "Promise#finally",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>callback</strong> { <a href=\"../types/data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常</strong>：callback 不是函数或执行失败时，返回的 Promise 被拒绝</li>\n<li><strong>副作用</strong>：无论成功或失败都调度 callback，并保持原值或原拒绝原因</li>\n</ul>\n<pre><code class=\"lang-js\">Promise.resolve(&#39;ok&#39;).finally(() =&gt; console.log(&#39;finished&#39;));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "callback"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise#await()",
+              "type": "method",
+              "name": "Promise#await",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Continuation</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - 完成值；非 nullish 的拒绝原因会在记录 / Toast 后作为普通恢复值返回</li>\n<li><strong>异常</strong>：continuation 未启用时抛出异常；nullish 拒绝会使内部 <code>resumeError</code> 在恢复前抛出，当前等待可能一直保持等待</li>\n<li><strong>线程 / 副作用</strong>：暂停当前 continuation，直至 Promise 完成</li>\n</ul>\n<p>固定提交的 <code>Promise#await()</code> 复用 <code>continuation.await()</code>：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 <code>await</code> 语义。</p>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst value = Promise.resolve(42).await();\nconsole.log(value); // 42\n\nconst recovered = Promise.reject(new Error(&#39;failed&#39;)).await();\nconsole.log(recovered.message); // failed；同时会记录 / Toast\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise#wait()",
+              "type": "method",
+              "name": "Promise#wait",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Blocking</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常</strong>：实现只执行 <code>if (resultObj.error)</code>，因此只有真值拒绝原因才会抛出</li>\n<li><strong>线程 / 副作用</strong>：阻塞当前线程直到完成；不得在 UI 线程使用</li>\n</ul>\n<p>拒绝原因为 <code>false</code>、<code>0</code>、空字符串、<code>null</code> 或 <code>undefined</code> 时，真值判断把它当作没有错误，随后读取不存在的 <code>result</code> 字段并返回 <code>undefined</code>。不要用假值作为需要由 <code>Promise#wait()</code> 传播的拒绝原因。</p>\n<pre><code class=\"lang-js\">const result = Promise.resolve(21)\n    .then(value =&gt; value * 2)\n    .wait();\n\nconsole.log(result); // 42\n\nconsole.log(Promise.reject(false).wait()); // undefined\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise.resolve(value?)",
+              "type": "method",
+              "name": "resolve",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常</strong>：读取 thenable 的 then 属性失败时返回拒绝态 Promise</li>\n<li><strong>副作用</strong>：已有同构 Promise 原样返回，其余值包装为完成态</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(Promise.resolve(1) instanceof Promise); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise.reject(reason?)",
+              "type": "method",
+              "name": "reject",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>reason</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>副作用</strong>：创建拒绝态 Promise；未注册处理器时通过 console.warn 发出警告</li>\n</ul>\n<pre><code class=\"lang-js\">Promise.reject(&#39;no&#39;).catch(reason =&gt; console.log(reason));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "reason?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise.all(values)",
+              "type": "method",
+              "name": "all",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>values</strong> { <a href=\"../types/data-types.md#array\">Array</a> } - 数组或带 length 的类数组对象</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise&lt;any[]&gt;</code> }</li>\n<li><strong>异常</strong>：输入不是类数组时返回拒绝态 Promise；任一成员拒绝时整体拒绝</li>\n<li><strong>副作用</strong>：订阅所有成员</li>\n</ul>\n<pre><code class=\"lang-js\">Promise.all([ Promise.resolve(1), 2 ]).then(values =&gt; console.log(values));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "values"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise.allSettled(values)",
+              "type": "method",
+              "name": "allSettled",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>values</strong> { <a href=\"../types/data-types.md#array\">Array</a> } - 数组或带 length 的类数组对象</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise&lt;object[]&gt;</code> }</li>\n<li><strong>异常</strong>：输入不是类数组时返回拒绝态 Promise</li>\n<li><strong>副作用</strong>：等待所有成员，结果包含 <code>fulfilled/value</code> 或 <code>rejected/reason</code></li>\n</ul>\n<pre><code class=\"lang-js\">Promise.allSettled([ Promise.resolve(1), Promise.reject(&#39;no&#39;) ])\n    .then(results =&gt; console.log(results));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "values"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "Promise.race(values)",
+              "type": "method",
+              "name": "race",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>values</strong> { <a href=\"../types/data-types.md#array\">Array</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常</strong>：输入不是类数组时返回拒绝态 Promise</li>\n<li><strong>副作用</strong>：订阅所有成员，以第一个完成或拒绝者决定结果</li>\n</ul>\n<pre><code class=\"lang-js\">Promise.race([ Promise.resolve(&#39;first&#39;), Promise.resolve(&#39;second&#39;) ])\n    .then(value =&gt; console.log(value));\n</code></pre>\n<p>拒绝且未注册处理器的 Promise 会通过 <code>console.warn</code> 输出警告。<code>Promise._immediateFn</code> 与 <code>Promise._unhandledRejectionFn</code> 是 polyfill 内部钩子，不属于稳定业务 API。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "values"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "Promise"
+        },
+        {
+          "textRaw": "ResultAdapter",
+          "name": "resultadapter",
+          "ctors": [
+            {
+              "textRaw": "new ResultAdapter()",
+              "type": "ctor",
+              "name": "ResultAdapter",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { ResultAdapter }</li>\n<li><strong>异常</strong>：UI 线程且 continuation 不可用时，首次等待可能失败</li>\n<li><strong>线程 / 生命周期</strong>：构造时根据线程选择 continuation 或可阻塞 disposable；一个实例应只完成一次</li>\n</ul>\n<p>把回调式异步接口转换成同步结果。在 UI 线程中使用 continuation；其他线程使用可阻塞的 disposable。</p>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "ResultAdapter#setResult(result)",
+              "type": "method",
+              "name": "ResultAdapter#setResult",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>result</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：底层 continuation/disposable 已完成或失效时可能抛出异常</li>\n<li><strong>副作用</strong>：以成功值完成适配器并唤醒等待方</li>\n</ul>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nsetTimeout(() =&gt; adapter.setResult(&#39;ready&#39;), 20);\nconsole.log(adapter.get()); // ready\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "result"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "ResultAdapter#setError(error)",
+              "type": "method",
+              "name": "ResultAdapter#setError",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>error</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：UI continuation 路径不接受 nullish 错误，并会在发出恢复信号前抛出；重复完成也可能失败</li>\n<li><strong>副作用</strong>：非 UI 路径保存错误并唤醒阻塞方；当 <code>get()</code> 已在等待时，UI continuation 路径会记录 / Toast 非 nullish 错误，再把错误对象作为普通恢复值交给 <code>get()</code></li>\n</ul>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nsetTimeout(() =&gt; adapter.setError(new Error(&#39;failed&#39;)), 20);\nconst outcome = adapter.get();\n// UI continuation 路径：outcome 是 Error 对象；非 UI 阻塞路径：get() 会抛出该 Error。\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "error"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "ResultAdapter#callback()",
+              "type": "method",
+              "name": "ResultAdapter#callback",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#function\">Function</a> } - <code>(result, error) =&gt; void</code></li>\n<li><strong>异常</strong>：回调完成底层适配器失败时向调用方传播</li>\n<li><strong>副作用 / 生命周期</strong>：返回绑定当前实例的 Node 风格回调；只能用于单次完成流程</li>\n</ul>\n<p>固定提交的实现只会在 <code>get()</code> 尚未开始等待时通过底层适配器完成；若先进入阻塞式 <code>get()</code>，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 <code>setResult</code> / <code>setError</code>。</p>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nconst callback = adapter.callback();\ncallback(&#39;ready&#39;, null);\nconsole.log(adapter.get()); // ready\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "ResultAdapter#get()",
+              "type": "method",
+              "name": "ResultAdapter#get",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常</strong>：非 UI 阻塞路径会重新抛出非 <code>null</code> 错误；UI continuation 路径不会重新抛出非 nullish 错误</li>\n<li><strong>线程 / 副作用</strong>：未提前完成时暂停 continuation 或阻塞当前线程</li>\n</ul>\n<p>在 UI continuation 路径中，当 <code>get()</code> 已暂停调用栈后，非 nullish 的错误会被记录 / Toast 并作为普通恢复值返回；nullish <code>setError</code> 会在恢复前抛出，使已进入 <code>get()</code> 的调用可能一直保持等待。非 UI 路径使用 <code>ContinuationResult.getOrThrow</code>，会抛出任何非 <code>null</code> 错误值。</p>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nadapter.setResult(42);\nconsole.log(adapter.get()); // 42\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "ResultAdapter.promise(promiseAdapter)",
+              "type": "method",
+              "name": "promise",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>promiseAdapter</strong> { <code>ScriptPromiseAdapter</code> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Promise</code> }</li>\n<li><strong>异常</strong>：参数没有 <code>onResolve</code> 或 <code>onReject</code> 时抛出异常</li>\n<li><strong>副作用</strong>：向原生适配器注册成功与失败回调</li>\n</ul>\n<pre><code class=\"lang-js\">// 实际使用时，promiseAdapter 通常由 Monkey King 原生异步 API 返回。\nconst promiseAdapter = {\n    onResolve(callback) {\n        this.resolve = callback;\n        return this;\n    },\n    onReject(callback) {\n        this.reject = callback;\n        setTimeout(() =&gt; this.resolve(&#39;ready&#39;), 20);\n        return this;\n    },\n};\n\nResultAdapter.promise(promiseAdapter)\n    .then(value =&gt; console.log(value)); // ready\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "promiseAdapter"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "ResultAdapter.wait(promise)",
+              "type": "method",
+              "name": "wait",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>promise</strong> { <code>Promise | ScriptPromiseAdapter</code> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><strong>异常</strong>：取决于所选等待路径，不能保证所有拒绝都会重新抛出</li>\n<li><strong>线程 / 副作用</strong>：continuation 启用时调用 <code>await</code>，否则调用阻塞式 <code>wait</code></li>\n</ul>\n<p><code>ResultAdapter.wait</code> 不会统一两种错误语义：continuation 启用时沿用 UI continuation 路径，非 nullish 拒绝会作为普通恢复值返回，nullish 拒绝可能一直保持等待；未启用时沿用 <code>Promise#wait()</code>，只有真值拒绝原因才会抛出，假值拒绝返回 <code>undefined</code>。</p>\n<pre><code class=\"lang-js\">console.log(ResultAdapter.wait(Promise.resolve(42))); // 42\n\nif (continuation.enabled) {\n    console.log(ResultAdapter.wait(Promise.reject(&#39;failed&#39;))); // failed（并已记录 / Toast）\n} else {\n    console.log(ResultAdapter.wait(Promise.reject(false))); // undefined\n}\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "promise"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "ResultAdapter"
+        },
+        {
+          "textRaw": "内置第三方入口",
+          "name": "内置第三方入口",
+          "desc": "<p><code>axios</code>、<code>cheerio</code>、<code>dayjs</code> 和 <code>i18n</code> 是按首次访问延迟加载的全局属性。它们打包在应用源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 中，不从网络动态更新。</p>\n<ul>\n<li><a href=\"https://axios-http.com/docs/intro\"><code>axios</code></a>：内置文件自报版本 <code>1.1.2</code>；Monkey King 使用适配 Android/Rhino 的构建。</li>\n<li><a href=\"https://cheerio.js.org/docs/intro\"><code>cheerio</code></a>：使用提交内的单文件打包版本；源码未保留可验证的独立版本字段。</li>\n<li><a href=\"https://day.js.org/docs/en/installation/installation\"><code>dayjs</code></a>：使用提交内的核心单文件构建；未预装全部插件和地区包。</li>\n<li><code>i18n</code>：基于提交内的 <code>banana-i18n.js</code>，并增加本地 JSON 目录加载约定，详见 <a href=\"../utilities/i18n.md\">Internationalization</a>。</li>\n</ul>\n<p>这些页面只说明 Monkey King 的入口与差异；完整 API 请查阅各项目官方文档。</p>\n",
+          "type": "module",
+          "displayName": "内置第三方入口"
+        }
+      ],
+      "properties": [
+        {
+          "textRaw": "[p] require.cache",
+          "name": "cache",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><strong>异常</strong>：读取本身不抛出模块错误</li>\n<li><strong>副作用 / 生命周期</strong>：删除或替换成员会改变当前运行时之后的加载行为</li>\n</ul>\n<p>以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 <code>false</code>、<code>0</code>、空字符串或 <code>null</code> 时，固定提交的真值判断不会形成稳定缓存命中。删除某个键可让下一次 <code>require</code> 重新加载对应模块，这可能重复注册监听器或产生其他副作用。</p>\n<pre><code class=\"lang-js\">const path = require.resolve(&#39;./counter&#39;);\ndelete require.cache[path];\nconst fresh = require(&#39;./counter&#39;);\n</code></pre>\n"
+        },
+        {
+          "textRaw": "[m] require.resolve",
+          "name": "resolve",
+          "methods": [
+            {
+              "textRaw": "require.resolve(id, parent?)",
+              "type": "method",
+              "name": "resolve",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>id</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ parent ]</strong> { <a href=\"#module-对象\">Module</a> } - 用于确定搜索起点的父模块</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#object\">Object</a> | <a href=\"../types/data-types.md#boolean\">boolean</a> } - 文件路径、内置模块描述对象或 <code>false</code></li>\n<li><strong>异常</strong>：无效 package.json 会抛出 <code>PARSE_ERROR</code>；底层路径查询也可能抛出 I/O 异常</li>\n<li><strong>副作用</strong>：不执行目标模块，但会访问文件系统或内置资源索引</li>\n</ul>\n<p>只执行解析，不运行目标模块。内置模块返回含 <code>path</code> 与 <code>core</code> 的资源描述对象，普通文件返回规范化路径，无法解析时返回 <code>false</code>。</p>\n<pre><code class=\"lang-js\">const resolved = require.resolve(&#39;./lib/math&#39;);\nconsole.log(resolved || &#39;not found&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "id"
+                    },
+                    {
+                      "name": "parent?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] require.paths",
+          "name": "paths",
+          "methods": [
+            {
+              "textRaw": "require.paths()",
+              "type": "method",
+              "name": "paths",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a>[] }</li>\n<li><strong>异常</strong>：读取 Java 系统属性或环境变量失败时可能抛出异常</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>返回额外模块搜索路径，包括用户目录下的 <code>.node_modules</code>、<code>.node_libraries</code>，以及 Java 系统环境中的 <code>NODE_PATH</code>。</p>\n<pre><code class=\"lang-js\">console.log(require.paths());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[p] require.NODE_PATH",
+          "name": "NODE_PATH",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#undefined\">undefined</a> }</li>\n</ul>\n<p>显式附加模块搜索路径。未设置时 <code>require.paths()</code> 读取进程环境变量 <code>NODE_PATH</code>；路径分隔符在 Windows 为分号，其他系统为冒号。</p>\n<pre><code class=\"lang-js\">require.NODE_PATH = files.join(files.cwd(), &#39;vendor&#39;);\nconsole.log(require.paths());\n</code></pre>\n"
+        },
+        {
+          "textRaw": "[p] require.debug",
+          "name": "debug",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 固定提交中默认为 <code>true</code></li>\n</ul>\n<p>控制解析失败并回退到原生加载器时是否向 Java 标准输出打印诊断信息。</p>\n<pre><code class=\"lang-js\">require.debug = false;\n</code></pre>\n"
+        },
+        {
+          "textRaw": "[p] require.extensions",
+          "name": "extensions",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n</ul>\n<p>固定提交初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。</p>\n<pre><code class=\"lang-js\">console.log(Object.keys(require.extensions)); // []\n</code></pre>\n"
+        },
+        {
+          "textRaw": "[p] require.root",
+          "name": "root",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>异常</strong>：赋值本身不校验目录是否存在</li>\n<li><strong>副作用 / 生命周期</strong>：影响当前运行时之后的顶层模块解析</li>\n</ul>\n<p>顶层模块解析根目录，初始化为脚本运行时当前工作目录。修改它会影响后续顶层模块解析。</p>\n<pre><code class=\"lang-js\">const previousRoot = require.root;\nrequire.root = files.cwd();\nconsole.log(require.root);\nrequire.root = previousRoot;\n</code></pre>\n<hr>\n"
+        }
+      ],
       "type": "module",
       "displayName": "模块 (Module)"
     }

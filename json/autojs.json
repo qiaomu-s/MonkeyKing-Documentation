@@ -4,7 +4,7 @@
     {
       "textRaw": "Monkey King 本体应用",
       "name": "monkey_king_本体应用",
-      "desc": "<p>monkeyking 全局对象主要包含与 Monkey King 应用本身相关的属性及方法, 如获取 Monkey King 的 [ Root 状态 / 语言标签 / 权限状态 ] 等.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">monkeyking</p>\n\n<hr>\n",
+      "desc": "<p><code>monkeyking</code> 全局对象包含应用身份、版本、屏幕方向、Root 模式、权限状态和进程生命周期接口。<code>$monkeyking</code> 指向同一对象，<code>app.monkeyking</code> 也指向该对象。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。修改 Root 偏好、重启或退出应用都有进程级副作用，调用前应保存脚本状态。</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">monkeyking</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[m] getLanguage",
@@ -14,7 +14,7 @@
               "textRaw": "getLanguage()",
               "type": "method",
               "name": "getLanguage",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html\">java.util.Locale</a> }</li>\n</ul>\n<p>获取 Monkey King <code>语言</code> 设置选项.</p>\n<p>此方法返回一个 java.util.Locale 对象, 如需返回其标签名, 如 <code>en-US</code>, <code>zh-CN</code> 等, 可使用 <code>monkeyking.getLanguage().toLanguageTag()</code> 或直接使用 <a href=\"#m-getlanguagetag\">monkeyking.getLanguageTag()</a> 方法.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.getLanguage().getDisplayName()); /* e.g. 日本語 */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html\">java.util.Locale</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不需要额外权限；同步读取应用语言偏好</li>\n</ul>\n<p>获取 Monkey King <code>语言</code> 设置选项.</p>\n<p>此方法返回一个 java.util.Locale 对象, 如需返回其标签名, 如 <code>en-US</code>, <code>zh-CN</code> 等, 可使用 <code>monkeyking.getLanguage().toLanguageTag()</code> 或直接使用 <a href=\"#m-getlanguagetag\">monkeyking.getLanguageTag()</a> 方法.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.getLanguage().getDisplayName()); /* e.g. 日本語 */\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -33,7 +33,7 @@
               "textRaw": "getLanguageTag()",
               "type": "method",
               "name": "getLanguageTag",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取 Monkey King 语言设置选项.</p>\n<p>此方法返回 <a href=\"https://en.wikipedia.org/wiki/IETF_language_tag\">IETF 语言标签</a>, 相当于 <code>monkeyking.getLanguage().toLanguageTag()</code>:</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.getLanguageTag()); /* e.g. en-US */\n</code></pre>\n<p>此方法可用于设定 i18n 对象的区域:</p>\n<pre><code class=\"lang-js\">i18n.setLocale(monkeyking.getLanguageTag());\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>异常、权限与副作用</strong>：与 <a href=\"#m-getlanguage\">getLanguage</a> 相同</li>\n</ul>\n<p>获取 Monkey King 语言设置选项.</p>\n<p>此方法返回 <a href=\"https://en.wikipedia.org/wiki/IETF_language_tag\">IETF 语言标签</a>, 相当于 <code>monkeyking.getLanguage().toLanguageTag()</code>:</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.getLanguageTag()); /* e.g. en-US */\n</code></pre>\n<p>此方法可用于设定 i18n 对象的区域:</p>\n<pre><code class=\"lang-js\">i18n.setLocale(monkeyking.getLanguageTag());\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -45,6 +45,90 @@
           "displayName": "[m] getLanguageTag"
         },
         {
+          "textRaw": "[m] isScreenPortrait",
+          "name": "[m]_isscreenportrait",
+          "methods": [
+            {
+              "textRaw": "isScreenPortrait()",
+              "type": "method",
+              "name": "isScreenPortrait",
+              "desc": "<p><strong><code>6.3.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数不为空时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不需要额外权限，只读取当前显示配置</li>\n</ul>\n<p>当前资源方向是否为 <code>Configuration.ORIENTATION_PORTRAIT</code>。无 Activity 时使用全局资源和显示服务回退。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.isScreenPortrait());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isScreenPortrait"
+        },
+        {
+          "textRaw": "[m] isScreenLandscape",
+          "name": "[m]_isscreenlandscape",
+          "methods": [
+            {
+              "textRaw": "isScreenLandscape()",
+              "type": "method",
+              "name": "isScreenLandscape",
+              "desc": "<p><strong><code>6.3.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数不为空时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不需要额外权限，只读取当前显示配置</li>\n</ul>\n<p>当前资源方向是否为 <code>Configuration.ORIENTATION_LANDSCAPE</code>。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.isScreenLandscape());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] isScreenLandscape"
+        },
+        {
+          "textRaw": "[m] restart",
+          "name": "[m]_restart",
+          "methods": [
+            {
+              "textRaw": "restart(scriptsAfterRestart?)",
+              "type": "method",
+              "name": "restart",
+              "desc": "<p><strong><code>v6.7.0</code></strong></p>\n<ul>\n<li><strong>[ scriptsAfterRestart ]</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#string\">string</a>[] } - 重启后运行的脚本</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数超过 1 个或参数既不是字符串、数组也不是 nullish 时抛出异常</li>\n<li><strong>权限 / 线程</strong>：不需要额外 Android 权限；发起应用级进程重启</li>\n</ul>\n<p>请求重启 Monkey King 应用。字符串缺少 <code>.js</code> 扩展名时会自动补全；特殊值 <code>@</code> 代表当前引擎脚本。其他类型会抛出参数异常。</p>\n<pre><code class=\"lang-js\">files.write(&#39;./state.json&#39;, JSON.stringify({ step: 2 }));\nmonkeyking.restart(&#39;@&#39;);\n</code></pre>\n<p>该调用会结束当前进程和脚本资源，后续语句不应承担必须完成的清理工作。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "scriptsAfterRestart?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] restart"
+        },
+        {
+          "textRaw": "[m] exit",
+          "name": "[m]_exit",
+          "methods": [
+            {
+              "textRaw": "exit(scriptsAfterExit?)",
+              "type": "method",
+              "name": "exit",
+              "desc": "<p><strong><code>v6.7.0</code></strong></p>\n<ul>\n<li><strong>[ scriptsAfterExit ]</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#string\">string</a>[] } - 保存为“下次应用启动后执行”的脚本</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数超过 1 个或参数既不是字符串、数组也不是 nullish 时抛出异常</li>\n<li><strong>权限 / 生命周期</strong>：不需要额外 Android 权限；结束应用进程与当前脚本资源</li>\n</ul>\n<p>请求退出 Monkey King 应用。脚本名称规范化规则与 <a href=\"#restart-scriptsafterrestart\">restart</a> 相同。传入脚本时只会把名称写入“应用重启后脚本”偏好并退出；它不会自动重启应用，也不会在退出后立即运行这些脚本。只有用户以后再次启动 Monkey King，启动流程才有机会读取并执行该偏好。此方法不同于全局 <code>exit()</code>：后者只停止当前脚本引擎。</p>\n<pre><code class=\"lang-js\">files.write(&#39;./before-exit.json&#39;, JSON.stringify({ saved: true }));\n// 只登记到下次应用启动；本次调用不会安排自动重启。\nmonkeyking.exit(&#39;after-next-launch.js&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "scriptsAfterExit?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] exit"
+        },
+        {
           "textRaw": "[m] isRootAvailable",
           "name": "[m]_isrootavailable",
           "methods": [
@@ -52,7 +136,7 @@
               "textRaw": "isRootAvailable()",
               "type": "method",
               "name": "isRootAvailable",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>获取 Monkey King 的 Root 权限有效性.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.isRootAvailable()); // e.g. true\n</code></pre>\n<p>注意上述示例的检测结果取决于 Monkey King 的 <code>强制 Root 权限检查</code> 设置.<br>\n此设置可通过 Monkey King 应用设置修改, 或 <a href=\"#m-setrootmode\">setRootMode</a> 方法携带 <code>isWriteIntoPreference</code> 参数实现修改.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>线程 / 副作用</strong>：同步检查当前 Root 模式、常见 <code>su</code> 路径和 RootShell 能力；只读查询</li>\n</ul>\n<p>获取 Monkey King 的 Root 权限有效性.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.isRootAvailable()); // e.g. true\n</code></pre>\n<p>注意上述示例的检测结果取决于 Monkey King 的 <code>强制 Root 权限检查</code> 设置.<br>\n此设置可通过 Monkey King 应用设置修改, 或 <a href=\"#m-setrootmode\">setRootMode</a> 方法携带 <code>isWriteIntoPreference</code> 参数实现修改.</p>\n",
               "signatures": [
                 {
                   "params": []
@@ -71,7 +155,7 @@
               "textRaw": "getRootMode()",
               "type": "method",
               "name": "getRootMode",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#rootmode\">RootMode</a> }</li>\n</ul>\n<p>获取 Monkey King 的 Root 权限状态.</p>\n<pre><code class=\"lang-js\"> /* 是否为 &#39;自动检测 Root 权限&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.AUTO_DETECT);\n/* 是否为 &#39;强制 Root 模式&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.FORCE_ROOT);\n/* 是否为 &#39;强制非 Root 模式&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.FORCE_NON_ROOT);\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#rootmode\">RootMode</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>副作用</strong>：同步只读查询；返回当前运行时覆盖值，否则返回应用偏好值</li>\n</ul>\n<p>获取 Monkey King 的 Root 权限状态.</p>\n<pre><code class=\"lang-js\"> /* 是否为 &#39;自动检测 Root 权限&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.AUTO_DETECT);\n/* 是否为 &#39;强制 Root 模式&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.FORCE_ROOT);\n/* 是否为 &#39;强制非 Root 模式&#39; 状态. */\nconsole.log(monkeyking.getRootMode() === RootMode.FORCE_NON_ROOT);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -90,7 +174,7 @@
               "textRaw": "setRootMode(rootMode, isWriteIntoPreference?)",
               "type": "method",
               "name": "setRootMode",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload [1-2]/2</code></strong></p>\n<ul>\n<li><strong>rootMode</strong> { <a href=\"../types/data-types.md#rootmode\">RootMode</a> | <a href=\"../types/data-types.md#number\">number</a> | <a href=\"../types/data-types.md#boolean\">boolean</a> | &#39;auto&#39; | &#39;root&#39; | &#39;non-root&#39; } - Root 模式参数</li>\n<li><strong>[ isWriteIntoPreference = <code>false</code> ]</strong> {  <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否写入应用设置</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>设置 Monkey King 的 Root 模式.</p>\n<p>默认情况下, Monkey King 将根据 <code>su</code> 二进制名称特征来判断是否具有 Root 权限.\n但有时设备可能使用了非常规 Root 方式或 Root 权限检测结果出现异常, 此时可设置 <code>强制 Root 模式</code> 或 <code>强制非 Root 模式</code> 来改变 Monkey King 对 Root 权限的检测结果.</p>\n<p>以设置 &#39;强制 Root 模式&#39; 为例:</p>\n<pre><code class=\"lang-js\">monkeyking.setRootMode(RootMode.FORCE_ROOT);\nmonkeyking.setRootMode(&#39;root&#39;); /* 同上. */\nmonkeyking.setRootMode(1); /* 同上. */\nmonkeyking.setRootMode(true); /* 同上. */\n</code></pre>\n<p>上述示例设置的 Root 模式, 将影响 <a href=\"#m-isrootavailable\">isRootAvailable</a> 的结果, 使其固定返回 <code>true</code>.<br>\n如果设置为 <code>RootMode.FORCE_NON_ROOT</code>, <a href=\"#m-isrootavailable\">isRootAvailable</a> 将固定返回 <code>false</code>.<br>\n如果设置为 <code>RootMode.AUTO_DETECT</code>, <a href=\"#m-isrootavailable\">isRootAvailable</a> 将根据 Monkey King 是否具有 <code>su</code> 二进制名称特征决定其返回结果.<br></p>\n<p>在没有特殊需求的情况下, 建议始终保持 Root 模式为 &#39;自动&#39; 模式.</p>\n<p>需额外留意, Root 模式修改仅对当前 <code>运行时 (Runtime)</code> 有效, 当脚本结束时, 已设置的 Root 模式将自动还原为 &#39;自动&#39; 模式, 即 <code>RootMode.AUTO_DETECT</code>.</p>\n<p>如需将保留修改的 Root 模式, 可使用 <code>isWriteIntoPreference</code> 参数, 修改将立即写入应用设置中:</p>\n<pre><code class=\"lang-js\">monkeyking.setRootMode(RootMode.FORCE_ROOT, true);\n</code></pre>\n<p>上述示例代码的效果, 等效于在 Monkey King 应用中进行如下设置:</p>\n<pre><code class=\"lang-text\">[ Monkey King 设置 ] - [ 强制 Root 权限检查 ] - [ 强制 Root 模式 ] # [ 选择 ]\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload [1-2]/2</code></strong></p>\n<ul>\n<li><strong>rootMode</strong> { <a href=\"../types/data-types.md#rootmode\">RootMode</a> | <a href=\"../types/data-types.md#number\">number</a> | <a href=\"../types/data-types.md#boolean\">boolean</a> | &#39;auto&#39; | &#39;root&#39; | &#39;non-root&#39; } - Root 模式参数</li>\n<li><strong>[ isWriteIntoPreference = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> | <code>&quot;write_into_pref&quot;</code> } - 是否写入应用设置</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1 至 2 之间、字符串模式未知或模式类型不受支持时抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：默认修改当前应用进程共享的临时 Root 模式，并在脚本运行时回收时重置；第二参数为 <code>true</code> 或不区分大小写的 <code>&quot;write_into_pref&quot;</code> 时持久写入应用偏好</li>\n</ul>\n<p>设置 Monkey King 的 Root 模式.</p>\n<p>数值模式只识别 <code>1</code>（强制 Root）、<code>0</code>（强制非 Root）和 <code>-1</code>（自动检测）；固定提交中其他数值不会改变模式，也不会抛出异常。</p>\n<p>默认情况下, Monkey King 将根据 <code>su</code> 二进制名称特征来判断是否具有 Root 权限.\n但有时设备可能使用了非常规 Root 方式或 Root 权限检测结果出现异常, 此时可设置 <code>强制 Root 模式</code> 或 <code>强制非 Root 模式</code> 来改变 Monkey King 对 Root 权限的检测结果.</p>\n<p>以设置 &#39;强制 Root 模式&#39; 为例:</p>\n<pre><code class=\"lang-js\">monkeyking.setRootMode(RootMode.FORCE_ROOT);\nmonkeyking.setRootMode(&#39;root&#39;); /* 同上. */\nmonkeyking.setRootMode(1); /* 同上. */\nmonkeyking.setRootMode(true); /* 同上. */\n</code></pre>\n<p>上述示例设置的 Root 模式, 将影响 <a href=\"#m-isrootavailable\">isRootAvailable</a> 的结果, 使其固定返回 <code>true</code>.<br>\n如果设置为 <code>RootMode.FORCE_NON_ROOT</code>, <a href=\"#m-isrootavailable\">isRootAvailable</a> 将固定返回 <code>false</code>.<br>\n如果设置为 <code>RootMode.AUTO_DETECT</code>, <a href=\"#m-isrootavailable\">isRootAvailable</a> 将根据 Monkey King 是否具有 <code>su</code> 二进制名称特征决定其返回结果.<br></p>\n<p>在没有特殊需求的情况下, 建议始终保持 Root 模式为 &#39;自动&#39; 模式.</p>\n<p>需额外留意，临时 Root 模式保存在应用进程的共享状态中，并非脚本对象私有；并行脚本可能观察到同一临时值。当脚本运行时回收时，该临时状态会还原为 <code>RootMode.AUTO_DETECT</code>，随后 <code>getRootMode()</code> 再读取应用偏好。</p>\n<p>如需将保留修改的 Root 模式, 可使用 <code>isWriteIntoPreference</code> 参数, 修改将立即写入应用设置中:</p>\n<pre><code class=\"lang-js\">monkeyking.setRootMode(RootMode.FORCE_ROOT, true);\n</code></pre>\n<p>上述示例代码的效果, 等效于在 Monkey King 应用中进行如下设置:</p>\n<pre><code class=\"lang-text\">[ Monkey King 设置 ] - [ 强制 Root 权限检查 ] - [ 强制 Root 模式 ] # [ 选择 ]\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -116,7 +200,7 @@
               "textRaw": "canModifySystemSettings()",
               "type": "method",
               "name": "canModifySystemSettings",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>获取 Monkey King 的 <code>修改系统设置</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canModifySystemSettings()); // e.g. true\n</code></pre>\n<p>拥有 <code>修改系统设置</code> 后, Monkey King 可以通过脚本修改部分系统设置, 如修改屏幕超时参数, 修改媒体音量值等.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不请求权限，只读取 Android <code>Settings.System.canWrite</code> 状态</li>\n</ul>\n<p>获取 Monkey King 的 <code>修改系统设置</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canModifySystemSettings()); // e.g. true\n</code></pre>\n<p>拥有 <code>修改系统设置</code> 后, Monkey King 可以通过脚本修改部分系统设置, 如修改屏幕超时参数, 修改媒体音量值等.</p>\n",
               "signatures": [
                 {
                   "params": []
@@ -135,7 +219,7 @@
               "textRaw": "canWriteSecureSettings()",
               "type": "method",
               "name": "canWriteSecureSettings",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>获取 Monkey King 的 <code>修改安全设置</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canWriteSecureSettings()); // e.g. true\n</code></pre>\n<p>拥有 <code>修改安全设置</code> 后, Monkey King 可以通过脚本修改部分安全设置, 如修改屏幕常亮类别参数, 修改无障碍服务列表内容等.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不请求权限，只检查 <code>WRITE_SECURE_SETTINGS</code> 授权状态</li>\n</ul>\n<p>获取 Monkey King 的 <code>修改安全设置</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canWriteSecureSettings()); // e.g. true\n</code></pre>\n<p>拥有 <code>修改安全设置</code> 后, Monkey King 可以通过脚本修改部分安全设置, 如修改屏幕常亮类别参数, 修改无障碍服务列表内容等.</p>\n",
               "signatures": [
                 {
                   "params": []
@@ -154,7 +238,7 @@
               "textRaw": "canDisplayOverOtherApps()",
               "type": "method",
               "name": "canDisplayOverOtherApps",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>获取 Monkey King 的 <code>显示在其他应用上层</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canDisplayOverOtherApps()); // e.g. true\n</code></pre>\n<p>拥有 <code>显示在其他应用上层</code> 后, Monkey King 可以使用悬浮窗工具, 并可通过脚本显示对话框或自定义浮动组件等.</p>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出异常</li>\n<li><strong>权限 / 副作用</strong>：不请求权限，只读取“显示在其他应用上层”授权状态</li>\n</ul>\n<p>获取 Monkey King 的 <code>显示在其他应用上层</code> 权限状态.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.canDisplayOverOtherApps()); // e.g. true\n</code></pre>\n<p>拥有 <code>显示在其他应用上层</code> 后, Monkey King 可以使用悬浮窗工具, 并可通过脚本显示对话框或自定义浮动组件等.</p>\n",
               "signatures": [
                 {
                   "params": []
@@ -166,55 +250,84 @@
           "displayName": "[m] canDisplayOverOtherApps"
         },
         {
+          "textRaw": "[p] name",
+          "name": "[p]_name",
+          "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>应用显示名称，当前为 <code>Monkey King</code>。</p>\n<p>属性不可删除，但固定提交未附加 <code>READONLY</code> 标志；脚本可在当前对象上重新赋值，重新赋值不会修改 Android 应用名称。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.name); // Monkey King\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] name"
+        },
+        {
+          "textRaw": "[p] packageName",
+          "name": "[p]_packagename",
+          "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>当前安装包名；正式应用使用 <code>com.qiaomu.monkeyking</code>，不同构建变体可能带后缀。</p>\n<p>属性不可删除但可在当前脚本对象上重新赋值；赋值不会改变实际安装包身份。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.packageName);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] packageName"
+        },
+        {
+          "textRaw": "[p] rotation",
+          "name": "[p]_rotation",
+          "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Getter</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：读取不需要额外权限；只查询默认显示器旋转状态</li>\n</ul>\n<p>Android <code>Surface</code> 旋转常量，合法值通常为 <code>ROTATION_0</code>、<code>ROTATION_90</code>、<code>ROTATION_180</code> 或 <code>ROTATION_270</code> 对应的整数。优先从 <code>DisplayManager</code> 读取。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.rotation); // 0、1、2 或 3\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] rotation"
+        },
+        {
+          "textRaw": "[p] orientation",
+          "name": "[p]_orientation",
+          "desc": "<p><strong><code>6.6.0</code></strong> <strong><code>Getter</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> { <a href=\"../types/data-types.md#number\">number</a> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：读取不需要额外权限；只查询当前资源方向</li>\n</ul>\n<p>Android <code>Configuration.orientation</code>。无法取得 Activity 资源时回退为竖屏方向。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.orientation);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "[p] orientation"
+        },
+        {
           "textRaw": "[p] versionName",
           "name": "[p]_versionname",
-          "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionName); // e.g. 6.2.0-alpha9\nconsole.log(monkeyking.version.name); /* 同上. */\n</code></pre>\n",
+          "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<p>重新赋值只改变当前脚本对象上的显示值，不改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionName); // 6.7.0\nconsole.log(monkeyking.version.name); /* 同上. */\n</code></pre>\n",
           "type": "module",
           "displayName": "[p] versionName"
         },
         {
           "textRaw": "[p] versionCode",
           "name": "[p]_versioncode",
-          "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>获取版本号.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionCode); // e.g. 1545\nconsole.log(monkeyking.version.code); /* 同上. */\n</code></pre>\n",
+          "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>获取版本号.</p>\n<p>重新赋值只改变当前脚本对象上的显示值，不改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionCode); // e.g. 1545\nconsole.log(monkeyking.version.code); /* 同上. */\n</code></pre>\n",
           "type": "module",
           "displayName": "[p] versionCode"
         },
         {
           "textRaw": "[p] versionDate",
           "name": "[p]_versiondate",
-          "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本日期.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionDate); // e.g. Dec 18, 2022\nconsole.log(monkeyking.version.date); /* 同上. */\n</code></pre>\n",
+          "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本日期.</p>\n<p>重新赋值只改变当前脚本对象上的显示值，不改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.versionDate); // 构建时生成的英文日期字符串\nconsole.log(monkeyking.version.date); /* 同上. */\n</code></pre>\n",
           "type": "module",
           "displayName": "[p] versionDate"
         },
         {
           "textRaw": "[p] themeColor",
           "name": "[p]_themecolor",
-          "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Getter</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> <a href=\"../types/data-types.md#themecolor\">ThemeColor</a></li>\n</ul>\n<p>获取 Monkey King 的主题颜色实例.</p>\n<pre><code class=\"lang-js\">monkeyking.themeColor.getColorPrimary(); /* 获取 Monkey King 主题色的主色色值. */\n</code></pre>\n",
+          "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Getter</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> <a href=\"../types/data-types.md#themecolor\">ThemeColor</a></li>\n<li><strong>异常 / 副作用</strong>：读取当前主题管理器状态，不修改主题</li>\n</ul>\n<p>获取 Monkey King 的主题颜色实例.</p>\n<pre><code class=\"lang-js\">monkeyking.themeColor.getColorPrimary(); /* 获取 Monkey King 主题色的主色色值. */\n</code></pre>\n",
           "type": "module",
           "displayName": "[p] themeColor"
         },
         {
           "textRaw": "[p+] version",
           "name": "[p+]_version",
+          "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> } - 应用构建版本快照与比较方法</li>\n<li><strong>异常 / 副作用</strong>：读取对象本身无副作用；比较方法的规则见下列成员</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name, monkeyking.version.code);\n</code></pre>\n",
           "modules": [
             {
               "textRaw": "[p] name",
               "name": "[p]_name",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // e.g. 6.2.0-alpha9\nconsole.log(monkeyking.versionName); /* 同上. */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<p>该快照属性不可删除但可在当前 <code>version</code> 对象上重新赋值；不会改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // 6.7.0\nconsole.log(monkeyking.versionName); /* 同上. */\n</code></pre>\n",
               "type": "module",
               "displayName": "[p] name"
             },
             {
               "textRaw": "[p] code",
               "name": "[p]_code",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>获取版本号.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.code); // e.g. 1545\nconsole.log(monkeyking.versionCode); /* 同上. */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#number\">number</a> }</li>\n</ul>\n<p>获取版本号.</p>\n<p>该快照属性不可删除但可在当前 <code>version</code> 对象上重新赋值；不会改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.code); // e.g. 1545\nconsole.log(monkeyking.versionCode); /* 同上. */\n</code></pre>\n",
               "type": "module",
               "displayName": "[p] code"
             },
             {
               "textRaw": "[p] date",
               "name": "[p]_date",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本日期.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.date); // e.g. Dec 18, 2022\nconsole.log(monkeyking.versionDate); /* 同上. */\n</code></pre>\n",
+              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本日期.</p>\n<p>该快照属性不可删除但可在当前 <code>version</code> 对象上重新赋值；不会改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.date); // 构建时生成的英文日期字符串\nconsole.log(monkeyking.versionDate); /* 同上. */\n</code></pre>\n",
               "type": "module",
               "displayName": "[p] date"
             },
@@ -226,7 +339,7 @@
                   "textRaw": "isEqual(otherVersion)",
                   "type": "method",
                   "name": "isEqual",
-                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>返回 Monkey King 版本是否与参数对应的版本号等同.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isEqual(&#39;6.2.0&#39;)); // e.g. true\n</code></pre>\n",
+                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 或版本字符串无法解析时抛出异常；同步纯比较</li>\n</ul>\n<p>返回 Monkey King 版本是否与参数对应的版本号等同.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isEqual(&#39;6.2.0&#39;)); // e.g. true\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -249,7 +362,7 @@
                   "textRaw": "isHigherThan(otherVersion)",
                   "type": "method",
                   "name": "isHigherThan",
-                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>返回 Monkey King 版本是否高于待比较版本.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isHigherThan(&#39;6.1.3&#39;)); // e.g. true\n</code></pre>\n",
+                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 或版本字符串无法解析时抛出异常；同步纯比较</li>\n</ul>\n<p>返回 Monkey King 版本是否高于待比较版本.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isHigherThan(&#39;6.1.3&#39;)); // e.g. true\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -272,7 +385,7 @@
                   "textRaw": "isLowerThan(otherVersion)",
                   "type": "method",
                   "name": "isLowerThan",
-                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>返回 Monkey King 版本是否低于待比较版本.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isLowerThan(&#39;6.2.0&#39;)); // e.g. true\n</code></pre>\n",
+                  "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 或版本字符串无法解析时抛出异常；同步纯比较</li>\n</ul>\n<p>返回 Monkey King 版本是否低于待比较版本.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isLowerThan(&#39;7.0.0&#39;)); // true\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -295,7 +408,7 @@
                   "textRaw": "isAtLeast(otherVersion)",
                   "type": "method",
                   "name": "isAtLeast",
-                  "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>返回 Monkey King 版本是否不低于 (即大于等于) 参数对应的版本号.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isAtLeast(&#39;6.1.3&#39;)); // e.g. true\n</code></pre>\n",
+                  "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload 1/2</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不为 1 或版本字符串无法解析时抛出异常；同步纯比较</li>\n</ul>\n<p>返回 Monkey King 版本是否不低于 (即大于等于) 参数对应的版本号.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.isAtLeast(&#39;6.1.3&#39;)); // e.g. true\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -310,7 +423,7 @@
                   "textRaw": "isAtLeast(otherVersion, ignoreSuffix)",
                   "type": "method",
                   "name": "isAtLeast",
-                  "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><strong>[ ignoreSuffix = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否忽略版本后缀</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n</ul>\n<p>返回 Monkey King 版本是否不低于 (即大于等于) 参数对应的版本号且根据 <code>ignoreSuffix</code> 参数决定是否忽略版本后缀.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // e.g. 6.2.0-alpha9\nconsole.log(monkeyking.version.isAtLeast(&#39;6.2.0&#39;)); // e.g. false\nconsole.log(monkeyking.version.isAtLeast(&#39;6.2.0&#39;, true)); // e.g. true\n</code></pre>\n",
+                  "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>Overload 2/2</code></strong></p>\n<ul>\n<li><strong>otherVersion</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../utilities/version.md#c-version\">Version</a> } - 待比较版本参数</li>\n<li><strong>[ ignoreSuffix = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 是否忽略版本后缀</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 副作用</strong>：参数数量不在 1 至 2 之间或版本字符串无法解析时抛出异常；同步纯比较</li>\n</ul>\n<p>返回 Monkey King 版本是否不低于 (即大于等于) 参数对应的版本号且根据 <code>ignoreSuffix</code> 参数决定是否忽略版本后缀.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // 6.7.0\nconsole.log(monkeyking.version.isAtLeast(&#39;6.7.0&#39;)); // true\nconsole.log(monkeyking.version.isAtLeast(&#39;6.7.0-beta1&#39;, true)); // true\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -335,7 +448,7 @@
         {
           "textRaw": "[p+] R",
           "name": "[p+]_r",
-          "desc": "<p>使用 R 类的子类中的静态整数可访问相应的应用资源, 如 <code>R.string</code> 访问字符串资源, <code>R.drawable</code> 访问可绘制资源等.</p>\n<p><a href=\"global.md#p-r\">global.R</a> 的别名属性, 参阅 <a href=\"global.md#p-r\">全局对象 (Global)</a> 章节.</p>\n",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Getter</code></strong> <strong><code>Alias: global.R</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 按资源类型和名称延迟解析 ID 的代理</li>\n<li><strong>异常 / 副作用</strong>：读取资源类型时创建并缓存代理；资源名称不存在时 Android <code>getIdentifier</code> 返回 <code>0</code></li>\n</ul>\n<p>使用 R 类的子类中的静态整数可访问相应的应用资源, 如 <code>R.string</code> 访问字符串资源, <code>R.drawable</code> 访问可绘制资源等.</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.R.drawable.monkeyking_material);\nconsole.log(R.drawable.monkeyking_material); /* 访问相同资源命名空间. */\n</code></pre>\n<p><a href=\"global.md#p-r\">global.R</a> 的别名属性, 参阅 <a href=\"global.md#p-r\">全局对象 (Global)</a> 章节.</p>\n",
           "type": "module",
           "displayName": "[p+] R"
         }

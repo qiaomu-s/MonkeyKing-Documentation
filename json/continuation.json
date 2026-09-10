@@ -4,7 +4,178 @@
     {
       "textRaw": "协程 (Continuation)",
       "name": "协程_(continuation)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n",
+      "desc": "<p><code>continuation</code> 与 <code>$continuation</code> 指向同一个只读模块对象。它在 Rhino 2.0 中捕获当前 JavaScript 调用栈，并在异步结果到达后恢复执行。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p>只有启用了 <code>continuation</code> 特性的脚本才能暂停调用栈。普通执行模式调用等待接口会抛出 <code>IllegalStateException</code>。创建器与捕获的脚本运行时绑定，恢复后不要再次调用 <code>resume</code> 或 <code>resumeError</code>。</p>\n<blockquote>\n<p><strong>固定提交的错误恢复语义不同于标准 Promise。</strong> <code>Continuation.Result.handle</code> 会记录并 Toast 非 <code>null</code> 错误，然后把该错误对象当作普通恢复值传回。因此，非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。若拒绝原因为 <code>null</code> 或 <code>undefined</code>，<code>resumeError</code> 会在恢复 continuation 之前抛出参数异常；原等待点得不到恢复信号，可能一直保持等待。</p>\n</blockquote>\n",
+      "modules": [
+        {
+          "textRaw": "[@] continuation",
+          "name": "[@]_continuation",
+          "modules": [
+            {
+              "textRaw": "continuation",
+              "name": "continuation",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>READONLY</code></strong> <strong><code>Alias: $continuation</code></strong></p>\n<ul>\n<li><strong>类型</strong>：<code>object</code></li>\n<li><strong>权限</strong>：不需要 Android 权限</li>\n<li><strong>生命周期 / 副作用</strong>：只影响当前脚本运行时；等待接口会暂停当前 continuation</li>\n</ul>\n<pre><code class=\"lang-js\">console.log($continuation === continuation); // true\nconsole.log(typeof continuation.create); // &quot;function&quot;\n</code></pre>\n",
+              "type": "module",
+              "displayName": "continuation"
+            }
+          ],
+          "type": "module",
+          "displayName": "[@] continuation"
+        },
+        {
+          "textRaw": "[p] enabled",
+          "name": "[p]_enabled",
+          "properties": [
+            {
+              "textRaw": "continuation.enabled",
+              "name": "enabled",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>READONLY</code></strong></p>\n<ul>\n<li><strong>&lt;get&gt;</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：无</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>返回当前脚本引擎是否启用了 continuation 特性。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    console.warn(&#39;当前脚本不能捕获 continuation&#39;);\n}\n</code></pre>\n"
+            }
+          ],
+          "type": "module",
+          "displayName": "[p] enabled"
+        },
+        {
+          "textRaw": "[m] create",
+          "name": "[m]_create",
+          "methods": [
+            {
+              "textRaw": "continuation.create(scope?)",
+              "type": "method",
+              "name": "create",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>[ scope = <code>global</code> ]</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 捕获 continuation 使用的 Rhino 作用域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#continuationcreator\">ContinuationCreator</a> }</li>\n<li><strong>异常</strong>：参数超过 1 个时抛出异常；运行时不能捕获 continuation 时，后续 <code>await</code> 会抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：创建与当前运行时绑定的 continuation 控制器</li>\n</ul>\n<p><code>scope</code> 只有在它是 Rhino <code>Scriptable</code> 时才会采用；其他值按未提供处理并回退到顶级作用域。</p>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst creator = continuation.create(global);\nsetTimeout(() =&gt; creator.resume(&#39;ready&#39;), 20);\nconsole.log(creator.await()); // ready\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "scope?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] create"
+        },
+        {
+          "textRaw": "[m] await",
+          "name": "[m]_await",
+          "methods": [
+            {
+              "textRaw": "continuation.await(promise)",
+              "type": "method",
+              "name": "await",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>promise</strong> { <code>PromiseLike</code> } - 提供 <code>then</code> 与 <code>catch</code> 的对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - Promise 的完成值；非 nullish 的拒绝原因会在记录 / Toast 后作为普通恢复值返回</li>\n<li><strong>异常</strong>：参数不是 Promise-like 或 continuation 未启用时抛出异常；nullish 拒绝会使 <code>resumeError</code> 自身抛出，等待点可能一直保持等待</li>\n<li><strong>生命周期 / 副作用</strong>：暂停当前 JavaScript continuation，直至 Promise 完成</li>\n</ul>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst value = continuation.await(Promise.resolve(21));\nconsole.log(value * 2); // 42\n\nconst recovered = continuation.await(Promise.reject(new Error(&#39;failed&#39;)));\nconsole.log(recovered.message); // failed；此值没有在等待点抛出\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "promise"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] await"
+        },
+        {
+          "textRaw": "[m] delay",
+          "name": "[m]_delay",
+          "methods": [
+            {
+              "textRaw": "continuation.delay(millis)",
+              "type": "method",
+              "name": "delay",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>millis</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 延迟毫秒数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：计时器参数无效或 continuation 未启用时抛出异常</li>\n<li><strong>生命周期 / 副作用</strong>：注册一次性计时器并暂停当前 continuation</li>\n</ul>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst startedAt = Date.now();\ncontinuation.delay(20);\nconsole.log(Date.now() &gt;= startedAt + 20); // true\n</code></pre>\n<hr>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "millis"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m] delay"
+        },
+        {
+          "textRaw": "ContinuationCreator",
+          "name": "continuationcreator",
+          "desc": "<p><code>continuation.create()</code> 返回的运行时包装对象，公开 <code>await</code>、<code>resume</code> 和 <code>resumeError</code>。</p>\n",
+          "type": "module",
+          "displayName": "ContinuationCreator"
+        },
+        {
+          "textRaw": "[m#] ContinuationCreator#await",
+          "name": "[m#]_continuationcreator#await",
+          "methods": [
+            {
+              "textRaw": "ContinuationCreator#await()",
+              "type": "method",
+              "name": "ContinuationCreator#await",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - <code>resume</code> 提供的值；<code>resumeError</code> 的非 nullish 错误在记录 / Toast 后也会作为普通恢复值返回</li>\n<li><strong>异常</strong>：未启用 continuation 时抛出 <code>IllegalStateException</code>；nullish 错误会在 <code>resumeError</code> 调用点抛出并可能让此等待点一直保持等待</li>\n<li><strong>线程 / 生命周期</strong>：暂停当前 continuation；同一创建器只应完成一次</li>\n</ul>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst creator = continuation.create();\nsetTimeout(() =&gt; creator.resume({ ok: true }), 20);\nconsole.log(creator.await().ok); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] ContinuationCreator#await"
+        },
+        {
+          "textRaw": "[m#] ContinuationCreator#resume",
+          "name": "[m#]_continuationcreator#resume",
+          "methods": [
+            {
+              "textRaw": "ContinuationCreator#resume(result?)",
+              "type": "method",
+              "name": "ContinuationCreator#resume",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>[ result = <code>undefined</code> ]</strong> { <a href=\"../types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：重复恢复或恢复已经失效的 continuation 时，底层运行时可能抛出异常</li>\n<li><strong>线程 / 副作用</strong>：以成功结果恢复等待中的调用栈；可由计时器或异步回调触发</li>\n</ul>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst creator = continuation.create();\nsetTimeout(() =&gt; creator.resume(7), 20);\nconsole.log(creator.await()); // 7\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "result?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] ContinuationCreator#resume"
+        },
+        {
+          "textRaw": "[m#] ContinuationCreator#resumeError",
+          "name": "[m#]_continuationcreator#resumeerror",
+          "methods": [
+            {
+              "textRaw": "ContinuationCreator#resumeError(error)",
+              "type": "method",
+              "name": "ContinuationCreator#resumeError",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>error</strong> { <a href=\"../types/data-types.md#any\">any</a> } - 非 <code>null</code>、非 <code>undefined</code> 的错误值</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：error 为 nullish 或 continuation 已恢复时抛出异常；nullish 检查发生在恢复之前</li>\n<li><strong>线程 / 副作用</strong>：以错误值恢复等待中的调用栈；固定提交不会把非 nullish 错误重新抛到等待点，而是记录 / Toast 后把它作为普通恢复值返回</li>\n</ul>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst creator = continuation.create();\nsetTimeout(() =&gt; creator.resumeError(new Error(&#39;request failed&#39;)), 20);\nconst recovered = creator.await();\nconsole.log(recovered.message); // request failed\n\n// 不要传 null 或 undefined：resumeError 会先抛出，creator.await() 可能永远等不到恢复。\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "error"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] ContinuationCreator#resumeError"
+        }
+      ],
       "type": "module",
       "displayName": "协程 (Continuation)"
     }

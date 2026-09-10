@@ -4,7 +4,392 @@
     {
       "textRaw": "事件发射器 (EventEmitter)",
       "name": "事件发射器_(eventemitter)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 2, 2023.</p>\n\n<hr>\n",
+      "desc": "<p>EventEmitter 是 Monkey King 多个模块共用的事件接口。<code>events</code>、传感器和 WebSocket 等对象会提供这些方法；业务脚本通常不直接构造 Java <code>EventEmitter</code>。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p>默认监听器上限是 10。带运行时计时器的发射器会把回调排入脚本事件循环；没有计时器时通过当前脚本桥接器调用。注册、移除与发送操作本身同步完成，但监听器是否立即执行取决于发射器的计时器配置。</p>\n<p>以下接口在可追溯历史中早于当前版本体系，固定提交中均已存在，因此以 <code>≤ 6.6.4</code> 标记。</p>\n<p>除“获取 EventEmitter 接口”一节外，后续示例均假设已执行：</p>\n<pre><code class=\"lang-js\">const emitter = events.__asEmitter__({});\n</code></pre>\n",
+      "modules": [
+        {
+          "textRaw": "[m#] EventEmitter#on",
+          "name": "[m#]_eventemitter#on",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#on(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#on",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <a href=\"data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：监听器达到上限或参数不能转换为要求的 Java 类型时抛出异常</li>\n<li><strong>副作用</strong>：注册持久监听器并发送内部 <code>newListener</code> 事件</li>\n</ul>\n<p>若已有 sticky 数据，listener 会先收到该数据，然后继续保留。</p>\n<pre><code class=\"lang-js\">emitter.on(&#39;data&#39;, value =&gt; console.log(value));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#on"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#addListener",
+          "name": "[m#]_eventemitter#addlistener",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#addListener(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#addListener",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>参数、返回、异常与副作用</strong>：与 <a href=\"#eventemitter-on-eventname-listener\">on</a> 完全相同</li>\n</ul>\n<pre><code class=\"lang-js\">emitter.addListener(&#39;data&#39;, value =&gt; console.log(value));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#addListener"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#once",
+          "name": "[m#]_eventemitter#once",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#once(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#once",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <a href=\"data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：监听器达到上限或参数类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：注册一次性监听器并发送 <code>newListener</code></li>\n</ul>\n<p>若立即消费 sticky 数据，该监听器不会加入后续监听列表。</p>\n<blockquote>\n<p><strong>固定提交缺陷：</strong>同一事件存在两个或更多 once 监听器时，发送循环会用递增索引修改 <code>CopyOnWriteArrayList</code>。前一个监听器删除后，后续删除可能命中错误位置或抛出 <code>IndexOutOfBoundsException</code>，后续一次性监听器可能残留。不要依赖一轮 <code>emit</code> 安全清除多个 <code>once</code> / <code>prependOnceListener</code>；需要可靠的一次性语义时应由回调自行用 <code>removeListener</code> 注销。</p>\n</blockquote>\n<pre><code class=\"lang-js\">emitter.once(&#39;ready&#39;, value =&gt; console.log(value));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#once"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#prependListener",
+          "name": "[m#]_eventemitter#prependlistener",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#prependListener(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#prependListener",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <a href=\"data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：监听器达到上限或参数类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：把持久监听器插入同名列表开头，并发送 <code>newListener</code></li>\n</ul>\n<p>与 <code>on</code> 不同，固定提交中的 prepend 路径不会立即回放已保存的 sticky 数据。</p>\n<pre><code class=\"lang-js\">emitter.prependListener(&#39;step&#39;, () =&gt; console.log(&#39;first&#39;));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#prependListener"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#prependOnceListener",
+          "name": "[m#]_eventemitter#prependoncelistener",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#prependOnceListener(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#prependOnceListener",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <a href=\"data-types.md#function\">Function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：监听器达到上限或参数类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：把一次性监听器插入列表开头，并发送 <code>newListener</code></li>\n</ul>\n<p>与 <code>once</code> 不同，固定提交中的 prepend 路径不会立即消费已保存的 sticky 数据。它仍受 <a href=\"#eventemitter-once-eventname-listener\">多个 once 监听器的移除缺陷</a> 影响。</p>\n<pre><code class=\"lang-js\">emitter.prependOnceListener(&#39;step&#39;, () =&gt; console.log(&#39;first once&#39;));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#prependOnceListener"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#emit",
+          "name": "[m#]_eventemitter#emit",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#emit(eventName, ...args)",
+              "type": "method",
+              "name": "EventEmitter#emit",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>args</strong> { <a href=\"data-types.md#any\">...any[]</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#boolean\">boolean</a> } - 是否存在并调度了监听器</li>\n<li><strong>异常</strong>：同步桥接执行的监听器异常会进入当前脚本异常流程</li>\n<li><strong>副作用</strong>：按当前快照顺序发送事件；单个可正确定位的一次性监听器会在本次发送后移除，但多个一次性监听器可能残留并导致 <code>IndexOutOfBoundsException</code></li>\n</ul>\n<pre><code class=\"lang-js\">const handled = emitter.emit(&#39;data&#39;, 42, &#39;ok&#39;);\nconsole.log(handled);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "...args"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#emit"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#emitSticky",
+          "name": "[m#]_eventemitter#emitsticky",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#emitSticky(eventName, ...args)",
+              "type": "method",
+              "name": "EventEmitter#emitSticky",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>参数、返回与异常</strong>：与 <a href=\"#eventemitter-emit-eventname-args\">emit</a> 相同</li>\n<li><strong>副作用 / 生命周期</strong>：发送事件并保存本次参数；之后注册的监听器会立即收到最近一次 sticky 数据</li>\n</ul>\n<p>移除监听器不会清除 sticky 数据；再次调用 <code>emitSticky</code> 会替换同名事件保存的参数。</p>\n<pre><code class=\"lang-js\">emitter.emitSticky(&#39;state&#39;, &#39;ready&#39;);\nemitter.once(&#39;state&#39;, value =&gt; console.log(value)); // ready\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "...args"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#emitSticky"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#removeListener",
+          "name": "[m#]_eventemitter#removelistener",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#removeListener(eventName, listener)",
+              "type": "method",
+              "name": "EventEmitter#removeListener",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <a href=\"data-types.md#function\">Function</a> } - 注册时的同一函数对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：参数类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：移除第一个匹配监听器；成功移除时发送 <code>removeListener</code></li>\n</ul>\n<pre><code class=\"lang-js\">const listener = value =&gt; console.log(value);\nemitter.on(&#39;data&#39;, listener);\nemitter.removeListener(&#39;data&#39;, listener);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#removeListener"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#removeAllListeners",
+          "name": "[m#]_eventemitter#removealllisteners",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#removeAllListeners(eventName?)",
+              "type": "method",
+              "name": "EventEmitter#removeAllListeners",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>[ eventName ]</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：指定事件名无法转换为字符串时抛出异常</li>\n<li><strong>副作用</strong>：底层 Java 重载分别移除指定事件或全部事件监听器，并为每个移除项发送 <code>removeListener</code>；不清除 sticky 数据</li>\n</ul>\n<blockquote>\n<p><strong><code>events.__asEmitter__</code> 适配缺陷：</strong>两个 removeAllListeners Java 重载会以同名属性互相覆盖，反射返回顺序又没有稳定保证。因此适配后的脚本对象最终只保留其中一个签名；不要依赖两种调用形式同时可用。若需要稳定地清空某一事件，请获取 <code>listeners(eventName)</code> 快照并逐个调用 <code>removeListener(eventName, listener)</code>。</p>\n</blockquote>\n<pre><code class=\"lang-js\">for (const listener of emitter.listeners(&#39;data&#39;)) {\n    emitter.removeListener(&#39;data&#39;, listener);\n}\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#removeAllListeners"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#listeners",
+          "name": "[m#]_eventemitter#listeners",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#listeners(eventName)",
+              "type": "method",
+              "name": "EventEmitter#listeners",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#function\">Function</a>[] } - 监听器快照</li>\n<li><strong>异常</strong>：事件名类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：查询不存在的事件也会建立一个空监听器列表</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(emitter.listeners(&#39;data&#39;).length);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#listeners"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#listenerCount",
+          "name": "[m#]_eventemitter#listenercount",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#listenerCount(eventName)",
+              "type": "method",
+              "name": "EventEmitter#listenerCount",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>eventName</strong> { <a href=\"data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#number\">number</a> }</li>\n<li><strong>异常</strong>：事件名类型不兼容时抛出异常</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(emitter.listenerCount(&#39;data&#39;)); // 0 或正整数\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "eventName"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#listenerCount"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#eventNames",
+          "name": "[m#]_eventemitter#eventnames",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#eventNames()",
+              "type": "method",
+              "name": "EventEmitter#eventNames",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#string\">string</a>[] }</li>\n<li><strong>异常</strong>：无</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>返回内部已建立的事件名。空列表对应的名称也可能保留，结果顺序没有稳定保证。</p>\n<pre><code class=\"lang-js\">console.log(emitter.eventNames());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#eventNames"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#setMaxListeners",
+          "name": "[m#]_eventemitter#setmaxlisteners",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#setMaxListeners(maxListeners)",
+              "type": "method",
+              "name": "EventEmitter#setMaxListeners",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>maxListeners</strong> { <a href=\"data-types.md#number\">number</a> } - 建议使用非负整数；0 表示无限制</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"#事件发射器-eventemitter\">EventEmitter</a> }</li>\n<li><strong>异常</strong>：Java 数值转换失败时抛出异常；负数会使后续注册立即触发上限错误</li>\n<li><strong>副作用</strong>：修改当前发射器的监听器上限</li>\n</ul>\n<pre><code class=\"lang-js\">emitter.setMaxListeners(20);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "maxListeners"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#setMaxListeners"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#getMaxListeners",
+          "name": "[m#]_eventemitter#getmaxlisteners",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#getMaxListeners()",
+              "type": "method",
+              "name": "EventEmitter#getMaxListeners",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#number\">number</a> }</li>\n<li><strong>异常</strong>：无</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(emitter.getMaxListeners()); // 默认 10\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#getMaxListeners"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#getTimer",
+          "name": "[m#]_eventemitter#gettimer",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#getTimer()",
+              "type": "method",
+              "name": "EventEmitter#getTimer",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <code>Timer | null</code> }</li>\n<li><strong>异常</strong>：无</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>返回发射器用于调度监听器的运行时计时器；没有计时器时返回 <code>null</code>。该对象属于运行时内部设施，不应由业务脚本关闭或替换。</p>\n<pre><code class=\"lang-js\">console.log(emitter.getTimer() === null || typeof emitter.getTimer() === &#39;object&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#getTimer"
+        },
+        {
+          "textRaw": "[m#] EventEmitter#defaultMaxListeners",
+          "name": "[m#]_eventemitter#defaultmaxlisteners",
+          "methods": [
+            {
+              "textRaw": "EventEmitter#defaultMaxListeners()",
+              "type": "method",
+              "name": "EventEmitter#defaultMaxListeners",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"data-types.md#number\">number</a> } - 新实例的默认上限，固定提交中为 10</li>\n<li><strong>异常</strong>：无</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(emitter.defaultMaxListeners()); // 10\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "[m#] EventEmitter#defaultMaxListeners"
+        },
+        {
+          "textRaw": "获取 EventEmitter 接口",
+          "name": "获取_eventemitter_接口",
+          "desc": "<p><code>events.__asEmitter__(object?, thread?)</code> 是底层适配入口，会把上述 Java 公共方法安装到 Rhino 对象。object 必须是 Rhino <code>ScriptableObject</code>；thread 只接受运行时主线程代理或 Java <code>Thread</code>。同名 Java 重载没有被合并：它们先同时通过属性缺失检查，再依次写入相同属性名，后写入者覆盖先写入者；<code>removeAllListeners()</code> 与 <code>removeAllListeners(eventName)</code> 因此不能视为可靠共存。</p>\n<pre><code class=\"lang-js\">const emitter = events.__asEmitter__({});\nemitter.once(&#39;ready&#39;, value =&gt; console.log(value));\nemitter.emit(&#39;ready&#39;, 42);\n</code></pre>\n<p>适配后的发射器与当前脚本运行时绑定。脚本退出后不要继续从其他线程调用其监听器。</p>\n",
+          "type": "module",
+          "displayName": "获取 EventEmitter 接口"
+        }
+      ],
       "type": "module",
       "displayName": "事件发射器 (EventEmitter)"
     }
