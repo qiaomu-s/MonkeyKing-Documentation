@@ -361,6 +361,19 @@ describe('content inventory', () => {
     }
   })
 
+  test('ignores generated VitePress cache artifacts', () => {
+    const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-vitepress-cache-'))
+    try {
+      writeCanonicalFixture(root)
+      writeFixture(root, 'docs/.vitepress/cache/deps/metadata.json', '{}\n')
+      writeFixture(root, 'docs/.vitepress/cache/markdown/entry.bin', 'cache\n')
+
+      expect(checkContent(root).errors).toEqual([])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('matches the canonical repository inventory exactly', () => {
     const report = checkContent(process.cwd())
 

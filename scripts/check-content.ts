@@ -175,7 +175,7 @@ function inspectCanonicalLayout(
   const publishedFiles = walkFiles(
     rootDirectory,
     resolve(rootDirectory, 'docs'),
-    ['docs/superpowers'],
+    ['docs/.vitepress/cache', 'docs/superpowers'],
   )
   const allowedCanonicalFiles = new Set([
     ...expectedSources,

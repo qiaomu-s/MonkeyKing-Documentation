@@ -25,6 +25,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Check out Monkey King 6.7.0 source
+        uses: actions/checkout@v7
+        with:
+          repository: qiaomu-s/AutoJs6
+          ref: bafa2986212d27b6b59f1324f89548b72a810966
+          token: ${{ secrets.MONKEYKING_SOURCE_TOKEN }}
+          path: .source/monkeyking
+          persist-credentials: false
+
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
@@ -43,6 +52,15 @@ jobs:
       - name: Check TypeScript
         run: npx tsc --noEmit
 
+      - name: Verify fixed API surface
+        run: npm run api:extract -- --source .source/monkeyking --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
+
+      - name: Check API documentation coverage
+        run: npm run api:check
+
+      - name: Check JavaScript examples
+        run: npm run examples:check
+
       - name: Check content catalog
         run: npm run check:content
 
@@ -50,7 +68,7 @@ jobs:
         run: npm run json:build
 
       - name: Reject compatibility JSON drift
-        run: git diff --exit-code -- json
+        run: git diff --exit-code -- api-surface json
 
       - name: Run unit tests
         run: npm test

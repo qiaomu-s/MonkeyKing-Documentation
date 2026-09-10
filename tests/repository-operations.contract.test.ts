@@ -5,6 +5,8 @@ const rootDirectory = process.cwd()
 const workflowPath = resolve(rootDirectory, '.github/workflows/pages.yml')
 const readmePath = resolve(rootDirectory, 'README.md')
 const projectMetadataPath = resolve(rootDirectory, 'project.json')
+const gitignorePath = resolve(rootDirectory, '.gitignore')
+const sourceRef = 'bafa2986212d27b6b59f1324f89548b72a810966'
 
 function readOptionalText(path: string): string {
   return existsSync(path) ? readFileSync(path, 'utf8') : ''
@@ -36,15 +38,28 @@ describe('repository operations contract', () => {
     expect(workflow).toMatch(
       /uses: actions\/checkout@v7\s*\n\s+with:\s*\n\s+persist-credentials: false/,
     )
+    expect(workflow).toMatch(
+      new RegExp(
+        String.raw`uses: actions/checkout@v7\s*\n\s+with:\s*\n` +
+          String.raw`\s+repository: qiaomu-s/AutoJs6\s*\n` +
+          String.raw`\s+ref: ${sourceRef}\s*\n` +
+          String.raw`\s+token: \$\{\{ secrets\.MONKEYKING_SOURCE_TOKEN \}\}\s*\n` +
+          String.raw`\s+path: \.source/monkeyking\s*\n` +
+          String.raw`\s+persist-credentials: false`,
+      ),
+    )
     expect(workflow).toContain('cache: npm')
     expectInOrder(workflow, [
       'run: npm install --global npm@11.17.0',
       'run: test "$(npm --version)" = "11.17.0"',
       'run: npm ci',
       'run: npx tsc --noEmit',
+      `run: npm run api:extract -- --source .source/monkeyking --ref ${sourceRef} --check`,
+      'run: npm run api:check',
+      'run: npm run examples:check',
       'run: npm run check:content',
       'run: npm run json:build',
-      'run: git diff --exit-code -- json',
+      'run: git diff --exit-code -- api-surface json',
       'run: npm test',
       'run: npm run build:web',
       'run: npm run check:links',
@@ -128,5 +143,12 @@ describe('repository operations contract', () => {
 
   test('removes obsolete project metadata', () => {
     expect(existsSync(projectMetadataPath)).toBe(false)
+  })
+
+  test('ignores operating-system metadata and generated VitePress caches', () => {
+    const gitignore = readOptionalText(gitignorePath)
+
+    expect(gitignore).toMatch(/^\.DS_Store$/m)
+    expect(gitignore).toMatch(/^docs\/\.vitepress\/cache\/$/m)
   })
 })
