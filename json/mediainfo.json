@@ -4,7 +4,7 @@
     {
       "textRaw": "MediaInfo - 媒体信息",
       "name": "mediainfo_-_媒体信息",
-      "desc": "<p><code>mediainfo</code> 同步读取本地媒体文件的容器、视频、音频、字幕等元数据。运行时同时注册 <code>mediainfo</code> 与 <code>$mediainfo</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n",
+      "desc": "<p><code>mediainfo</code> 同步读取本地媒体文件的容器、视频、音频、字幕等元数据。运行时同时注册 <code>mediainfo</code> 与 <code>$mediainfo</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "mediainfo",
@@ -68,7 +68,7 @@
         {
           "textRaw": "生命周期与副作用",
           "name": "生命周期与副作用",
-          "desc": "<ul>\n<li>创建对象时立即同步读取文件并解析全部区段，没有延迟加载。</li>\n<li>对象保存的是读取时的快照；文件后续发生变化时应重新调用 <code>mediainfo.read</code>。</li>\n<li>模块只读取媒体内容，不修改源文件。</li>\n<li>返回对象没有显式 <code>close()</code>；底层 MediaInfo 调用由运行时封装管理。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>创建对象时立即同步读取文件并解析全部区段，没有延迟加载。</li>\n<li>对象保存的是读取时的快照；文件后续发生变化时应重新调用 <code>mediainfo.read</code>。</li>\n<li>模块只读取媒体内容，不修改源文件。</li>\n<li>返回对象没有显式 <code>close()</code>；底层 MediaInfo 调用由运行时封装管理。</li>\n<li>路径、文件读取、格式解析或原生库加载异常会同步抛出，不会返回部分初始化对象。</li>\n<li>模块不请求额外 Android 运行时权限，但调用方必须对目标路径具有系统允许的读取权限；受分区存储限制的路径仍可能失败。</li>\n</ul>\n",
           "type": "module",
           "displayName": "生命周期与副作用"
         }

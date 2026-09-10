@@ -4,7 +4,7 @@
     {
       "textRaw": "Formatter / fmt",
       "name": "formatter_/_fmt",
-      "desc": "<p><strong>自 v6.7.0 起提供。</strong></p>\n",
+      "desc": "<p><strong>自 v6.7.0 起提供。</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "formatter",

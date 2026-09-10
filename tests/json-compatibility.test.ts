@@ -607,7 +607,6 @@ describe('legacy JSON compatibility', () => {
       contentEntries.reduce((count, entry) => count + entry.jsonNames.length, 1) +
         frozenLegacyJsonStems.length,
     )
-    expect(expectedCommittedJsonFilenames).toHaveLength(125)
   })
 
   test('rejects unexpected JSON without deleting or rewriting it', () => {

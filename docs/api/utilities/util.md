@@ -4,12 +4,48 @@
 
 版本：**v6.6.0**
 
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
 ## util
 
 ```js
 console.log(util === $util); // true
 console.log(util.isArray([1, 2])); // true
 console.log(util.format('%s: %d', 'count', 2)); // count: 2
+```
+
+## Java 类原型成员
+
+运行时在 `util` 的 prototype 上公开以下四个同步方法。它们不访问文件、网络或 Android 权限，也不持有资源；四者自 **v6.6.0** 起可用。返回的外部类型参阅 Java 官方的 [`java.lang.Class`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html)。
+
+### util.class(value)
+
+### util.getClass(value)
+
+- `value` {any} - 必填且不能是 `null`
+- 返回 {`java.lang.Class`} - `value` 本身若已经是 `Class` 就原样返回，否则返回其实际 Java 类
+- 异常 - value 为 `null` 时抛出参数异常；参数数量不正确时由 Rhino 调用桥接层拒绝
+
+`util.class(value)` 与 `util.getClass(value)` 是同义入口。
+
+### util.className(value)
+
+### util.getClassName(value)
+
+- `value` {any} - 必填且不能是 `null`
+- 返回 {string} - 上述 `Class.getName()` 的结果，即完整二进制类名
+- 异常 - value 为 `null` 时抛出参数异常；其他类访问错误会原样传播
+
+`util.className(value)` 与 `util.getClassName(value)` 是同义入口。
+
+```js
+let list = new java.util.ArrayList();
+let klass = util.class(list);
+
+console.log(klass === util.getClass(list)); // true
+console.log(util.getClass(klass) === klass); // true
+console.log(util.className(list)); // java.util.ArrayList
+console.log(util.getClassName(list)); // java.util.ArrayList
 ```
 
 ## 类型判断
@@ -27,7 +63,7 @@ console.log(util.format('%s: %d', 'count', 2)); // count: 2
 | `util.isSymbol(value)` | `Symbol` |
 | `util.isUndefined(value)` | `undefined` |
 | `util.isRegExp(value)` | 正则表达式 |
-| `util.isObject(value)` | JavaScript 的对象类型；`null` 也符合 `typeof` 的对象语义 |
+| `util.isObject(value)` | 非空的 JavaScript 对象；`null` 明确返回 `false` |
 | `util.isDate(value)` | `Date` |
 | `util.isError(value)` | 错误对象 |
 | `util.isFunction(value)` | 可调用函数 |
@@ -40,6 +76,11 @@ console.log(util.format('%s: %d', 'count', 2)); // count: 2
 | `util.isEmptyObject(value)` | 没有自有属性的脚本对象 |
 
 参数数量不为 1 时会抛出参数错误。
+
+```js
+console.log(util.isObject({})); // true
+console.log(util.isObject(null)); // false
+```
 
 ## util.unwrapJavaObject(value)
 
@@ -208,7 +249,7 @@ console.log(bytes.length); // 16
 
 `util.morseCode(source, timeSpan?)` 返回一个摩尔斯电码对象。`timeSpan` 的默认值和下限都是 `100` 毫秒；支持拉丁字母、数字和源码字典中的常用标点，无法识别的字符会抛出错误。
 
-对象具有只读的 `code`、`pattern` 属性，以及 `getCode()`、`getPattern()`、`vibrate(delay?)`、`toString()` 方法。模块还提供同名快捷方法：
+对象具有只读的 `code`、`pattern` 属性，以及 `getCode()`、`getPattern()`、`vibrate(delay?)`、`toString()`、`toStringReadable()` 方法。两个字符串方法都返回原始摩尔斯字符串的可读表示。模块还提供同名快捷方法：
 
 - `util.morseCode.getCode(source, timeSpan?)`
 - `util.morseCode.getPattern(source, timeSpan?)`
@@ -241,3 +282,9 @@ console.log(sos.getPattern());
 ## 内部兼容方法
 
 `util.__assignFunctions__(source, target, functionNames)` 用于把指定方法绑定后复制到另一个脚本对象。它要求前两个参数为 `ScriptableObject`、第三个参数为数组，且每个名称都指向函数。该名称主要供运行时模块装配使用，业务脚本不应依赖它。
+
+## 共同执行契约
+
+- 除 `util.log`、警告方法、尺寸换算和 `morseCode.vibrate` 外，成员均为当前线程内的同步内存操作；不创建需要关闭的生命周期资源。
+- 可见副作用仅包括：`util.log`、`deprecate`、`debuglog` 写控制台，尺寸换算读取显示指标，`morseCode.vibrate` 触发设备振动并受设备振动能力与系统策略限制。其余成员不要求 Android 权限。
+- 参数数量、类型或合法值不满足各成员说明时会同步抛出异常；没有声明容错返回值的成员不会吞掉错误。

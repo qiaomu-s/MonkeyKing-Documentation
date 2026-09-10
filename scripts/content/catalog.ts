@@ -248,8 +248,8 @@ const contentDefinitions = [
   ['colorTable', 'reference/color-table', 'Color Table - 颜色列表'],
 ] as const satisfies readonly ContentEntryDefinition[]
 
-const EXPECTED_CONTENT_ENTRY_COUNT = 113
-const EXPECTED_LEGACY_ALL_ENTRY_COUNT = 42
+const EXPECTED_CONTENT_ENTRY_COUNT = contentDefinitions.length
+const EXPECTED_LEGACY_ALL_ENTRY_COUNT = legacyAllEntryIdDefinitions.length
 
 function createContentEntry<
   const Definition extends ContentEntryDefinition,

@@ -1,8 +1,10 @@
 # Zip - 压缩与解压
 
-`zip` 基于 [Zip4j](https://github.com/srikanth-lingala/zip4j) 同步创建、修改和解压 ZIP 文件。运行时同时注册 `zip` 与 `$zip`，两者引用同一个模块对象。
+`zip` 基于 [Zip4j 2.11.5](https://github.com/srikanth-lingala/zip4j) 同步创建、修改和解压 ZIP 文件。运行时同时注册 `zip` 与 `$zip`，两者引用同一个模块对象。外部类型参阅 Zip4j 官方 API：[`ZipFile`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/ZipFile.html)、[`FileHeader`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/FileHeader.html)、[`ZipParameters`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/ZipParameters.html) 和 [`UnzipParameters`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/UnzipParameters.html)。
 
 版本：**v6.7.0**
+
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
 ## zip
 
@@ -26,9 +28,16 @@ console.log(archive.isValidZipFile());
 
 路径按 `files.nonNullPath` 规则解析。空值、空字符串或非对象选项会抛出参数错误。
 
-## zip.zipFile(filePath, destination?, options?)
+## zip.zipFile(filePath, destination, options?)
 
-把一个文件加入 ZIP 并返回 `ZipNativeObject`。第二个参数若为对象，则按 `options` 处理并使用源文件去除扩展名后的名称生成 `.zip` 目标；否则第二个参数是目标 ZIP 路径。
+把一个文件加入 ZIP 并返回 `ZipNativeObject`。调用必须提供 **2 至 3 个参数**；一参调用会由参数守卫抛出异常。`destination` 槽必传：它是字符串时表示目标 ZIP 路径；它是 JavaScript 对象且总参数数为 2 时按 `options` 处理，并使用源文件去除扩展名后的名称生成 `.zip` 目标。
+
+- `filePath` {string} - 必填源文件路径
+- `destination` {string | Object} - 必填目标路径，或二参简写中的选项对象
+- `options` {Object} - 可选压缩选项，仅用于三参形式
+- 返回 {ZipNativeObject}
+- 异常 - 参数数不是 2 至 3、源路径非法或底层 Zip4j 写入失败时抛出
+- 权限 / 线程 / 生命周期 / 副作用 - 当前线程同步读取源文件并创建或修改目标 ZIP；需要目标路径写权限，返回对象不要求脚本级 `close()`
 
 ```js
 let result = zip.zipFile('./report.txt', './report.zip', {
@@ -37,24 +46,37 @@ let result = zip.zipFile('./report.txt', './report.zip', {
 console.log(result.getPath());
 ```
 
-## zip.zipDir(directoryPath, destination?, options?)
+## zip.zipDir(directoryPath, destination, options?)
 
-把整个目录创建为 ZIP 并返回 `ZipNativeObject`。参数重载和默认目标名与 `zip.zipFile` 相同。该实现调用 Zip4j 的目录压缩接口，分卷压缩关闭。
+把整个目录创建为 ZIP 并返回 `ZipNativeObject`。调用必须提供 **2 至 3 个参数**；一参调用会由参数守卫抛出异常。`destination` 槽必传，并与 `zip.zipFile` 一样接受目标路径或二参形式的选项对象。该实现调用 Zip4j 的目录压缩接口，分卷压缩关闭。
 
-## zip.zipFiles(filePaths, destination?, options?)
+- `directoryPath` {string} - 必填源目录路径
+- `destination` {string | Object} - 必填目标 ZIP 路径，或二参简写中的选项对象
+- `options` {Object} - 可选压缩选项
+- 返回 {ZipNativeObject}
+- 异常 / 权限 / 线程 / 生命周期 / 副作用 - 参数数不是 2 至 3 时抛出；当前线程同步遍历目录并写 ZIP，需要源目录读取与目标写入权限，不保留脚本级可关闭资源
+
+## zip.zipFiles(filePaths, destination, options?)
 
 把可迭代的多个路径加入一个 ZIP 并返回 `ZipNativeObject`。
 
+- 调用必须提供 **2 至 3 个参数**；一参调用会由参数守卫抛出异常。
 - `filePaths` 必须是可迭代对象，且每个源路径必须存在。
-- 只有一个源路径且省略目标时，目标名取该项目名称并改为 `.zip`。
-- 多个源路径位于同一父目录时，默认使用父目录名。
-- 无法确定统一名称时，生成 `yyyyMMdd-HHmmss-XXXX.zip` 形式的名称。
+- `destination` 槽必传；字符串表示目标 ZIP，二参形式传对象则把它作为选项并计算默认目标名。
+- 二参选项简写且只有一个源路径时，目标名取该项目名称并改为 `.zip`。
+- 二参选项简写且多个源路径位于同一父目录时，默认使用父目录名；无法确定统一名称时生成 `yyyyMMdd-HHmmss-XXXX.zip`。
 
-非可迭代参数、缺失源文件或无效路径会抛出错误。
+返回 `ZipNativeObject`。非可迭代参数、缺失源文件、无效路径或底层写入失败会同步抛出错误；方法读取所有源路径并写目标 ZIP，需要相应文件权限，没有脚本级资源关闭要求。
 
-## zip.unzip(zipPath, destination?, options?)
+## zip.unzip(zipPath, destination, options?)
 
-解压整个 ZIP 并返回 `ZipNativeObject`。第二个参数若为对象，则作为 `options`，目标路径按空字符串交给 `files.nonNullPath` 解析；通常建议显式提供目标目录。
+解压整个 ZIP 并返回 `ZipNativeObject`。调用必须提供 **2 至 3 个参数**；一参调用会由参数守卫抛出异常。`destination` 槽必传：字符串表示目标目录；二参形式传对象时把它作为 `options`，并把空字符串交给 `files.nonNullPath` 解析默认目录。为避免依赖当前路径，通常应显式提供目标目录。
+
+- `zipPath` {string} - 必填 ZIP 路径
+- `destination` {string | Object} - 必填目标目录，或二参简写中的选项对象
+- `options` {Object} - 可选解压选项
+- 返回 {ZipNativeObject}
+- 异常 / 权限 / 线程 / 生命周期 / 副作用 - 参数数不是 2 至 3、密码或归档非法、目标不可写时抛出；当前线程同步读取归档并写文件，不保留脚本级可关闭资源
 
 ```js
 zip.unzip('./backup.zip', './restored', {
@@ -113,6 +135,27 @@ zip.unzip('./backup.zip', './restored', {
 | `unzipParameters` | 由默认选项构造的 `UnzipParameters` |
 
 这些属性只读。`String(archive)` 或 `archive.toString()` 返回操作名、路径和选项的可读摘要。
+
+### 公共方法契约总表
+
+以下成员自 **v6.7.0** 起公开。所有方法都同步执行；参数数量不符、路径或选项非法以及 Zip4j 操作失败会立即抛出异常。修改或提取方法需要相应文件读写权限。
+
+| 签名与参数数 | 参数、合法值与返回 | 生命周期与副作用 |
+| --- | --- | --- |
+| archive.addFile(filePath, options?) — 1 至 2 个参数 | `filePath: string`；`options?: Object`；返回 `undefined`。 | 按 `files.nonNullPath` 解析文件并把它写入当前 ZIP。 |
+| archive.addFiles(filePaths, options?) — 1 至 2 个参数 | `filePaths: Iterable<string>`；`options?: Object`；返回 `undefined`。非可迭代值抛出参数异常。 | 解析每个路径并把文件集合写入当前 ZIP。 |
+| archive.addFolder(directoryPath, options?) — 1 至 2 个参数 | `directoryPath: string`；`options?: Object`；返回 `undefined`。 | 递归读取目录并写入当前 ZIP。 |
+| archive.extractAll(destination, options?) — 1 至 2 个参数 | `destination: string`；`options?: Object`；返回 `undefined`。 | 创建或覆盖目标目录中的文件；归档、密码或目标无效时抛出。 |
+| archive.extractFile(entryPath, destination, options?, newFileName?) — 2 至 4 个参数 | `entryPath: string`、`destination: string`；`options?: Object`；`newFileName?: string`；返回 `undefined`。提供新文件名时若不需要选项，应在第三位传 `null`。固定源码会先按 `files.nonNullPath` 解析 `entryPath` 与目标路径。 | 从当前 ZIP 写出一个条目，可按第四参数改名。 |
+| archive.setPassword(password) — 1 个参数 | `password: string`；返回 `undefined`。 | 修改底层 `ZipFile` 后续读写使用的密码，不会重写既有条目。 |
+| archive.getFileHeader(entryName) — 1 个参数 | `entryName: string`；返回 Zip4j `FileHeader`，未命中时可能为 `null`。 | 同步读取归档目录，不写文件。 |
+| archive.getFileHeaders() — 0 个参数 | 返回 `Array<FileHeader>`。 | 同步读取全部条目元数据，不写文件。 |
+| archive.isEncrypted() — 0 个参数 | 返回 `boolean`。 | 同步检查归档加密状态。 |
+| archive.removeFile(entryName) — 1 个参数 | `entryName: string`；返回 `undefined`。 | 重写归档并删除指定条目。 |
+| archive.isValidZipFile() — 0 个参数 | 返回 `boolean`。 | 同步读取归档结构；无效归档返回 `false` 或传播底层 I/O 错误。 |
+| archive.getPath() — 0 个参数 | 返回绝对 ZIP 路径 `string`。 | 纯读取，不访问文件。 |
+| archive.getZipFile() — 0 个参数 | 返回底层 Zip4j `ZipFile`。 | 暴露可变底层资源；调用方若直接关闭或修改它，必须自行管理生命周期，后续 `archive` 调用会看到同一状态。 |
+| archive.toString() — 0 个参数 | 返回包含 operation、path 与 options 的 `string`。 | 纯读取，不再次访问 ZIP。 |
 
 ### archive.addFile(filePath, options?)
 

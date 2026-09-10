@@ -2,6 +2,8 @@
 
 **自 v6.7.0 起提供。**
 
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
 ## converter
 
 Converter 是 Monkey King 的数据转换模块。目前脚本 API 只暴露缩写入口 `cvt` 与 `$cvt`，不存在名为 `converter` 的全局变量。

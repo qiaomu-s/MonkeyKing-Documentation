@@ -2,7 +2,11 @@
 
 **自 v6.6.0 起提供。**
 
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
 Jsox 用于把 Monkey King 的 `Mathx`、`Numberx` 和 `Arrayx` 能力安装到 JavaScript 内建对象。它会修改当前脚本运行时中的 `Math`、`Number`、`Number.prototype`、`Array` 或 `Array.prototype`，因此应在了解全局副作用后使用。
+
+三个入口的返回值均为 `undefined`；各节的 <ins>**returns**</ins> 行给出同一契约。
 
 ## jsox
 

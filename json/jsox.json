@@ -4,7 +4,7 @@
     {
       "textRaw": "Jsox",
       "name": "jsox",
-      "desc": "<p><strong>自 v6.6.0 起提供。</strong></p>\n<p>Jsox 用于把 Monkey King 的 <code>Mathx</code>、<code>Numberx</code> 和 <code>Arrayx</code> 能力安装到 JavaScript 内建对象。它会修改当前脚本运行时中的 <code>Math</code>、<code>Number</code>、<code>Number.prototype</code>、<code>Array</code> 或 <code>Array.prototype</code>，因此应在了解全局副作用后使用。</p>\n",
+      "desc": "<p><strong>自 v6.6.0 起提供。</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n<p>Jsox 用于把 Monkey King 的 <code>Mathx</code>、<code>Numberx</code> 和 <code>Arrayx</code> 能力安装到 JavaScript 内建对象。它会修改当前脚本运行时中的 <code>Math</code>、<code>Number</code>、<code>Number.prototype</code>、<code>Array</code> 或 <code>Array.prototype</code>，因此应在了解全局副作用后使用。</p>\n<p>三个入口的返回值均为 <code>undefined</code>；各节的 <ins><strong>returns</strong></ins> 行给出同一契约。</p>\n",
       "modules": [
         {
           "textRaw": "jsox",

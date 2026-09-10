@@ -4,7 +4,7 @@
     {
       "textRaw": "Util - 实用工具",
       "name": "util_-_实用工具",
-      "desc": "<p><code>util</code> 汇集类型判断、对象继承、格式化、类型断言、尺寸换算以及 Java 互操作等通用能力。运行时同时注册 <code>util</code> 与 <code>$util</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.0</strong></p>\n",
+      "desc": "<p><code>util</code> 汇集类型判断、对象继承、格式化、类型断言、尺寸换算以及 Java 互操作等通用能力。运行时同时注册 <code>util</code> 与 <code>$util</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.0</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "util",
@@ -14,9 +14,176 @@
           "displayName": "util"
         },
         {
+          "textRaw": "Java 类原型成员",
+          "name": "java_类原型成员",
+          "desc": "<p>运行时在 <code>util</code> 的 prototype 上公开以下四个同步方法。它们不访问文件、网络或 Android 权限，也不持有资源；四者自 <strong>v6.6.0</strong> 起可用。返回的外部类型参阅 Java 官方的 <a href=\"https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html\"><code>java.lang.Class</code></a>。</p>\n",
+          "methods": [
+            {
+              "textRaw": "util.class(value)",
+              "type": "method",
+              "name": "class",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "`value` {any} - 必填且不能是 `null` ",
+                      "name": "value",
+                      "type": "any",
+                      "desc": "必填且不能是 `null`"
+                    },
+                    {
+                      "textRaw": "返回 {`java.lang.Class`} - `value` 本身若已经是 `Class` 就原样返回，否则返回其实际 Java 类 ",
+                      "name": "返回",
+                      "type": "`java.lang.Class`",
+                      "desc": "`value` 本身若已经是 `Class` 就原样返回，否则返回其实际 Java 类"
+                    },
+                    {
+                      "textRaw": "异常 - value 为 `null` 时抛出参数异常；参数数量不正确时由 Rhino 调用桥接层拒绝 ",
+                      "name": "异常",
+                      "desc": "value 为 `null` 时抛出参数异常；参数数量不正确时由 Rhino 调用桥接层拒绝"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "desc": "<p><code>util.class(value)</code> 与 <code>util.getClass(value)</code> 是同义入口。</p>\n"
+            },
+            {
+              "textRaw": "util.getClass(value)",
+              "type": "method",
+              "name": "getClass",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "`value` {any} - 必填且不能是 `null` ",
+                      "name": "value",
+                      "type": "any",
+                      "desc": "必填且不能是 `null`"
+                    },
+                    {
+                      "textRaw": "返回 {`java.lang.Class`} - `value` 本身若已经是 `Class` 就原样返回，否则返回其实际 Java 类 ",
+                      "name": "返回",
+                      "type": "`java.lang.Class`",
+                      "desc": "`value` 本身若已经是 `Class` 就原样返回，否则返回其实际 Java 类"
+                    },
+                    {
+                      "textRaw": "异常 - value 为 `null` 时抛出参数异常；参数数量不正确时由 Rhino 调用桥接层拒绝 ",
+                      "name": "异常",
+                      "desc": "value 为 `null` 时抛出参数异常；参数数量不正确时由 Rhino 调用桥接层拒绝"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "desc": "<p><code>util.class(value)</code> 与 <code>util.getClass(value)</code> 是同义入口。</p>\n"
+            },
+            {
+              "textRaw": "util.className(value)",
+              "type": "method",
+              "name": "className",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "`value` {any} - 必填且不能是 `null` ",
+                      "name": "value",
+                      "type": "any",
+                      "desc": "必填且不能是 `null`"
+                    },
+                    {
+                      "textRaw": "返回 {string} - 上述 `Class.getName()` 的结果，即完整二进制类名 ",
+                      "name": "返回",
+                      "type": "string",
+                      "desc": "上述 `Class.getName()` 的结果，即完整二进制类名"
+                    },
+                    {
+                      "textRaw": "异常 - value 为 `null` 时抛出参数异常；其他类访问错误会原样传播 ",
+                      "name": "异常",
+                      "desc": "value 为 `null` 时抛出参数异常；其他类访问错误会原样传播"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "desc": "<p><code>util.className(value)</code> 与 <code>util.getClassName(value)</code> 是同义入口。</p>\n<pre><code class=\"lang-js\">let list = new java.util.ArrayList();\nlet klass = util.class(list);\n\nconsole.log(klass === util.getClass(list)); // true\nconsole.log(util.getClass(klass) === klass); // true\nconsole.log(util.className(list)); // java.util.ArrayList\nconsole.log(util.getClassName(list)); // java.util.ArrayList\n</code></pre>\n"
+            },
+            {
+              "textRaw": "util.getClassName(value)",
+              "type": "method",
+              "name": "getClassName",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "`value` {any} - 必填且不能是 `null` ",
+                      "name": "value",
+                      "type": "any",
+                      "desc": "必填且不能是 `null`"
+                    },
+                    {
+                      "textRaw": "返回 {string} - 上述 `Class.getName()` 的结果，即完整二进制类名 ",
+                      "name": "返回",
+                      "type": "string",
+                      "desc": "上述 `Class.getName()` 的结果，即完整二进制类名"
+                    },
+                    {
+                      "textRaw": "异常 - value 为 `null` 时抛出参数异常；其他类访问错误会原样传播 ",
+                      "name": "异常",
+                      "desc": "value 为 `null` 时抛出参数异常；其他类访问错误会原样传播"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "desc": "<p><code>util.className(value)</code> 与 <code>util.getClassName(value)</code> 是同义入口。</p>\n<pre><code class=\"lang-js\">let list = new java.util.ArrayList();\nlet klass = util.class(list);\n\nconsole.log(klass === util.getClass(list)); // true\nconsole.log(util.getClass(klass) === klass); // true\nconsole.log(util.className(list)); // java.util.ArrayList\nconsole.log(util.getClassName(list)); // java.util.ArrayList\n</code></pre>\n"
+            }
+          ],
+          "type": "module",
+          "displayName": "Java 类原型成员"
+        },
+        {
           "textRaw": "类型判断",
           "name": "类型判断",
-          "desc": "<p>下列方法都只接收一个参数并返回 <code>boolean</code>：</p>\n<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>为 <code>true</code> 的条件</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>util.isArray(value)</code></td>\n<td>JavaScript 数组</td>\n</tr>\n<tr>\n<td><code>util.isBoolean(value)</code></td>\n<td>布尔值</td>\n</tr>\n<tr>\n<td><code>util.isNull(value)</code></td>\n<td>严格为 <code>null</code></td>\n</tr>\n<tr>\n<td><code>util.isNullOrUndefined(value)</code></td>\n<td><code>null</code> 或 <code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isNumber(value)</code></td>\n<td>JavaScript 数值</td>\n</tr>\n<tr>\n<td><code>util.isString(value)</code></td>\n<td>字符串</td>\n</tr>\n<tr>\n<td><code>util.isSymbol(value)</code></td>\n<td><code>Symbol</code></td>\n</tr>\n<tr>\n<td><code>util.isUndefined(value)</code></td>\n<td><code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isRegExp(value)</code></td>\n<td>正则表达式</td>\n</tr>\n<tr>\n<td><code>util.isObject(value)</code></td>\n<td>JavaScript 的对象类型；<code>null</code> 也符合 <code>typeof</code> 的对象语义</td>\n</tr>\n<tr>\n<td><code>util.isDate(value)</code></td>\n<td><code>Date</code></td>\n</tr>\n<tr>\n<td><code>util.isError(value)</code></td>\n<td>错误对象</td>\n</tr>\n<tr>\n<td><code>util.isFunction(value)</code></td>\n<td>可调用函数</td>\n</tr>\n<tr>\n<td><code>util.isBigInt(value)</code></td>\n<td><code>BigInt</code></td>\n</tr>\n<tr>\n<td><code>util.isJavaObject(value)</code></td>\n<td>Rhino 包装的 Java 对象</td>\n</tr>\n<tr>\n<td><code>util.isJavaArray(value)</code></td>\n<td>Rhino 包装的 Java 数组</td>\n</tr>\n<tr>\n<td><code>util.isInteger(value)</code></td>\n<td>整数</td>\n</tr>\n<tr>\n<td><code>util.isPrimitive(value)</code></td>\n<td>非引用值</td>\n</tr>\n<tr>\n<td><code>util.isReference(value)</code></td>\n<td>非空对象或函数</td>\n</tr>\n<tr>\n<td><code>util.isEmptyObject(value)</code></td>\n<td>没有自有属性的脚本对象</td>\n</tr>\n</tbody>\n</table>\n<p>参数数量不为 1 时会抛出参数错误。</p>\n",
+          "desc": "<p>下列方法都只接收一个参数并返回 <code>boolean</code>：</p>\n<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>为 <code>true</code> 的条件</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>util.isArray(value)</code></td>\n<td>JavaScript 数组</td>\n</tr>\n<tr>\n<td><code>util.isBoolean(value)</code></td>\n<td>布尔值</td>\n</tr>\n<tr>\n<td><code>util.isNull(value)</code></td>\n<td>严格为 <code>null</code></td>\n</tr>\n<tr>\n<td><code>util.isNullOrUndefined(value)</code></td>\n<td><code>null</code> 或 <code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isNumber(value)</code></td>\n<td>JavaScript 数值</td>\n</tr>\n<tr>\n<td><code>util.isString(value)</code></td>\n<td>字符串</td>\n</tr>\n<tr>\n<td><code>util.isSymbol(value)</code></td>\n<td><code>Symbol</code></td>\n</tr>\n<tr>\n<td><code>util.isUndefined(value)</code></td>\n<td><code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isRegExp(value)</code></td>\n<td>正则表达式</td>\n</tr>\n<tr>\n<td><code>util.isObject(value)</code></td>\n<td>非空的 JavaScript 对象；<code>null</code> 明确返回 <code>false</code></td>\n</tr>\n<tr>\n<td><code>util.isDate(value)</code></td>\n<td><code>Date</code></td>\n</tr>\n<tr>\n<td><code>util.isError(value)</code></td>\n<td>错误对象</td>\n</tr>\n<tr>\n<td><code>util.isFunction(value)</code></td>\n<td>可调用函数</td>\n</tr>\n<tr>\n<td><code>util.isBigInt(value)</code></td>\n<td><code>BigInt</code></td>\n</tr>\n<tr>\n<td><code>util.isJavaObject(value)</code></td>\n<td>Rhino 包装的 Java 对象</td>\n</tr>\n<tr>\n<td><code>util.isJavaArray(value)</code></td>\n<td>Rhino 包装的 Java 数组</td>\n</tr>\n<tr>\n<td><code>util.isInteger(value)</code></td>\n<td>整数</td>\n</tr>\n<tr>\n<td><code>util.isPrimitive(value)</code></td>\n<td>非引用值</td>\n</tr>\n<tr>\n<td><code>util.isReference(value)</code></td>\n<td>非空对象或函数</td>\n</tr>\n<tr>\n<td><code>util.isEmptyObject(value)</code></td>\n<td>没有自有属性的脚本对象</td>\n</tr>\n</tbody>\n</table>\n<p>参数数量不为 1 时会抛出参数错误。</p>\n<pre><code class=\"lang-js\">console.log(util.isObject({})); // true\nconsole.log(util.isObject(null)); // false\n</code></pre>\n",
           "type": "module",
           "displayName": "类型判断"
         },
@@ -158,6 +325,13 @@
           "desc": "<p><code>util.__assignFunctions__(source, target, functionNames)</code> 用于把指定方法绑定后复制到另一个脚本对象。它要求前两个参数为 <code>ScriptableObject</code>、第三个参数为数组，且每个名称都指向函数。该名称主要供运行时模块装配使用，业务脚本不应依赖它。</p>\n",
           "type": "module",
           "displayName": "内部兼容方法"
+        },
+        {
+          "textRaw": "共同执行契约",
+          "name": "共同执行契约",
+          "desc": "<ul>\n<li>除 <code>util.log</code>、警告方法、尺寸换算和 <code>morseCode.vibrate</code> 外，成员均为当前线程内的同步内存操作；不创建需要关闭的生命周期资源。</li>\n<li>可见副作用仅包括：<code>util.log</code>、<code>deprecate</code>、<code>debuglog</code> 写控制台，尺寸换算读取显示指标，<code>morseCode.vibrate</code> 触发设备振动并受设备振动能力与系统策略限制。其余成员不要求 Android 权限。</li>\n<li>参数数量、类型或合法值不满足各成员说明时会同步抛出异常；没有声明容错返回值的成员不会吞掉错误。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "共同执行契约"
         }
       ],
       "methods": [
@@ -307,7 +481,7 @@
         {
           "textRaw": "util.morseCode",
           "name": "morseCode",
-          "desc": "<p><code>util.morseCode(source, timeSpan?)</code> 返回一个摩尔斯电码对象。<code>timeSpan</code> 的默认值和下限都是 <code>100</code> 毫秒；支持拉丁字母、数字和源码字典中的常用标点，无法识别的字符会抛出错误。</p>\n<p>对象具有只读的 <code>code</code>、<code>pattern</code> 属性，以及 <code>getCode()</code>、<code>getPattern()</code>、<code>vibrate(delay?)</code>、<code>toString()</code> 方法。模块还提供同名快捷方法：</p>\n<ul>\n<li><code>util.morseCode.getCode(source, timeSpan?)</code></li>\n<li><code>util.morseCode.getPattern(source, timeSpan?)</code></li>\n<li><code>util.morseCode.vibrate(source, delay?)</code></li>\n</ul>\n<p><code>pattern</code> 是 Android 振动节奏数组。<code>vibrate</code> 会触发设备振动，延迟为负数或非数值时按 <code>0</code> 处理；空节奏不会振动。</p>\n<pre><code class=\"lang-js\">let sos = util.morseCode(&#39;SOS&#39;);\nconsole.log(sos.getCode());\nconsole.log(sos.getPattern());\n// sos.vibrate(200); // 在真实设备上产生振动\n</code></pre>\n"
+          "desc": "<p><code>util.morseCode(source, timeSpan?)</code> 返回一个摩尔斯电码对象。<code>timeSpan</code> 的默认值和下限都是 <code>100</code> 毫秒；支持拉丁字母、数字和源码字典中的常用标点，无法识别的字符会抛出错误。</p>\n<p>对象具有只读的 <code>code</code>、<code>pattern</code> 属性，以及 <code>getCode()</code>、<code>getPattern()</code>、<code>vibrate(delay?)</code>、<code>toString()</code>、<code>toStringReadable()</code> 方法。两个字符串方法都返回原始摩尔斯字符串的可读表示。模块还提供同名快捷方法：</p>\n<ul>\n<li><code>util.morseCode.getCode(source, timeSpan?)</code></li>\n<li><code>util.morseCode.getPattern(source, timeSpan?)</code></li>\n<li><code>util.morseCode.vibrate(source, delay?)</code></li>\n</ul>\n<p><code>pattern</code> 是 Android 振动节奏数组。<code>vibrate</code> 会触发设备振动，延迟为负数或非数值时按 <code>0</code> 处理；空节奏不会振动。</p>\n<pre><code class=\"lang-js\">let sos = util.morseCode(&#39;SOS&#39;);\nconsole.log(sos.getCode());\nconsole.log(sos.getPattern());\n// sos.vibrate(200); // 在真实设备上产生振动\n</code></pre>\n"
         },
         {
           "textRaw": "util.version",

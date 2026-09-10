@@ -4,7 +4,7 @@
     {
       "textRaw": "Pinyin4j",
       "name": "pinyin4j",
-      "desc": "<p><strong>自 v6.6.1 起提供。</strong></p>\n<p>Pinyin4j 模块封装 pinyin4j 2.5.1，用于把基础汉字转换为汉语拼音，或把带数字的声调转换为声调符号。</p>\n",
+      "desc": "<p><strong>自 v6.6.1 起提供。</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n<p>Pinyin4j 模块封装 pinyin4j 2.5.1，用于把基础汉字转换为汉语拼音，或把带数字的声调转换为声调符号。</p>\n",
       "modules": [
         {
           "textRaw": "pinyin4j",

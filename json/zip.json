@@ -4,7 +4,7 @@
     {
       "textRaw": "Zip - 压缩与解压",
       "name": "zip_-_压缩与解压",
-      "desc": "<p><code>zip</code> 基于 <a href=\"https://github.com/srikanth-lingala/zip4j\">Zip4j</a> 同步创建、修改和解压 ZIP 文件。运行时同时注册 <code>zip</code> 与 <code>$zip</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n",
+      "desc": "<p><code>zip</code> 基于 <a href=\"https://github.com/srikanth-lingala/zip4j\">Zip4j 2.11.5</a> 同步创建、修改和解压 ZIP 文件。运行时同时注册 <code>zip</code> 与 <code>$zip</code>，两者引用同一个模块对象。外部类型参阅 Zip4j 官方 API：<a href=\"https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/ZipFile.html\"><code>ZipFile</code></a>、<a href=\"https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/FileHeader.html\"><code>FileHeader</code></a>、<a href=\"https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/ZipParameters.html\"><code>ZipParameters</code></a> 和 <a href=\"https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/UnzipParameters.html\"><code>UnzipParameters</code></a>。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "zip",
@@ -46,6 +46,13 @@
               "desc": "<table>\n<thead>\n<tr>\n<th>属性</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>name</code></td>\n<td>创建对象的操作名，例如 <code>open</code>、<code>zipFile</code> 或 <code>unzip</code></td>\n</tr>\n<tr>\n<td><code>path</code></td>\n<td>解析后的 ZIP 绝对路径</td>\n</tr>\n<tr>\n<td><code>zipFile</code></td>\n<td>底层 Zip4j <code>ZipFile</code></td>\n</tr>\n<tr>\n<td><code>options</code></td>\n<td>原始 JavaScript 选项对象</td>\n</tr>\n<tr>\n<td><code>zipParameters</code></td>\n<td>由默认选项构造的 <code>ZipParameters</code></td>\n</tr>\n<tr>\n<td><code>unzipParameters</code></td>\n<td>由默认选项构造的 <code>UnzipParameters</code></td>\n</tr>\n</tbody>\n</table>\n<p>这些属性只读。<code>String(archive)</code> 或 <code>archive.toString()</code> 返回操作名、路径和选项的可读摘要。</p>\n",
               "type": "module",
               "displayName": "属性"
+            },
+            {
+              "textRaw": "公共方法契约总表",
+              "name": "公共方法契约总表",
+              "desc": "<p>以下成员自 <strong>v6.7.0</strong> 起公开。所有方法都同步执行；参数数量不符、路径或选项非法以及 Zip4j 操作失败会立即抛出异常。修改或提取方法需要相应文件读写权限。</p>\n<table>\n<thead>\n<tr>\n<th>签名与参数数</th>\n<th>参数、合法值与返回</th>\n<th>生命周期与副作用</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>archive.addFile(filePath, options?) — 1 至 2 个参数</td>\n<td><code>filePath: string</code>；<code>options?: Object</code>；返回 <code>undefined</code>。</td>\n<td>按 <code>files.nonNullPath</code> 解析文件并把它写入当前 ZIP。</td>\n</tr>\n<tr>\n<td>archive.addFiles(filePaths, options?) — 1 至 2 个参数</td>\n<td><code>filePaths: Iterable&lt;string&gt;</code>；<code>options?: Object</code>；返回 <code>undefined</code>。非可迭代值抛出参数异常。</td>\n<td>解析每个路径并把文件集合写入当前 ZIP。</td>\n</tr>\n<tr>\n<td>archive.addFolder(directoryPath, options?) — 1 至 2 个参数</td>\n<td><code>directoryPath: string</code>；<code>options?: Object</code>；返回 <code>undefined</code>。</td>\n<td>递归读取目录并写入当前 ZIP。</td>\n</tr>\n<tr>\n<td>archive.extractAll(destination, options?) — 1 至 2 个参数</td>\n<td><code>destination: string</code>；<code>options?: Object</code>；返回 <code>undefined</code>。</td>\n<td>创建或覆盖目标目录中的文件；归档、密码或目标无效时抛出。</td>\n</tr>\n<tr>\n<td>archive.extractFile(entryPath, destination, options?, newFileName?) — 2 至 4 个参数</td>\n<td><code>entryPath: string</code>、<code>destination: string</code>；<code>options?: Object</code>；<code>newFileName?: string</code>；返回 <code>undefined</code>。提供新文件名时若不需要选项，应在第三位传 <code>null</code>。固定源码会先按 <code>files.nonNullPath</code> 解析 <code>entryPath</code> 与目标路径。</td>\n<td>从当前 ZIP 写出一个条目，可按第四参数改名。</td>\n</tr>\n<tr>\n<td>archive.setPassword(password) — 1 个参数</td>\n<td><code>password: string</code>；返回 <code>undefined</code>。</td>\n<td>修改底层 <code>ZipFile</code> 后续读写使用的密码，不会重写既有条目。</td>\n</tr>\n<tr>\n<td>archive.getFileHeader(entryName) — 1 个参数</td>\n<td><code>entryName: string</code>；返回 Zip4j <code>FileHeader</code>，未命中时可能为 <code>null</code>。</td>\n<td>同步读取归档目录，不写文件。</td>\n</tr>\n<tr>\n<td>archive.getFileHeaders() — 0 个参数</td>\n<td>返回 <code>Array&lt;FileHeader&gt;</code>。</td>\n<td>同步读取全部条目元数据，不写文件。</td>\n</tr>\n<tr>\n<td>archive.isEncrypted() — 0 个参数</td>\n<td>返回 <code>boolean</code>。</td>\n<td>同步检查归档加密状态。</td>\n</tr>\n<tr>\n<td>archive.removeFile(entryName) — 1 个参数</td>\n<td><code>entryName: string</code>；返回 <code>undefined</code>。</td>\n<td>重写归档并删除指定条目。</td>\n</tr>\n<tr>\n<td>archive.isValidZipFile() — 0 个参数</td>\n<td>返回 <code>boolean</code>。</td>\n<td>同步读取归档结构；无效归档返回 <code>false</code> 或传播底层 I/O 错误。</td>\n</tr>\n<tr>\n<td>archive.getPath() — 0 个参数</td>\n<td>返回绝对 ZIP 路径 <code>string</code>。</td>\n<td>纯读取，不访问文件。</td>\n</tr>\n<tr>\n<td>archive.getZipFile() — 0 个参数</td>\n<td>返回底层 Zip4j <code>ZipFile</code>。</td>\n<td>暴露可变底层资源；调用方若直接关闭或修改它，必须自行管理生命周期，后续 <code>archive</code> 调用会看到同一状态。</td>\n</tr>\n<tr>\n<td>archive.toString() — 0 个参数</td>\n<td>返回包含 operation、path 与 options 的 <code>string</code>。</td>\n<td>纯读取，不再次访问 ZIP。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "公共方法契约总表"
             }
           ],
           "methods": [
@@ -277,10 +284,10 @@
           ]
         },
         {
-          "textRaw": "zip.zipFile(filePath, destination?, options?)",
+          "textRaw": "zip.zipFile(filePath, destination, options?)",
           "type": "method",
           "name": "zipFile",
-          "desc": "<p>把一个文件加入 ZIP 并返回 <code>ZipNativeObject</code>。第二个参数若为对象，则按 <code>options</code> 处理并使用源文件去除扩展名后的名称生成 <code>.zip</code> 目标；否则第二个参数是目标 ZIP 路径。</p>\n<pre><code class=\"lang-js\">let result = zip.zipFile(&#39;./report.txt&#39;, &#39;./report.zip&#39;, {\n    compressionLevel: &#39;NORMAL&#39;,\n});\nconsole.log(result.getPath());\n</code></pre>\n",
+          "desc": "<p>把一个文件加入 ZIP 并返回 <code>ZipNativeObject</code>。调用必须提供 <strong>2 至 3 个参数</strong>；一参调用会由参数守卫抛出异常。<code>destination</code> 槽必传：它是字符串时表示目标 ZIP 路径；它是 JavaScript 对象且总参数数为 2 时按 <code>options</code> 处理，并使用源文件去除扩展名后的名称生成 <code>.zip</code> 目标。</p>\n<ul>\n<li><code>filePath</code> {string} - 必填源文件路径</li>\n<li><code>destination</code> {string | Object} - 必填目标路径，或二参简写中的选项对象</li>\n<li><code>options</code> {Object} - 可选压缩选项，仅用于三参形式</li>\n<li>返回 {ZipNativeObject}</li>\n<li>异常 - 参数数不是 2 至 3、源路径非法或底层 Zip4j 写入失败时抛出</li>\n<li>权限 / 线程 / 生命周期 / 副作用 - 当前线程同步读取源文件并创建或修改目标 ZIP；需要目标路径写权限，返回对象不要求脚本级 <code>close()</code></li>\n</ul>\n<pre><code class=\"lang-js\">let result = zip.zipFile(&#39;./report.txt&#39;, &#39;./report.zip&#39;, {\n    compressionLevel: &#39;NORMAL&#39;,\n});\nconsole.log(result.getPath());\n</code></pre>\n",
           "signatures": [
             {
               "params": [
@@ -288,7 +295,7 @@
                   "name": "filePath"
                 },
                 {
-                  "name": "destination?"
+                  "name": "destination"
                 },
                 {
                   "name": "options?"
@@ -298,10 +305,10 @@
           ]
         },
         {
-          "textRaw": "zip.zipDir(directoryPath, destination?, options?)",
+          "textRaw": "zip.zipDir(directoryPath, destination, options?)",
           "type": "method",
           "name": "zipDir",
-          "desc": "<p>把整个目录创建为 ZIP 并返回 <code>ZipNativeObject</code>。参数重载和默认目标名与 <code>zip.zipFile</code> 相同。该实现调用 Zip4j 的目录压缩接口，分卷压缩关闭。</p>\n",
+          "desc": "<p>把整个目录创建为 ZIP 并返回 <code>ZipNativeObject</code>。调用必须提供 <strong>2 至 3 个参数</strong>；一参调用会由参数守卫抛出异常。<code>destination</code> 槽必传，并与 <code>zip.zipFile</code> 一样接受目标路径或二参形式的选项对象。该实现调用 Zip4j 的目录压缩接口，分卷压缩关闭。</p>\n<ul>\n<li><code>directoryPath</code> {string} - 必填源目录路径</li>\n<li><code>destination</code> {string | Object} - 必填目标 ZIP 路径，或二参简写中的选项对象</li>\n<li><code>options</code> {Object} - 可选压缩选项</li>\n<li>返回 {ZipNativeObject}</li>\n<li>异常 / 权限 / 线程 / 生命周期 / 副作用 - 参数数不是 2 至 3 时抛出；当前线程同步遍历目录并写 ZIP，需要源目录读取与目标写入权限，不保留脚本级可关闭资源</li>\n</ul>\n",
           "signatures": [
             {
               "params": [
@@ -309,7 +316,7 @@
                   "name": "directoryPath"
                 },
                 {
-                  "name": "destination?"
+                  "name": "destination"
                 },
                 {
                   "name": "options?"
@@ -319,10 +326,10 @@
           ]
         },
         {
-          "textRaw": "zip.zipFiles(filePaths, destination?, options?)",
+          "textRaw": "zip.zipFiles(filePaths, destination, options?)",
           "type": "method",
           "name": "zipFiles",
-          "desc": "<p>把可迭代的多个路径加入一个 ZIP 并返回 <code>ZipNativeObject</code>。</p>\n<ul>\n<li><code>filePaths</code> 必须是可迭代对象，且每个源路径必须存在。</li>\n<li>只有一个源路径且省略目标时，目标名取该项目名称并改为 <code>.zip</code>。</li>\n<li>多个源路径位于同一父目录时，默认使用父目录名。</li>\n<li>无法确定统一名称时，生成 <code>yyyyMMdd-HHmmss-XXXX.zip</code> 形式的名称。</li>\n</ul>\n<p>非可迭代参数、缺失源文件或无效路径会抛出错误。</p>\n",
+          "desc": "<p>把可迭代的多个路径加入一个 ZIP 并返回 <code>ZipNativeObject</code>。</p>\n<ul>\n<li>调用必须提供 <strong>2 至 3 个参数</strong>；一参调用会由参数守卫抛出异常。</li>\n<li><code>filePaths</code> 必须是可迭代对象，且每个源路径必须存在。</li>\n<li><code>destination</code> 槽必传；字符串表示目标 ZIP，二参形式传对象则把它作为选项并计算默认目标名。</li>\n<li>二参选项简写且只有一个源路径时，目标名取该项目名称并改为 <code>.zip</code>。</li>\n<li>二参选项简写且多个源路径位于同一父目录时，默认使用父目录名；无法确定统一名称时生成 <code>yyyyMMdd-HHmmss-XXXX.zip</code>。</li>\n</ul>\n<p>返回 <code>ZipNativeObject</code>。非可迭代参数、缺失源文件、无效路径或底层写入失败会同步抛出错误；方法读取所有源路径并写目标 ZIP，需要相应文件权限，没有脚本级资源关闭要求。</p>\n",
           "signatures": [
             {
               "params": [
@@ -330,7 +337,7 @@
                   "name": "filePaths"
                 },
                 {
-                  "name": "destination?"
+                  "name": "destination"
                 },
                 {
                   "name": "options?"
@@ -340,10 +347,10 @@
           ]
         },
         {
-          "textRaw": "zip.unzip(zipPath, destination?, options?)",
+          "textRaw": "zip.unzip(zipPath, destination, options?)",
           "type": "method",
           "name": "unzip",
-          "desc": "<p>解压整个 ZIP 并返回 <code>ZipNativeObject</code>。第二个参数若为对象，则作为 <code>options</code>，目标路径按空字符串交给 <code>files.nonNullPath</code> 解析；通常建议显式提供目标目录。</p>\n<pre><code class=\"lang-js\">zip.unzip(&#39;./backup.zip&#39;, &#39;./restored&#39;, {\n    password: &#39;secret&#39;,\n});\n</code></pre>\n",
+          "desc": "<p>解压整个 ZIP 并返回 <code>ZipNativeObject</code>。调用必须提供 <strong>2 至 3 个参数</strong>；一参调用会由参数守卫抛出异常。<code>destination</code> 槽必传：字符串表示目标目录；二参形式传对象时把它作为 <code>options</code>，并把空字符串交给 <code>files.nonNullPath</code> 解析默认目录。为避免依赖当前路径，通常应显式提供目标目录。</p>\n<ul>\n<li><code>zipPath</code> {string} - 必填 ZIP 路径</li>\n<li><code>destination</code> {string | Object} - 必填目标目录，或二参简写中的选项对象</li>\n<li><code>options</code> {Object} - 可选解压选项</li>\n<li>返回 {ZipNativeObject}</li>\n<li>异常 / 权限 / 线程 / 生命周期 / 副作用 - 参数数不是 2 至 3、密码或归档非法、目标不可写时抛出；当前线程同步读取归档并写文件，不保留脚本级可关闭资源</li>\n</ul>\n<pre><code class=\"lang-js\">zip.unzip(&#39;./backup.zip&#39;, &#39;./restored&#39;, {\n    password: &#39;secret&#39;,\n});\n</code></pre>\n",
           "signatures": [
             {
               "params": [
@@ -351,7 +358,7 @@
                   "name": "zipPath"
                 },
                 {
-                  "name": "destination?"
+                  "name": "destination"
                 },
                 {
                   "name": "options?"

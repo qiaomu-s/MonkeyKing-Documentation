@@ -4,7 +4,9 @@
 
 版本：**v6.6.0**
 
-相关 Android 类型：[SQLiteDatabase](https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase)、[Cursor](https://developer.android.com/reference/android/database/Cursor)。
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
+相关 Android 类型：[SQLiteDatabase](https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase)、[SQLiteOpenHelper](https://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper)、[SQLiteStatement](https://developer.android.com/reference/android/database/sqlite/SQLiteStatement)、[SQLiteTransactionListener](https://developer.android.com/reference/android/database/sqlite/SQLiteTransactionListener)、[Cursor](https://developer.android.com/reference/android/database/Cursor)、[CancellationSignal](https://developer.android.com/reference/android/os/CancellationSignal) 和 [ContentValues](https://developer.android.com/reference/android/content/ContentValues)。
 
 ## sqlite
 
@@ -82,6 +84,25 @@ let db = sqlite.open('./cache.db', { version: 2 }, {
 - Java `byte[]`
 
 其他值类型会抛出 `Unsupported data type for key`。表名、条件与 SQL 文本不会自动转义，应使用参数绑定并避免拼接不可信输入。
+
+### 项目包装成员契约
+
+下列 `Database` 成员由 Monkey King 在 **v6.6.0** 中包装底层 `SQLiteDatabase`，不是 `SQLiteOpenHelper` 的直接继承成员。除 `transaction` 对回调异常的特殊处理外，Android 参数校验、数据库状态和 SQL 异常会同步传播。数据库文件需要应用对目标路径具有读写权限；所有方法都在调用线程执行，返回的 `CursorWrapper` 必须按下文规则关闭。
+
+| 成员族 | 参数与合法值 | 返回、异常与副作用 |
+| --- | --- | --- |
+| `insert` / `insertOrThrow` / `insertWithOnConflict` / `replace` / `replaceOrThrow` | `table`、`nullColumnHack` 为 `string` 或 `null`；`values` 为可转换的 JS 对象；`conflictAlgorithm` 使用 Android `SQLiteDatabase.CONFLICT_` 常量：`NONE`、`ROLLBACK`、`ABORT`、`FAIL`、`IGNORE` 或 `REPLACE`。 | 返回 row ID `number`；非 Throw 版本可返回 Android 失败值，Throw 版本和非法数据会抛出。修改数据库。 |
+| `update` / `updateWithOnConflict` | `table: string`、`values: Object`、`whereClause` 为 `string` 或 `null`、`whereArgs` 为 `string[]` 或 `null`，冲突版本另收上述算法整数。 | 返回受影响行数；修改数据库。绑定值只替换 `?`，表名和 SQL 片段不会转义。 |
+| `delete` | `table: string`、`whereClause` 为 `string` 或 `null`、`whereArgs` 为 `string[]` 或 `null`。 | 返回受影响行数；修改数据库。 |
+| `query` / `queryWithFactory` | `columns`、`selectionArgs` 为 `string[]` 或 `null`；`selection`、`groupBy`、`having`、`orderBy`、`limit` 为 `string` 或 `null`；高级重载接受 Android `CursorFactory`、`CancellationSignal` 与 `distinct: boolean`。 | 返回 `CursorWrapper`；同步执行查询，取消或 SQL 错误传播。调用方关闭游标。 |
+| `rawQuery` / `rawQueryWithFactory` | `sql: string`、`selectionArgs` 为 `string[]` 或 `null`；高级重载接受 `CursorFactory`、`editTable` 为 `string` 或 `null`、`CancellationSignal`。 | 返回 `CursorWrapper`；同步执行查询并读取数据库，SQL 与取消异常传播。 |
+| `execSQL` | `sql: string`；可选 `bindArgs: Object[]`。 | 返回 `undefined`；同步执行非查询 SQL 并可能修改 schema 或数据。 |
+| `compileStatement` / `validateSql` | SQL 字符串；`validateSql` 另收可空 `CancellationSignal`。 | 分别返回 Android `SQLiteStatement` 或 `undefined`；语法、状态与取消异常传播。返回语句的生命周期按 Android API 管理。 |
+| 事务基础成员 | 无参方法，或 `listener: SQLiteTransactionListener`、`sleepAfterYieldDelay: number`。 | `inTransaction` / `yieldIfContendedSafely` 返回 `boolean`，其余返回 `undefined`；会改变当前连接的事务状态。必须配对结束事务。 |
+| `transaction(callback, exclusive = true)` | `callback(transaction)` 必填；`exclusive: boolean` 默认 `true`。 | 同步返回 `EventEmitter` 并发出 `begin`、`commit`/`rollback`、`end`。callback 抛出的异常会作为 `error` 事件发出，不再向调用点抛出；事务随后回滚并结束。 |
+| 配置、状态与引用成员 | 数值配置必须满足 Android `SQLiteDatabase` 的合法范围；`setLocale` 接受 `java.util.Locale`。 | getter 返回底层值；setter 会立即改变连接配置。`acquireReference` / `releaseReference` 必须配对，错误释放会传播底层异常。 |
+| `getTypeAdapter()` | 无参数。 | 返回 Monkey King 当前 `TypeAdapter`，主要供高级互操作；不转移所有权。 |
+| `close()` | 无参数。 | 关闭底层数据库并从脚本运行时清理列表移除；之后继续使用会传播已关闭异常。 |
 
 ### CRUD
 
@@ -164,9 +185,28 @@ events.on('error', function (error) {
 - `db.getTypeAdapter()`：返回当前脚本值适配器，主要用于高级互操作
 - `db.close()`：关闭底层数据库并从运行时清理列表移除
 
+### External: SQLiteOpenHelper 继承成员
+
+`Database` 继承自 Android `SQLiteOpenHelper`。以下公共成员不是 Monkey King 新增包装，而是 **external API**；其可用性、API level、线程约束、异常和副作用以官方 [`SQLiteOpenHelper`](https://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper) 文档为准：
+
+- `db.getDatabaseName()`
+- `db.getReadableDatabase()`
+- `db.getWritableDatabase()`
+- `db.onConfigure(database)`
+- `db.onDowngrade(database, oldVersion, newVersion)`
+- `db.setLookasideConfig(slotSize, slotCount)`
+- `db.setOpenParams(openParams)`
+- `db.setWriteAheadLoggingEnabled(enabled)`
+
+本类覆盖的 `close()`、`onCreate()`、`onOpen()`、`onUpgrade()` 已在本页生命周期与 `DatabaseCallback` 契约中说明，不按 external 成员处理。直接调用 `getReadableDatabase()` / `getWritableDatabase()` 仍会触发同步打开和回调；不要在 UI 线程做耗时迁移。
+
 ## CursorWrapper
 
 `CursorWrapper` 委托实现 Android `Cursor` 的全部标准方法，并增加以下脚本辅助方法：
+
+### External: Cursor 委托成员
+
+除本页列出的六个脚本辅助方法外，`CursorWrapper` 的移动、列查询、计数、通知、extras、`close()` / `isClosed()` 等公共成员均直接委托给 **external** Android [`Cursor`](https://developer.android.com/reference/android/database/Cursor)。这些成员的参数、返回、API level、异常、线程和生命周期以官方文档为准；Monkey King 不改变其行为。
 
 ### cursor.get(index)
 

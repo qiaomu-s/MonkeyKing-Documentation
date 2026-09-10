@@ -4,7 +4,7 @@
     {
       "textRaw": "Pinyin - 拼音",
       "name": "pinyin_-_拼音",
-      "desc": "<p><code>pinyin</code> 使用内置单字、词组和姓氏数据把中文转换为拼音，并可选用 Jieba 分词。运行时同时注册 <code>pinyin</code> 与 <code>$pinyin</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.1</strong></p>\n",
+      "desc": "<p><code>pinyin</code> 使用内置单字、词组和姓氏数据把中文转换为拼音，并可选用 Jieba 分词。运行时同时注册 <code>pinyin</code> 与 <code>$pinyin</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.1</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "pinyin",
@@ -39,14 +39,14 @@
             {
               "textRaw": "拼音风格",
               "name": "拼音风格",
-              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.STYLE_NORMAL</code></td>\n<td><code>0</code></td>\n<td>不标声调</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td><code>1</code></td>\n<td>使用带声调的韵母，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE2</code></td>\n<td><code>2</code></td>\n<td>在拼音末尾加入声调数字</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_INITIALS</code></td>\n<td><code>3</code></td>\n<td>只保留声母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_FIRST_LETTER</code></td>\n<td><code>4</code></td>\n<td>只保留首字母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TO3NE</code></td>\n<td><code>5</code></td>\n<td>使用源码兼容的数字声调形式</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>暴露值</th>\n<th style=\"text-align:right\">内部编号</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.STYLE_NORMAL</code></td>\n<td><code>PinyinStyle.NORMAL</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>0</code></td>\n<td>不标声调</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td><code>PinyinStyle.TONE</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>1</code></td>\n<td>使用带声调的韵母，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE2</code></td>\n<td><code>PinyinStyle.TONE2</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>2</code></td>\n<td>在拼音末尾加入声调数字</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_INITIALS</code></td>\n<td><code>PinyinStyle.INITIALS</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>3</code></td>\n<td>只保留声母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_FIRST_LETTER</code></td>\n<td><code>PinyinStyle.FIRST_LETTER</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>4</code></td>\n<td>只保留首字母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TO3NE</code></td>\n<td><code>PinyinStyle.TO3NE</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>5</code></td>\n<td>使用源码兼容的数字声调形式</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "拼音风格"
             },
             {
               "textRaw": "转换模式",
               "name": "转换模式",
-              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td><code>0</code></td>\n<td>普通转换，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_SURNAME</code></td>\n<td><code>1</code></td>\n<td>使用单姓与复姓字典</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACENAME</code></td>\n<td><code>2</code></td>\n<td>地名模式兼容名称</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACE_NAME</code></td>\n<td><code>2</code></td>\n<td>与 <code>MODE_PLACENAME</code> 相同</td>\n</tr>\n</tbody>\n</table>\n<p>固定源码只对姓氏模式提供专门分支；地名模式目前沿用普通转换流程。</p>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>暴露值</th>\n<th style=\"text-align:right\">内部编号</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td><code>PinyinMode.NORMAL</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>0</code></td>\n<td>普通转换，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_SURNAME</code></td>\n<td><code>PinyinMode.SURNAME</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>1</code></td>\n<td>使用单姓与复姓字典</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACENAME</code></td>\n<td><code>PinyinMode.PLACE_NAME</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>2</code></td>\n<td>地名模式兼容名称</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACE_NAME</code></td>\n<td><code>PinyinMode.PLACE_NAME</code> 枚举对象</td>\n<td style=\"text-align:right\"><code>2</code></td>\n<td>与 <code>MODE_PLACENAME</code> 相同</td>\n</tr>\n</tbody>\n</table>\n<p>固定源码只对姓氏模式提供专门分支；地名模式目前沿用普通转换流程。</p>\n<p>这些属性分别暴露 Kotlin <code>PinyinStyle 枚举对象</code> 与 <code>PinyinMode 枚举对象</code>，不是 JavaScript 数字。选项也可使用枚举名称字符串：风格合法名称为 <code>NORMAL</code>、<code>TONE</code>、<code>TONE2</code>、<code>TO3NE</code>、<code>INITIALS</code>、<code>FIRST_LETTER</code>；模式合法名称为 <code>NORMAL</code>、<code>SURNAME</code>、<code>PLACE_NAME</code>、<code>PLACENAME</code>。名称转换不区分大小写。</p>\n<p>普通 JavaScript 数字（包括 <code>0</code>、<code>1</code>、<code>2</code> 等）在 Rhino 2.0 中不是 Kotlin <code>Int</code>，不能作为合法 <code>style</code> 或 <code>mode</code>；请传公开枚举对象或名称字符串。底层仅为 Java 互操作保留 <code>Int</code> 编号分支，不应据此把脚本数字写成公开契约。</p>\n",
               "type": "module",
               "displayName": "转换模式"
             }
@@ -57,7 +57,7 @@
         {
           "textRaw": "数据、性能与副作用",
           "name": "数据、性能与副作用",
-          "desc": "<ul>\n<li>单字和词组查询使用应用内置 SQLite 字典；首次访问会延迟初始化数据库。</li>\n<li><code>segment: true</code> 会加载 Jieba 分词数据，首次调用的时间和内存开销更高。</li>\n<li>转换过程只读取字典，不修改文件或系统设置。</li>\n<li>姓氏模式会优先使用单姓与复姓表；普通模式优先使用词组字典，未命中时退回逐字查询。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>单字和词组查询使用应用内置 SQLite 字典；首次访问会延迟初始化数据库。</li>\n<li><code>segment: true</code> 会加载 Jieba 分词数据，首次调用的时间和内存开销更高。</li>\n<li>转换过程只读取字典，不修改文件或系统设置。</li>\n<li>姓氏模式会优先使用单姓与复姓表；普通模式优先使用词组字典，未命中时退回逐字查询。</li>\n<li>所有公开调用都在当前线程同步完成，不请求 Android 运行时权限；字典数据库和分词器按应用生命周期延迟初始化，返回值不需要关闭。</li>\n</ul>\n",
           "type": "module",
           "displayName": "数据、性能与副作用"
         }
@@ -101,7 +101,7 @@
               ]
             }
           ],
-          "desc": "<p>选项：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>style</code></td>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td>风格常量、对应整数或枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>mode</code></td>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td>模式常量、对应整数或枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>segment</code></td>\n<td><code>false</code></td>\n<td>是否先用 Jieba 分词</td>\n</tr>\n<tr>\n<td><code>heteronym</code></td>\n<td><code>false</code></td>\n<td>是否保留多音字的多个读音</td>\n</tr>\n<tr>\n<td><code>group</code></td>\n<td><code>false</code></td>\n<td>将同一词组中各字的候选读音组合成一组完整字符串</td>\n</tr>\n</tbody>\n</table>\n<p><code>style</code> 或 <code>mode</code> 的整数、名称无效时会抛出参数错误。非中文连续片段会原样作为一个结果项保留。</p>\n<p>返回数组额外绑定了 <code>compact()</code> 方法，可把各位置的候选项展开为完整组合；它与模块级的 <code>pinyin.compact()</code> 不是同一个实现。</p>\n<pre><code class=\"lang-js\">let result = pinyin.convert(&#39;重庆 A&#39;, {\n    style: pinyin.STYLE_TONE2,\n    segment: true,\n    heteronym: true,\n});\n\nconsole.log(JSON.stringify(result));\nconsole.log(JSON.stringify(result.compact()));\n</code></pre>\n"
+          "desc": "<p>选项：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>style</code></td>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td>公开 <code>PinyinStyle</code> 枚举对象，或合法枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>mode</code></td>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td>公开 <code>PinyinMode</code> 枚举对象，或合法枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>segment</code></td>\n<td><code>false</code></td>\n<td>是否先用 Jieba 分词</td>\n</tr>\n<tr>\n<td><code>heteronym</code></td>\n<td><code>false</code></td>\n<td>是否保留多音字的多个读音</td>\n</tr>\n<tr>\n<td><code>group</code></td>\n<td><code>false</code></td>\n<td>将同一词组中各字的候选读音组合成一组完整字符串</td>\n</tr>\n</tbody>\n</table>\n<p><code>style</code> 或 <code>mode</code> 的对象类型、名称无效时会抛出参数错误。非中文连续片段会原样作为一个结果项保留。</p>\n<p>返回数组额外绑定了 <code>compact()</code> 方法，可把各位置的候选项展开为完整组合；它与模块级的 <code>pinyin.compact()</code> 不是同一个实现。</p>\n<pre><code class=\"lang-js\">let result = pinyin.convert(&#39;重庆 A&#39;, {\n    style: pinyin.STYLE_TONE2,\n    mode: &#39;NORMAL&#39;,\n    segment: true,\n    heteronym: true,\n});\n\nlet surname = pinyin.convert(&#39;欧阳&#39;, {\n    style: &#39;TONE2&#39;,\n    mode: &#39;SURNAME&#39;,\n});\n\nconsole.log(JSON.stringify(result));\nconsole.log(JSON.stringify(result.compact()));\n</code></pre>\n"
         },
         {
           "textRaw": "pinyin.simple(text, numericTone?, segment?)",
@@ -185,8 +185,32 @@
           "textRaw": "pinyin.compare(left, right?)",
           "type": "method",
           "name": "compare",
-          "desc": "<p>当前固定源码实现始终返回空字符串，没有执行拼音比较。不要把它作为排序比较器。</p>\n",
           "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "参数数量：**1 至 2 个参数**；`left` 必填，`right` 可省略，当前实现不会读取或转换参数值 ",
+                  "name": "参数数量：**1",
+                  "desc": "至 2 个参数**；`left` 必填，`right` 可省略，当前实现不会读取或转换参数值"
+                },
+                {
+                  "textRaw": "返回 {string} - 始终为空字符串 `\"\"` ",
+                  "name": "返回",
+                  "type": "string",
+                  "desc": "始终为空字符串 `\"\"`"
+                },
+                {
+                  "textRaw": "异常 - 只有参数数量不在 1 至 2 时由参数守卫抛出 ",
+                  "name": "异常",
+                  "desc": "只有参数数量不在 1 至 2 时由参数守卫抛出"
+                },
+                {
+                  "textRaw": "权限 / 线程 / 生命周期 / 副作用 - 当前线程同步纯计算，不访问字典、不要求权限且不持有资源 ",
+                  "name": "权限",
+                  "desc": "/ 线程 / 生命周期 / 副作用 - 当前线程同步纯计算，不访问字典、不要求权限且不持有资源"
+                }
+              ]
+            },
             {
               "params": [
                 {
@@ -197,14 +221,39 @@
                 }
               ]
             }
-          ]
+          ],
+          "desc": "<p>当前固定源码没有执行拼音比较。不要把它作为排序比较器。</p>\n"
         },
         {
           "textRaw": "pinyin.compact(value, options?)",
           "type": "method",
           "name": "compact",
-          "desc": "<p>当前固定源码中的模块级方法始终返回空字符串。需要组合 <code>pinyin.convert</code> 的候选结果时，应调用返回数组自带的 <code>result.compact()</code>。</p>\n",
           "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "参数数量：**1 至 2 个参数**；`value` 必填，`options` 可省略，当前实现不会读取参数值 ",
+                  "name": "参数数量：**1",
+                  "desc": "至 2 个参数**；`value` 必填，`options` 可省略，当前实现不会读取参数值"
+                },
+                {
+                  "textRaw": "返回 {string} - 始终为空字符串 `\"\"` ",
+                  "name": "返回",
+                  "type": "string",
+                  "desc": "始终为空字符串 `\"\"`"
+                },
+                {
+                  "textRaw": "异常 - 只有参数数量不在 1 至 2 时由参数守卫抛出 ",
+                  "name": "异常",
+                  "desc": "只有参数数量不在 1 至 2 时由参数守卫抛出"
+                },
+                {
+                  "textRaw": "权限 / 线程 / 生命周期 / 副作用 - 当前线程同步纯计算，不访问字典、不要求权限且不持有资源 ",
+                  "name": "权限",
+                  "desc": "/ 线程 / 生命周期 / 副作用 - 当前线程同步纯计算，不访问字典、不要求权限且不持有资源"
+                }
+              ]
+            },
             {
               "params": [
                 {
@@ -215,7 +264,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "desc": "<p>需要组合 <code>pinyin.convert</code> 的候选结果时，应调用返回数组自带的 <code>result.compact()</code>；它绑定到结果数组并执行真正的候选组合。</p>\n"
         }
       ],
       "type": "module",

@@ -2,6 +2,8 @@
 
 **自 v6.7.0 起提供。**
 
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
 ## formatter
 
 Formatter 是 Monkey King 的数据格式化模块。目前脚本 API 只暴露缩写入口 `fmt` 与 `$fmt`，不存在名为 `formatter` 的全局变量。

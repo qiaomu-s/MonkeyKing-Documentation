@@ -2,6 +2,8 @@
 
 **自 v6.6.0 起提供。**
 
+本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+
 NanoID 使用 `java.security.SecureRandom` 生成适合 URL 使用的随机标识符。默认长度为 21，字符来自一个包含大小写字母、数字、连字符和下划线的 64 字符字母表。
 
 ## nanoid
