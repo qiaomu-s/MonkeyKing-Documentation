@@ -53,7 +53,13 @@ if (!continuation.enabled) {
 
 `scope` 只有在它是 Rhino `Scriptable` 时才会采用；其他值按未提供处理并回退到顶级作用域。
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const creator = continuation.create(global);
 setTimeout(() => creator.resume('ready'), 20);
 console.log(creator.await()); // ready
@@ -70,7 +76,13 @@ console.log(creator.await()); // ready
 - **异常**：参数不是 Promise-like 或 continuation 未启用时抛出异常；nullish 拒绝会使 `resumeError` 自身抛出，等待点可能一直保持等待
 - **生命周期 / 副作用**：暂停当前 JavaScript continuation，直至 Promise 完成
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const value = continuation.await(Promise.resolve(21));
 console.log(value * 2); // 42
 
@@ -89,7 +101,13 @@ console.log(recovered.message); // failed；此值没有在等待点抛出
 - **异常**：计时器参数无效或 continuation 未启用时抛出异常
 - **生命周期 / 副作用**：注册一次性计时器并暂停当前 continuation
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const startedAt = Date.now();
 continuation.delay(20);
 console.log(Date.now() >= startedAt + 20); // true
@@ -111,7 +129,13 @@ console.log(Date.now() >= startedAt + 20); // true
 - **异常**：未启用 continuation 时抛出 `IllegalStateException`；nullish 错误会在 `resumeError` 调用点抛出并可能让此等待点一直保持等待
 - **线程 / 生命周期**：暂停当前 continuation；同一创建器只应完成一次
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const creator = continuation.create();
 setTimeout(() => creator.resume({ ok: true }), 20);
 console.log(creator.await().ok); // true
@@ -128,7 +152,13 @@ console.log(creator.await().ok); // true
 - **异常**：重复恢复或恢复已经失效的 continuation 时，底层运行时可能抛出异常
 - **线程 / 副作用**：以成功结果恢复等待中的调用栈；可由计时器或异步回调触发
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const creator = continuation.create();
 setTimeout(() => creator.resume(7), 20);
 console.log(creator.await()); // 7
@@ -145,7 +175,13 @@ console.log(creator.await()); // 7
 - **异常**：error 为 nullish 或 continuation 已恢复时抛出异常；nullish 检查发生在恢复之前
 - **线程 / 副作用**：以错误值恢复等待中的调用栈；固定提交不会把非 nullish 错误重新抛到等待点，而是记录 / Toast 后把它作为普通恢复值返回
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const creator = continuation.create();
 setTimeout(() => creator.resumeError(new Error('request failed')), 20);
 const recovered = creator.await();

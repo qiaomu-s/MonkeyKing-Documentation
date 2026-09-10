@@ -381,7 +381,13 @@ Promise.resolve('ok').finally(() => console.log('finished'));
 
 固定提交的 `Promise#await()` 复用 `continuation.await()`：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 `await` 语义。
 
+以下等待示例仅适用于已启用 continuation 特性的脚本。
+
 ```js
+if (!continuation.enabled) {
+    throw new Error('当前脚本未启用 continuation');
+}
+
 const value = Promise.resolve(42).await();
 console.log(value); // 42
 

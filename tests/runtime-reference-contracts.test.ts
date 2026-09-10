@@ -34,7 +34,7 @@ describe('fixed-source runtime reference contracts', () => {
     const source = markdown('docs/api/system/notice.md')
 
     expect(source).toContain('提交给 NotificationManager 之前同步抛出 RuntimeException')
-    expect(source).toContain('ensureEnabled() 会先尝试打开系统通知设置页，再抛出异常')
+    expect(source).toContain('`ensureEnabled()` 会先尝试打开系统通知设置页，再抛出异常')
     expect(source).toContain('设置页启动失败会被 startSafely 吞掉')
     expect(source).toContain('notice.builder 与 notice.getBuilder() 相同')
     expect(source).toContain('缺少 channelId 时回退到当前默认渠道 ID')

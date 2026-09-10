@@ -439,7 +439,7 @@ if (!notice.isEnabled()) {
 
 确保 Monkey King 的通知未被阻止 (not blocked).
 
-当通知被阻止时，`ensureEnabled() 会先尝试打开系统通知设置页，再抛出异常`。因此它不是纯检查接口；只想查询状态时应使用 `isEnabled()`。
+当通知被阻止时，`ensureEnabled()` 会先尝试打开系统通知设置页，再抛出异常。因此它不是纯检查接口；只想查询状态时应使用 `isEnabled()`。
 
 ```js
 try {
