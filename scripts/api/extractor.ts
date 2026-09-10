@@ -85,6 +85,15 @@ const publicMemberAnnotationNames = new Set([
   'ScriptVariable',
 ])
 
+const kotlinIdentifierSource =
+  '(?:[A-Za-z_][A-Za-z0-9_]*|`[^`\\r\\n]+`)'
+
+function normalizeKotlinIdentifier(value: string): string {
+  return value.startsWith('`') && value.endsWith('`')
+    ? value.slice(1, -1)
+    : value
+}
+
 function compareText(left: string, right: string): number {
   return left.localeCompare(right, 'en')
 }
@@ -128,12 +137,14 @@ function referencedNames(expression: string): string[] {
   const references: Array<{ value: string; offset: number }> = [
     ...stringLiterals(code),
   ]
-  const functionPattern =
-    /::([A-Za-z_][A-Za-z0-9_]*)\.name(\.lowercase\(\))?/g
+  const functionPattern = new RegExp(
+    `::(${kotlinIdentifierSource})\\.name(\\.lowercase\\(\\))?`,
+    'g',
+  )
   let match: RegExpExecArray | null
 
   while ((match = functionPattern.exec(code)) !== null) {
-    const raw = match[1]
+    const raw = normalizeKotlinIdentifier(match[1])
     references.push({
       value: match[2] ? raw.toLowerCase() : raw,
       offset: match.index,
@@ -348,16 +359,43 @@ function explicitKey(
 
 function parseDeclarationHints(path: string, source: string): DeclarationHint[] {
   const hints: DeclarationHint[] = []
-  const marker = /\/\/\s*@(Signature|Overload)\s+(.+)$/gm
+  const marker = /^[ \t]*\/\/[ \t]*@(Signature|Overload)(?:[ \t]+([^\r\n]*))?[ \t]*$/gm
   let match: RegExpExecArray | null
 
   while ((match = marker.exec(source)) !== null) {
-    hints.push({
-      path,
-      line: lineNumberAt(source, match.index),
-      kind: match[1] === 'Signature' ? 'signature' : 'overload',
-      value: match[2].trim(),
-    })
+    const kind = match[1] === 'Signature' ? 'signature' : 'overload'
+    const inline = match[2]?.trim()
+    if (inline) {
+      hints.push({
+        path,
+        line: lineNumberAt(source, match.index),
+        kind,
+        value: inline,
+      })
+      continue
+    }
+
+    let cursor = marker.lastIndex
+    if (source[cursor] === '\r') cursor += 1
+    if (source[cursor] === '\n') cursor += 1
+    while (cursor < source.length) {
+      const lineEnd = source.indexOf('\n', cursor)
+      const end = lineEnd < 0 ? source.length : lineEnd
+      const comment = /^[ \t]*\/\/[ \t]*(.*?)[ \t]*\r?$/.exec(
+        source.slice(cursor, end),
+      )
+      if (!comment || /^@(Signature|Overload)\b/.test(comment[1])) break
+      const value = comment[1].trim()
+      if (!value) break
+      hints.push({
+        path,
+        line: lineNumberAt(source, cursor),
+        kind,
+        value,
+      })
+      cursor = lineEnd < 0 ? source.length : lineEnd + 1
+    }
+    marker.lastIndex = cursor
   }
 
   const typescript = /TypeScript Declarations\s*:/g
@@ -375,15 +413,74 @@ function parseDeclarationHints(path: string, source: string): DeclarationHint[] 
 function nextDeclaredMember(masked: string, start: number): {
   readonly name: string
   readonly offset: number
+  readonly public: boolean
 } | null {
-  const tail = masked.slice(start, start + 900)
-  const kotlin = /\b(?:fun|val|var|class|object|interface)\s+(?:<[^>]+>\s*)?([A-Za-z_][A-Za-z0-9_]*)/g
-  const java = /\b(?:public|protected|private)\s+(?:(?:static|final|abstract|synchronized|native)\s+)*(?:[A-Za-z_][A-Za-z0-9_$.<>?\[\], ]*\s+)([A-Za-z_][A-Za-z0-9_]*)\s*(?:\(|=|;)/g
-  const candidates = [kotlin.exec(tail), java.exec(tail)]
-    .filter((candidate): candidate is RegExpExecArray => candidate !== null)
-    .sort((left, right) => left.index - right.index)
-  const match = candidates[0]
-  return match ? { name: match[1], offset: start + match.index } : null
+  let declarationStart = start
+  const skipWhitespace = (): void => {
+    while (/\s/.test(masked[declarationStart] ?? '')) declarationStart += 1
+  }
+  const skipParenthesizedArguments = (): boolean => {
+    if (masked[declarationStart] !== '(') return true
+    let depth = 0
+    for (let index = declarationStart; index < masked.length; index += 1) {
+      if (masked[index] === '(') depth += 1
+      if (masked[index] !== ')') continue
+      depth -= 1
+      if (depth === 0) {
+        declarationStart = index + 1
+        return true
+      }
+    }
+    return false
+  }
+
+  skipWhitespace()
+  if (!skipParenthesizedArguments()) return null
+  skipWhitespace()
+  while (masked[declarationStart] === '@') {
+    const annotation = /^@(?:[A-Za-z_][A-Za-z0-9_]*:)?[A-Za-z_][A-Za-z0-9_.]*/.exec(
+      masked.slice(declarationStart),
+    )
+    if (!annotation) return null
+    declarationStart += annotation[0].length
+    skipWhitespace()
+    if (!skipParenthesizedArguments()) return null
+    skipWhitespace()
+  }
+
+  const tail = masked.slice(declarationStart, declarationStart + 900)
+  const kotlin = new RegExp(
+    `^(?:(public|private|protected|internal)\\s+)?` +
+      `(?:(?:override|open|final|abstract|sealed|data|enum|annotation|value|suspend|operator|infix|tailrec|external|inline|const|lateinit)\\s+)*` +
+      `(?:fun|val|var|class|object|interface)\\s+(?:<[^>]+>\\s*)?(${kotlinIdentifierSource})`,
+  )
+  const java = /^(public|protected|private)\s+(?:(?:static|final|abstract|synchronized|native)\s+)*(?:[A-Za-z_][A-Za-z0-9_$.<>?\[\], ]*\s+)([A-Za-z_][A-Za-z0-9_]*)\s*(?:\(|=|;)/
+  const kotlinMatch = kotlin.exec(tail)
+  const javaMatch = java.exec(tail)
+  const candidates = [
+    ...(kotlinMatch
+      ? [{
+          match: kotlinMatch,
+          name: normalizeKotlinIdentifier(kotlinMatch[2]),
+          public: !['private', 'protected', 'internal'].includes(kotlinMatch[1] ?? ''),
+        }]
+      : []),
+    ...(javaMatch
+      ? [{
+          match: javaMatch,
+          name: javaMatch[2],
+          public: javaMatch[1] === 'public',
+        }]
+      : []),
+  ].sort((left, right) => left.match.index - right.match.index)
+  const candidate = candidates[0]
+  return candidate
+    ? {
+        name: candidate.name,
+        offset: declarationStart + candidate.match.index,
+        public: candidate.public,
+      }
+    : null
 }
 
 function parseMethodMetadata(path: string, source: string): MethodMetadata {
@@ -400,7 +497,7 @@ function parseMethodMetadata(path: string, source: string): MethodMetadata {
     const annotation = match[1]
     if (!annotationNames.has(annotation)) continue
     const declaration = nextDeclaredMember(masked, annotationPattern.lastIndex)
-    if (!declaration) continue
+    if (!declaration?.public) continue
     const sourceLocation = location(path, source, declaration.offset)
     const existing = grouped.get(declaration.name) ?? {
       annotations: new Set<string>(),
@@ -429,8 +526,11 @@ function parseMethodMetadata(path: string, source: string): MethodMetadata {
   const overloads = new Map<string, string[]>()
   for (const hint of hints) {
     if (hint.kind === 'typescript') continue
-    const name = hint.value.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*\(/)?.[1]
-    if (!name) continue
+    const rawName = new RegExp(`^(${kotlinIdentifierSource})\\s*\\(`).exec(
+      hint.value,
+    )?.[1]
+    if (!rawName) continue
+    const name = normalizeKotlinIdentifier(rawName)
     const target = hint.kind === 'signature' ? signatures : overloads
     const values = target.get(name) ?? []
     values.push(hint.value)

@@ -32,6 +32,23 @@ describe('API source lexer', () => {
     expect(masked).not.toContain('stillCommented')
   })
 
+  test('preserves Kotlin backtick identifiers as code', async () => {
+    const lexer = await loadLexer()
+    expect(lexer, 'scripts/api/lexer.ts must exist').not.toBeNull()
+    if (!lexer) return
+
+    const source = [
+      'val functions = listOf(::`var`.name, ::`as`.name)',
+      '@ScriptInterface',
+      'fun `var`() = Unit',
+      'val text = "`as` is only text here"',
+    ].join('\n')
+
+    expect(lexer.maskNonCode(source)).toContain('::`var`.name')
+    expect(lexer.maskNonCode(source)).toContain('fun `var`()')
+    expect(lexer.maskComments(source)).toContain('::`as`.name')
+  })
+
   test('finds balanced ranges through nested calls', async () => {
     const lexer = await loadLexer()
     expect(lexer, 'scripts/api/lexer.ts must exist').not.toBeNull()

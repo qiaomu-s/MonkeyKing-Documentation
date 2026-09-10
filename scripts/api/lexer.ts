@@ -11,7 +11,7 @@ export function maskNonCode(source: string): string {
   const output = source.split('')
   let index = 0
   let blockCommentDepth = 0
-  let quote: "'" | '"' | '`' | null = null
+  let quote: "'" | '"' | null = null
   let rawString = false
 
   const mask = (position: number): void => {
@@ -98,7 +98,7 @@ export function maskNonCode(source: string): string {
       continue
     }
 
-    if (current === "'" || current === '"' || current === '`') {
+    if (current === "'" || current === '"') {
       quote = current
       mask(index)
       index += 1
@@ -120,7 +120,7 @@ export function maskComments(source: string): string {
   const output = source.split('')
   let index = 0
   let blockCommentDepth = 0
-  let quote: "'" | '"' | '`' | null = null
+  let quote: "'" | '"' | null = null
   let rawString = false
 
   const mask = (position: number): void => {
@@ -197,7 +197,7 @@ export function maskComments(source: string): string {
       continue
     }
 
-    if (current === "'" || current === '"' || current === '`') {
+    if (current === "'" || current === '"') {
       quote = current
     }
     index += 1

@@ -11,6 +11,7 @@ class Alpha(private val scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntim
 
     override val selfAssignmentFunctions = listOf(
         ::run.name,
+        ::`var`.name,
         // ::commentedOut.name,
         (::fetch.name to listOf(::fetch.name, "get")) to AS_GLOBAL,
         ::shared.name to AS_GLOBAL,
@@ -37,6 +38,18 @@ class Alpha(private val scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntim
     // @Signature run(value: string): string;
     // @Overload run(value: number): number;
     fun run(scriptRuntime: ScriptRuntime, args: Array<out Any?>) = args
+
+    @JvmStatic
+    @ScriptInterface
+    // @Signature `var`(value: string): string;
+    // @Overload
+    // `var`(value: number): number;
+    fun `var`(value: Any?) = value
+
+    @ScriptInterface
+    private fun privateAnnotated() = Unit
+
+    fun publicAfterPrivateAnnotation() = Unit
 
     @JvmStatic
     @RhinoRuntimeFunctionInterface

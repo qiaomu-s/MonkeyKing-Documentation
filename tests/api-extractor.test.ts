@@ -106,6 +106,13 @@ describe('API manifest extractor', () => {
       signatures: ['run(value: string): string;'],
       overloads: ['run(value: number): number;'],
     })
+    expect(symbols.get('alpha.var')).toMatchObject({
+      kind: 'function',
+      annotations: ['ScriptInterface'],
+      signatures: ['`var`(value: string): string;'],
+      overloads: ['`var`(value: number): number;'],
+    })
+    expect(symbols.has('alpha.publicAfterPrivateAnnotation')).toBe(false)
     expect(symbols.get('alias:alpha.get')).toMatchObject({
       kind: 'alias',
       canonicalId: 'alpha.fetch',
@@ -274,6 +281,10 @@ describe('API manifest extractor', () => {
       kind: 'function',
       annotations: ['RhinoStandardFunctionInterface'],
     })
+    expect(symbols.has('alpha.Result.secret')).toBe(false)
+    expect(symbols.has('alpha.Result.visibleButUnannotated')).toBe(false)
+    expect(symbols.has('alpha.Result.companionLeak')).toBe(false)
+    expect(symbols.has('alpha.Result.afterCompanion')).toBe(false)
     expect(symbols.get('dynamic:alpha.Result.fields')).toMatchObject({
       owner: 'alpha.Result',
       name: 'fields',
