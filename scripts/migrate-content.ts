@@ -701,9 +701,14 @@ export function preprocessMarkdown(
   markdown: string,
   context: Pick<MigrationContext, 'current'>,
 ): string {
+  const brandContext = {
+    current: {
+      legacySource: context.current.legacySource ?? context.current.source,
+    },
+  }
   return normalizeMarkdownSyntax(
     normalizeTrailingWhitespace(
-      applyBrandPolicy(repairKnownContentDefects(markdown, context), context),
+      applyBrandPolicy(repairKnownContentDefects(markdown, context), brandContext),
     ),
   )
 }
@@ -982,9 +987,12 @@ function validateApiLayout(
   if (!existsSync(apiDirectory)) return
 
   const expectedMarkdownNames = new Set(
-    [...entries.map(({ legacySource }) => legacySource), ...retiredSources].map(
-      (path) => basename(path),
-    ),
+    [
+      ...entries.flatMap(({ legacySource }) =>
+        legacySource === undefined ? [] : [legacySource],
+      ),
+      ...retiredSources,
+    ].map((path) => basename(path)),
   )
   const allowedFiles = new Set([
     ...expectedMarkdownNames,
@@ -1178,12 +1186,18 @@ export async function migrateContent(
     : undefined
 
   const migrationSources = entries.map((entry) => {
-    const legacyPath = resolveRepoPath(rootDirectory, entry.legacySource)
+    const legacyPath = entry.legacySource
+      ? resolveRepoPath(rootDirectory, entry.legacySource)
+      : undefined
     const canonicalPath = resolveRepoPath(rootDirectory, entry.source)
     const inputPath = existsSync(canonicalPath) ? canonicalPath : legacyPath
-    if (!existsSync(inputPath) || !statSync(inputPath).isFile()) {
+    if (
+      inputPath === undefined ||
+      !existsSync(inputPath) ||
+      !statSync(inputPath).isFile()
+    ) {
       throw new Error(
-        `Missing migration input for ${entry.id}: ${entry.legacySource} or ${entry.source}`,
+        `Missing migration input for ${entry.id}: ${entry.legacySource ? `${entry.legacySource} or ` : ''}${entry.source}`,
       )
     }
     return {
@@ -1210,7 +1224,11 @@ export async function migrateContent(
       entries,
       headingIndex,
     })
-    assertAllowedLegacyBrands(markdown, { current: source.entry })
+    assertAllowedLegacyBrands(markdown, {
+      current: {
+        legacySource: source.entry.legacySource ?? source.entry.source,
+      },
+    })
     return { entry: source.entry, markdown }
   })
 

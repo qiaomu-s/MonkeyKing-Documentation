@@ -1,0 +1,111 @@
+{
+  "source": "..\\docs\\api\\utilities\\converter.md",
+  "modules": [
+    {
+      "textRaw": "Converter / cvt",
+      "name": "converter_/_cvt",
+      "desc": "<p><strong>自 v6.7.0 起提供。</strong></p>\n",
+      "modules": [
+        {
+          "textRaw": "converter",
+          "name": "converter",
+          "desc": "<p>Converter 是 Monkey King 的数据转换模块。目前脚本 API 只暴露缩写入口 <code>cvt</code> 与 <code>$cvt</code>，不存在名为 <code>converter</code> 的全局变量。</p>\n<p>当前公开的转换器只有 <code>bytes</code>，用于在字节单位之间换算并返回数值。</p>\n",
+          "type": "module",
+          "displayName": "converter"
+        },
+        {
+          "textRaw": "cvt",
+          "name": "cvt",
+          "modules": [
+            {
+              "textRaw": "cvt",
+              "name": "cvt",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>object</code></li>\n<li><strong>返回值</strong>：无；<code>cvt</code> 本身不可调用</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>全局转换器对象。<code>$cvt</code> 是同一对象的别名。</p>\n<pre><code class=\"lang-js\">console.log($cvt === cvt); // true\nconsole.log(typeof cvt.bytes); // &quot;function&quot;\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt"
+            },
+            {
+              "textRaw": "cvt.bytes.UNITS",
+              "name": "cvt.bytes.units",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;KMGTPEZYRQ&quot;</code></li>\n</ul>\n<p>按从小到大的顺序列出可用单位前缀，即 K、M、G、T、P、E、Z、Y、R、Q。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.UNITS); // KMGTPEZYRQ\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.UNITS"
+            },
+            {
+              "textRaw": "cvt.bytes.AUTO",
+              "name": "cvt.bytes.auto",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;AUTO&quot;</code></li>\n</ul>\n<p>表示自动选择目标单位。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.AUTO); // AUTO\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.AUTO"
+            },
+            {
+              "textRaw": "cvt.bytes.IEC_DIV",
+              "name": "cvt.bytes.iec_div",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1024</code></li>\n</ul>\n<p>IEC 二进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.IEC_DIV); // 1024\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.IEC_DIV"
+            },
+            {
+              "textRaw": "cvt.bytes.SI_DIV",
+              "name": "cvt.bytes.si_div",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1000</code></li>\n</ul>\n<p>SI 十进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.SI_DIV); // 1000\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.SI_DIV"
+            },
+            {
+              "textRaw": "cvt.bytes.strict(source, arg1?, arg2?, arg3?)",
+              "name": "cvt.bytes.strict(source,_arg1?,_arg2?,_arg3?)",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前固定源码应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用严格单位规则。<code>KB</code>、<code>MB</code> 等 SI 单位以 1000 为基数，<code>KiB</code>、<code>MiB</code> 等 IEC 单位以 1024 为基数。选项对象中不得再提供非空的 <code>strict</code>。</p>\n<p>可用形式为 <code>strict(source, options)</code>、<code>strict(source, toUnit, options)</code>、<code>strict(source, fromUnit, toUnit, options)</code>。固定源码的纯位置参数分支会把模式布尔值传入 <code>strict</code> 选项槽，继而触发空值校验；因此 <code>strict(source)</code> 或 <code>strict(source, fromUnit, toUnit)</code> 当前会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.strict(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1000\nconsole.log(cvt.bytes.strict(1, { fromUnit: &#39;KiB&#39;, toUnit: &#39;B&#39; })); // 1024\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.strict(source, arg1?, arg2?, arg3?)"
+            },
+            {
+              "textRaw": "cvt.bytes.loose(source, arg1?, arg2?, arg3?)",
+              "name": "cvt.bytes.loose(source,_arg1?,_arg2?,_arg3?)",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前固定源码应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用宽松单位规则。单位不区分 SI 与 IEC 标识，<code>K</code>、<code>KB</code>、<code>KiB</code> 会统一按 1024 进位。选项对象中不得再提供非空的 <code>strict</code>。可用形式与 <code>strict</code> 相同；纯位置参数分支在当前固定源码中同样会触发空值校验异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.loose(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1024\nconsole.log(cvt.bytes.loose(&#39;2 MiB&#39;, { toUnit: &#39;KiB&#39; })); // 2048\n</code></pre>\n",
+              "type": "module",
+              "displayName": "cvt.bytes.loose(source, arg1?, arg2?, arg3?)"
+            },
+            {
+              "textRaw": "单位、异常与执行特性",
+              "name": "单位、异常与执行特性",
+              "desc": "<ul>\n<li>单位名称不区分大小写；基础单位为 <code>B</code>，前缀范围为 <code>K</code> 至 <code>Q</code>。</li>\n<li><code>source</code> 字符串只接受非负十进制数、可选空白和可选单位；负数、<code>NaN</code>、非法文本会抛出异常。</li>\n<li><code>source</code> 内嵌单位与 <code>fromUnit</code> 同时出现且含义冲突时会抛出异常。</li>\n<li><code>fractionDigits</code> 为负数、<code>autoCarryThreshold</code> 非正数、非 <code>AUTO</code> 目标使用自定义进位阈值、单位无效或参数个数不在 1 至 4 之间时会抛出异常。</li>\n<li>本模块只进行同步内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。</li>\n</ul>\n",
+              "type": "module",
+              "displayName": "单位、异常与执行特性"
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "cvt.bytes(source, arg1?, arg2?, arg3?)",
+              "type": "method",
+              "name": "bytes",
+              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>source</strong> { <code>number | string</code> } - 非负字节值。字符串可同时携带单位，例如 <code>&quot;1.5 MiB&quot;</code></li>\n<li><strong>arg1 / arg2 / arg3</strong> - 按下方重载表解释</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> } - 换算结果；超出 JavaScript 安全整数范围时保留为高精度 Java 大数对象</li>\n<li><strong>异常</strong>：参数数量、数值、单位或选项不合法时抛出参数异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>默认从 <code>B</code> 转换到 <code>AUTO</code>，保留 2 位小数，自动进位阈值为 1024，并使用宽松单位规则。</p>\n<p>可用调用形式：</p>\n<table>\n<thead>\n<tr>\n<th>调用形式</th>\n<th>含义</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>cvt.bytes(source)</code></td>\n<td>使用全部默认值</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, options)</code></td>\n<td>使用选项对象</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit)</code></td>\n<td>指定目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fractionDigits)</code></td>\n<td>指定小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit)</code></td>\n<td>指定源单位和目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, options)</code></td>\n<td>指定目标单位并补充选项</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, fractionDigits)</code></td>\n<td>指定目标单位和小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, options)</code></td>\n<td>完整选项形式</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, fractionDigits)</code></td>\n<td>完整数值形式</td>\n</tr>\n</tbody>\n</table>\n<p>为与 <code>fmt.bytes</code> 的位置参数保持兼容，第二、第三或第四参数位也接受布尔值；该布尔值不改变 <code>cvt.bytes</code> 的数值换算。需要选择严格模式时应使用 <code>strict</code> 选项或 <code>cvt.bytes.strict</code>。</p>\n<p>选项对象支持：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>类型</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>fromUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;B&quot;</code></td>\n<td>源单位；source 已携带单位时不可与其冲突</td>\n</tr>\n<tr>\n<td><code>toUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;AUTO&quot;</code></td>\n<td>目标单位，或 <code>cvt.bytes.AUTO</code></td>\n</tr>\n<tr>\n<td><code>fractionDigits</code></td>\n<td><code>number</code></td>\n<td><code>2</code></td>\n<td>转换并舍入为非负整数，表示结果保留的小数位数</td>\n</tr>\n<tr>\n<td><code>autoCarryThreshold</code></td>\n<td><code>number</code></td>\n<td><code>1024</code></td>\n<td>转换并舍入为正整数，作为自动提前进位阈值；仅能与 <code>AUTO</code> 同用</td>\n</tr>\n<tr>\n<td><code>strict</code></td>\n<td><code>boolean</code></td>\n<td><code>false</code></td>\n<td>是否区分 SI 与 IEC 单位</td>\n</tr>\n</tbody>\n</table>\n<pre><code class=\"lang-js\">console.log(cvt.bytes(1536)); // 1.5\nconsole.log(cvt.bytes(&#39;1.5 MiB&#39;, &#39;KiB&#39;)); // 1536\nconsole.log(cvt.bytes(1500, { toUnit: &#39;KB&#39;, fractionDigits: 3 })); // 1.465\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "arg1?"
+                    },
+                    {
+                      "name": "arg2?"
+                    },
+                    {
+                      "name": "arg3?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "cvt"
+        }
+      ],
+      "type": "module",
+      "displayName": "Converter / cvt"
+    }
+  ]
+}

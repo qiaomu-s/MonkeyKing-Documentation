@@ -56,7 +56,7 @@ interface ResolvedLink {
 
 export class UnresolvedFragmentError extends Error {
   constructor(entry: ContentEntry, fragment: string) {
-    super(`Unresolved fragment "${fragment}" for ${entry.legacySource}`)
+    super(`Unresolved fragment "${fragment}" for ${entry.legacySource ?? entry.source}`)
     this.name = 'UnresolvedFragmentError'
   }
 }
@@ -64,7 +64,7 @@ export class UnresolvedFragmentError extends Error {
 export class AmbiguousFragmentError extends Error {
   constructor(entry: ContentEntry, fragment: string, candidates: readonly string[]) {
     super(
-      `Ambiguous fragment "${fragment}" for ${entry.legacySource}: ${candidates.join(', ')}`,
+      `Ambiguous fragment "${fragment}" for ${entry.legacySource ?? entry.source}: ${candidates.join(', ')}`,
     )
     this.name = 'AmbiguousFragmentError'
   }
@@ -88,7 +88,9 @@ function safelyDecode(value: string): string {
 }
 
 function legacyStemFor(entry: ContentEntry): string {
-  return posix.basename(entry.legacySource, '.md')
+  return entry.legacySource === undefined
+    ? entry.jsonNames[0] ?? posix.basename(entry.source, '.md')
+    : posix.basename(entry.legacySource, '.md')
 }
 
 function normalizeLegacyStem(value: string): string {
@@ -367,7 +369,7 @@ function resolveLink(
     parsed.targetLegacyStem ??
     (parsed.entry ? legacyStemFor(parsed.entry) : '')
   const override = resolveFragmentOverride({
-    currentLegacySource: context.current.legacySource,
+    currentLegacySource: context.current.legacySource ?? context.current.source,
     targetLegacyStem,
     fragment: parsed.fragment,
     label,
@@ -382,7 +384,7 @@ function resolveLink(
     ? entryById(override.targetEntryId, entries)
     : parsed.entry
   if (!targetEntry) {
-    throw new Error(`Unknown legacy Markdown target "${rawTarget}" from ${context.current.legacySource}`)
+    throw new Error(`Unknown legacy Markdown target "${rawTarget}" from ${context.current.legacySource ?? context.current.source}`)
   }
 
   if (override?.kind === 'link') {

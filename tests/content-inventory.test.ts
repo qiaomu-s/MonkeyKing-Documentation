@@ -29,7 +29,9 @@ function writeFixture(root: string, repositoryPath: string, content = ''): void 
 
 function writeLegacyFixture(root: string): void {
   for (const source of [
-    ...contentEntries.map(({ legacySource }) => legacySource),
+    ...contentEntries.flatMap(({ legacySource }) =>
+      legacySource === undefined ? [] : [legacySource],
+    ),
     ...deletedLegacySources,
   ]) {
     writeFixture(root, source)
@@ -57,6 +59,30 @@ function sha256(path: string): string {
 }
 
 describe('content inventory', () => {
+  test.each([
+    ['docs/api/utilities/util.md', ['## util', 'util.isArray(', 'util.ensureType(', 'util.inspect(', 'util.java.array(', 'util.morseCode(']],
+    ['docs/api/utilities/converter.md', ['## converter', '## cvt', 'cvt.bytes(', 'cvt.bytes.strict(', 'cvt.bytes.loose(']],
+    ['docs/api/utilities/formatter.md', ['## formatter', '## fmt', 'fmt.bytes(', 'fmt.bytes.strict(', 'fmt.bytes.loose(']],
+    ['docs/api/utilities/jsox.md', ['## jsox', 'jsox.extend(', 'jsox.extendAll(']],
+    ['docs/api/utilities/mime.md', ['## mime', 'mime(', 'mime.fromFile(', 'JsMime']],
+    ['docs/api/utilities/zip.md', ['## zip', 'zip.open(', 'zip.zipFile(', 'ZipNativeObject']],
+    ['docs/api/utilities/nanoid.md', ['## nanoid', 'nanoid(']],
+    ['docs/api/utilities/pinyin.md', ['## pinyin', 'pinyin.convert(', 'pinyin.simple(', 'pinyin.fromPhrase(']],
+    ['docs/api/utilities/pinyin4j.md', ['## pinyin4j', 'pinyin4j.of(', 'pinyin4j.as(']],
+    ['docs/api/system/sysprops.md', ['## sysprops', 'sysprops.get(', 'sysprops.getAll(']],
+    ['docs/api/system/sqlite.md', ['## sqlite', 'sqlite.open(', 'Database', 'CursorWrapper']],
+    ['docs/api/media/mediainfo.md', ['## mediainfo', 'mediainfo.read(', 'MediainfoNativeObject']],
+  ] as const)('publishes a source-backed module reference in %s', (source, requiredText) => {
+    const markdown = readFileSync(resolve(process.cwd(), source), 'utf8')
+
+    expect(markdown).toMatch(/(?:≤\s*)?v\d+\.\d+\.\d+/)
+    expect(markdown).toMatch(/```js[\s\S]+```/)
+    expect(markdown).not.toMatch(
+      /待补充|待完善|\bPENDING\b|^\s*(?:\.\.\.|…)\s*$/m,
+    )
+    for (const text of requiredText) expect(markdown).toContain(text)
+  })
+
   test('checks a complete legacy tree without requiring canonical files', () => {
     const root = mkdtempSync(resolve(tmpdir(), 'monkeyking-legacy-inventory-'))
     try {
@@ -65,7 +91,10 @@ describe('content inventory', () => {
 
       expect(report.phase).toBe('legacy')
       expect(report.errors).toEqual([])
-      expect(report.legacyMarkdownCount).toBe(107)
+      expect(report.legacyMarkdownCount).toBe(
+        contentEntries.filter(({ legacySource }) => legacySource !== undefined)
+          .length + deletedLegacySources.length,
+      )
       expect(report.canonicalMarkdownCount).toBe(0)
     } finally {
       rmSync(root, { recursive: true, force: true })
@@ -380,7 +409,7 @@ describe('content inventory', () => {
     expect(report.phase).toBe('canonical')
     expect(report.errors).toEqual([])
     expect(report.legacyMarkdownCount).toBe(0)
-    expect(report.canonicalMarkdownCount).toBe(101)
+    expect(report.canonicalMarkdownCount).toBe(contentEntries.length)
     expect(report.imageCount).toBe(37)
     expect(migratedImageNames).toHaveLength(37)
     expect(new Set(migratedImageNames).size).toBe(37)

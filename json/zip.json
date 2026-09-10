@@ -1,0 +1,368 @@
+{
+  "source": "..\\docs\\api\\utilities\\zip.md",
+  "modules": [
+    {
+      "textRaw": "Zip - 压缩与解压",
+      "name": "zip_-_压缩与解压",
+      "desc": "<p><code>zip</code> 基于 <a href=\"https://github.com/srikanth-lingala/zip4j\">Zip4j</a> 同步创建、修改和解压 ZIP 文件。运行时同时注册 <code>zip</code> 与 <code>$zip</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n",
+      "modules": [
+        {
+          "textRaw": "zip",
+          "name": "zip",
+          "methods": [
+            {
+              "textRaw": "zip(path)",
+              "type": "method",
+              "name": "zip",
+              "desc": "<p>等价于 <code>zip.open(path)</code>，返回 <code>ZipNativeObject</code>。</p>\n<pre><code class=\"lang-js\">let archive = zip(files.path(&#39;./backup.zip&#39;));\narchive.addFile(files.path(&#39;./config.json&#39;));\nconsole.log(archive.isValidZipFile());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "path"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "zip"
+        },
+        {
+          "textRaw": "选项",
+          "name": "选项",
+          "desc": "<p>这些选项可传给模块级方法，也可传给实例的 <code>addFile</code>、<code>addFiles</code>、<code>addFolder</code>。未说明的 Zip4j 行为沿用底层库默认值。</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值或行为</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>aesKeyStrength</code></td>\n<td><code>256</code></td>\n<td>AES 密钥强度；接受 Zip4j 枚举、原始代码或 <code>128</code>、<code>192</code>、<code>256</code></td>\n</tr>\n<tr>\n<td><code>aesVersion</code></td>\n<td><code>2</code></td>\n<td>AES 版本；接受枚举、版本号或名称</td>\n</tr>\n<tr>\n<td><code>compressionLevel</code></td>\n<td><code>NORMAL</code></td>\n<td>Zip4j 压缩级别枚举、级别数值或名称</td>\n</tr>\n<tr>\n<td><code>compressionMethod</code></td>\n<td><code>DEFLATE</code></td>\n<td>Zip4j 压缩方法枚举、代码或名称</td>\n</tr>\n<tr>\n<td><code>encryptionMethod</code></td>\n<td><code>AES</code></td>\n<td><code>NONE</code>、<code>ZIP_STANDARD</code>、<code>ZIP_STANDARD_VARIANT_STRONG</code>、<code>AES</code>，也接受兼容数字代码</td>\n</tr>\n<tr>\n<td><code>password</code></td>\n<td>未设置</td>\n<td>为 <code>ZipFile</code> 设置密码，并自动启用文件加密</td>\n</tr>\n<tr>\n<td><code>isEncryptFiles</code> / <code>encryptFiles</code></td>\n<td>Zip4j 默认值</td>\n<td>是否加密条目</td>\n</tr>\n<tr>\n<td><code>defaultFolderPath</code></td>\n<td>未设置</td>\n<td>默认目录路径</td>\n</tr>\n<tr>\n<td><code>entryCRC</code></td>\n<td>未设置</td>\n<td>条目 CRC</td>\n</tr>\n<tr>\n<td><code>entrySize</code></td>\n<td>未设置</td>\n<td>条目大小</td>\n</tr>\n<tr>\n<td><code>excludeFileFilter</code></td>\n<td>未设置</td>\n<td><code>ExcludeFileFilter</code> 或返回布尔值的 JavaScript 函数</td>\n</tr>\n<tr>\n<td><code>fileComment</code> / <code>comment</code></td>\n<td>未设置</td>\n<td>条目注释</td>\n</tr>\n<tr>\n<td><code>fileNameInZip</code></td>\n<td>未设置</td>\n<td>ZIP 内的条目名称</td>\n</tr>\n<tr>\n<td><code>isIncludeRootFolder</code> / <code>includeRootFolder</code></td>\n<td>Zip4j 默认值</td>\n<td>是否包含根目录</td>\n</tr>\n<tr>\n<td><code>isOverrideExistingFilesInZip</code> / <code>overrideExistingFilesInZip</code></td>\n<td>Zip4j 默认值</td>\n<td>是否覆盖归档内同名条目</td>\n</tr>\n<tr>\n<td><code>isReadHiddenFiles</code> / <code>readHiddenFiles</code></td>\n<td>Zip4j 默认值</td>\n<td>是否读取隐藏文件</td>\n</tr>\n<tr>\n<td><code>isReadHiddenFolders</code> / <code>readHiddenFolders</code></td>\n<td>Zip4j 默认值</td>\n<td>是否读取隐藏目录</td>\n</tr>\n<tr>\n<td><code>isUnixMode</code> / <code>unixMode</code></td>\n<td>Zip4j 默认值</td>\n<td>是否使用 Unix 模式元数据</td>\n</tr>\n<tr>\n<td><code>isWriteExtendedLocalFileHeader</code> / <code>writeExtendedLocalFileHeader</code></td>\n<td>Zip4j 默认值</td>\n<td>是否写扩展本地文件头</td>\n</tr>\n<tr>\n<td><code>lastModifiedFileTime</code></td>\n<td>未设置</td>\n<td>条目最后修改时间</td>\n</tr>\n<tr>\n<td><code>rootFolderNameInZip</code></td>\n<td>未设置</td>\n<td>ZIP 内根目录名</td>\n</tr>\n<tr>\n<td><code>symbolicLinkAction</code></td>\n<td><code>INCLUDE_LINKED_FILE_ONLY</code></td>\n<td>Zip4j 符号链接处理枚举</td>\n</tr>\n</tbody>\n</table>\n<p>解压相关选项：</p>\n<ul>\n<li><code>password</code>：设置解密密码。</li>\n<li><code>isExtractSymbolicLinks</code>：当前固定源码会读取该值，但没有写回 <code>UnzipParameters</code>，因此不会改变底层参数。</li>\n<li><code>isIgnoreDateTimeAttributes</code> / <code>ignoreDateTimeAttributes</code>：Zip4j 2.x 已不支持，传入时直接抛出异常。</li>\n</ul>\n<p>枚举名称、数值或选项类型非法时会传播参数解析异常。</p>\n",
+          "type": "module",
+          "displayName": "选项"
+        },
+        {
+          "textRaw": "ZipNativeObject",
+          "name": "zipnativeobject",
+          "modules": [
+            {
+              "textRaw": "属性",
+              "name": "属性",
+              "desc": "<table>\n<thead>\n<tr>\n<th>属性</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>name</code></td>\n<td>创建对象的操作名，例如 <code>open</code>、<code>zipFile</code> 或 <code>unzip</code></td>\n</tr>\n<tr>\n<td><code>path</code></td>\n<td>解析后的 ZIP 绝对路径</td>\n</tr>\n<tr>\n<td><code>zipFile</code></td>\n<td>底层 Zip4j <code>ZipFile</code></td>\n</tr>\n<tr>\n<td><code>options</code></td>\n<td>原始 JavaScript 选项对象</td>\n</tr>\n<tr>\n<td><code>zipParameters</code></td>\n<td>由默认选项构造的 <code>ZipParameters</code></td>\n</tr>\n<tr>\n<td><code>unzipParameters</code></td>\n<td>由默认选项构造的 <code>UnzipParameters</code></td>\n</tr>\n</tbody>\n</table>\n<p>这些属性只读。<code>String(archive)</code> 或 <code>archive.toString()</code> 返回操作名、路径和选项的可读摘要。</p>\n",
+              "type": "module",
+              "displayName": "属性"
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "archive.addFile(filePath, options?)",
+              "type": "method",
+              "name": "addFile",
+              "desc": "<p>把单个文件加入归档，没有返回值。实例选项会为本次调用重新构造压缩参数。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "filePath"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.addFiles(filePaths, options?)",
+              "type": "method",
+              "name": "addFiles",
+              "desc": "<p>把可迭代路径集合加入归档，没有返回值。非可迭代值会抛出参数错误。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "filePaths"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.addFolder(directoryPath, options?)",
+              "type": "method",
+              "name": "addFolder",
+              "desc": "<p>把目录加入归档，没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directoryPath"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.extractAll(destination, options?)",
+              "type": "method",
+              "name": "extractAll",
+              "desc": "<p>把全部条目解压到目标目录，没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "destination"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.extractFile(entryPath, destination, options?, newFileName?)",
+              "type": "method",
+              "name": "extractFile",
+              "desc": "<p>解压指定条目。第三个参数是解压选项，第四个参数可指定新的文件名；没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "entryPath"
+                    },
+                    {
+                      "name": "destination"
+                    },
+                    {
+                      "name": "options?"
+                    },
+                    {
+                      "name": "newFileName?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.setPassword(password)",
+              "type": "method",
+              "name": "setPassword",
+              "desc": "<p>设置后续读取或写入所用密码，没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "password"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.getFileHeader(entryName)",
+              "type": "method",
+              "name": "getFileHeader",
+              "desc": "<p>返回指定条目的 Zip4j <code>FileHeader</code>。条目不存在时沿用底层库返回或异常行为。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "entryName"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.getFileHeaders()",
+              "type": "method",
+              "name": "getFileHeaders",
+              "desc": "<p>返回全部 Zip4j <code>FileHeader</code> 组成的 JavaScript 数组。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.isEncrypted()",
+              "type": "method",
+              "name": "isEncrypted",
+              "desc": "<p>返回归档是否包含加密内容。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.removeFile(entryName)",
+              "type": "method",
+              "name": "removeFile",
+              "desc": "<p>从归档删除指定条目，没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "entryName"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.isValidZipFile()",
+              "type": "method",
+              "name": "isValidZipFile",
+              "desc": "<p>返回当前路径是否为有效 ZIP 文件。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.getPath()",
+              "type": "method",
+              "name": "getPath",
+              "desc": "<p>返回 <code>path</code>。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "archive.getZipFile()",
+              "type": "method",
+              "name": "getZipFile",
+              "desc": "<p>返回底层 Zip4j <code>ZipFile</code>，供高级互操作使用。</p>\n<pre><code class=\"lang-js\">let archive = $zip.open(&#39;./bundle.zip&#39;, { password: &#39;secret&#39; });\narchive.addFiles([&#39;./a.txt&#39;, &#39;./b.txt&#39;]);\n\nconsole.log(archive.getFileHeaders().length);\nconsole.log(archive.isEncrypted());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "ZipNativeObject"
+        },
+        {
+          "textRaw": "文件副作用与错误处理",
+          "name": "文件副作用与错误处理",
+          "desc": "<ul>\n<li>所有操作都是同步文件 I/O，可能创建或修改 ZIP、创建目录并写出解压文件。</li>\n<li>一次性方法 <code>zipFile</code>、<code>zipDir</code>、<code>zipFiles</code>、<code>unzip</code> 执行失败时会尝试关闭底层 <code>ZipFile</code> 后重新抛出原异常。</li>\n<li>成功返回的 <code>ZipNativeObject</code> 没有额外的脚本级 <code>close()</code>；需要底层生命周期控制时可通过 <code>getZipFile()</code> 使用 Zip4j API。</li>\n<li>写入前应确认目标路径，尤其是解压到已存在目录时的同名文件处理。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "文件副作用与错误处理"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "zip.open(path, options?)",
+          "type": "method",
+          "name": "open",
+          "desc": "<p>打开或准备一个 ZIP 路径并返回 <code>ZipNativeObject</code>，本身不添加或提取文件。</p>\n<ul>\n<li><code>path</code> {string} - ZIP 文件路径，不能为空</li>\n<li><code>options</code> {Object} - 默认压缩与解压选项</li>\n<li>返回 {ZipNativeObject}</li>\n</ul>\n<p>路径按 <code>files.nonNullPath</code> 规则解析。空值、空字符串或非对象选项会抛出参数错误。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "path"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "zip.zipFile(filePath, destination?, options?)",
+          "type": "method",
+          "name": "zipFile",
+          "desc": "<p>把一个文件加入 ZIP 并返回 <code>ZipNativeObject</code>。第二个参数若为对象，则按 <code>options</code> 处理并使用源文件去除扩展名后的名称生成 <code>.zip</code> 目标；否则第二个参数是目标 ZIP 路径。</p>\n<pre><code class=\"lang-js\">let result = zip.zipFile(&#39;./report.txt&#39;, &#39;./report.zip&#39;, {\n    compressionLevel: &#39;NORMAL&#39;,\n});\nconsole.log(result.getPath());\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "filePath"
+                },
+                {
+                  "name": "destination?"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "zip.zipDir(directoryPath, destination?, options?)",
+          "type": "method",
+          "name": "zipDir",
+          "desc": "<p>把整个目录创建为 ZIP 并返回 <code>ZipNativeObject</code>。参数重载和默认目标名与 <code>zip.zipFile</code> 相同。该实现调用 Zip4j 的目录压缩接口，分卷压缩关闭。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "directoryPath"
+                },
+                {
+                  "name": "destination?"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "zip.zipFiles(filePaths, destination?, options?)",
+          "type": "method",
+          "name": "zipFiles",
+          "desc": "<p>把可迭代的多个路径加入一个 ZIP 并返回 <code>ZipNativeObject</code>。</p>\n<ul>\n<li><code>filePaths</code> 必须是可迭代对象，且每个源路径必须存在。</li>\n<li>只有一个源路径且省略目标时，目标名取该项目名称并改为 <code>.zip</code>。</li>\n<li>多个源路径位于同一父目录时，默认使用父目录名。</li>\n<li>无法确定统一名称时，生成 <code>yyyyMMdd-HHmmss-XXXX.zip</code> 形式的名称。</li>\n</ul>\n<p>非可迭代参数、缺失源文件或无效路径会抛出错误。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "filePaths"
+                },
+                {
+                  "name": "destination?"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "zip.unzip(zipPath, destination?, options?)",
+          "type": "method",
+          "name": "unzip",
+          "desc": "<p>解压整个 ZIP 并返回 <code>ZipNativeObject</code>。第二个参数若为对象，则作为 <code>options</code>，目标路径按空字符串交给 <code>files.nonNullPath</code> 解析；通常建议显式提供目标目录。</p>\n<pre><code class=\"lang-js\">zip.unzip(&#39;./backup.zip&#39;, &#39;./restored&#39;, {\n    password: &#39;secret&#39;,\n});\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "zipPath"
+                },
+                {
+                  "name": "destination?"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "type": "module",
+      "displayName": "Zip - 压缩与解压"
+    }
+  ]
+}

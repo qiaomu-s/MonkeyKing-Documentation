@@ -1,0 +1,82 @@
+{
+  "source": "..\\docs\\api\\utilities\\pinyin4j.md",
+  "modules": [
+    {
+      "textRaw": "Pinyin4j",
+      "name": "pinyin4j",
+      "desc": "<p><strong>自 v6.6.1 起提供。</strong></p>\n<p>Pinyin4j 模块封装 pinyin4j 2.5.1，用于把基础汉字转换为汉语拼音，或把带数字的声调转换为声调符号。</p>\n",
+      "modules": [
+        {
+          "textRaw": "pinyin4j",
+          "name": "pinyin4j",
+          "methods": [
+            {
+              "textRaw": "pinyin4j(string, options?)",
+              "type": "method",
+              "name": "pinyin4j",
+              "desc": "<p><strong>v6.6.1</strong></p>\n<ul>\n<li><strong>string</strong> { <code>string</code> } - 待转换文本</li>\n<li><strong>options</strong> { <code>object | string</code> } - 可选；字符串会直接作为分隔符</li>\n<li><ins><strong>returns</strong></ins> { <code>string</code> }</li>\n<li><strong>异常</strong>：参数数量或格式选项不合法时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>全局可调用入口，与 <code>pinyin4j.of</code> 等价。<code>$pinyin4j</code> 是同一函数对象的别名。</p>\n<pre><code class=\"lang-js\">console.log(pinyin4j(&#39;中国&#39;)); // zhongguo\nconsole.log(pinyin4j(&#39;中国&#39;, &#39; &#39;)); // zhong guo\nconsole.log($pinyin4j === pinyin4j); // true\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "string"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "pinyin4j.of(string, options?)",
+              "type": "method",
+              "name": "of",
+              "desc": "<p><strong>v6.6.1</strong></p>\n<ul>\n<li><strong>string</strong> { <code>string</code> } - 待转换文本</li>\n<li><strong>options</strong> { <code>object | string</code> } - 格式选项，或作为简写的分隔符字符串</li>\n<li><ins><strong>returns</strong></ins> { <code>string</code> }</li>\n<li><strong>异常</strong>：参数数量、枚举值或底层拼音格式组合不合法时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>逐字符转换 <code>U+4E00</code> 至 <code>U+9FA5</code> 范围内的汉字。范围外字符原样保留；一个汉字有多个读音时只采用 pinyin4j 返回的第一项。</p>\n<p>选项对象支持以下名称和别名：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>合法值</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>separator</code> / <code>sep</code></td>\n<td>空字符串</td>\n<td>任意字符串</td>\n</tr>\n<tr>\n<td><code>case</code> / <code>caseType</code></td>\n<td><code>LOWERCASE</code></td>\n<td><code>LOWERCASE</code>、<code>LOW</code>、<code>L</code>、<code>0</code>；或 <code>UPPERCASE</code>、<code>UP</code>、<code>U</code>、<code>1</code></td>\n</tr>\n<tr>\n<td><code>tone</code> / <code>toneType</code></td>\n<td><code>WITHOUT_TONE</code></td>\n<td><code>WITH_TONE_NUMBER</code>、<code>WITH_NUMBER</code>、<code>NUMBER</code>、<code>NUM</code>；<code>WITHOUT_TONE</code>、<code>NO_TONE</code>、<code>NO</code>、<code>FALSE</code>、<code>0</code>；<code>WITH_TONE_MARK</code>、<code>WITH_MARK</code>、<code>MARK</code>、<code>TRUE</code>、<code>1</code></td>\n</tr>\n<tr>\n<td><code>v</code> / <code>vChar</code> / <code>vCharType</code></td>\n<td><code>WITH_V</code></td>\n<td><code>WITH_U_AND_COLON</code>、<code>U_AND_COLON</code>、<code>U_COLON</code>、<code>U:</code>；<code>WITH_V</code>、<code>V</code>；<code>WITH_U_UNICODE</code>、<code>U_UNICODE</code>、<code>UNICODE</code>、<code>Ü</code></td>\n</tr>\n</tbody>\n</table>\n<p>也可直接传入 pinyin4j 的 <code>HanyuPinyinCaseType</code>、<code>HanyuPinyinToneType</code> 和 <code>HanyuPinyinVCharType</code> 枚举对象。使用声调符号且未指定 v 字符格式时，默认改用 Unicode <code>ü</code>。</p>\n<pre><code class=\"lang-js\">console.log(pinyin4j.of(&#39;中国&#39;, {\n    separator: &#39; &#39;,\n    case: &#39;UPPERCASE&#39;,\n    tone: &#39;WITH_TONE_NUMBER&#39;,\n})); // ZHONG1 GUO2\n\nconsole.log(pinyin4j.of(&#39;女&#39;, {\n    tone: &#39;WITH_TONE_MARK&#39;,\n})); // nǚ\n</code></pre>\n<p>实现会在每个输入字符转换后追加分隔符，最后只移除首尾空白。因此空格分隔符不会留下尾随空格，而 <code>-</code> 一类非空白分隔符会保留在结果末尾。</p>\n<pre><code class=\"lang-js\">console.log(pinyin4j.of(&#39;中国&#39;, &#39;-&#39;)); // zhong-guo-\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "string"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "pinyin4j.as(numberedPinyin)",
+              "type": "method",
+              "name": "as",
+              "desc": "<p><strong>v6.6.1</strong></p>\n<ul>\n<li><strong>numberedPinyin</strong> { <code>string</code> } - 含 0 至 4 声调数字的拼音文本</li>\n<li><ins><strong>returns</strong></ins> { <code>string</code> } - 转换声调后的文本</li>\n<li><strong>异常</strong>：参数数量不为 1 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>把可识别的韵母加数字形式替换为 Unicode 声调字符。未匹配的内容原样保留；数字 0 表示轻声并移除数字。</p>\n<pre><code class=\"lang-js\">console.log(pinyin4j.as(&#39;zhong1 guo2&#39;)); // zhōng guó\nconsole.log(pinyin4j.as(&#39;nv3 hai2&#39;)); // nǚ hái\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "numberedPinyin"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "modules": [
+            {
+              "textRaw": "异常、线程与副作用",
+              "name": "异常、线程与副作用",
+              "desc": "<ul>\n<li><code>pinyin4j</code> 与 <code>pinyin4j.of</code> 必须传入 1 至 2 个参数，<code>pinyin4j.as</code> 必须传入 1 个参数；数量不符会抛出异常。</li>\n<li>非法的大小写、声调或 v 字符枚举值会抛出参数异常；pinyin4j 不接受的格式组合也可能抛出格式异常。</li>\n<li>空字符串返回空字符串。除无效枚举外，输入会按 Monkey King 的字符串转换规则处理。</li>\n<li>所有转换同步完成，只进行内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。</li>\n</ul>\n",
+              "type": "module",
+              "displayName": "异常、线程与副作用"
+            }
+          ],
+          "type": "module",
+          "displayName": "pinyin4j"
+        }
+      ],
+      "type": "module",
+      "displayName": "Pinyin4j"
+    }
+  ]
+}

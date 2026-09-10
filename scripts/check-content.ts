@@ -281,7 +281,10 @@ function inspectCanonicalLayout(
     string,
     { readonly legacySource: string }
   >(
-    contentEntries.map((entry) => [entry.source, entry] as const),
+    contentEntries.map((entry) => [
+      entry.source,
+      { legacySource: entry.legacySource ?? entry.source },
+    ] as const),
   )
   for (const source of publishedMarkdown) {
     const path = resolve(rootDirectory, source)
@@ -355,7 +358,7 @@ function printReport(report: ContentCheckReport): void {
   }
 
   const generatedJsonNameCount = contentEntries.reduce(
-    (count, entry) => count + entry.legacyJsonNames.length,
+    (count, entry) => count + entry.jsonNames.length,
     0,
   )
   console.log(

@@ -177,7 +177,9 @@ function countLegacyBrandTokens(line: string): number {
 const require = createRequire(import.meta.url)
 const markedLegacy = require('marked-legacy') as (markdown: string) => string
 
-function entryFor(legacySource: string) {
+type LegacyContentEntry = ContentEntry & { readonly legacySource: string }
+
+function entryFor(legacySource: string): LegacyContentEntry {
   const entry = contentEntries.find(
     (candidate) => candidate.legacySource === legacySource,
   )
@@ -186,10 +188,13 @@ function entryFor(legacySource: string) {
     throw new Error('Missing test catalog entry for ' + legacySource)
   }
 
-  return entry
+  if (entry.legacySource === undefined) {
+    throw new Error('Expected legacy source for ' + entry.id)
+  }
+  return entry as LegacyContentEntry
 }
 
-function testEntry(legacyStem: string, target: string): ContentEntry {
+function testEntry(legacyStem: string, target: string): LegacyContentEntry {
   const source = target.startsWith('docs/') ? target : `docs/${target}`
   const relativeSource = source.slice('docs/'.length, -'.md'.length)
   return {
@@ -202,6 +207,8 @@ function testEntry(legacyStem: string, target: string): ContentEntry {
       0,
       relativeSource.lastIndexOf('/'),
     ) as ContentEntry['section'],
+    jsonNames: [legacyStem],
+    includeInLegacyAll: false,
     legacyJsonNames: [legacyStem],
   }
 }
@@ -245,7 +252,9 @@ function snapshotFiles(root: string, directory = root): readonly string[] {
 
 function readCatalogMarkdown(entry: ContentEntry): string {
   const canonicalPath = resolve(process.cwd(), entry.source)
-  const legacyPath = resolve(process.cwd(), entry.legacySource)
+  const legacyPath = entry.legacySource
+    ? resolve(process.cwd(), entry.legacySource)
+    : canonicalPath
   return readFileSync(existsSync(canonicalPath) ? canonicalPath : legacyPath, 'utf8')
 }
 
@@ -255,6 +264,9 @@ function currentEntryPath(
 ): { readonly path: string; readonly migrated: boolean } {
   const canonicalPath = resolve(root, entry.source)
   if (existsSync(canonicalPath)) return { path: canonicalPath, migrated: true }
+  if (entry.legacySource === undefined) {
+    return { path: canonicalPath, migrated: true }
+  }
   return { path: resolve(root, entry.legacySource), migrated: false }
 }
 
@@ -299,7 +311,9 @@ function countOutsideMarkdownCode(markdown: string, token: string): number {
 function countCatalogToken(root: string, token: string): number {
   return contentEntries.reduce((count, entry) => {
     const canonicalPath = resolve(root, entry.source)
-    const legacyPath = resolve(root, entry.legacySource)
+    const legacyPath = entry.legacySource
+      ? resolve(root, entry.legacySource)
+      : canonicalPath
     const path = existsSync(canonicalPath) ? canonicalPath : legacyPath
     return count + countOutsideMarkdownCode(readFileSync(path, 'utf8'), token)
   }, 0)
@@ -498,7 +512,11 @@ describe('deterministic Markdown migration', () => {
           .flatMap((line) => {
             const occurrences = countDottedAutoJs(line)
             return occurrences > 0
-              ? [{ legacySource: entry.legacySource, line, occurrences }]
+              ? [{
+                  legacySource: entry.legacySource ?? entry.source,
+                  line,
+                  occurrences,
+                }]
               : []
           }),
       )
@@ -533,7 +551,7 @@ describe('deterministic Markdown migration', () => {
     for (const entry of contentEntries) {
       expect(() =>
         assertAllowedLegacyBrands(readCatalogMarkdown(entry), {
-          current: entry,
+          current: { legacySource: entry.legacySource ?? entry.source },
         }),
       ).not.toThrow()
     }
@@ -542,7 +560,7 @@ describe('deterministic Markdown migration', () => {
   test('audits every legacy brand residual in the published corpus and home page', () => {
     const documents = [
       ...contentEntries.map((entry) => ({
-        legacySource: entry.legacySource,
+        legacySource: entry.legacySource ?? entry.source,
         markdown: readCatalogMarkdown(entry),
       })),
       {
@@ -924,7 +942,7 @@ describe('deterministic Markdown migration', () => {
     expect(report.overrides).toBe(2)
   })
 
-  test('dry-runs all 101 retained pages in either migration phase', async () => {
+  test('dry-runs every retained and canonical-only page in either migration phase', async () => {
     const legacyLayout = existsSync(resolve(process.cwd(), 'api'))
     const sources = contentEntries.map((entry) => ({
       entry,
@@ -952,7 +970,7 @@ describe('deterministic Markdown migration', () => {
       if (result.markdown !== source.markdown) changedSources += 1
     }
 
-    expect(sources).toHaveLength(101)
+    expect(sources).toHaveLength(contentEntries.length)
     if (legacyLayout) {
       expect(totals).toEqual({
         automaticFragments: 169,
@@ -1152,7 +1170,7 @@ describe('content migration orchestration', () => {
     }
   })
 
-  test('runs the default 101-page migration three times without changing the second pass', async () => {
+  test('runs the default corpus migration three times without changing the second pass', async () => {
     const startedLegacy = copyCurrentContentCorpus(root)
     writeFixture(root, 'docs/superpowers/keep.md', 'keep\n')
 
@@ -1180,7 +1198,12 @@ describe('content migration orchestration', () => {
     const secondSnapshot = snapshotFiles(root)
     const thirdReport = await migrateContent({ rootDirectory: root })
 
-    expect(firstReport.entriesWritten).toBe(startedLegacy ? 101 : 0)
+    expect(firstReport.entriesWritten).toBe(
+      startedLegacy
+        ? contentEntries.filter(({ legacySource }) => legacySource !== undefined)
+            .length
+        : 0,
+    )
     expect(firstReport.imagesCopied).toBe(startedLegacy ? 37 : 0)
     expect(secondReport).toEqual({
       entriesWritten: 0,

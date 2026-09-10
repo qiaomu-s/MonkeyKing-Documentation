@@ -1,0 +1,225 @@
+{
+  "source": "..\\docs\\api\\utilities\\pinyin.md",
+  "modules": [
+    {
+      "textRaw": "Pinyin - 拼音",
+      "name": "pinyin_-_拼音",
+      "desc": "<p><code>pinyin</code> 使用内置单字、词组和姓氏数据把中文转换为拼音，并可选用 Jieba 分词。运行时同时注册 <code>pinyin</code> 与 <code>$pinyin</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.1</strong></p>\n",
+      "modules": [
+        {
+          "textRaw": "pinyin",
+          "name": "pinyin",
+          "methods": [
+            {
+              "textRaw": "pinyin(text, options?)",
+              "type": "method",
+              "name": "pinyin",
+              "desc": "<p>等价于 <code>pinyin.convert(text, options)</code>。</p>\n<pre><code class=\"lang-js\">let result = pinyin(&#39;中国&#39;);\nconsole.log(JSON.stringify(result));\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "text"
+                    },
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "pinyin"
+        },
+        {
+          "textRaw": "常量",
+          "name": "常量",
+          "modules": [
+            {
+              "textRaw": "拼音风格",
+              "name": "拼音风格",
+              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.STYLE_NORMAL</code></td>\n<td><code>0</code></td>\n<td>不标声调</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td><code>1</code></td>\n<td>使用带声调的韵母，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TONE2</code></td>\n<td><code>2</code></td>\n<td>在拼音末尾加入声调数字</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_INITIALS</code></td>\n<td><code>3</code></td>\n<td>只保留声母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_FIRST_LETTER</code></td>\n<td><code>4</code></td>\n<td>只保留首字母</td>\n</tr>\n<tr>\n<td><code>pinyin.STYLE_TO3NE</code></td>\n<td><code>5</code></td>\n<td>使用源码兼容的数字声调形式</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "拼音风格"
+            },
+            {
+              "textRaw": "转换模式",
+              "name": "转换模式",
+              "desc": "<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td><code>0</code></td>\n<td>普通转换，默认值</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_SURNAME</code></td>\n<td><code>1</code></td>\n<td>使用单姓与复姓字典</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACENAME</code></td>\n<td><code>2</code></td>\n<td>地名模式兼容名称</td>\n</tr>\n<tr>\n<td><code>pinyin.MODE_PLACE_NAME</code></td>\n<td><code>2</code></td>\n<td>与 <code>MODE_PLACENAME</code> 相同</td>\n</tr>\n</tbody>\n</table>\n<p>固定源码只对姓氏模式提供专门分支；地名模式目前沿用普通转换流程。</p>\n",
+              "type": "module",
+              "displayName": "转换模式"
+            }
+          ],
+          "type": "module",
+          "displayName": "常量"
+        },
+        {
+          "textRaw": "数据、性能与副作用",
+          "name": "数据、性能与副作用",
+          "desc": "<ul>\n<li>单字和词组查询使用应用内置 SQLite 字典；首次访问会延迟初始化数据库。</li>\n<li><code>segment: true</code> 会加载 Jieba 分词数据，首次调用的时间和内存开销更高。</li>\n<li>转换过程只读取字典，不修改文件或系统设置。</li>\n<li>姓氏模式会优先使用单姓与复姓表；普通模式优先使用词组字典，未命中时退回逐字查询。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "数据、性能与副作用"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "pinyin.convert(text, options?)",
+          "type": "method",
+          "name": "convert",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`text` {string} - 要转换的文本 ",
+                  "name": "text",
+                  "type": "string",
+                  "desc": "要转换的文本"
+                },
+                {
+                  "textRaw": "`options` {Object} - 可选配置；非普通对象会按空配置处理 ",
+                  "name": "options",
+                  "type": "Object",
+                  "desc": "可选配置；非普通对象会按空配置处理"
+                },
+                {
+                  "textRaw": "返回 {Array&lt;Array&lt;string&gt;&gt;} - 每个字、词组或非中文片段对应一组候选结果 ",
+                  "name": "返回",
+                  "type": "Array&lt;Array&lt;string&gt;&gt;",
+                  "desc": "每个字、词组或非中文片段对应一组候选结果"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "text"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>选项：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>style</code></td>\n<td><code>pinyin.STYLE_TONE</code></td>\n<td>风格常量、对应整数或枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>mode</code></td>\n<td><code>pinyin.MODE_NORMAL</code></td>\n<td>模式常量、对应整数或枚举名称字符串</td>\n</tr>\n<tr>\n<td><code>segment</code></td>\n<td><code>false</code></td>\n<td>是否先用 Jieba 分词</td>\n</tr>\n<tr>\n<td><code>heteronym</code></td>\n<td><code>false</code></td>\n<td>是否保留多音字的多个读音</td>\n</tr>\n<tr>\n<td><code>group</code></td>\n<td><code>false</code></td>\n<td>将同一词组中各字的候选读音组合成一组完整字符串</td>\n</tr>\n</tbody>\n</table>\n<p><code>style</code> 或 <code>mode</code> 的整数、名称无效时会抛出参数错误。非中文连续片段会原样作为一个结果项保留。</p>\n<p>返回数组额外绑定了 <code>compact()</code> 方法，可把各位置的候选项展开为完整组合；它与模块级的 <code>pinyin.compact()</code> 不是同一个实现。</p>\n<pre><code class=\"lang-js\">let result = pinyin.convert(&#39;重庆 A&#39;, {\n    style: pinyin.STYLE_TONE2,\n    segment: true,\n    heteronym: true,\n});\n\nconsole.log(JSON.stringify(result));\nconsole.log(JSON.stringify(result.compact()));\n</code></pre>\n"
+        },
+        {
+          "textRaw": "pinyin.simple(text, numericTone?, segment?)",
+          "type": "method",
+          "name": "simple",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`text` {string} - 要转换的文本 ",
+                  "name": "text",
+                  "type": "string",
+                  "desc": "要转换的文本"
+                },
+                {
+                  "textRaw": "`numericTone` {boolean} - 是否使用 `STYLE_TONE2`，默认 `false` ",
+                  "name": "numericTone",
+                  "type": "boolean",
+                  "desc": "是否使用 `STYLE_TONE2`，默认 `false`"
+                },
+                {
+                  "textRaw": "`segment` {boolean} - 是否分词，默认 `false` ",
+                  "name": "segment",
+                  "type": "boolean",
+                  "desc": "是否分词，默认 `false`"
+                },
+                {
+                  "textRaw": "返回 {string} ",
+                  "name": "返回",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "text"
+                },
+                {
+                  "name": "numericTone?"
+                },
+                {
+                  "name": "segment?"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>对每个位置取第一个读音并连接成字符串。<code>numericTone</code> 为假时使用无声调的 <code>STYLE_NORMAL</code>。</p>\n<pre><code class=\"lang-js\">console.log(pinyin.simple(&#39;中国&#39;)); // zhongguo\nconsole.log(pinyin.simple(&#39;中国&#39;, true)); // zhong1guo2\n</code></pre>\n"
+        },
+        {
+          "textRaw": "pinyin.fromCodePoint(codePoint)",
+          "type": "method",
+          "name": "fromCodePoint",
+          "desc": "<p>按 Unicode 码点查询单字字典，返回字典中的原始拼音字符串；没有记录时返回 <code>null</code>。多音字记录可能以逗号分隔。</p>\n<pre><code class=\"lang-js\">console.log(pinyin.fromCodePoint(&#39;中&#39;.codePointAt(0)));\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "codePoint"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "pinyin.fromPhrase(phrase)",
+          "type": "method",
+          "name": "fromPhrase",
+          "desc": "<p>查询内置词组字典，返回按字序排列的二维拼音数组；没有记录时返回空数组。返回内容是词典中的原始带调拼音。</p>\n<pre><code class=\"lang-js\">console.log(JSON.stringify(pinyin.fromPhrase(&#39;重庆&#39;)));\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "phrase"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "pinyin.compare(left, right?)",
+          "type": "method",
+          "name": "compare",
+          "desc": "<p>当前固定源码实现始终返回空字符串，没有执行拼音比较。不要把它作为排序比较器。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "left"
+                },
+                {
+                  "name": "right?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "pinyin.compact(value, options?)",
+          "type": "method",
+          "name": "compact",
+          "desc": "<p>当前固定源码中的模块级方法始终返回空字符串。需要组合 <code>pinyin.convert</code> 的候选结果时，应调用返回数组自带的 <code>result.compact()</code>。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "type": "module",
+      "displayName": "Pinyin - 拼音"
+    }
+  ]
+}

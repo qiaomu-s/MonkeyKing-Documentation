@@ -1,0 +1,46 @@
+{
+  "source": "..\\docs\\api\\utilities\\nanoid.md",
+  "modules": [
+    {
+      "textRaw": "NanoID",
+      "name": "nanoid",
+      "desc": "<p><strong>自 v6.6.0 起提供。</strong></p>\n<p>NanoID 使用 <code>java.security.SecureRandom</code> 生成适合 URL 使用的随机标识符。默认长度为 21，字符来自一个包含大小写字母、数字、连字符和下划线的 64 字符字母表。</p>\n",
+      "modules": [
+        {
+          "textRaw": "nanoid",
+          "name": "nanoid",
+          "methods": [
+            {
+              "textRaw": "nanoid(size?)",
+              "type": "method",
+              "name": "nanoid",
+              "desc": "<p><strong>v6.6.0</strong></p>\n<ul>\n<li><strong>[ size = <code>21</code> ]</strong> { <code>number</code> } - 标识符长度；输入会转换并舍入为整数</li>\n<li><ins><strong>returns</strong></ins> { <code>string</code> } - 长度为 size 的随机字符串</li>\n<li><strong>异常</strong>：参数过多、长度为负数或无法分配随机字节缓冲区时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步消耗安全随机源，不持有需要关闭的资源</li>\n</ul>\n<p>全局可调用入口。<code>$nanoid</code> 是同一函数对象的别名。</p>\n<pre><code class=\"lang-js\">let id = nanoid();\nconsole.log(id.length); // 21\n\nlet shortId = nanoid(8);\nconsole.log(shortId.length); // 8\nconsole.log(/^[A-Za-z0-9_-]+$/.test(shortId)); // true\n\nconsole.log($nanoid === nanoid); // true\n</code></pre>\n<p>每次调用都会创建安全随机数生成器并填充新的字节缓冲区。相同长度的多次调用不保证不同，但随机碰撞概率随长度增大而迅速降低。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "size?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "modules": [
+            {
+              "textRaw": "参数、异常与执行特性",
+              "name": "参数、异常与执行特性",
+              "desc": "<ul>\n<li>不传参数时使用长度 21；长度为 0 时返回空字符串。</li>\n<li>负长度无法创建随机字节缓冲区，会抛出运行时异常。</li>\n<li>只接受零个或一个参数；参数过多会抛出参数数量异常。</li>\n<li>极大的长度可能因内存不足而失败，调用方应对外部输入设置合理上限。</li>\n<li>该函数同步执行，不访问文件、网络或 Android 权限，也不持有需要关闭的资源。</li>\n</ul>\n",
+              "type": "module",
+              "displayName": "参数、异常与执行特性"
+            }
+          ],
+          "type": "module",
+          "displayName": "nanoid"
+        }
+      ],
+      "type": "module",
+      "displayName": "NanoID"
+    }
+  ]
+}

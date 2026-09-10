@@ -1,0 +1,79 @@
+{
+  "source": "..\\docs\\api\\utilities\\jsox.md",
+  "modules": [
+    {
+      "textRaw": "Jsox",
+      "name": "jsox",
+      "desc": "<p><strong>自 v6.6.0 起提供。</strong></p>\n<p>Jsox 用于把 Monkey King 的 <code>Mathx</code>、<code>Numberx</code> 和 <code>Arrayx</code> 能力安装到 JavaScript 内建对象。它会修改当前脚本运行时中的 <code>Math</code>、<code>Number</code>、<code>Number.prototype</code>、<code>Array</code> 或 <code>Array.prototype</code>，因此应在了解全局副作用后使用。</p>\n",
+      "modules": [
+        {
+          "textRaw": "jsox",
+          "name": "jsox",
+          "methods": [
+            {
+              "textRaw": "jsox(modules?)",
+              "type": "method",
+              "name": "jsox",
+              "desc": "<p><strong>v6.6.0</strong></p>\n<ul>\n<li><strong>modules</strong> { <code>string | Array</code> } - 可选模块名；支持多个参数和嵌套数组</li>\n<li><ins><strong>returns</strong></ins> { <code>undefined</code> }</li>\n<li><strong>异常</strong>：模块名不受支持时抛出参数异常</li>\n<li><strong>副作用 / 生命周期</strong>：永久扩展当前脚本运行时中的内建对象</li>\n</ul>\n<p>全局可调用入口，与 <code>jsox.extend</code> 等价。<code>$jsox</code> 是同一函数对象的别名。没有提供模块名时会扩展全部预设模块。</p>\n<pre><code class=\"lang-js\">console.log($jsox === jsox); // true\n\njsox(&#39;Mathx&#39;);\nconsole.log(Math.sum([ 1, 2, 3 ])); // 6\n\njsox([ &#39;Arrayx&#39;, &#39;Numberx&#39; ]);\nconsole.log([ 3, 1, 2 ].sorted()); // [1, 2, 3]\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "modules?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "jsox.extend(modules?)",
+              "type": "method",
+              "name": "extend",
+              "desc": "<p><strong>v6.6.0</strong></p>\n<ul>\n<li><strong>modules</strong> { <code>string | Array</code> } - 可选模块名；参数会被展平、转成字符串并去重</li>\n<li><ins><strong>returns</strong></ins> { <code>undefined</code> }</li>\n<li><strong>异常</strong>：模块名无法解析为受支持扩展时抛出参数异常</li>\n<li><strong>副作用 / 生命周期</strong>：永久扩展当前脚本运行时中的指定内建对象</li>\n</ul>\n<p>扩展指定的 JavaScript 内建对象。常用名称 <code>Math</code>、<code>Mathx</code>、<code>mathx</code> 会归一化为 <code>Mathx</code>；另外两个模块同理。空参数调用与 <code>jsox.extendAll</code> 等价。</p>\n<pre><code class=\"lang-js\">jsox.extend(&#39;Numberx&#39;);\nconsole.log((12.345).toFixedNum(2)); // 12.35\n\njsox.extend(&#39;Arrayx&#39;, &#39;Mathx&#39;);\nconsole.log([ 1, 1, 2 ].distinct()); // [1, 2]\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "modules?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "jsox.extendAll()",
+              "type": "method",
+              "name": "extendAll",
+              "desc": "<p><strong>v6.6.0</strong></p>\n<ul>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <code>undefined</code> }</li>\n<li><strong>异常</strong>：传入参数时抛出参数数量异常</li>\n<li><strong>副作用 / 生命周期</strong>：永久扩展当前脚本运行时中的全部预设内建对象</li>\n</ul>\n<p>一次扩展全部预设模块：<code>Mathx</code>、<code>Numberx</code> 和 <code>Arrayx</code>。传入任何参数都会抛出参数数量异常。</p>\n<pre><code class=\"lang-js\">jsox.extendAll();\n\nconsole.log(typeof Math.mean); // &quot;function&quot;\nconsole.log(typeof Number.ensureNumber); // &quot;function&quot;\nconsole.log(typeof Array.ensureArray); // &quot;function&quot;\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "modules": [
+            {
+              "textRaw": "支持的扩展模块",
+              "name": "支持的扩展模块",
+              "desc": "<table>\n<thead>\n<tr>\n<th>模块名</th>\n<th>修改目标</th>\n<th>主要效果</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>Mathx</code></td>\n<td><code>Math</code>，以及少量全局函数</td>\n<td>添加随机数、统计、距离、对数和幂运算辅助方法</td>\n</tr>\n<tr>\n<td><code>Numberx</code></td>\n<td><code>Number</code>、<code>Number.prototype</code>，以及少量全局函数</td>\n<td>添加数值检查、解析、限制、定点数和补位方法</td>\n</tr>\n<tr>\n<td><code>Arrayx</code></td>\n<td><code>Array</code>、<code>Array.prototype</code></td>\n<td>添加去重、集合运算、排序和乱序方法</td>\n</tr>\n</tbody>\n</table>\n<p>各扩展成员的完整签名分别参阅 <a href=\"mathx.md\">Mathx</a>、<a href=\"numberx.md\">Numberx</a> 和 <a href=\"arrayx.md\">Arrayx</a>。</p>\n",
+              "type": "module",
+              "displayName": "支持的扩展模块"
+            },
+            {
+              "textRaw": "异常、生命周期与副作用",
+              "name": "异常、生命周期与副作用",
+              "desc": "<ul>\n<li>不支持的模块名、无法解析为扩展模块的值会抛出参数异常。</li>\n<li><code>jsox.extendAll</code> 只接受零个参数；<code>jsox</code> 与 <code>jsox.extend</code> 可接受零个或多个模块名。</li>\n<li>扩展同步完成，不访问文件、网络或 Android 权限。</li>\n<li>新成员安装到当前脚本运行时的内建对象及其原型，并在该运行时后续代码中持续可见；这些属性按永久属性注册。</li>\n<li>对同一模块重复扩展不会创建另一套内建对象，但仍应避免在无必要时反复执行全局修改。</li>\n</ul>\n",
+              "type": "module",
+              "displayName": "异常、生命周期与副作用"
+            }
+          ],
+          "type": "module",
+          "displayName": "jsox"
+        }
+      ],
+      "type": "module",
+      "displayName": "Jsox"
+    }
+  ]
+}

@@ -17,9 +17,25 @@ import type {
 
 const kebabCaseSegment = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const expectedLegacyMarkdownSources = [
-  ...contentEntries.map(({ legacySource }) => legacySource),
+  ...contentEntries.flatMap(({ legacySource }) =>
+    legacySource === undefined ? [] : [legacySource],
+  ),
   ...deletedLegacySources,
 ].sort()
+const expectedCanonicalOnlyEntries = [
+  ['api.system.sysprops', 'docs/api/system/sysprops.md', 'sysprops'],
+  ['api.system.sqlite', 'docs/api/system/sqlite.md', 'sqlite'],
+  ['api.media.mediainfo', 'docs/api/media/mediainfo.md', 'mediainfo'],
+  ['api.utilities.util', 'docs/api/utilities/util.md', 'util'],
+  ['api.utilities.converter', 'docs/api/utilities/converter.md', 'cvt'],
+  ['api.utilities.formatter', 'docs/api/utilities/formatter.md', 'fmt'],
+  ['api.utilities.jsox', 'docs/api/utilities/jsox.md', 'jsox'],
+  ['api.utilities.mime', 'docs/api/utilities/mime.md', 'mime'],
+  ['api.utilities.zip', 'docs/api/utilities/zip.md', 'zip'],
+  ['api.utilities.nanoid', 'docs/api/utilities/nanoid.md', 'nanoid'],
+  ['api.utilities.pinyin', 'docs/api/utilities/pinyin.md', 'pinyin'],
+  ['api.utilities.pinyin4j', 'docs/api/utilities/pinyin4j.md', 'pinyin4j'],
+] as const
 const expectedLegacyAllEntryIds = [
   'guide.overview',
   'project.about',
@@ -65,7 +81,7 @@ const expectedLegacyAllEntryIds = [
   'api.utilities.e4x',
 ] as const
 
-function valuesFor(key: 'id' | 'legacySource' | 'source' | 'route'): string[] {
+function valuesFor(key: 'id' | 'source' | 'route'): string[] {
   return contentEntries.map((entry) => entry[key])
 }
 
@@ -99,8 +115,13 @@ describe('content catalog contract', () => {
     expect(existsSync(resolve(process.cwd(), 'scripts/content/catalog.ts'))).toBe(true)
   })
 
-  test('contains exactly 101 ordered content entries', () => {
-    expect(contentEntries).toHaveLength(101)
+  test('contains the complete legacy corpus plus the twelve 6.7.0 module pages', () => {
+    const legacyEntryCount =
+      expectedLegacyMarkdownSources.length - deletedLegacySources.length
+
+    expect(contentEntries).toHaveLength(
+      legacyEntryCount + expectedCanonicalOnlyEntries.length,
+    )
     expect(contentSectionOrder).toEqual([
       'guide',
       'project',
@@ -121,23 +142,54 @@ describe('content catalog contract', () => {
     )
   })
 
-  test.each(['id', 'legacySource', 'source', 'route'] as const)(
+  test.each(['id', 'source', 'route'] as const)(
     'keeps every %s unique',
     (key) => {
       expectUnique(valuesFor(key))
     },
   )
 
+  test('keeps every defined legacy source unique', () => {
+    expectUnique(
+      contentEntries.flatMap(({ legacySource }) =>
+        legacySource === undefined ? [] : [legacySource],
+      ),
+    )
+  })
+
   test('keeps JSON names unique while preserving the Monkey King compatibility alias', () => {
     const monkeyKing = contentEntries.find(({ id }) => id === 'api.core.monkeyking')
     const otherEntries = contentEntries.filter(({ id }) => id !== 'api.core.monkeyking')
-    const jsonNames = contentEntries.flatMap(({ legacyJsonNames }) => legacyJsonNames)
+    const jsonNames = contentEntries.flatMap(({ jsonNames }) => jsonNames)
 
-    expect(monkeyKing?.legacyJsonNames).toEqual(['monkeyking', 'autojs'])
-    expect(otherEntries.every(({ legacyJsonNames }) => legacyJsonNames.length === 1)).toBe(
+    expect(monkeyKing?.jsonNames).toEqual(['monkeyking', 'autojs'])
+    expect(otherEntries.every(({ jsonNames }) => jsonNames.length === 1)).toBe(
+      true,
+    )
+    expect(contentEntries.every((entry) => entry.legacyJsonNames === entry.jsonNames)).toBe(
       true,
     )
     expectUnique(jsonNames)
+  })
+
+  test('declares the twelve canonical-only 6.7.0 module pages and JSON entry names', () => {
+    expect(
+      contentEntries
+        .filter(({ legacySource }) => legacySource === undefined)
+        .map(({ id, source, jsonNames, includeInLegacyAll }) => [
+          id,
+          source,
+          jsonNames[0],
+          includeInLegacyAll,
+        ]),
+    ).toEqual(
+      expectedCanonicalOnlyEntries.map(([id, source, jsonName]) => [
+        id,
+        source,
+        jsonName,
+        false,
+      ]),
+    )
   })
 
   test('uses kebab-case source directories and basenames', () => {
@@ -150,7 +202,9 @@ describe('content catalog contract', () => {
       expect(sourceSegments.every((segment) => kebabCaseSegment.test(segment))).toBe(true)
       expect(entry.section).toBe(sourceSegments.slice(0, -1).join('/'))
       expect(entry.id).toBe(relativeSource.replaceAll('/', '.'))
-      expect(entry.legacySource).toMatch(/^api\/[^/]+\.md$/)
+      if (entry.legacySource !== undefined) {
+        expect(entry.legacySource).toMatch(/^api\/[^/]+\.md$/)
+      }
     }
   })
 
@@ -168,7 +222,9 @@ describe('content catalog contract', () => {
       route: '/api/core/monkeyking.html',
       title: 'Monkey King - 本体应用',
       section: 'api/core',
+      jsonNames: ['monkeyking', 'autojs'],
       legacyJsonNames: ['monkeyking', 'autojs'],
+      includeInLegacyAll: true,
     })
     expect(contentEntries.find(({ legacySource }) => legacySource === 'api/qa.md')).toEqual({
       id: 'guide.troubleshooting',
@@ -177,7 +233,9 @@ describe('content catalog contract', () => {
       route: '/guide/troubleshooting.html',
       title: 'Troubleshooting - 疑难解答',
       section: 'guide',
+      jsonNames: ['qa'],
       legacyJsonNames: ['qa'],
+      includeInLegacyAll: true,
     })
     expect(
       contentEntries.find(({ legacySource }) => legacySource === 'api/documentation.md'),
@@ -188,7 +246,9 @@ describe('content catalog contract', () => {
       route: '/project/about.html',
       title: 'About - 关于文档',
       section: 'project',
+      jsonNames: ['documentation'],
       legacyJsonNames: ['documentation'],
+      includeInLegacyAll: true,
     })
   })
 
@@ -218,13 +278,20 @@ describe('content catalog contract', () => {
     ])
   })
 
-  test('preserves the 42-entry legacy all-document include order by canonical id', () => {
-    expect(legacyAllEntryIds).toHaveLength(42)
+  test('preserves the legacy all-document include order by canonical id', () => {
+    expect(legacyAllEntryIds).toHaveLength(expectedLegacyAllEntryIds.length)
     expectUnique(legacyAllEntryIds)
     expect(legacyAllEntryIds.every((id) => contentEntries.some((entry) => entry.id === id))).toBe(
       true,
     )
     expect(legacyAllEntryIds).toEqual(expectedLegacyAllEntryIds)
+    expect(
+      new Set(
+        contentEntries
+          .filter(({ includeInLegacyAll }) => includeInLegacyAll)
+          .map(({ id }) => id),
+      ),
+    ).toEqual(new Set(expectedLegacyAllEntryIds))
   })
 
   test('freezes the exported catalog and every nested collection at runtime', () => {
@@ -234,7 +301,10 @@ describe('content catalog contract', () => {
     expect(Object.isFrozen(contentEntries)).toBe(true)
     expect(contentEntries.every((entry) => Object.isFrozen(entry))).toBe(true)
     expect(
-      contentEntries.every(({ legacyJsonNames }) => Object.isFrozen(legacyJsonNames)),
+      contentEntries.every(
+        ({ jsonNames, legacyJsonNames }) =>
+          Object.isFrozen(jsonNames) && Object.isFrozen(legacyJsonNames),
+      ),
     ).toBe(true)
     expect(Object.isFrozen(contentEntriesBySection)).toBe(true)
     expect(
@@ -316,7 +386,10 @@ describe('content catalog contract', () => {
     {
       name: 'unsafe generated JSON stem',
       options: {
-        entries: replaceEntry(8, { legacyJsonNames: ['nested/name'] }),
+        entries: replaceEntry(8, {
+          jsonNames: ['nested/name'],
+          legacyJsonNames: ['nested/name'],
+        }),
       },
       expectedError: /Invalid generated legacy JSON stem/,
     },
@@ -355,7 +428,10 @@ describe('content catalog contract', () => {
     'control\u0000character',
   ])('rejects unsafe generated JSON stem %j', (stem) => {
     const errors = validateContentCatalog({
-      entries: replaceEntry(8, { legacyJsonNames: [stem] }),
+      entries: replaceEntry(8, {
+        jsonNames: [stem],
+        legacyJsonNames: [stem],
+      }),
     })
 
     expect(errors.join('\n')).toMatch(/Invalid generated legacy JSON stem/)
@@ -383,7 +459,10 @@ describe('content catalog contract', () => {
     'accepts safe numeric, camelCase, and kebab-case JSON stem %s',
     (stem) => {
       const errors = validateContentCatalog({
-        entries: replaceEntry(8, { legacyJsonNames: [stem] }),
+        entries: replaceEntry(8, {
+          jsonNames: [stem],
+          legacyJsonNames: [stem],
+        }),
       })
 
       expect(errors.filter((error) => error.includes('legacy JSON stem'))).toEqual([])

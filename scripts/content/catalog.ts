@@ -18,21 +18,33 @@ export type ContentSectionId = (typeof contentSections)[number]['id']
 
 export interface ContentEntry {
   readonly id: string
-  readonly legacySource: string
+  readonly legacySource?: string
   readonly source: string
   readonly route: string
   readonly title: string
   readonly section: ContentSectionId
+  readonly jsonNames: readonly string[]
+  readonly includeInLegacyAll: boolean
+  /** @deprecated Use jsonNames. */
   readonly legacyJsonNames: readonly string[]
 }
 
 type ContentTargetPath = `${ContentSectionId}/${string}`
-type ContentEntryDefinition = readonly [
+type LegacyContentEntryDefinition = readonly [
   legacyStem: string,
   targetPathUnderDocs: ContentTargetPath,
   title: string,
   legacyJsonNames?: readonly [string, ...string[]],
 ]
+type CanonicalContentEntryDefinition = readonly [
+  legacyStem: undefined,
+  targetPathUnderDocs: ContentTargetPath,
+  title: string,
+  jsonNames: readonly [string, ...string[]],
+]
+type ContentEntryDefinition =
+  | LegacyContentEntryDefinition
+  | CanonicalContentEntryDefinition
 
 type DottedPath<Path extends string> =
   Path extends `${infer Head}/${infer Tail}`
@@ -47,33 +59,78 @@ type DirectoryPath<Path extends string> =
     : never
 
 type DefinitionJsonNames<Definition extends ContentEntryDefinition> =
-  Definition extends readonly [
-    string,
-    ContentTargetPath,
-    string,
-    infer Names extends readonly [string, ...string[]],
-  ]
-    ? Names
-    : readonly [Definition[0]]
+  Definition[3] extends readonly [string, ...string[]]
+    ? Definition[3]
+    : Definition[0] extends string
+      ? readonly [Definition[0]]
+      : never
 
 type ContentEntryFromDefinition<
   Definition extends ContentEntryDefinition,
 > = Definition extends ContentEntryDefinition
   ? Readonly<{
       id: DottedPath<Definition[1]>
-      legacySource: `api/${Definition[0]}.md`
+      legacySource: Definition[0] extends string
+        ? `api/${Definition[0]}.md`
+        : undefined
       source: `docs/${Definition[1]}.md`
       route: `/${Definition[1]}.html`
       title: Definition[2]
       section: Extract<DirectoryPath<Definition[1]>, ContentSectionId>
+      jsonNames: DefinitionJsonNames<Definition>
+      includeInLegacyAll: boolean
       legacyJsonNames: DefinitionJsonNames<Definition>
     }>
   : never
 
-const EXPECTED_CONTENT_ENTRY_COUNT = 101
-const EXPECTED_LEGACY_ALL_ENTRY_COUNT = 42
 const KEBAB_CASE_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const SAFE_LEGACY_JSON_STEM = /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/
+
+const legacyAllEntryIdDefinitions = [
+  'guide.overview',
+  'project.about',
+  'guide.troubleshooting',
+  'api.core.global',
+  'api.automation.automator',
+  'api.core.monkeyking',
+  'api.core.app',
+  'api.media.color',
+  'api.media.image',
+  'api.media.ocr',
+  'api.media.barcode',
+  'api.media.qr-code',
+  'api.automation.keys',
+  'api.system.device',
+  'api.system.storages',
+  'api.system.files',
+  'api.system.engines',
+  'api.system.tasks',
+  'api.core.modules',
+  'api.core.plugins',
+  'api.system.toast',
+  'api.system.notice',
+  'api.system.console',
+  'api.system.shell',
+  'api.media.media',
+  'api.system.sensors',
+  'api.media.recorder',
+  'api.system.timers',
+  'api.system.threads',
+  'api.system.continuation',
+  'api.system.events',
+  'api.automation.dialogs',
+  'api.automation.floaty',
+  'api.media.canvas',
+  'api.automation.ui',
+  'api.network.web',
+  'api.network.http',
+  'api.utilities.base64',
+  'api.utilities.crypto',
+  'api.utilities.opencc',
+  'api.utilities.i18n',
+  'api.utilities.e4x',
+] as const
+const legacyAllEntryIdSet = new Set<string>(legacyAllEntryIdDefinitions)
 
 const contentDefinitions = [
   ['overview', 'guide/overview', 'Overview - 综述'],
@@ -111,6 +168,8 @@ const contentDefinitions = [
   ['threads', 'api/system/threads', 'Threads - 线程'],
   ['continuation', 'api/system/continuation', 'Continuation - 协程'],
   ['events', 'api/system/events', 'Events - 事件监听'],
+  [undefined, 'api/system/sysprops', 'Sysprops - 系统属性', ['sysprops']],
+  [undefined, 'api/system/sqlite', 'SQLite - 数据库', ['sqlite']],
   ['color', 'api/media/color', 'Color - 颜色'],
   ['image', 'api/media/image', 'Images - 图像'],
   ['ocr', 'api/media/ocr', 'OCR - 光学字符识别'],
@@ -119,6 +178,7 @@ const contentDefinitions = [
   ['media', 'api/media/media', 'Media - 多媒体'],
   ['recorder', 'api/media/recorder', 'Recorder - 记录器'],
   ['canvas', 'api/media/canvas', 'Canvas - 画布'],
+  [undefined, 'api/media/mediainfo', 'MediaInfo - 媒体信息', ['mediainfo']],
   ['web', 'api/network/web', 'Web - 万维网'],
   ['http', 'api/network/http', 'HTTP'],
   ['webSocketType', 'api/network/web-socket', 'WebSocket'],
@@ -133,6 +193,15 @@ const contentDefinitions = [
   ['numberx', 'api/utilities/numberx', 'Numberx - Number 扩展'],
   ['mathx', 'api/utilities/mathx', 'Mathx - Math 扩展'],
   ['versionType', 'api/utilities/version', 'Version - 版本工具类'],
+  [undefined, 'api/utilities/util', 'Util - 实用工具', ['util']],
+  [undefined, 'api/utilities/converter', 'Converter / cvt - 数据转换', ['cvt']],
+  [undefined, 'api/utilities/formatter', 'Formatter / fmt - 数据格式化', ['fmt']],
+  [undefined, 'api/utilities/jsox', 'Jsox - JavaScript 对象扩展', ['jsox']],
+  [undefined, 'api/utilities/mime', 'MIME - 媒体类型', ['mime']],
+  [undefined, 'api/utilities/zip', 'Zip - 压缩与解压', ['zip']],
+  [undefined, 'api/utilities/nanoid', 'NanoID', ['nanoid']],
+  [undefined, 'api/utilities/pinyin', 'Pinyin - 拼音', ['pinyin']],
+  [undefined, 'api/utilities/pinyin4j', 'Pinyin4j - 拼音转换', ['pinyin4j']],
   ['androidBundleType', 'api/types/android-bundle', 'AndroidBundle'],
   ['androidRectType', 'api/types/android-rect', 'AndroidRect'],
   ['appType', 'api/types/app', 'App - 应用枚举类'],
@@ -179,17 +248,26 @@ const contentDefinitions = [
   ['colorTable', 'reference/color-table', 'Color Table - 颜色列表'],
 ] as const satisfies readonly ContentEntryDefinition[]
 
+const EXPECTED_CONTENT_ENTRY_COUNT = 113
+const EXPECTED_LEGACY_ALL_ENTRY_COUNT = 42
+
 function createContentEntry<
   const Definition extends ContentEntryDefinition,
 >(definition: Definition): ContentEntryFromDefinition<Definition> {
   const [legacyStem, targetPathUnderDocs, title, explicitJsonNames] = definition
-  const legacyJsonNames = Object.freeze(
-    explicitJsonNames ? [...explicitJsonNames] : [legacyStem],
+  const jsonNames = Object.freeze(
+    explicitJsonNames
+      ? [...explicitJsonNames]
+      : legacyStem === undefined
+        ? []
+        : [legacyStem],
   )
+  const id = targetPathUnderDocs.replaceAll('/', '.')
 
   return Object.freeze({
-    id: targetPathUnderDocs.replaceAll('/', '.'),
-    legacySource: 'api/' + legacyStem + '.md',
+    id,
+    legacySource:
+      legacyStem === undefined ? undefined : 'api/' + legacyStem + '.md',
     source: 'docs/' + targetPathUnderDocs + '.md',
     route: '/' + targetPathUnderDocs + '.html',
     title,
@@ -197,7 +275,9 @@ function createContentEntry<
       0,
       targetPathUnderDocs.lastIndexOf('/'),
     ),
-    legacyJsonNames,
+    jsonNames,
+    includeInLegacyAll: legacyAllEntryIdSet.has(id),
+    legacyJsonNames: jsonNames,
   }) as unknown as ContentEntryFromDefinition<Definition>
 }
 
@@ -249,50 +329,9 @@ export const frozenLegacyJsonStems = Object.freeze([
   'widgetsBasedAutomation',
 ] as const)
 
-export const legacyAllEntryIds = Object.freeze([
-  'guide.overview',
-  'project.about',
-  'guide.troubleshooting',
-  'api.core.global',
-  'api.automation.automator',
-  'api.core.monkeyking',
-  'api.core.app',
-  'api.media.color',
-  'api.media.image',
-  'api.media.ocr',
-  'api.media.barcode',
-  'api.media.qr-code',
-  'api.automation.keys',
-  'api.system.device',
-  'api.system.storages',
-  'api.system.files',
-  'api.system.engines',
-  'api.system.tasks',
-  'api.core.modules',
-  'api.core.plugins',
-  'api.system.toast',
-  'api.system.notice',
-  'api.system.console',
-  'api.system.shell',
-  'api.media.media',
-  'api.system.sensors',
-  'api.media.recorder',
-  'api.system.timers',
-  'api.system.threads',
-  'api.system.continuation',
-  'api.system.events',
-  'api.automation.dialogs',
-  'api.automation.floaty',
-  'api.media.canvas',
-  'api.automation.ui',
-  'api.network.web',
-  'api.network.http',
-  'api.utilities.base64',
-  'api.utilities.crypto',
-  'api.utilities.opencc',
-  'api.utilities.i18n',
-  'api.utilities.e4x',
-] as const satisfies readonly ContentEntryId[])
+export const legacyAllEntryIds = Object.freeze(
+  [...legacyAllEntryIdDefinitions] as const satisfies readonly ContentEntryId[],
+)
 
 export interface ContentCatalogValidationOptions {
   readonly entries?: readonly ContentEntry[]
@@ -402,32 +441,42 @@ export function validateContentCatalog(
   addDuplicateErrors(
     errors,
     'legacy source',
-    entries.map(({ legacySource }) => legacySource),
+    entries.flatMap(({ legacySource }) =>
+      legacySource === undefined ? [] : [legacySource],
+    ),
   )
   addDuplicateErrors(errors, 'source', entries.map(({ source }) => source))
   addDuplicateErrors(errors, 'route', entries.map(({ route }) => route))
   addDuplicateErrors(
     errors,
-    'legacy JSON name',
-    entries.flatMap(({ legacyJsonNames }) => legacyJsonNames),
+    'JSON name',
+    entries.flatMap(({ jsonNames }) => jsonNames),
   )
 
   for (const entry of entries) {
     if (!entry.title.trim()) {
-      errors.push('Missing title for ' + (entry.id || entry.legacySource))
+      errors.push('Missing title for ' + (entry.id || entry.source))
     }
 
-    addUnsafeJsonStemErrors(
-      errors,
-      'generated',
-      entry.legacyJsonNames,
-      entry.id,
-    )
+    addUnsafeJsonStemErrors(errors, 'generated', entry.jsonNames, entry.id)
 
-    if (!/^api\/[^/]+\.md$/.test(entry.legacySource)) {
+    if (
+      entry.legacySource !== undefined &&
+      !/^api\/[^/]+\.md$/.test(entry.legacySource)
+    ) {
       errors.push(
         'Invalid legacy source for ' + entry.id + ': ' + entry.legacySource,
       )
+    }
+
+    if (!sameOrderedValues(entry.legacyJsonNames, entry.jsonNames)) {
+      errors.push(`Legacy JSON-name alias mismatch for ${entry.id}`)
+    }
+
+    if (
+      entry.includeInLegacyAll !== legacyAllEntryIdSet.has(entry.id)
+    ) {
+      errors.push(`Legacy all-document membership mismatch for ${entry.id}`)
     }
 
     if (!/^docs\/.+\.md$/.test(entry.source)) {
@@ -484,14 +533,14 @@ export function validateContentCatalog(
 
     const expectedJsonNameCount =
       entry.id === 'api.core.monkeyking' ? 2 : 1
-    if (entry.legacyJsonNames.length !== expectedJsonNameCount) {
+    if (entry.jsonNames.length !== expectedJsonNameCount) {
       errors.push(
         'Expected ' +
           expectedJsonNameCount +
-          ' legacy JSON name(s) for ' +
+          ' JSON name(s) for ' +
           entry.id +
           ', found ' +
-          entry.legacyJsonNames.length,
+          entry.jsonNames.length,
       )
     }
   }
@@ -561,7 +610,7 @@ export function validateContentCatalog(
   }
 
   const generatedJsonNames = entries.flatMap(
-    ({ legacyJsonNames }) => legacyJsonNames,
+    ({ jsonNames }) => jsonNames,
   )
   const frozenGeneratedCollisions = frozenJsonStems.filter((stem) =>
     generatedJsonNames.includes(stem),
@@ -574,7 +623,9 @@ export function validateContentCatalog(
   }
 
   const expectedLegacySources = [
-    ...entries.map(({ legacySource }) => legacySource),
+    ...entries.flatMap(({ legacySource }) =>
+      legacySource === undefined ? [] : [legacySource],
+    ),
     ...deletedSources,
   ]
   addDuplicateErrors(errors, 'covered legacy source', expectedLegacySources)

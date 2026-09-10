@@ -1,0 +1,327 @@
+{
+  "source": "..\\docs\\api\\utilities\\util.md",
+  "modules": [
+    {
+      "textRaw": "Util - 实用工具",
+      "name": "util_-_实用工具",
+      "desc": "<p><code>util</code> 汇集类型判断、对象继承、格式化、类型断言、尺寸换算以及 Java 互操作等通用能力。运行时同时注册 <code>util</code> 与 <code>$util</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.0</strong></p>\n",
+      "modules": [
+        {
+          "textRaw": "util",
+          "name": "util",
+          "desc": "<pre><code class=\"lang-js\">console.log(util === $util); // true\nconsole.log(util.isArray([1, 2])); // true\nconsole.log(util.format(&#39;%s: %d&#39;, &#39;count&#39;, 2)); // count: 2\n</code></pre>\n",
+          "type": "module",
+          "displayName": "util"
+        },
+        {
+          "textRaw": "类型判断",
+          "name": "类型判断",
+          "desc": "<p>下列方法都只接收一个参数并返回 <code>boolean</code>：</p>\n<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>为 <code>true</code> 的条件</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>util.isArray(value)</code></td>\n<td>JavaScript 数组</td>\n</tr>\n<tr>\n<td><code>util.isBoolean(value)</code></td>\n<td>布尔值</td>\n</tr>\n<tr>\n<td><code>util.isNull(value)</code></td>\n<td>严格为 <code>null</code></td>\n</tr>\n<tr>\n<td><code>util.isNullOrUndefined(value)</code></td>\n<td><code>null</code> 或 <code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isNumber(value)</code></td>\n<td>JavaScript 数值</td>\n</tr>\n<tr>\n<td><code>util.isString(value)</code></td>\n<td>字符串</td>\n</tr>\n<tr>\n<td><code>util.isSymbol(value)</code></td>\n<td><code>Symbol</code></td>\n</tr>\n<tr>\n<td><code>util.isUndefined(value)</code></td>\n<td><code>undefined</code></td>\n</tr>\n<tr>\n<td><code>util.isRegExp(value)</code></td>\n<td>正则表达式</td>\n</tr>\n<tr>\n<td><code>util.isObject(value)</code></td>\n<td>JavaScript 的对象类型；<code>null</code> 也符合 <code>typeof</code> 的对象语义</td>\n</tr>\n<tr>\n<td><code>util.isDate(value)</code></td>\n<td><code>Date</code></td>\n</tr>\n<tr>\n<td><code>util.isError(value)</code></td>\n<td>错误对象</td>\n</tr>\n<tr>\n<td><code>util.isFunction(value)</code></td>\n<td>可调用函数</td>\n</tr>\n<tr>\n<td><code>util.isBigInt(value)</code></td>\n<td><code>BigInt</code></td>\n</tr>\n<tr>\n<td><code>util.isJavaObject(value)</code></td>\n<td>Rhino 包装的 Java 对象</td>\n</tr>\n<tr>\n<td><code>util.isJavaArray(value)</code></td>\n<td>Rhino 包装的 Java 数组</td>\n</tr>\n<tr>\n<td><code>util.isInteger(value)</code></td>\n<td>整数</td>\n</tr>\n<tr>\n<td><code>util.isPrimitive(value)</code></td>\n<td>非引用值</td>\n</tr>\n<tr>\n<td><code>util.isReference(value)</code></td>\n<td>非空对象或函数</td>\n</tr>\n<tr>\n<td><code>util.isEmptyObject(value)</code></td>\n<td>没有自有属性的脚本对象</td>\n</tr>\n</tbody>\n</table>\n<p>参数数量不为 1 时会抛出参数错误。</p>\n",
+          "type": "module",
+          "displayName": "类型判断"
+        },
+        {
+          "textRaw": "util.deprecate() 与 util.debuglog()",
+          "name": "util.deprecate()_与_util.debuglog()",
+          "desc": "<p>这两个 Node.js 兼容名称不适用于 Monkey King。当前实现只向全局控制台输出警告，不会创建包装函数或调试记录器。</p>\n",
+          "type": "module",
+          "displayName": "util.deprecate() 与 util.debuglog()"
+        },
+        {
+          "textRaw": "字符串工具",
+          "name": "字符串工具",
+          "methods": [
+            {
+              "textRaw": "util.checkStringArgument(source, pattern)",
+              "type": "method",
+              "name": "checkStringArgument",
+              "desc": "<p>将原始值去除首尾空白后进行不区分大小写的完整匹配。<code>pattern</code> 可为字符串或运行时可识别的正则对象；字符串会自动加上首尾锚点。<code>source</code> 必须为非空的原始值，其他类型会抛出错误。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "pattern"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "util.assureStringStartsWith(source, start)",
+              "type": "method",
+              "name": "assureStringStartsWith",
+              "desc": "<p>当 <code>source</code> 尚未以 <code>start</code> 开头时补上前缀。两个参数都必须是字符串。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "start"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "util.assureStringEndsWith(source, end)",
+              "type": "method",
+              "name": "assureStringEndsWith",
+              "desc": "<p>当 <code>source</code> 尚未以 <code>end</code> 结尾时补上后缀。两个参数都必须是字符串。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "end"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "util.assureStringSurroundsWith(source, start, end?)",
+              "type": "method",
+              "name": "assureStringSurroundsWith",
+              "desc": "<p>同时保证前缀和后缀；省略 <code>end</code> 或传入空值时，后缀沿用 <code>start</code>。</p>\n<pre><code class=\"lang-js\">console.log(util.assureStringStartsWith(&#39;api&#39;, &#39;/&#39;)); // /api\nconsole.log(util.assureStringEndsWith(&#39;index&#39;, &#39;.md&#39;)); // index.md\nconsole.log(util.assureStringSurroundsWith(&#39;name&#39;, &#39;&quot;&#39;)); // &quot;name&quot;\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "start"
+                    },
+                    {
+                      "name": "end?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "字符串工具"
+        },
+        {
+          "textRaw": "类型断言",
+          "name": "类型断言",
+          "methods": [
+            {
+              "textRaw": "util.ensureType(value, type)",
+              "type": "method",
+              "name": "ensureType",
+              "desc": "<p>按 JavaScript <code>typeof</code> 语义校验类型。<code>type</code> 必须是以下字符串之一：<code>object</code>、<code>string</code>、<code>undefined</code>、<code>symbol</code>、<code>bigint</code>、<code>number</code>、<code>function</code>、<code>boolean</code>。类型不匹配或名称非法时抛出参数错误，校验成功时没有返回值。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    },
+                    {
+                      "name": "type"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "modules": [
+            {
+              "textRaw": "便捷断言",
+              "name": "便捷断言",
+              "desc": "<p>下列方法可接收任意数量的值并逐个校验，任意一个不匹配都会抛出参数错误：</p>\n<ul>\n<li><code>util.ensureStringType(values)</code></li>\n<li><code>util.ensureNumberType(values)</code></li>\n<li><code>util.ensureUndefinedType(values)</code></li>\n<li><code>util.ensureBooleanType(values)</code></li>\n<li><code>util.ensureSymbolType(values)</code></li>\n<li><code>util.ensureBigIntType(values)</code></li>\n<li><code>util.ensureObjectType(values)</code></li>\n<li><code>util.ensureFunctionType(values)</code></li>\n<li><code>util.ensureNonNullObjectType(values)</code></li>\n<li><code>util.ensureArrayType(values)</code></li>\n</ul>\n<pre><code class=\"lang-js\">util.ensureType(1, &#39;number&#39;);\nutil.ensureStringType(&#39;a&#39;, &#39;b&#39;);\nutil.ensureArrayType([], [1]);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "便捷断言"
+            }
+          ],
+          "type": "module",
+          "displayName": "类型断言"
+        },
+        {
+          "textRaw": "尺寸换算",
+          "name": "尺寸换算",
+          "desc": "<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>说明</th>\n<th>返回值</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>util.dpToPx(value)</code></td>\n<td>dp 转 px</td>\n<td><code>number</code></td>\n</tr>\n<tr>\n<td><code>util.spToPx(value)</code></td>\n<td>sp 转 px</td>\n<td><code>number</code></td>\n</tr>\n<tr>\n<td><code>util.pxToDp(value)</code></td>\n<td>px 转 dp</td>\n<td><code>number</code></td>\n</tr>\n<tr>\n<td><code>util.pxToSp(value)</code></td>\n<td>px 转 sp</td>\n<td><code>number</code></td>\n</tr>\n</tbody>\n</table>\n<p>结果依赖当前设备的显示密度或字体缩放设置。</p>\n",
+          "type": "module",
+          "displayName": "尺寸换算"
+        },
+        {
+          "textRaw": "内部兼容方法",
+          "name": "内部兼容方法",
+          "desc": "<p><code>util.__assignFunctions__(source, target, functionNames)</code> 用于把指定方法绑定后复制到另一个脚本对象。它要求前两个参数为 <code>ScriptableObject</code>、第三个参数为数组，且每个名称都指向函数。该名称主要供运行时模块装配使用，业务脚本不应依赖它。</p>\n",
+          "type": "module",
+          "displayName": "内部兼容方法"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "util.unwrapJavaObject(value)",
+          "type": "method",
+          "name": "unwrapJavaObject",
+          "desc": "<p>解除 Rhino 的 Java 包装并返回底层值；非包装值按运行时的通用解包规则处理。</p>\n<pre><code class=\"lang-js\">let list = new java.util.ArrayList();\nlet raw = util.unwrapJavaObject(list);\nconsole.log(raw.getClass().getName());\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "util.extend(child, parent)",
+          "type": "method",
+          "name": "extend",
+          "desc": "<p>设置构造函数或脚本对象的继承关系，并调整 <code>child.prototype</code> 的原型链。<code>child</code> 必须是 <code>ScriptableObject</code>；<code>parent</code> 可以是脚本对象、可转换为脚本对象的值或 <code>null</code>。非法原型会抛出参数错误。</p>\n<pre><code class=\"lang-js\">function Animal() {}\nAnimal.prototype.kind = &#39;animal&#39;;\n\nfunction Cat() {}\nutil.extend(Cat, Animal);\n\nconsole.log(new Cat().kind); // animal\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "child"
+                },
+                {
+                  "name": "parent"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "util.format(format, values)",
+          "type": "method",
+          "name": "format",
+          "desc": "<p>生成格式化字符串。参数可以继续追加，不限制为固定数量。</p>\n<ul>\n<li>首个参数不是字符串时，对全部参数调用 <code>util.inspect</code> 后用空格连接。</li>\n<li><code>%s</code> 转为字符串。</li>\n<li><code>%d</code> 转为数值。</li>\n<li><code>%j</code> 使用 JSON 序列化；循环引用显示为 <code>[Circular]</code>。</li>\n<li><code>%%</code> 输出百分号。</li>\n<li>缺少对应值或遇到未知占位符时保留原文本。</li>\n<li>尚未消费的参数追加到结果尾部，对象使用 <code>util.inspect</code>。</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(util.format(&#39;%s=%d&#39;, &#39;size&#39;, 3)); // size=3\nconsole.log(util.format({ ok: true }, [1, 2]));\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "format"
+                },
+                {
+                  "name": "values"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "util.log(values)",
+          "type": "method",
+          "name": "log",
+          "desc": "<p>先用 <code>util.format</code> 生成消息，再在前方加入 <code>dd MMM HH:mm:ss</code> 格式的本地时间并写入全局控制台。此方法只输出日志，不返回有意义的值。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "values"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "util.toRegular(fn)",
+          "type": "method",
+          "name": "toRegular",
+          "desc": "<p>将没有普通 <code>prototype</code> 的函数包装为常规函数。已经具备对象型 <code>prototype</code> 的函数会原样返回；参数不是函数时抛出类型错误。</p>\n<p><code>util.toRegularAndCall()</code> 与 <code>util.toRegularAndApply()</code> 已废弃，当前实现调用即抛出过时函数异常。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "fn"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "util.inspect(value, options?)",
+          "type": "method",
+          "name": "inspect",
+          "desc": "<p>返回适合调试输出的字符串，也可以直接调用 <code>util.inspect(value)</code>。支持的选项如下：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>showHidden</code></td>\n<td><code>false</code></td>\n<td>是否显示隐藏属性</td>\n</tr>\n<tr>\n<td><code>depth</code></td>\n<td><code>2</code></td>\n<td>最大递归深度</td>\n</tr>\n<tr>\n<td><code>colors</code></td>\n<td><code>false</code></td>\n<td>是否加入 ANSI 样式</td>\n</tr>\n<tr>\n<td><code>customInspect</code></td>\n<td><code>false</code></td>\n<td>是否允许对象自定义检查逻辑</td>\n</tr>\n<tr>\n<td><code>maxArrayItems</code></td>\n<td><code>10000</code></td>\n<td>最多显示的数组项目数</td>\n</tr>\n<tr>\n<td><code>maxObjectKeys</code></td>\n<td><code>10000</code></td>\n<td>最多显示的对象键数</td>\n</tr>\n<tr>\n<td><code>maxStringLength</code></td>\n<td><code>100000</code></td>\n<td>最长字符串长度</td>\n</tr>\n</tbody>\n</table>\n<p><code>options</code> 必须是 JavaScript 对象。<code>util.inspect.colors</code> 与 <code>util.inspect.styles</code> 暴露当前 ANSI 颜色和类型样式映射。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "options?"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "properties": [
+        {
+          "textRaw": "util.java",
+          "name": "java",
+          "desc": "<p>Java 互操作辅助对象。</p>\n",
+          "modules": [
+            {
+              "textRaw": "util.java.instanceof(object, classValue)",
+              "name": "util.java.instanceof(object,_classvalue)",
+              "desc": "<p>判断 <code>object</code> 是否为目标 Java 类或其子类的实例。<code>classValue</code> 可为 <code>Class</code>、<code>NativeJavaClass</code>、包装类或可解析的完整类名。<code>object</code> 为 <code>null</code> 时抛出错误，类无法解析时会传播类加载异常。</p>\n",
+              "type": "module",
+              "displayName": "util.java.instanceof(object, classValue)"
+            },
+            {
+              "textRaw": "util.java.array(componentType, dimensions)",
+              "name": "util.java.array(componenttype,_dimensions)",
+              "desc": "<p>创建 Java 数组。<code>componentType</code> 可为 Java 类、完整类名或 <code>string</code>、<code>int</code>、<code>long</code>、<code>double</code>、<code>char</code>、<code>byte</code>、<code>float</code>、<code>short</code>、<code>boolean</code>；后续一个或多个参数为各维长度。未提供维度时抛出错误。</p>\n<pre><code class=\"lang-js\">let bytes = util.java.array(&#39;byte&#39;, 16);\nlet matrix = util.java.array(&#39;int&#39;, 2, 3);\nconsole.log(bytes.length); // 16\n</code></pre>\n",
+              "type": "module",
+              "displayName": "util.java.array(componentType, dimensions)"
+            },
+            {
+              "textRaw": "util.java.toJsArray(iterable, nullToEmpty?)",
+              "name": "util.java.tojsarray(iterable,_nulltoempty?)",
+              "desc": "<p>把 Java <code>Iterable</code> 转为 JavaScript 数组。输入为 <code>null</code> 时默认返回 <code>null</code>；<code>nullToEmpty</code> 为真时返回空数组。非可迭代值会抛出参数错误。</p>\n",
+              "type": "module",
+              "displayName": "util.java.toJsArray(iterable, nullToEmpty?)"
+            },
+            {
+              "textRaw": "util.java.objectToMap(object)",
+              "name": "util.java.objecttomap(object)",
+              "desc": "<p>把 JavaScript 普通对象的自有属性复制到 <code>HashMap&lt;String, Object&gt;</code>。空值返回 <code>null</code>，非普通对象会抛出参数错误。</p>\n",
+              "type": "module",
+              "displayName": "util.java.objectToMap(object)"
+            },
+            {
+              "textRaw": "util.java.mapToObject(map)",
+              "name": "util.java.maptoobject(map)",
+              "desc": "<p>把 Java <code>Map</code> 的条目复制到 JavaScript 普通对象，键按字符串转换。空值返回 <code>null</code>，非 <code>Map</code> 值会抛出参数错误。</p>\n",
+              "type": "module",
+              "displayName": "util.java.mapToObject(map)"
+            }
+          ]
+        },
+        {
+          "textRaw": "util.morseCode",
+          "name": "morseCode",
+          "desc": "<p><code>util.morseCode(source, timeSpan?)</code> 返回一个摩尔斯电码对象。<code>timeSpan</code> 的默认值和下限都是 <code>100</code> 毫秒；支持拉丁字母、数字和源码字典中的常用标点，无法识别的字符会抛出错误。</p>\n<p>对象具有只读的 <code>code</code>、<code>pattern</code> 属性，以及 <code>getCode()</code>、<code>getPattern()</code>、<code>vibrate(delay?)</code>、<code>toString()</code> 方法。模块还提供同名快捷方法：</p>\n<ul>\n<li><code>util.morseCode.getCode(source, timeSpan?)</code></li>\n<li><code>util.morseCode.getPattern(source, timeSpan?)</code></li>\n<li><code>util.morseCode.vibrate(source, delay?)</code></li>\n</ul>\n<p><code>pattern</code> 是 Android 振动节奏数组。<code>vibrate</code> 会触发设备振动，延迟为负数或非数值时按 <code>0</code> 处理；空节奏不会振动。</p>\n<pre><code class=\"lang-js\">let sos = util.morseCode(&#39;SOS&#39;);\nconsole.log(sos.getCode());\nconsole.log(sos.getPattern());\n// sos.vibrate(200); // 在真实设备上产生振动\n</code></pre>\n"
+        },
+        {
+          "textRaw": "util.version",
+          "name": "version",
+          "desc": "<p><code>util.version.sdkInt</code> 是当前 Android 系统的 API 级别整数。</p>\n"
+        },
+        {
+          "textRaw": "util.versionCodes",
+          "name": "versionCodes",
+          "desc": "<p>提供 Android 版本代码查询：</p>\n<ul>\n<li><code>util.versionCodes.search(value)</code>：返回第一个匹配的版本信息对象或 <code>null</code>。</li>\n<li><code>util.versionCodes.searchAll(value)</code>：返回全部匹配项并按 API 级别降序排列。</li>\n<li><code>util.versionCodes.summary(detail?)</code>：生成版本摘要；<code>detail</code> 为真时包含完整字段。</li>\n<li><code>util.versionCodes.toString(detail?)</code>：与 <code>summary</code> 相同。</li>\n</ul>\n<p>查询值可为 API 级别、版本代码、发布名称、内部代号、平台版本、发布日期、时间戳、数值或 <code>Date</code>。结果对象包含 <code>versionCode</code>、<code>apiLevel</code>、<code>releaseName</code>、<code>platformVersion</code>、<code>internalCodename</code>、<code>releaseDate</code>、<code>releaseTimestamp</code>，其 <code>valueOf()</code> 返回 <code>apiLevel</code>。</p>\n"
+        }
+      ],
+      "type": "module",
+      "displayName": "Util - 实用工具"
+    }
+  ]
+}

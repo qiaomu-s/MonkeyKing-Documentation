@@ -1,0 +1,198 @@
+{
+  "source": "..\\docs\\api\\utilities\\mime.md",
+  "modules": [
+    {
+      "textRaw": "MIME - 媒体类型",
+      "name": "mime_-_媒体类型",
+      "desc": "<p><code>mime</code> 用于解析 MIME 字符串、创建 OkHttp <code>MediaType</code>、按文件扩展名推断类型，并提供 IANA 媒体类型常量。运行时同时注册 <code>mime</code> 与 <code>$mime</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.0</strong></p>\n<p>参考：<a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">IANA Media Types</a>、<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-media-type/\">OkHttp MediaType</a>。</p>\n",
+      "modules": [
+        {
+          "textRaw": "mime",
+          "name": "mime",
+          "methods": [
+            {
+              "textRaw": "mime(value)",
+              "type": "method",
+              "name": "mime",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "`value` {string} - MIME 字符串 ",
+                      "name": "value",
+                      "type": "string",
+                      "desc": "MIME 字符串"
+                    },
+                    {
+                      "textRaw": "返回 {JsMime} ",
+                      "name": "返回",
+                      "type": "JsMime"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "desc": "<p>解析一个 MIME 字符串。参数数量不为 1 或字符串格式无法被底层解析器接受时会抛出错误。</p>\n<pre><code class=\"lang-js\">let parsed = mime(&#39;text/html; charset=utf-8&#39;);\n\nconsole.log(parsed.type); // text\nconsole.log(parsed.subtype); // html\nconsole.log(parsed.mimeTypeRefined); // text/html\nconsole.log(parsed.parameters.charset); // utf-8\n</code></pre>\n"
+            }
+          ],
+          "type": "module",
+          "displayName": "mime"
+        },
+        {
+          "textRaw": "JsMime",
+          "name": "jsmime",
+          "desc": "<p><code>mime(value)</code> 返回的只读数据对象。</p>\n<table>\n<thead>\n<tr>\n<th>属性</th>\n<th>类型</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>raw</code></td>\n<td><code>string</code></td>\n<td>原始输入</td>\n</tr>\n<tr>\n<td><code>type</code></td>\n<td><code>string</code></td>\n<td>主类型，例如 <code>text</code></td>\n</tr>\n<tr>\n<td><code>subtype</code></td>\n<td><code>string</code></td>\n<td>子类型，例如 <code>html</code></td>\n</tr>\n<tr>\n<td><code>mimeType</code></td>\n<td><code>string</code></td>\n<td>规范化后的完整类型，保留参数</td>\n</tr>\n<tr>\n<td><code>mimeTypeRefined</code></td>\n<td><code>string</code></td>\n<td>只含 <code>type/subtype</code> 的类型</td>\n</tr>\n<tr>\n<td><code>parameters</code></td>\n<td><code>Object</code></td>\n<td>分号后可解析的键值参数，值均为字符串</td>\n</tr>\n</tbody>\n</table>\n<p><code>String(parsed)</code> 会返回包含上述字段的可读文本。</p>\n<pre><code class=\"lang-js\">let parsed = $mime(&#39;application/json; profile=compact&#39;);\nconsole.log(parsed.mimeType); // application/json; profile=compact\nconsole.log(String(parsed));\n</code></pre>\n",
+          "type": "module",
+          "displayName": "JsMime"
+        },
+        {
+          "textRaw": "MIME 常量",
+          "name": "mime_常量",
+          "desc": "<p>固定源码在 <code>mime</code> 对象上公开 <strong>2540</strong> 个大写常量，覆盖 IANA 注册表及少量兼容别名。常量名称把媒体类型转为大写下划线形式，例如 <code>application/problem+json</code> 对应 <code>APPLICATION_PROBLEM_JSON</code>；同一值可能有多个兼容名称。</p>\n<p>按名称前缀统计的常量族：</p>\n<table>\n<thead>\n<tr>\n<th>前缀</th>\n<th style=\"text-align:right\">数量</th>\n<th>示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>APPLICATION_</code></td>\n<td style=\"text-align:right\">1842</td>\n<td><code>APPLICATION_JSON</code>、<code>APPLICATION_PDF</code>、<code>APPLICATION_XML</code>、<code>APPLICATION_ZIP</code></td>\n</tr>\n<tr>\n<td><code>AUDIO_</code></td>\n<td style=\"text-align:right\">180</td>\n<td><code>AUDIO_AAC</code>、<code>AUDIO_FLAC</code>、<code>AUDIO_MPEG</code>、<code>AUDIO_OGG</code></td>\n</tr>\n<tr>\n<td><code>CHEMICAL_</code></td>\n<td style=\"text-align:right\">54</td>\n<td>化学数据媒体类型</td>\n</tr>\n<tr>\n<td><code>FONT_</code></td>\n<td style=\"text-align:right\">6</td>\n<td>字体媒体类型</td>\n</tr>\n<tr>\n<td><code>IMAGE_</code></td>\n<td style=\"text-align:right\">109</td>\n<td><code>IMAGE_JPEG</code>、<code>IMAGE_PNG</code>、<code>IMAGE_SVG_XML</code>、<code>IMAGE_WEBP</code></td>\n</tr>\n<tr>\n<td><code>INODE_</code></td>\n<td style=\"text-align:right\">6</td>\n<td>inode 兼容类型</td>\n</tr>\n<tr>\n<td><code>MESSAGE_</code></td>\n<td style=\"text-align:right\">24</td>\n<td><code>MESSAGE_RFC822</code> 等消息类型</td>\n</tr>\n<tr>\n<td><code>MODEL_</code></td>\n<td style=\"text-align:right\">42</td>\n<td>三维模型类型</td>\n</tr>\n<tr>\n<td><code>MULTIPART_</code></td>\n<td style=\"text-align:right\">19</td>\n<td><code>MULTIPART_FORM_DATA</code> 等复合类型</td>\n</tr>\n<tr>\n<td><code>TEXT_</code></td>\n<td style=\"text-align:right\">139</td>\n<td><code>TEXT_PLAIN</code>、<code>TEXT_HTML</code>、<code>TEXT_CSS</code>、<code>TEXT_CSV</code>、<code>TEXT_MARKDOWN</code></td>\n</tr>\n<tr>\n<td><code>VIDEO_</code></td>\n<td style=\"text-align:right\">111</td>\n<td><code>VIDEO_MP4</code>、<code>VIDEO_MPEG</code>、<code>VIDEO_OGG</code>、<code>VIDEO_WEBM</code></td>\n</tr>\n</tbody>\n</table>\n<p>其余顶层兼容常量包括：</p>\n<table>\n<thead>\n<tr>\n<th>常量</th>\n<th>值</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>mime.WILDCARD</code></td>\n<td><code>*/*</code></td>\n</tr>\n<tr>\n<td><code>mime.MEDIA_TYPE_WILDCARD</code></td>\n<td><code>*</code></td>\n</tr>\n<tr>\n<td><code>mime.APPLICATION_X_WWW_FORM_URLENCODED</code></td>\n<td><code>application/x-www-form-urlencoded</code></td>\n</tr>\n<tr>\n<td><code>mime.APPLICATION_FORM_URLENCODED</code></td>\n<td><code>application/x-www-form-urlencoded</code></td>\n</tr>\n<tr>\n<td><code>mime.APPLICATION_JSON_PATCH_JSON</code></td>\n<td><code>application/json-patch+json</code></td>\n</tr>\n<tr>\n<td><code>mime.MULTIPART_FORM_DATA</code></td>\n<td><code>multipart/form-data</code></td>\n</tr>\n<tr>\n<td><code>mime.SERVER_SENT_EVENTS</code></td>\n<td><code>text/event-stream</code></td>\n</tr>\n<tr>\n<td><code>mime.TEXT_EVENT_STREAM</code></td>\n<td><code>text/event-stream</code></td>\n</tr>\n</tbody>\n</table>\n<p>常用文件类型：</p>\n<pre><code class=\"lang-js\">console.log(mime.APPLICATION_JSON); // application/json\nconsole.log(mime.APPLICATION_PDF); // application/pdf\nconsole.log(mime.IMAGE_PNG); // image/png\nconsole.log(mime.AUDIO_FLAC); // audio/flac\nconsole.log(mime.VIDEO_MP4); // video/mp4\n</code></pre>\n<p>常量值来自固定源码生成时采用的注册表快照。IANA 后续新增或变更不会在已安装的 Monkey King 版本中自动同步，跨版本依赖冷门常量前应先检查其是否存在。</p>\n",
+          "type": "module",
+          "displayName": "MIME 常量"
+        },
+        {
+          "textRaw": "副作用与兼容性",
+          "name": "副作用与兼容性",
+          "desc": "<ul>\n<li><code>mime(value)</code> 和 OkHttp 转换只处理内存中的字符串。</li>\n<li>文件推断只查看扩展名，不读取文件内容。</li>\n<li>Android <code>MimeTypeMap</code> 的映射可能随系统版本变化；需要稳定结果时优先使用明确常量或自有映射。</li>\n<li><code>JsMime.parameters</code> 进行轻量键值拆分，不负责 RFC 参数解码、字符集验证或引号语义规范化。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "副作用与兼容性"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "mime.getMediaType(value)",
+          "type": "method",
+          "name": "getMediaType",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`value` {string} - 媒体类型字符串 ",
+                  "name": "value",
+                  "type": "string",
+                  "desc": "媒体类型字符串"
+                },
+                {
+                  "textRaw": "返回 {okhttp3.MediaType} ",
+                  "name": "返回",
+                  "type": "okhttp3.MediaType"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>使用 OkHttp 的严格解析接口创建 <code>MediaType</code>。格式非法时抛出 <code>IllegalArgumentException</code>。</p>\n"
+        },
+        {
+          "textRaw": "mime.parseMediaType(value)",
+          "type": "method",
+          "name": "parseMediaType",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`value` {string} - 媒体类型字符串 ",
+                  "name": "value",
+                  "type": "string",
+                  "desc": "媒体类型字符串"
+                },
+                {
+                  "textRaw": "返回 {okhttp3.MediaType | null} ",
+                  "name": "返回",
+                  "type": "okhttp3.MediaType | null"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>使用 OkHttp 的容错解析接口。格式非法时返回 <code>null</code>，不会因语法错误抛出异常。</p>\n<pre><code class=\"lang-js\">let jsonType = mime.getMediaType(mime.APPLICATION_JSON);\nlet invalid = mime.parseMediaType(&#39;not a media type&#39;);\n\nconsole.log(jsonType.type); // application\nconsole.log(invalid); // null\n</code></pre>\n"
+        },
+        {
+          "textRaw": "mime.fromFile(path)",
+          "type": "method",
+          "name": "fromFile",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`path` {string} - 文件路径或文件名 ",
+                  "name": "path",
+                  "type": "string",
+                  "desc": "文件路径或文件名"
+                },
+                {
+                  "textRaw": "返回 {string | null} ",
+                  "name": "返回",
+                  "type": "string | null"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "path"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>只读取路径扩展名并通过 Android <code>MimeTypeMap</code> 查询，不检查文件内容，也不要求文件实际存在。</p>\n<ul>\n<li>路径没有扩展名时返回 <code>mime.WILDCARD</code>，即 <code>*/*</code>。</li>\n<li>扩展名存在但 Android 没有映射时返回 <code>null</code>。</li>\n<li>找到映射时返回对应 MIME 字符串。</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(mime.fromFile(&#39;/sdcard/photo.png&#39;)); // image/png\nconsole.log(mime.fromFile(&#39;/sdcard/README&#39;)); // */*\n</code></pre>\n"
+        },
+        {
+          "textRaw": "mime.fromFileOr(path, defaultType?)",
+          "type": "method",
+          "name": "fromFileOr",
+          "desc": "<p>先调用 <code>mime.fromFile(path)</code>。结果为空时返回 <code>defaultType</code>；默认类型也为空时返回 <code>mime.WILDCARD</code>。</p>\n<pre><code class=\"lang-js\">let type = mime.fromFileOr(&#39;./archive.unknownext&#39;, mime.APPLICATION_OCTET_STREAM);\nconsole.log(type); // application/octet-stream\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "path"
+                },
+                {
+                  "name": "defaultType?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "mime.fromFileOrWildcard(path)",
+          "type": "method",
+          "name": "fromFileOrWildcard",
+          "desc": "<p>等价于 <code>mime.fromFileOr(path, mime.WILDCARD)</code>，保证返回字符串。</p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "path"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "type": "module",
+      "displayName": "MIME - 媒体类型"
+    }
+  ]
+}

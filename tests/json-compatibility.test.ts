@@ -45,17 +45,22 @@ const retiredJsonFilenames = [
   'coverpage.json',
   'sidebar.json',
   'toc.json',
-  'util.json',
 ] as const
 const frozenJsonHashes = Object.fromEntries(
   frozenLegacyJsonManifest.map(({ stem, sha256 }) => [`${stem}.json`, sha256]),
 )
 const expectedCommittedJsonFilenames = [
   ...contentEntries.flatMap((entry) =>
-    entry.legacyJsonNames.map((name) => `${name}.json`),
+    entry.jsonNames.map((name) => `${name}.json`),
   ),
   'all.json',
   ...Object.keys(frozenJsonHashes),
+].sort()
+const expectedCurrentOnlyJsonFilenames = [
+  ...contentEntries
+    .filter(({ legacySource }) => legacySource === undefined)
+    .flatMap(({ jsonNames }) => jsonNames.map((name) => `${name}.json`)),
+  'monkeyking.json',
 ].sort()
 
 function sha256(path: string): string {
@@ -101,7 +106,7 @@ function copyMarkdownInputs(sourceRoot: string, destinationRoot: string): void {
     const source = resolveEntryMarkdownPath(sourceRoot, entry)
     const repositoryPath = source === resolve(sourceRoot, entry.source)
       ? entry.source
-      : entry.legacySource
+      : entry.legacySource ?? entry.source
     const destination = resolve(destinationRoot, repositoryPath)
     mkdirSync(dirname(destination), { recursive: true })
     copyFileSync(source, destination)
@@ -136,6 +141,10 @@ function replaceEntryPaths(
   legacySource = 'missing/legacy.md',
 ): ContentEntry {
   return { ...entry, source, legacySource }
+}
+
+function expectedDocumentSource(entry: ContentEntry): string {
+  return `..\\${(entry.legacySource ?? entry.source).replaceAll('/', '\\')}`
 }
 
 function snapshotJsonDirectory(rootDirectory: string): Record<string, string> {
@@ -374,7 +383,7 @@ describe('legacy JSON compatibility', () => {
         generatedFilenames.filter(
           (filename) => !fixtureFilenames.includes(filename),
         ),
-      ).toEqual(['monkeyking.json'])
+      ).toEqual(expectedCurrentOnlyJsonFilenames)
       expect(
         fixtureFilenames.filter(
           (filename) => !generatedFilenames.includes(filename),
@@ -432,7 +441,9 @@ describe('legacy JSON compatibility', () => {
 
   test('selects canonical Markdown when present and otherwise falls back to legacy input', () => {
     const temporaryRoot = mkdtempSync(resolve(tmpdir(), 'legacy-json-input-'))
-    const entry = contentEntries[0]
+    const entry = contentEntries.find(
+      (candidate) => candidate.legacySource !== undefined,
+    )!
     const canonicalPath = resolve(temporaryRoot, entry.source)
     const legacyPath = resolve(temporaryRoot, entry.legacySource)
 
@@ -556,19 +567,18 @@ describe('legacy JSON compatibility', () => {
     }
   })
 
-  test('matches all 101 active legacy JSON baselines and parses all Markdown once', () => {
+  test('matches every active JSON document and preserves historical source labels', () => {
     const outputs = createLegacyJsonOutputs(process.cwd())
     const outputsByFilename = new Map(
       outputs.map(({ filename, text }) => [filename, text]),
     )
 
-    expect(contentEntries).toHaveLength(101)
-    expect(legacyAllEntryIds).toHaveLength(42)
-    expect(outputs).toHaveLength(103)
+    expect(outputs).toHaveLength(
+      contentEntries.reduce((count, entry) => count + entry.jsonNames.length, 1),
+    )
 
     for (const entry of contentEntries) {
-      const legacyStem = basename(entry.legacySource, extname(entry.legacySource))
-      for (const jsonName of entry.legacyJsonNames) {
+      for (const jsonName of entry.jsonNames) {
         const filename = `${jsonName}.json`
         const committed = readFileSync(
           resolve(process.cwd(), 'json', filename),
@@ -576,7 +586,7 @@ describe('legacy JSON compatibility', () => {
         )
         expect(committed, filename).toBe(outputsByFilename.get(filename))
         expect(JSON.parse(committed).source, filename).toBe(
-          `..\\api\\${legacyStem}.md`,
+          expectedDocumentSource(entry),
         )
       }
     }
@@ -593,7 +603,11 @@ describe('legacy JSON compatibility', () => {
     expect(readdirSync(resolve(process.cwd(), 'json')).sort()).toEqual(
       expectedCommittedJsonFilenames,
     )
-    expect(expectedCommittedJsonFilenames).toHaveLength(113)
+    expect(expectedCommittedJsonFilenames).toHaveLength(
+      contentEntries.reduce((count, entry) => count + entry.jsonNames.length, 1) +
+        frozenLegacyJsonStems.length,
+    )
+    expect(expectedCommittedJsonFilenames).toHaveLength(125)
   })
 
   test('rejects unexpected JSON without deleting or rewriting it', () => {
@@ -741,7 +755,7 @@ describe('legacy JSON compatibility', () => {
     }
   })
 
-  test('builds exactly 113 schema-ready files while preserving frozen bytes', () => {
+  test('builds the catalog-derived schema-ready inventory while preserving frozen bytes', () => {
     const temporaryRoot = createTemporaryJsonProject()
     const jsonDirectory = resolve(temporaryRoot, 'json')
     try {
@@ -757,7 +771,7 @@ describe('legacy JSON compatibility', () => {
         ]),
       )
 
-      expect(firstInventory).toHaveLength(113)
+      expect(firstInventory).toHaveLength(expectedCommittedJsonFilenames.length)
       expect(firstInventory).toEqual(expectedCommittedJsonFilenames)
       expect(
         retiredJsonFilenames.every(
@@ -769,11 +783,10 @@ describe('legacy JSON compatibility', () => {
       )
 
       for (const entry of contentEntries) {
-        const legacyStem = basename(entry.legacySource, extname(entry.legacySource))
-        for (const jsonName of entry.legacyJsonNames) {
+        for (const jsonName of entry.jsonNames) {
           expect(
             JSON.parse(firstContents.get(`${jsonName}.json`) ?? '{}').source,
-          ).toBe(`..\\api\\${legacyStem}.md`)
+          ).toBe(expectedDocumentSource(entry))
         }
       }
       expect(JSON.parse(firstContents.get('all.json') ?? '{}').source).toBe(
@@ -806,7 +819,7 @@ describe('legacy JSON compatibility', () => {
     }
   })
 
-  test('validates all 113 documents with the Draft 2020-12 legacy schema', () => {
+  test('validates every generated document with the Draft 2020-12 legacy schema', () => {
     const schema = JSON.parse(
       readFileSync(
         resolve(process.cwd(), 'scripts/json/legacy-document.schema.json'),
@@ -821,7 +834,7 @@ describe('legacy JSON compatibility', () => {
         text: readFileSync(resolve(process.cwd(), 'json', filename), 'utf8'),
       }))
 
-    expect(documents).toHaveLength(113)
+    expect(documents).toHaveLength(expectedCommittedJsonFilenames.length)
     expect(documents.map(({ filename }) => filename)).toEqual(
       expectedCommittedJsonFilenames,
     )
@@ -832,6 +845,11 @@ describe('legacy JSON compatibility', () => {
     }
 
     expect(validate({})).toBe(false)
+    expect(
+      validate({ source: '..\\docs\\api\\utilities\\util.md' }),
+    ).toBe(true)
+    expect(validate({ source: '../docs/api/utilities/util.md' })).toBe(true)
+    expect(validate({ source: '..\\docs\\..\\escape.md' })).toBe(false)
     expect(validate({ source: '..\\api\\bad.md', unexpected: true })).toBe(false)
     expect(validate({ source: 'api/bad.md' })).toBe(false)
     expect(

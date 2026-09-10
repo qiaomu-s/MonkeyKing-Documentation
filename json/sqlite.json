@@ -1,0 +1,248 @@
+{
+  "source": "..\\docs\\api\\system\\sqlite.md",
+  "modules": [
+    {
+      "textRaw": "SQLite - 数据库",
+      "name": "sqlite_-_数据库",
+      "desc": "<p><code>sqlite</code> 打开 Android SQLite 数据库，并返回对 <code>SQLiteDatabase</code> 的脚本友好封装。运行时同时注册 <code>sqlite</code> 与 <code>$sqlite</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.6.0</strong></p>\n<p>相关 Android 类型：<a href=\"https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase\">SQLiteDatabase</a>、<a href=\"https://developer.android.com/reference/android/database/Cursor\">Cursor</a>。</p>\n",
+      "modules": [
+        {
+          "textRaw": "sqlite",
+          "name": "sqlite",
+          "methods": [
+            {
+              "textRaw": "sqlite(path, options?, callback?)",
+              "type": "method",
+              "name": "sqlite",
+              "desc": "<p>等价于 <code>sqlite.open(path, options, callback)</code>。</p>\n<pre><code class=\"lang-js\">let db = sqlite(files.path(&#39;./example.db&#39;));\ndb.execSQL(&#39;CREATE TABLE IF NOT EXISTS note (id INTEGER PRIMARY KEY, body TEXT)&#39;);\ndb.insert(&#39;note&#39;, { body: &#39;hello&#39; });\n\nlet rows = db.rawQuery(&#39;SELECT id, body FROM note&#39;, []).all();\nconsole.log(JSON.stringify(rows));\n\ndb.close();\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "path"
+                    },
+                    {
+                      "name": "options?"
+                    },
+                    {
+                      "name": "callback?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "sqlite"
+        },
+        {
+          "textRaw": "Database",
+          "name": "database",
+          "desc": "<p><code>Database</code> 继承 <code>SQLiteOpenHelper</code> 并实现 <code>Closeable</code>。创建后会登记到脚本运行时的 closeable manager；脚本结束时运行时可统一清理，主动使用完毕仍建议调用 <code>db.close()</code>。</p>\n",
+          "modules": [
+            {
+              "textRaw": "写入值转换",
+              "name": "写入值转换",
+              "desc": "<p><code>insert</code>、<code>replace</code>、<code>update</code> 系列方法把 JavaScript 对象转换为 <code>ContentValues</code>。支持：</p>\n<ul>\n<li><code>null</code> 与 <code>undefined</code>，写入 SQL <code>NULL</code></li>\n<li>整数与浮点数</li>\n<li><code>boolean</code></li>\n<li><code>string</code></li>\n<li>Java <code>byte[]</code></li>\n</ul>\n<p>其他值类型会抛出 <code>Unsupported data type for key</code>。表名、条件与 SQL 文本不会自动转义，应使用参数绑定并避免拼接不可信输入。</p>\n",
+              "type": "module",
+              "displayName": "写入值转换"
+            },
+            {
+              "textRaw": "CRUD",
+              "name": "crud",
+              "desc": "<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>返回值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>db.insert(table, values)</code></td>\n<td><code>number</code></td>\n<td>插入一行，<code>nullColumnHack</code> 使用 <code>null</code></td>\n</tr>\n<tr>\n<td><code>db.insert(table, nullColumnHack, values)</code></td>\n<td><code>number</code></td>\n<td>插入一行，返回 row ID 或 Android 的失败值</td>\n</tr>\n<tr>\n<td><code>db.insertOrThrow(table, nullColumnHack, values)</code></td>\n<td><code>number</code></td>\n<td>插入失败时抛出异常</td>\n</tr>\n<tr>\n<td><code>db.insertWithOnConflict(table, nullColumnHack, values, conflictAlgorithm)</code></td>\n<td><code>number</code></td>\n<td>指定冲突算法插入</td>\n</tr>\n<tr>\n<td><code>db.replace(table, nullColumnHack, values)</code></td>\n<td><code>number</code></td>\n<td>替换一行</td>\n</tr>\n<tr>\n<td><code>db.replaceOrThrow(table, nullColumnHack, values)</code></td>\n<td><code>number</code></td>\n<td>替换失败时抛出异常</td>\n</tr>\n<tr>\n<td><code>db.update(table, values, whereClause, whereArgs)</code></td>\n<td><code>number</code></td>\n<td>返回受影响行数</td>\n</tr>\n<tr>\n<td><code>db.updateWithOnConflict(table, values, whereClause, whereArgs, conflictAlgorithm)</code></td>\n<td><code>number</code></td>\n<td>指定冲突算法更新</td>\n</tr>\n<tr>\n<td><code>db.delete(table, whereClause, whereArgs)</code></td>\n<td><code>number</code></td>\n<td>返回删除行数</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "CRUD"
+            },
+            {
+              "textRaw": "查询",
+              "name": "查询",
+              "desc": "<p>所有查询方法都把 Android <code>Cursor</code> 包装为 <code>CursorWrapper</code>：</p>\n<ul>\n<li><code>db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy)</code></li>\n<li><code>db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)</code></li>\n<li><code>db.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)</code></li>\n<li><code>db.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal)</code></li>\n<li><code>db.queryWithFactory(cursorFactory, distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)</code></li>\n<li><code>db.queryWithFactory(cursorFactory, distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal)</code></li>\n<li><code>db.rawQuery(sql, selectionArgs)</code></li>\n<li><code>db.rawQuery(sql, selectionArgs, cancellationSignal)</code></li>\n<li><code>db.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable)</code></li>\n<li><code>db.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable, cancellationSignal)</code></li>\n</ul>\n<p><code>cursorFactory</code>、<code>cancellationSignal</code> 等高级参数直接使用 Android 类型。</p>\n",
+              "type": "module",
+              "displayName": "查询"
+            },
+            {
+              "textRaw": "SQL 与语句",
+              "name": "SQL 与语句",
+              "desc": "<ul>\n<li><code>db.execSQL(sql)</code></li>\n<li><code>db.execSQL(sql, bindArgs)</code></li>\n<li><code>db.compileStatement(sql)</code>：返回 Android <code>SQLiteStatement</code></li>\n<li><code>db.validateSql(sql, cancellationSignal)</code></li>\n</ul>\n",
+              "type": "module",
+              "displayName": "事务"
+            },
+            {
+              "textRaw": "事务",
+              "name": "事务",
+              "desc": "<ul>\n<li><code>db.beginTransaction()</code></li>\n<li><code>db.beginTransactionNonExclusive()</code></li>\n<li><code>db.beginTransactionWithListener(listener)</code></li>\n<li><code>db.beginTransactionWithListenerNonExclusive(listener)</code></li>\n<li><code>db.setTransactionSuccessful()</code></li>\n<li><code>db.endTransaction()</code></li>\n<li><code>db.inTransaction()</code></li>\n<li><code>db.yieldIfContendedSafely()</code></li>\n<li><code>db.yieldIfContendedSafely(sleepAfterYieldDelay)</code></li>\n</ul>\n<p>监听器参数使用 Android <code>SQLiteTransactionListener</code>。</p>\n<p><code>db.transaction(callback, exclusive = true)</code> 是组合式事务辅助方法，返回 <code>EventEmitter</code>。它会依次发出 <code>begin</code>、<code>commit</code> 或 <code>rollback</code>、<code>end</code>；回调抛错时还会发出 <code>error</code>，并在结束时回滚未标记成功的事务。</p>\n<pre><code class=\"lang-js\">let events = db.transaction(function (transaction) {\n    db.insert(&#39;note&#39;, { body: &#39;inside transaction&#39; });\n}, false);\n\nevents.on(&#39;error&#39;, function (error) {\n    console.error(error);\n});\n</code></pre>\n",
+              "type": "module",
+              "displayName": "事务"
+            },
+            {
+              "textRaw": "配置与状态",
+              "name": "配置与状态",
+              "desc": "<ul>\n<li><code>db.enableWriteAheadLogging()</code> / <code>db.disableWriteAheadLogging()</code> / <code>db.isWriteAheadLoggingEnabled()</code></li>\n<li><code>db.setForeignKeyConstraintsEnabled(enable)</code></li>\n<li><code>db.getVersion()</code> / <code>db.setVersion(version)</code> / <code>db.needUpgrade(newVersion)</code></li>\n<li><code>db.getMaximumSize()</code> / <code>db.setMaximumSize(bytes)</code></li>\n<li><code>db.getPageSize()</code> / <code>db.setPageSize(bytes)</code></li>\n<li><code>db.setLocale(locale)</code></li>\n<li><code>db.setMaxSqlCacheSize(cacheSize)</code></li>\n<li><code>db.getPath()</code> / <code>db.getAttachedDbs()</code></li>\n<li><code>db.isDatabaseIntegrityOk()</code></li>\n<li><code>db.isDbLockedByCurrentThread()</code></li>\n<li><code>db.isOpen()</code> / <code>db.isReadOnly()</code></li>\n<li><code>db.acquireReference()</code> / <code>db.releaseReference()</code></li>\n<li><code>db.getTypeAdapter()</code>：返回当前脚本值适配器，主要用于高级互操作</li>\n<li><code>db.close()</code>：关闭底层数据库并从运行时清理列表移除</li>\n</ul>\n",
+              "type": "module",
+              "displayName": "配置与状态"
+            }
+          ],
+          "type": "module",
+          "displayName": "Database"
+        },
+        {
+          "textRaw": "CursorWrapper",
+          "name": "cursorwrapper",
+          "desc": "<p><code>CursorWrapper</code> 委托实现 Android <code>Cursor</code> 的全部标准方法，并增加以下脚本辅助方法：</p>\n",
+          "methods": [
+            {
+              "textRaw": "cursor.get(index)",
+              "type": "method",
+              "name": "get",
+              "desc": "<p>按列索引读取当前行。SQL <code>NULL</code> 返回 <code>null</code>，整数返回 <code>number</code>，浮点返回 <code>number</code>，文本返回 <code>string</code>，BLOB 返回 Java <code>byte[]</code>。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "index"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "cursor.getByColumn(name)",
+              "type": "method",
+              "name": "getByColumn",
+              "desc": "<p>按列名读取当前行；列不存在时由 <code>getColumnIndexOrThrow</code> 抛出异常。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "cursor.pick()",
+              "type": "method",
+              "name": "pick",
+              "desc": "<p>把当前行转换为 JavaScript 对象，键为全部列名。此方法不会移动游标。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "cursor.next()",
+              "type": "method",
+              "name": "next",
+              "desc": "<p>移动到下一行并返回 <code>pick()</code> 的对象；没有下一行时返回 <code>null</code>。此方法不会自动关闭游标。</p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "cursor.all(close = true)",
+              "type": "method",
+              "name": "all",
+              "desc": "<p>从当前位置之后开始遍历剩余行，返回对象数组。默认遍历后关闭游标；传入假值可保持打开。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "close ",
+                      "default": " true"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "cursor.single()",
+              "type": "method",
+              "name": "single",
+              "desc": "<p>读取下一行并立即关闭游标；没有下一行时返回 <code>null</code>。</p>\n<pre><code class=\"lang-js\">let cursor = db.rawQuery(&#39;SELECT id, body FROM note ORDER BY id&#39;, []);\nlet first = cursor.next();\nconsole.log(first &amp;&amp; first.body);\ncursor.close();\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "CursorWrapper"
+        },
+        {
+          "textRaw": "线程与生命周期",
+          "name": "线程与生命周期",
+          "desc": "<ul>\n<li>打开、查询和写入接口均为同步调用；不要在 UI 线程执行大型迁移或长查询。</li>\n<li><code>CursorWrapper.next()</code> 与 <code>pick()</code> 不会自动关闭游标，调用方负责 <code>close()</code>。</li>\n<li><code>all()</code> 默认关闭，<code>single()</code> 总会关闭。</li>\n<li><code>Database.close()</code> 之后继续调用数据库方法会传播 Android 的已关闭状态异常。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "线程与生命周期"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "sqlite.open(path, options?, callback?)",
+          "type": "method",
+          "name": "open",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`path` {string} - 数据库文件路径；相对路径按 `files` 模块规则解析 ",
+                  "name": "path",
+                  "type": "string",
+                  "desc": "数据库文件路径；相对路径按 `files` 模块规则解析"
+                },
+                {
+                  "textRaw": "`options` {Object} - 打开选项 ",
+                  "name": "options",
+                  "type": "Object",
+                  "desc": "打开选项"
+                },
+                {
+                  "textRaw": "`callback` {DatabaseCallback} - 生命周期回调 ",
+                  "name": "callback",
+                  "type": "DatabaseCallback",
+                  "desc": "生命周期回调"
+                },
+                {
+                  "textRaw": "返回 {Database} ",
+                  "name": "返回",
+                  "type": "Database"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "path"
+                },
+                {
+                  "name": "options?"
+                },
+                {
+                  "name": "callback?"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>选项：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>version</code></td>\n<td><code>1</code></td>\n<td>数据库版本，传给 <code>SQLiteOpenHelper</code></td>\n</tr>\n<tr>\n<td><code>readOnly</code></td>\n<td><code>false</code></td>\n<td>为真时使用 Android 的 <code>getReadableDatabase()</code>；为假时使用 <code>getWritableDatabase()</code></td>\n</tr>\n</tbody>\n</table>\n<p><code>readOnly</code> 名称用于兼容脚本接口。Android 的 <code>getReadableDatabase()</code> 在条件允许时仍可能返回可写数据库，因此它不是强制只读沙箱。</p>\n<p>空路径、非普通对象的 <code>options</code>、无法转换为 <code>DatabaseCallback</code> 的 <code>callback</code> 都会抛出参数错误。打开数据库和生命周期回调都在当前线程同步执行。</p>\n",
+          "modules": [
+            {
+              "textRaw": "DatabaseCallback",
+              "name": "databasecallback",
+              "desc": "<p>回调对象可实现以下方法：</p>\n<ul>\n<li><code>onCreate(database)</code>：首次创建数据库时调用。</li>\n<li><code>onOpen(database)</code>：每次打开后调用。</li>\n<li><code>onUpgrade(database, oldVersion, newVersion)</code>：版本增加时调用。</li>\n<li><code>onCorruption(sqliteDatabase)</code>：Android 报告数据库损坏时调用；参数是底层 <code>SQLiteDatabase</code>。</li>\n</ul>\n<pre><code class=\"lang-js\">let db = sqlite.open(&#39;./cache.db&#39;, { version: 2 }, {\n    onCreate(database) {\n        database.execSQL(&#39;CREATE TABLE cache (key TEXT PRIMARY KEY, value TEXT)&#39;);\n    },\n    onOpen(database) {\n        console.log(database.getPath());\n    },\n    onUpgrade(database, oldVersion, newVersion) {\n        console.log(oldVersion + &#39; -&gt; &#39; + newVersion);\n    },\n    onCorruption(nativeDatabase) {\n        console.error(&#39;database corrupted: &#39; + nativeDatabase.getPath());\n    },\n});\n</code></pre>\n",
+              "type": "module",
+              "displayName": "DatabaseCallback"
+            }
+          ]
+        }
+      ],
+      "type": "module",
+      "displayName": "SQLite - 数据库"
+    }
+  ]
+}

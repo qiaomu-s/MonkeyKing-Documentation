@@ -56,12 +56,11 @@ export const retiredLegacyJsonFilenames = Object.freeze([
   'coverpage.json',
   'sidebar.json',
   'toc.json',
-  'util.json',
 ] as const)
 
 const expectedGeneratedJsonFilenames = Object.freeze([
   ...contentEntries.flatMap((entry) =>
-    entry.legacyJsonNames.map((name) => `${name}.json`),
+    entry.jsonNames.map((name) => `${name}.json`),
   ),
   'all.json',
 ])
@@ -170,16 +169,22 @@ export function resolveEntryMarkdownPath(
     return canonicalPath
   }
 
-  const legacyPath = resolveWithin(rootDirectory, entry.legacySource)
-  if (existsSync(legacyPath)) {
-    assertRegularFile(legacyPath, `legacy Markdown input ${entry.id}`)
-    assertRealPathWithin(rootDirectory, legacyPath, entry.id)
-    return legacyPath
+  if (entry.legacySource !== undefined) {
+    const legacyPath = resolveWithin(rootDirectory, entry.legacySource)
+    if (existsSync(legacyPath)) {
+      assertRegularFile(legacyPath, `legacy Markdown input ${entry.id}`)
+      assertRealPathWithin(rootDirectory, legacyPath, entry.id)
+      return legacyPath
+    }
   }
 
   throw new Error(
-    `Missing Markdown input for ${entry.id}: neither ${entry.source} nor ${entry.legacySource} exists`,
+    `Missing Markdown input for ${entry.id}: ${entry.legacySource === undefined ? entry.source : `neither ${entry.source} nor ${entry.legacySource}`} exists`,
   )
+}
+
+function markdownDocumentSource(entry: ContentEntry): string {
+  return `..\\${(entry.legacySource ?? entry.source).replaceAll('/', '\\')}`
 }
 
 export function createLegacyJsonOutputs(
@@ -188,14 +193,15 @@ export function createLegacyJsonOutputs(
   const outputs: LegacyJsonOutput[] = []
 
   for (const entry of contentEntries) {
-    const legacyStem = basename(entry.legacySource, extname(entry.legacySource))
-    assertSafeLegacyJsonStem(legacyStem, entry.legacySource)
+    const sourceLabel = entry.legacySource ?? entry.source
+    const sourceStem = basename(sourceLabel, extname(sourceLabel))
+    assertSafeLegacyJsonStem(sourceStem, sourceLabel)
     const input = readFileSync(resolveEntryMarkdownPath(rootDirectory, entry), 'utf8')
     const text = stringifyLegacyDocument(
-      parseLegacyMarkdown(input, `..\\api\\${legacyStem}.md`),
+      parseLegacyMarkdown(input, markdownDocumentSource(entry)),
     )
 
-    for (const jsonName of entry.legacyJsonNames) {
+    for (const jsonName of entry.jsonNames) {
       assertSafeLegacyJsonStem(jsonName, entry.id)
       outputs.push({ filename: `${jsonName}.json`, text })
     }
@@ -208,6 +214,11 @@ export function createLegacyJsonOutputs(
         const entry = entriesById.get(entryId)
         if (!entry) {
           throw new Error(`Unknown legacy all-document entry id: ${entryId}`)
+        }
+        if (entry.legacySource === undefined) {
+          throw new Error(
+            `Legacy all-document entry has no legacy source: ${entry.id}`,
+          )
         }
         const legacyStem = basename(entry.legacySource, extname(entry.legacySource))
         assertSafeLegacyJsonStem(legacyStem, entry.legacySource)
