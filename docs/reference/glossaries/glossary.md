@@ -1,86 +1,68 @@
 # 术语 (Glossaries)
 
----
+本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。
 
-<p style="font: italic 1em sans-serif; color: #78909C">此章节待补充或完善...</p>
-<p style="font: italic 1em sans-serif; color: #78909C">Marked by SuperMonster003 on Oct 22, 2022.</p>
-
----
+本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
 
 ## 内置模块
 
-Monkey King 内置模块指脚本可全局使用的 JavaScript 模块.<br>
-这些模块多数已在文档中列出, 如 `app`, `images`, `device` 等.
+Monkey King 内置模块是随 APK 发布、在每个 Rhino runtime 初始化时注册或加载的脚本能力，例如 `app`、`images`、`device`、`util` 和 `sqlite`。模块既可能由 Kotlin / Java 增强器实现，也可能来自 APK 的 `assets/modules` CommonJS 文件。
+
+多数模块可通过模块名和 `$` 前缀别名访问；部分方法还会被全局化。准确入口以各 API 页面和 [模块系统](../../api/core/modules.md) 为准。
 
 ### 查看内置模块源代码
 
-除 [直接查看开源代码](https://github.com/qiaomu-s/MonkeyKing/tree/master/app/src/main/assets/modules) 外, 还可以将内置模块解压到本地存储后查看:<br>
-下载 [Monkey King APK](https://github.com/qiaomu-s/MonkeyKing/releases) 并使用压缩软件将 APK 内的 `\assets\modules` 文件夹解压到本地.<br>
-模块通常以 `__%name%__.js` 格式命名, 其中 `%name%` 对应模块名.<br>
-可使用文本编辑器等软件查看模块源代码.
+6.7.0 文档使用 Monkey King 私有源码仓的固定提交作为事实来源：
+
+- Kotlin / Java 增强器位于 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/`。
+- JavaScript 资产模块位于 `app/src/main/assets/modules/`。
+- 引擎注册顺序位于 `ScriptRuntime.augment()`；CommonJS 初始化与 `require` 安装位于 `RhinoJavaScriptEngine`。
+
+APK 是 ZIP 容器，也可以解压后检查 `assets/modules`。压缩或打包后的资产可能不便阅读，源码提交仍是更可靠的审计入口。
 
 ### 修改或增加内置模块
 
-> 注: 此小节内容可能需要用户具备一定的编程基础及开发经验.
+修改内置模块属于应用源码开发，需要重新构建并签名 APK。自建 APK 能否覆盖安装取决于 applicationId、签名和构建变体；不要假设修改模块一定会改变包名，也不要直接修改已安装 APK 来绕过签名或权限限制。
 
-> 注: 此操作需要重新打包生成 `新的 Monkey King APK` (下文作 `新生 APK`).<br>
-> 因 `新生 APK` 包名发生变化, 需卸载已安装的 `开源 Monkey King APK` (下文作 `开源 APK`) 后再安装 `新生 APK`.<br>
-> 当 `开源 APK` 出现新版本时, 同样需卸载 `新生 APK` 才能安装新版本的 `开源 APK`.<br>
-> 此时, 修改或增加的内置模块将失效.<br>
-> 如欲将自己的代码整合到 `开源 APK` 中, 可向开源项目提交 [Pull Request (PR)](https://github.com/qiaomu-s/MonkeyKing/pull).
-
-克隆 (Clone) [Monkey King 源码](https://github.com/qiaomu-s/MonkeyKing).<br>
-使用 [Android Studio](https://developer.android.com/studio/archive) 打开并完成项目构建 (Build).<br>
-定位 `\app\src\main\assets\modules` 目录.
+在已获授权的源码工作区中使用 Android Studio 或 Gradle 构建，并保留应用许可证和上游署名。普通脚本项目若只需要复用代码，应优先创建本地 CommonJS 模块，再通过 `require()` 加载，无需修改 APK。
 
 #### 修改模块
 
-修改目录中的模块代码后直接打包生成新的 APK.
+修改 `assets/modules` 中的 JavaScript 或 `runtime/api/augment` 中的增强器后，需要重新构建 APK，并运行相关单元测试与设备验证。改变公开名称、别名或行为时，还应同步更新 API manifest、coverage 和文档。
 
 #### 增加模块
 
-以增加一个 date 模块为例, 该模块有一个 `date.toFullTimeString()` 方法.
-
-在 `\app\src\main\assets\modules` 目录新建 `__date__.js` 文件, 此文件将作为增加的内置模块.
-
-供参考的文件内容:
+以下 `date.js` 是项目本地模块示例，不要求修改 Monkey King：
 
 ```js
-module.exports = function () {
+module.exports = function createDateModule() {
     return {
         toFullTimeString() {
-            let now = new Date();
-            let pad = x => x.toString().padStart(2, '0');
-            return [ now.getHours(), now.getMinutes(), now.getSeconds() ].map(pad).join(':');
+            const now = new Date();
+            const pad = value => String(value).padStart(2, '0');
+            return [now.getHours(), now.getMinutes(), now.getSeconds()]
+                .map(pad)
+                .join(':');
         },
     };
 };
 ```
 
-打开 "初始化脚本", 即 `\app\src\main\assets\init.js`.<br>
-将 date 模块添加到 "初始化脚本" 中:
+同目录脚本可直接加载：
 
 ```js
-/* ... */
-
-let $ = {
-    /* ... */
-    bindModules() {
-        _.bind([
-            /* ... */
-
-            [ 'date', 'RootAutomator', 'floaty', /* 其他模块... */ ],
-
-            /* ... */
-        ]);
-    },
-    /* ... */
-};
-
-/* ... */
+const date = require('./date');
+console.log(date.toFullTimeString());
 ```
 
-添加完成后即可打包生成新的 APK.
+若要把自定义资产模块编译进 APK，6.7.0 的 `assets/init.js` 支持返回模块名、模块名数组、用 `|` 分隔的字符串、名称映射对象，或接收 `(scriptRuntime, scope)` 的函数。它自 6.6.0 起默认不注册额外模块。
+
+```js
+function installCustomModule(scriptRuntime, scope) {
+    scope.date = require('date');
+    console.log(scriptRuntime.ownerId);
+}
+```
 
 ## 编译器
 
@@ -617,7 +599,9 @@ scrollable().find().some((w) => {
 参数类型与此类阈值相关的常用方法:
 
 - images.threshold(a, b, <i><strong>threshold</strong></i>, c)
-- images.adaptiveThreshold ... (此处内容待完善)
+- images.adaptiveThreshold(image, maxValue, adaptiveMethod, thresholdType, blockSize, C)
+
+`adaptiveThreshold` 没有单独名为 `threshold` 的参数；它根据邻域计算阈值，再用常量 `C` 调整结果。`blockSize` 必须是大于 1 的奇数，`C` 可为正数、零或负数。详见 [Image 模块](../../api/media/image.md)。
 
 ## 亮度
 
