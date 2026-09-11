@@ -90,18 +90,18 @@ console.log(pinyin4j.as('nv3 hai2')); // nǚ hái
 - 空字符串返回空字符串。除无效枚举外，输入会按 Monkey King 的字符串转换规则处理。
 - 所有转换同步完成，只进行内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。
 
-<!-- fixed-source-contracts:start -->
+<!-- api-contracts:start -->
 
-## 固定源码合同表
+## API 合同表
 
-下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| <a id="api-symbol-Y2FsbDpwaW55aW40ag"></a> `call:pinyin4j` | `pinyin4j(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin4j/Pinyin4j.kt:L87` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j);` |
-| <a id="api-symbol-bW9kdWxlOnBpbnlpbjRq"></a> `module:pinyin4j` | `pinyin4j` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L801` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j);` |
-| <a id="api-symbol-cGlueWluNGouYXM"></a> `pinyin4j.as` | `pinyin4j.as(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin4j/Pinyin4j.kt:L165` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j.as);` |
-| <a id="api-symbol-cGlueWluNGoub2Y"></a> `pinyin4j.of` | `pinyin4j.of(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin4j/Pinyin4j.kt:L92` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j.of);` |
+| <a id="api-symbol-Y2FsbDpwaW55aW40ag"></a> `call:pinyin4j` | `pinyin4j(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j);` |
+| <a id="api-symbol-bW9kdWxlOnBpbnlpbjRq"></a> `module:pinyin4j` | `pinyin4j` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j);` |
+| <a id="api-symbol-cGlueWluNGouYXM"></a> `pinyin4j.as` | `pinyin4j.as(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j.as);` |
+| <a id="api-symbol-cGlueWluNGoub2Y"></a> `pinyin4j.of` | `pinyin4j.of(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需额外 Android 权限；线程：同步执行 | 生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin4j.of);` |
 
 ### Rhino 2.0 表格读取示例
 
@@ -109,4 +109,4 @@ console.log(pinyin4j.as('nv3 hai2')); // nǚ hái
 console.log('Rhino 2.0 contract table: pinyin4j');
 ```
 
-<!-- fixed-source-contracts:end -->
+<!-- api-contracts:end -->

@@ -8,7 +8,7 @@
 - **返回值**：`void` 表示调用方不应依赖返回结果；Java `null`、JavaScript `null` 与 `undefined` 必须按具体 API 说明区分。
 - **权限与线程**：类型记法自身不请求权限、不切换线程；真正的权限和线程限制属于使用该类型的 API。
 - **生命周期与副作用**：类型记法没有生命周期或副作用；文件、数据库、游标、流和 Android 组件等实例仍须按其所属 API 管理资源。
-- **旧版本**：既有类型名多数早于当前源码基线，无法从固定源码恢复首次版本时记作 **≤ v6.6.4（旧文档未记录精确版本）**。
+- **旧版本**：既有类型名多数早于当前源码基线，无法从实现合同恢复首次版本时记作 **≤ v6.6.4（旧文档未记录精确版本）**。
 
 ```js
 // Rhino 2.0：文档里的 number 与 Java long 都可能以 JS number 交互。
@@ -435,7 +435,7 @@ foo("1.3"); /* 不符合预期. */
 
 ## extends
 
-## index
+## index access
 
 ## condition
 
@@ -732,12 +732,12 @@ activity.finish();
 /* 设置状态栏颜色为深红色. */
 activity.getWindow().setStatusBarColor(colors.toInt('dark-red'));
 /* 将视图对象作为内容加载. */
-activity.setContentView(web.newInjectableWebView('https://www.github.com'));
+activity.setContentView(web.newInjectableWebView('https://example.com'));
 /* 获取顶层窗口的高度. */
 activity.getWindow().getDecorView().getRootView().getHeight();
 ```
 
-因 ScriptExecuteActivity 继承了 android.app.Activity 等非常多的 Java 类, 因此 activity 获得了非常丰富的属性和方法, 详情参阅 [Android Docs](https://developer.android.com/reference/android/app/Activity) 及 [Monkey King 源码](https://github.com/qiaomu-s/MonkeyKing/blob/10960ddbee71f75ef80907ad5b6ab42f3e1bf31e/app/src/main/java/com/qiaomu/monkeyking/execution/ScriptExecuteActivity.java#L30).
+因 ScriptExecuteActivity 继承了 android.app.Activity 等非常多的 Java 类, 因此 activity 获得了非常丰富的属性和方法, 详情参阅 [Android Docs](https://developer.android.com/reference/android/app/Activity) 以及本页的 `activity` 类型约束。
 
 ## DetectCompass
 

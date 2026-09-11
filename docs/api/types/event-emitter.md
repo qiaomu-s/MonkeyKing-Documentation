@@ -2,11 +2,11 @@
 
 EventEmitter 是 Monkey King 多个模块共用的事件接口。`events`、传感器和 WebSocket 等对象会提供这些方法；业务脚本通常不直接构造 Java `EventEmitter`。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 默认监听器上限是 10。带运行时计时器的发射器会把回调排入脚本事件循环；没有计时器时通过当前脚本桥接器调用。注册、移除与发送操作本身同步完成，但监听器是否立即执行取决于发射器的计时器配置。
 
-以下接口在可追溯历史中早于当前版本体系，固定提交中均已存在，因此以 `≤ 6.6.4` 标记。
+以下接口在可追溯历史中早于当前版本体系，产品版本中均已存在，因此以 `≤ 6.6.4` 标记。
 
 除“获取 EventEmitter 接口”一节外，后续示例均假设已执行：
 
@@ -58,7 +58,7 @@ emitter.addListener('data', value => console.log(value));
 
 若立即消费 sticky 数据，该监听器不会加入后续监听列表。
 
-> **固定提交缺陷：**同一事件存在两个或更多 once 监听器时，发送循环会用递增索引修改 `CopyOnWriteArrayList`。前一个监听器删除后，后续删除可能命中错误位置或抛出 `IndexOutOfBoundsException`，后续一次性监听器可能残留。不要依赖一轮 `emit` 安全清除多个 `once` / `prependOnceListener`；需要可靠的一次性语义时应由回调自行用 `removeListener` 注销。
+> **产品版本缺陷：**同一事件存在两个或更多 once 监听器时，发送循环会用递增索引修改 `CopyOnWriteArrayList`。前一个监听器删除后，后续删除可能命中错误位置或抛出 `IndexOutOfBoundsException`，后续一次性监听器可能残留。不要依赖一轮 `emit` 安全清除多个 `once` / `prependOnceListener`；需要可靠的一次性语义时应由回调自行用 `removeListener` 注销。
 
 ```js
 emitter.once('ready', value => console.log(value));
@@ -76,7 +76,7 @@ emitter.once('ready', value => console.log(value));
 - **异常**：监听器达到上限或参数类型不兼容时抛出异常
 - **副作用**：把持久监听器插入同名列表开头，并发送 `newListener`
 
-与 `on` 不同，固定提交中的 prepend 路径不会立即回放已保存的 sticky 数据。
+与 `on` 不同，产品版本中的 prepend 路径不会立即回放已保存的 sticky 数据。
 
 ```js
 emitter.prependListener('step', () => console.log('first'));
@@ -94,7 +94,7 @@ emitter.prependListener('step', () => console.log('first'));
 - **异常**：监听器达到上限或参数类型不兼容时抛出异常
 - **副作用**：把一次性监听器插入列表开头，并发送 `newListener`
 
-与 `once` 不同，固定提交中的 prepend 路径不会立即消费已保存的 sticky 数据。它仍受 [多个 once 监听器的移除缺陷](#eventemitter-once-eventname-listener) 影响。
+与 `once` 不同，产品版本中的 prepend 路径不会立即消费已保存的 sticky 数据。它仍受 [多个 once 监听器的移除缺陷](#eventemitter-once-eventname-listener) 影响。
 
 ```js
 emitter.prependOnceListener('step', () => console.log('first once'));
@@ -267,7 +267,7 @@ console.log(emitter.getTimer() === null || typeof emitter.getTimer() === 'object
 
 **`≤ 6.6.4`** **`Low-level`**
 
-- <ins>**returns**</ins> { [number](data-types.md#number) } - 新实例的默认上限，固定提交中为 10
+- <ins>**returns**</ins> { [number](data-types.md#number) } - 新实例的默认上限，产品版本中为 10
 - **异常**：无
 - **副作用**：无
 

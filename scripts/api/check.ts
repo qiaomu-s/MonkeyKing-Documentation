@@ -2,7 +2,12 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { assertApiSurface } from './checker'
-import type { ApiCoverage, ApiManifest } from './model'
+import type {
+  ApiCoverage,
+  ApiManifest,
+  PublicApiCoverage,
+  PublicApiManifest,
+} from './model'
 
 export interface CheckArguments {
   readonly root: string
@@ -42,10 +47,10 @@ export async function runCheck(arguments_: CheckArguments): Promise<void> {
   const root = resolve(arguments_.root)
   const manifest = JSON.parse(
     readFileSync(resolve(root, arguments_.manifest), 'utf8'),
-  ) as ApiManifest
+  ) as ApiManifest | PublicApiManifest
   const coverage = JSON.parse(
     readFileSync(resolve(root, arguments_.coverage), 'utf8'),
-  ) as ApiCoverage
+  ) as ApiCoverage | PublicApiCoverage
   const report = await assertApiSurface({ manifest, coverage, projectRoot: root })
   process.stdout.write(
     `API coverage valid: ${report.mappedSymbolCount}/${report.publicSymbolCount} ` +

@@ -2,7 +2,7 @@
 
 每个 Monkey King JavaScript 引擎都拥有一个 `ScriptRuntime` 实例，并在执行用户脚本前把它注入为全局变量 `runtime`。它保存当前引擎的模块实现、线程与计时器、权限请求入口以及需要在脚本结束时释放的资源。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。除明确标注为 v6.7.0 的成员外，无法精确追溯的既有入口统一标记为 `≤ v6.6.4`。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。除明确标注为 v6.7.0 的成员外，无法精确追溯的既有入口统一标记为 `≤ v6.6.4`。
 
 ## runtime
 
@@ -103,7 +103,7 @@ runtime.isJavaPrimitiveWrap = previous;
 - **异常**：数组中包含 `null` 等无法处理的值时可能抛出 Java 异常
 - **权限 / 线程 / 副作用**：筛掉已授权项后启动 Monkey King 的权限请求 Activity；方法本身不等待用户结果
 
-只能请求当前 APK Manifest 已声明且 Android 允许动态授予的权限。固定源码的 Manifest 不只声明定位和录音权限，但签名级、特殊访问权或不属于运行时权限的项目不能通过此方法获得。不要通过修改 APK 绕过平台权限模型。
+只能请求当前 APK Manifest 已声明且 Android 允许动态授予的权限。实现合同的 Manifest 不只声明定位和录音权限，但签名级、特殊访问权或不属于运行时权限的项目不能通过此方法获得。不要通过修改 APK 绕过平台权限模型。
 
 ```js
 runtime.requestPermissions([
@@ -241,7 +241,7 @@ if (files.exists('./stop.flag')) {
 }
 ```
 
-## runtime 属性仓库
+## runtime 属性集合
 
 ### runtime.getProperty(key)
 

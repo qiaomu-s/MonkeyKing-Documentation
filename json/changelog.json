@@ -6,11 +6,11 @@
       "name": "文档更新日志_(changelog)",
       "modules": [
         {
-          "textRaw": "v6.7.0 文档全量对账",
-          "name": "v6.7.0_文档全量对账",
-          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2026/09/10</p>\n\n<ul>\n<li><code>新增</code> 以 Monkey King 源码固定提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 为唯一事实来源的可审计 API manifest、覆盖映射和缺口报告。</li>\n<li><code>新增</code> <code>util</code>、<code>cvt</code>、<code>fmt</code>、<code>jsox</code>、<code>mime</code>、<code>zip</code>、<code>nanoid</code>、<code>pinyin</code>、<code>pinyin4j</code>、<code>sysprops</code>、<code>sqlite</code>、<code>mediainfo</code> 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。</li>\n<li><code>优化</code> 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的源码对账；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。</li>\n<li><code>修复</code> 统一 VitePress 页面锚点、旧链接和品牌说明，清除正文中的未完成占位标记，并保留历史 <code>all.json</code> 顺序及 10 个冻结 JSON 文件。</li>\n<li><code>新增</code> <code>api:extract</code>、<code>api:coverage</code>、<code>api:check</code>、<code>examples:check</code>、固定源码 checkout 和 Android / 模拟器 smoke 验证门禁。</li>\n</ul>\n",
+          "textRaw": "v6.7.0 文档版本说明",
+          "name": "v6.7.0_文档版本说明",
+          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2026/09/11</p>\n\n<ul>\n<li><code>新增</code> 完成 Monkey King 6.7.0 的公开 API 清单、覆盖映射和兼容数据整理。</li>\n<li><code>新增</code> <code>util</code>、<code>cvt</code>、<code>fmt</code>、<code>jsox</code>、<code>mime</code>、<code>zip</code>、<code>nanoid</code>、<code>pinyin</code>、<code>pinyin4j</code>、<code>sysprops</code>、<code>sqlite</code>、<code>mediainfo</code> 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。</li>\n<li><code>优化</code> 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的行为整理；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。</li>\n<li><code>修复</code> 统一页面锚点、外部参考链接和兼容标识，清除正文中的未完成占位标记。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "v6.7.0 文档全量对账"
+          "displayName": "v6.7.0 文档版本说明"
         },
         {
           "textRaw": "v1.1.8",
@@ -36,7 +36,7 @@
         {
           "textRaw": "v1.1.5",
           "name": "v1.1.5",
-          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2023/07/06</p>\n\n<ul>\n<li><code>新增</code> <a href=\"../api/utilities/crypto.md\">密文 (Crypto)</a> 文档</li>\n<li><code>新增</code> <a href=\"../api/types/crypto-cipher-options.md\">CryptoCipherOptions</a> / <a href=\"../api/types/crypto-key.md\">CryptoKey</a> / <a href=\"../api/types/crypto-key-pair.md\">CryptoKeyPair</a> 等类型</li>\n<li><code>修复</code> floaty 模块 widht 拼写失误 <em><a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues/1\"><code>issue #1</code></a></em></li>\n<li><code>优化</code> 完善 <a href=\"../api/utilities/base64.md\">Base64</a> 章节</li>\n<li><code>优化</code> 完善 <a href=\"../api/media/color.md\">颜色 (Color)</a> 章节</li>\n</ul>\n",
+          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2023/07/06</p>\n\n<ul>\n<li><code>新增</code> <a href=\"../api/utilities/crypto.md\">密文 (Crypto)</a> 文档</li>\n<li><code>新增</code> <a href=\"../api/types/crypto-cipher-options.md\">CryptoCipherOptions</a> / <a href=\"../api/types/crypto-key.md\">CryptoKey</a> / <a href=\"../api/types/crypto-key-pair.md\">CryptoKeyPair</a> 等类型</li>\n<li><code>修复</code> floaty 模块 widht 拼写失误。</li>\n<li><code>优化</code> 完善 <a href=\"../api/utilities/base64.md\">Base64</a> 章节</li>\n<li><code>优化</code> 完善 <a href=\"../api/media/color.md\">颜色 (Color)</a> 章节</li>\n</ul>\n",
           "type": "module",
           "displayName": "v1.1.5"
         },

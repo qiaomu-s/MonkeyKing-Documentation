@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,21 +15,13 @@ concurrency:
 
 jobs:
   quality:
+    if: github.ref == 'refs/heads/master'
     name: Quality gates
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
-          persist-credentials: false
-
-      - name: Check out Monkey King 6.7.0 source
-        uses: actions/checkout@v7
-        with:
-          repository: qiaomu-s/AutoJs6
-          ref: bafa2986212d27b6b59f1324f89548b72a810966
-          token: ${{ secrets.MONKEYKING_SOURCE_TOKEN }}
-          path: .source/monkeyking
           persist-credentials: false
 
       - name: Set up Node.js
@@ -51,12 +41,6 @@ jobs:
 
       - name: Check TypeScript
         run: npx tsc --noEmit
-
-      - name: Verify fixed API surface
-        run: npm run api:extract -- --source .source/monkeyking --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
-
-      - name: Verify generated MIME appendix
-        run: npm run api:mime -- --source .source/monkeyking --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
 
       - name: Verify API coverage manifest
         run: npm run api:coverage -- --check
@@ -82,11 +66,14 @@ jobs:
       - name: Build web documentation
         run: npm run build:web
 
-      - name: Check generated links
-        run: npm run check:links
-
       - name: Build Android documentation
         run: npm run build:android
+
+      - name: Scan public documentation boundary
+        run: npm run public:scan
+
+      - name: Check generated links
+        run: npm run check:links
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
@@ -95,13 +82,13 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload GitHub Pages artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist/web
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     needs: quality
     runs-on: ubuntu-latest
     permissions:

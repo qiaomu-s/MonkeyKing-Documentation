@@ -1,6 +1,6 @@
 # 自动化 (Automator)
 
-本页覆盖三组运行时入口：`auto` 管理 Monkey King 无障碍服务，`automator` 执行控件、坐标、手势与系统全局动作，`RootAutomator` 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本页覆盖三组运行时入口：`auto` 管理 Monkey King 无障碍服务，`automator` 执行控件、坐标、手势与系统全局动作，`RootAutomator` 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 <a id="api-symbol-bW9kdWxlOmF1dG8"></a>
 ## [@] auto
@@ -329,7 +329,7 @@ auto.registerEvent('window-change', {
 
 **`≤ 6.6.4`**
 
-- **入口 / 别名**：`auto.registerEvents(name, listener)`；固定提交直接委托给单数方法，不接受事件映射表
+- **入口 / 别名**：`auto.registerEvents(name, listener)`；产品版本直接委托给单数方法，不接受事件映射表
 - **name** { [string](../types/data-types.md#string) }
 - **listener** { `AccessibilityEventCallback | Object | null` }
 - <ins>**returns**</ins> { `kotlin.Unit` }
@@ -363,7 +363,7 @@ auto.removeEvent('window-change');
 
 **`≤ 6.6.4`**
 
-- **入口 / 别名**：`auto.removeEvents(name)`；固定提交直接委托给 `removeEvent`
+- **入口 / 别名**：`auto.removeEvents(name)`；产品版本直接委托给 `removeEvent`
 - **name** { [string](../types/data-types.md#string) } - 仍然只接受一个名称
 - <ins>**returns**</ins> { `kotlin.Unit` }
 - **异常 / 权限**：与 `removeEvent` 相同
@@ -673,7 +673,7 @@ automator.gesturesAsync([300, [100, 100], [300, 300]]);
 
 - **入口 / 别名**：`automator.isServiceRunning()`
 - **参数**：必须为 0 个
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 固定提交只检查当前进程是否有服务实例
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 产品版本只检查当前进程是否有服务实例
 - **异常 / 权限**：传入参数时抛出；不请求权限
 - **线程 / 生命周期 / 副作用**：只读状态；不等同于 `auto.isOperational()`
 
@@ -1073,7 +1073,7 @@ try {
 - <ins>**returns**</ins> { `any` } - 保留对应 Java 方法的返回值
 - **异常**：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出
 - **权限**：沿用构造实例时选择的 root 或 Shizuku 后端
-- **线程 / 生命周期 / 副作用**：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；固定提交未采用旧 JavaScript 模块的名称过滤器
+- **线程 / 生命周期 / 副作用**：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；产品版本未采用旧 JavaScript 模块的名称过滤器
 
 ```js
 const ra = new RootAutomator(5000);

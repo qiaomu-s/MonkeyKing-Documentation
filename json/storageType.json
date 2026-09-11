@@ -8,7 +8,7 @@
         {
           "textRaw": "Rhino 2.0 运行时合同",
           "name": "rhino_2.0_运行时合同",
-          "desc": "<p>Storage 是 <code>storages.create(name)</code> 在 Monkey King <strong>v6.7.0</strong> 固定源码中返回的 <code>StorageNativeObject</code>。旧成员无法恢复首次发布版本时统一标记为 <strong>≤ v6.6.4（旧文档未记录精确版本）</strong>。</p>\n<ul>\n<li><strong>权限与线程</strong>：使用应用内部 SharedPreferences，不需要额外 Android 运行时权限。<code>put</code>、<code>remove</code>、<code>clear</code> 与 <code>selfRemove</code> 使用异步 <code>apply()</code>；对应 <code>Sync</code> 方法使用同步 <code>commit()</code>，可能阻塞调用线程。</li>\n<li><strong>生命周期与副作用</strong>：数据跨脚本持久化，直到显式删除、应用数据被清除或应用卸载。所有写入、删除与清空方法都会修改持久化状态。</li>\n<li><strong>异常</strong>：方法必须以 Storage 实例作为 <code>this</code>；参数数量错误、写入 <code>undefined</code>、JSON 序列化失败或存储名为 nullish 时同步抛出异常。</li>\n<li><strong>返回值</strong>：除 <code>get</code> 外，当前固定源码中的实例方法均返回 Storage 本身以支持链式调用。特别注意：<code>contains(key)</code> 当前也返回 Storage，而不是布尔值；这是固定源码行为。</li>\n</ul>\n<pre><code class=\"lang-js\">// Rhino 2.0\nconst storage = storages.create(&#39;storage-contract&#39;);\nstorage.putSync(&#39;enabled&#39;, true);\nconsole.log(storage.get(&#39;enabled&#39;)); // true\nconsole.log(storage.name);           // storage-contract\nconsole.log(storage.size);           // 至少为 1\nstorage.selfRemoveSync(&#39;storage-contract&#39;);\n</code></pre>\n<p>存储类 Storage 是一个虚拟类, 实例通常由 <a href=\"../system/storages.md\">storages</a> 全局模块产生:</p>\n<pre><code class=\"lang-js\">/* Storage 为虚拟类, 并非真实存在. */\ntypeof global.Storage; // &quot;undefined&quot;\n\nlet sto = storages.create(&#39;test&#39;);\nsto._storage instanceof com.qiaomu.monkeyking.core.storage.LocalStorage; // true\n</code></pre>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../system/storages.md#m-create\">storages.create</a></li>\n</ul>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">Storage</p>\n\n<hr>\n",
+          "desc": "<p>Storage 是 <code>storages.create(name)</code> 在 Monkey King <strong>v6.7.0</strong> 实现合同中返回的 <code>StorageNativeObject</code>。旧成员无法恢复首次发布版本时统一标记为 <strong>≤ v6.6.4（旧文档未记录精确版本）</strong>。</p>\n<ul>\n<li><strong>权限与线程</strong>：使用应用内部 SharedPreferences，不需要额外 Android 运行时权限。<code>put</code>、<code>remove</code>、<code>clear</code> 与 <code>selfRemove</code> 使用异步 <code>apply()</code>；对应 <code>Sync</code> 方法使用同步 <code>commit()</code>，可能阻塞调用线程。</li>\n<li><strong>生命周期与副作用</strong>：数据跨脚本持久化，直到显式删除、应用数据被清除或应用卸载。所有写入、删除与清空方法都会修改持久化状态。</li>\n<li><strong>异常</strong>：方法必须以 Storage 实例作为 <code>this</code>；参数数量错误、写入 <code>undefined</code>、JSON 序列化失败或存储名为 nullish 时同步抛出异常。</li>\n<li><strong>返回值</strong>：除 <code>get</code> 外，当前实现合同中的实例方法均返回 Storage 本身以支持链式调用。特别注意：<code>contains(key)</code> 当前也返回 Storage，而不是布尔值；这是实现合同行为。</li>\n</ul>\n<pre><code class=\"lang-js\">// Rhino 2.0\nconst storage = storages.create(&#39;storage-contract&#39;);\nstorage.putSync(&#39;enabled&#39;, true);\nconsole.log(storage.get(&#39;enabled&#39;)); // true\nconsole.log(storage.name);           // storage-contract\nconsole.log(storage.size);           // 至少为 1\nstorage.selfRemoveSync(&#39;storage-contract&#39;);\n</code></pre>\n<p>存储类 Storage 是一个虚拟类, 实例通常由 <a href=\"../system/storages.md\">storages</a> 全局模块产生:</p>\n<pre><code class=\"lang-js\">/* Storage 为虚拟类, 并非真实存在. */\ntypeof global.Storage; // &quot;undefined&quot;\n\nlet sto = storages.create(&#39;test&#39;);\nsto._storage instanceof com.qiaomu.monkeyking.core.storage.LocalStorage; // true\n</code></pre>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../system/storages.md#m-create\">storages.create</a></li>\n</ul>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">Storage</p>\n\n<hr>\n",
           "type": "module",
           "displayName": "Rhino 2.0 运行时合同"
         },
@@ -82,10 +82,10 @@
                       "desc": "键名"
                     },
                     {
-                      "textRaw": "<ins>**returns**</ins> { [Storage](storage.md) } - 固定源码返回当前 Storage，而不是布尔值 ",
+                      "textRaw": "<ins>**returns**</ins> { [Storage](storage.md) } - 实现合同返回当前 Storage，而不是布尔值 ",
                       "name": "<ins>**returns**</ins>",
                       "type": " [Storage](storage.md) ",
-                      "desc": "固定源码返回当前 Storage，而不是布尔值"
+                      "desc": "实现合同返回当前 Storage，而不是布尔值"
                     }
                   ]
                 },
@@ -170,8 +170,8 @@
           "displayName": "[m#] clear"
         },
         {
-          "textRaw": "固定源码补充成员",
-          "name": "固定源码补充成员",
+          "textRaw": "实现合同补充成员",
+          "name": "实现合同补充成员",
           "properties": [
             {
               "textRaw": "`name` <ins>**returns**</ins> { [string](data-types.md#string) } ",
@@ -235,7 +235,7 @@
               "textRaw": "storage.selfRemove(name)",
               "type": "method",
               "name": "selfRemove",
-              "desc": "<p>当前固定源码要求 <strong>恰好 1 个</strong> <code>name</code> 参数，并调用 <code>storages.remove(name)</code> 的异步删除路径；它不会自动采用 <code>storage.name</code>。返回当前 Storage。</p>\n",
+              "desc": "<p>当前实现合同要求 <strong>恰好 1 个</strong> <code>name</code> 参数，并调用 <code>storages.remove(name)</code> 的异步删除路径；它不会自动采用 <code>storage.name</code>。返回当前 Storage。</p>\n",
               "signatures": [
                 {
                   "params": [
@@ -250,7 +250,7 @@
               "textRaw": "storage.selfRemoveSync(name)",
               "type": "method",
               "name": "selfRemoveSync",
-              "desc": "<p>当前固定源码同样要求 <strong>恰好 1 个</strong> <code>name</code> 参数，使用 <code>storages.removeSync(name)</code> 同步删除指定命名空间，并返回当前 Storage。</p>\n<pre><code class=\"lang-js\">const storage = storages.create(&#39;temporary-contract&#39;);\nstorage\n    .putSync(&#39;answer&#39;, 42)\n    .removeSync(&#39;answer&#39;)\n    .clearSync()\n    .selfRemoveSync(&#39;temporary-contract&#39;);\n</code></pre>\n",
+              "desc": "<p>当前实现合同同样要求 <strong>恰好 1 个</strong> <code>name</code> 参数，使用 <code>storages.removeSync(name)</code> 同步删除指定命名空间，并返回当前 Storage。</p>\n<pre><code class=\"lang-js\">const storage = storages.create(&#39;temporary-contract&#39;);\nstorage\n    .putSync(&#39;answer&#39;, 42)\n    .removeSync(&#39;answer&#39;)\n    .clearSync()\n    .selfRemoveSync(&#39;temporary-contract&#39;);\n</code></pre>\n",
               "signatures": [
                 {
                   "params": [
@@ -263,7 +263,7 @@
             }
           ],
           "type": "module",
-          "displayName": "固定源码补充成员"
+          "displayName": "实现合同补充成员"
         }
       ],
       "type": "module",

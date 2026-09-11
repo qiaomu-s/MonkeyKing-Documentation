@@ -2,7 +2,7 @@
 
 `pinyin` 使用内置单字、词组和姓氏数据把中文转换为拼音，并可选用 Jieba 分词。运行时同时注册 `pinyin` 与 `$pinyin`，两者引用同一个模块对象。
 
-版本：**v6.6.1**
+版本：**v6.7.0**
 
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
@@ -39,7 +39,7 @@ console.log(JSON.stringify(result));
 | `pinyin.MODE_PLACENAME` | `PinyinMode.PLACE_NAME` 枚举对象 | `2` | 地名模式兼容名称 |
 | `pinyin.MODE_PLACE_NAME` | `PinyinMode.PLACE_NAME` 枚举对象 | `2` | 与 `MODE_PLACENAME` 相同 |
 
-固定源码只对姓氏模式提供专门分支；地名模式目前沿用普通转换流程。
+实现合同只对姓氏模式提供专门分支；地名模式目前沿用普通转换流程。
 
 这些属性分别暴露 Kotlin `PinyinStyle 枚举对象` 与 `PinyinMode 枚举对象`，不是 JavaScript 数字。选项也可使用枚举名称字符串：风格合法名称为 `NORMAL`、`TONE`、`TONE2`、`TO3NE`、`INITIALS`、`FIRST_LETTER`；模式合法名称为 `NORMAL`、`SURNAME`、`PLACE_NAME`、`PLACENAME`。名称转换不区分大小写。
 
@@ -119,7 +119,7 @@ console.log(JSON.stringify(pinyin.fromPhrase('重庆')));
 - 异常 - 只有参数数量不在 1 至 2 时由参数守卫抛出
 - 权限 / 线程 / 生命周期 / 副作用 - 当前线程同步纯计算，不访问字典、不要求权限且不持有资源
 
-当前固定源码没有执行拼音比较。不要把它作为排序比较器。
+当前实现合同没有执行拼音比较。不要把它作为排序比较器。
 
 ## pinyin.compact(value, options?)
 
@@ -138,32 +138,32 @@ console.log(JSON.stringify(pinyin.fromPhrase('重庆')));
 - 姓氏模式会优先使用单姓与复姓表；普通模式优先使用词组字典，未命中时退回逐字查询。
 - 所有公开调用都在当前线程同步完成，不请求 Android 运行时权限；字典数据库和分词器按应用生命周期延迟初始化，返回值不需要关闭。
 
-<!-- fixed-source-contracts:start -->
+<!-- api-contracts:start -->
 
-## 固定源码合同表
+## API 合同表
 
-下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| <a id="api-symbol-Y2FsbDpwaW55aW4"></a> `call:pinyin` | `pinyin(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L63` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin);` |
-| <a id="api-symbol-bW9kdWxlOnBpbnlpbg"></a> `module:pinyin` | `pinyin` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L800` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin);` |
-| <a id="api-symbol-cGlueWluLmNvbXBhY3Q"></a> `pinyin.compact` | `pinyin.compact(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L142` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.compact);` |
-| <a id="api-symbol-cGlueWluLmNvbXBhcmU"></a> `pinyin.compare` | `pinyin.compare(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L137` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.compare);` |
-| <a id="api-symbol-cGlueWluLmNvbnZlcnQ"></a> `pinyin.convert` | `pinyin.convert(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L68` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.convert);` |
-| <a id="api-symbol-cGlueWluLmZyb21Db2RlUG9pbnQ"></a> `pinyin.fromCodePoint` | `pinyin.fromCodePoint(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L161` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.fromCodePoint);` |
-| <a id="api-symbol-cGlueWluLmZyb21QaHJhc2U"></a> `pinyin.fromPhrase` | `pinyin.fromPhrase(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L166` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.fromPhrase);` |
-| <a id="api-symbol-cGlueWluLk1PREVfTk9STUFM"></a> `pinyin.MODE_NORMAL` | `pinyin.MODE_NORMAL` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L47` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_NORMAL);` |
-| <a id="api-symbol-cGlueWluLk1PREVfUExBQ0VfTkFNRQ"></a> `pinyin.MODE_PLACE_NAME` | `pinyin.MODE_PLACE_NAME` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L50` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_PLACE_NAME);` |
-| <a id="api-symbol-cGlueWluLk1PREVfUExBQ0VOQU1F"></a> `pinyin.MODE_PLACENAME` | `pinyin.MODE_PLACENAME` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L49` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_PLACENAME);` |
-| <a id="api-symbol-cGlueWluLk1PREVfU1VSTkFNRQ"></a> `pinyin.MODE_SURNAME` | `pinyin.MODE_SURNAME` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L48` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_SURNAME);` |
-| <a id="api-symbol-cGlueWluLnNpbXBsZQ"></a> `pinyin.simple` | `pinyin.simple(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L147` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.simple);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX0ZJUlNUX0xFVFRFUg"></a> `pinyin.STYLE_FIRST_LETTER` | `pinyin.STYLE_FIRST_LETTER` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L46` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_FIRST_LETTER);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX0lOSVRJQUxT"></a> `pinyin.STYLE_INITIALS` | `pinyin.STYLE_INITIALS` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L45` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_INITIALS);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX05PUk1BTA"></a> `pinyin.STYLE_NORMAL` | `pinyin.STYLE_NORMAL` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L41` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_NORMAL);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX1RPM05F"></a> `pinyin.STYLE_TO3NE` | `pinyin.STYLE_TO3NE` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L44` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TO3NE);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX1RPTkU"></a> `pinyin.STYLE_TONE` | `pinyin.STYLE_TONE` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L42` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TONE);` |
-| <a id="api-symbol-cGlueWluLlNUWUxFX1RPTkUy"></a> `pinyin.STYLE_TONE2` | `pinyin.STYLE_TONE2` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/pinyin/Pinyin.kt:L43` | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TONE2);` |
+| <a id="api-symbol-Y2FsbDpwaW55aW4"></a> `call:pinyin` | `pinyin(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin);` |
+| <a id="api-symbol-bW9kdWxlOnBpbnlpbg"></a> `module:pinyin` | `pinyin` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin);` |
+| <a id="api-symbol-cGlueWluLmNvbXBhY3Q"></a> `pinyin.compact` | `pinyin.compact(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.compact);` |
+| <a id="api-symbol-cGlueWluLmNvbXBhcmU"></a> `pinyin.compare` | `pinyin.compare(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.compare);` |
+| <a id="api-symbol-cGlueWluLmNvbnZlcnQ"></a> `pinyin.convert` | `pinyin.convert(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.convert);` |
+| <a id="api-symbol-cGlueWluLmZyb21Db2RlUG9pbnQ"></a> `pinyin.fromCodePoint` | `pinyin.fromCodePoint(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.fromCodePoint);` |
+| <a id="api-symbol-cGlueWluLmZyb21QaHJhc2U"></a> `pinyin.fromPhrase` | `pinyin.fromPhrase(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.fromPhrase);` |
+| <a id="api-symbol-cGlueWluLk1PREVfTk9STUFM"></a> `pinyin.MODE_NORMAL` | `pinyin.MODE_NORMAL` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_NORMAL);` |
+| <a id="api-symbol-cGlueWluLk1PREVfUExBQ0VfTkFNRQ"></a> `pinyin.MODE_PLACE_NAME` | `pinyin.MODE_PLACE_NAME` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_PLACE_NAME);` |
+| <a id="api-symbol-cGlueWluLk1PREVfUExBQ0VOQU1F"></a> `pinyin.MODE_PLACENAME` | `pinyin.MODE_PLACENAME` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_PLACENAME);` |
+| <a id="api-symbol-cGlueWluLk1PREVfU1VSTkFNRQ"></a> `pinyin.MODE_SURNAME` | `pinyin.MODE_SURNAME` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.MODE_SURNAME);` |
+| <a id="api-symbol-cGlueWluLnNpbXBsZQ"></a> `pinyin.simple` | `pinyin.simple(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof pinyin.simple);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX0ZJUlNUX0xFVFRFUg"></a> `pinyin.STYLE_FIRST_LETTER` | `pinyin.STYLE_FIRST_LETTER` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_FIRST_LETTER);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX0lOSVRJQUxT"></a> `pinyin.STYLE_INITIALS` | `pinyin.STYLE_INITIALS` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_INITIALS);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX05PUk1BTA"></a> `pinyin.STYLE_NORMAL` | `pinyin.STYLE_NORMAL` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_NORMAL);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX1RPM05F"></a> `pinyin.STYLE_TO3NE` | `pinyin.STYLE_TO3NE` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TO3NE);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX1RPTkU"></a> `pinyin.STYLE_TONE` | `pinyin.STYLE_TONE` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TONE);` |
+| <a id="api-symbol-cGlueWluLlNUWUxFX1RPTkUy"></a> `pinyin.STYLE_TONE2` | `pinyin.STYLE_TONE2` · 实现合同  | 属性访问；无调用参数 | 返回：属性值；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换与常量读取 | 生命周期：无持久资源；副作用：无，仅返回结果或枚举对象 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(pinyin.STYLE_TONE2);` |
 
 ### Rhino 2.0 表格读取示例
 
@@ -171,4 +171,4 @@ console.log(JSON.stringify(pinyin.fromPhrase('重庆')));
 console.log('Rhino 2.0 contract table: pinyin');
 ```
 
-<!-- fixed-source-contracts:end -->
+<!-- api-contracts:end -->

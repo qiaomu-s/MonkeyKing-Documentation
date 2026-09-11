@@ -1,13 +1,13 @@
 # 插件 (Plugins)
 
-`plugins` 用于装载应用插件或当前项目根目录下的 JavaScript 插件。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对；旧文档中的 `extend`、`extendAll` 与 `extendAllBut` 不在该提交的公开 `plugins` 表面中，因而不再作为现行接口列出。
+`plugins` 用于装载应用插件或当前项目根目录下的 JavaScript 插件。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对；旧文档中的 `extend`、`extendAll` 与 `extendAllBut` 不在该提交的公开 `plugins` 表面中，因而不再作为现行接口列出。
 
 <a id="内置扩展插件"></a>
 ## 旧版“内置扩展插件”名称
 
 **`≤ 6.6.4`**
 
-旧版文档曾把 `Arrayx`、`Numberx`、`Mathx` 称为“内置扩展插件”，并通过 `plugins.extend*` 启用。Monkey King 6.7.0 的固定源码仍分别提供这些全局增强模块，但 `plugins` 已不公开 `extend`、`extendAll` 或 `extendAllBut`；旧类型名称只用于解释历史文档，不能作为当前 `plugins` API 调用。
+旧版文档曾把 `Arrayx`、`Numberx`、`Mathx` 称为“内置扩展插件”，并通过 `plugins.extend*` 启用。Monkey King 6.7.0 的实现合同仍分别提供这些全局增强模块，但 `plugins` 已不公开 `extend`、`extendAll` 或 `extendAllBut`；旧类型名称只用于解释历史文档，不能作为当前 `plugins` API 调用。
 
 ```js
 console.log(typeof Arrayx, typeof Numberx, typeof Mathx);

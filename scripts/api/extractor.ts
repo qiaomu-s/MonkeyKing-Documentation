@@ -1,5 +1,5 @@
 import {
-  API_MANIFEST_SCHEMA_VERSION,
+  INTERNAL_API_MANIFEST_SCHEMA_VERSION,
   type AnnotationEvidence,
   type ApiManifest,
   type ApiModule,
@@ -9,6 +9,7 @@ import {
   type DeclarationHint,
   type DynamicAssignmentName,
   type DynamicOverride,
+  type PublicApiManifest,
   type SourceLocation,
 } from './model'
 import {
@@ -20,6 +21,7 @@ import {
   type BalancedRange,
 } from './lexer'
 import type { SourceReader } from './source-reader'
+import { projectApiManifest } from './public-projection'
 
 export interface ExtractApiManifestOptions {
   readonly repository: string
@@ -1888,7 +1890,7 @@ export async function extractApiManifest(
     .sort((left, right) => compareText(left.id, right.id))
 
   return {
-    schemaVersion: API_MANIFEST_SCHEMA_VERSION,
+    schemaVersion: INTERNAL_API_MANIFEST_SCHEMA_VERSION,
     source: {
       repository: options.repository,
       ref: options.ref,
@@ -1905,4 +1907,12 @@ export async function extractApiManifest(
       compareText(left.id, right.id),
     ),
   }
+}
+
+/** Extract and immediately project the source-backed model for public use. */
+export async function extractPublicApiManifest(
+  reader: SourceReader,
+  options: ExtractApiManifestOptions,
+): Promise<PublicApiManifest> {
+  return projectApiManifest(await extractApiManifest(reader, options))
 }

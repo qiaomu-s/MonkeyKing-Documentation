@@ -10,9 +10,9 @@
 | AMAP             | 高德地图           | Amap              | com.autonavi.minimap               | amap             |
 | APPOPS           | App Ops        | ~                 | rikka.appops                       | appops           |
 | AQUAMAIL         | Aqua Mail      | ~                 | org.kman.AquaMail                  | aquamail         |
-| AUTOJS           | Auto.js        | ~                 | org.autojs.autojs                  | autojs           |
+| AUTOJS           | 历史兼容值      | ~                 | org.autojs.autojs                  | autojs           |
 | MONKEYKING          | Monkey King        | ~                 | com.qiaomu.monkeyking                 | monkeyking          |
-| AUTOJSPRO        | AutoJsPro      | ~                 | org.autojs.autojspro               | autojspro        |
+| AUTOJSPRO        | 历史兼容值      | ~                 | org.autojs.autojspro               | autojspro        |
 | BAIDUMAP         | 百度地图           | BaiduMap          | com.baidu.BaiduMap                 | baidumap         |
 | BILIBILI         | 哔哩哔哩           | bilibili          | tv.danmaku.bili                    | bilibili         |
 | BREVENT          | 黑阈             | Brevent           | mie.piebridge.brevent              | brevent          |

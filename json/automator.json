@@ -4,7 +4,7 @@
     {
       "textRaw": "自动化 (Automator)",
       "name": "自动化_(automator)",
-      "desc": "<p>本页覆盖三组运行时入口：<code>auto</code> 管理 Monkey King 无障碍服务，<code>automator</code> 执行控件、坐标、手势与系统全局动作，<code>RootAutomator</code> 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG8\"></a></p>\n",
+      "desc": "<p>本页覆盖三组运行时入口：<code>auto</code> 管理 Monkey King 无障碍服务，<code>automator</code> 执行控件、坐标、手势与系统全局动作，<code>RootAutomator</code> 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG8\"></a></p>\n",
       "modules": [
         {
           "textRaw": "[@] auto",
@@ -193,7 +193,7 @@
               "textRaw": "[m] auto.registerEvents(name, listener)",
               "type": "method",
               "name": "registerEvents",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.registerEvents(name, listener)</code>；固定提交直接委托给单数方法，不接受事件映射表</li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <code>AccessibilityEventCallback | Object | null</code> }</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>registerEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只注册一个 name；会确保服务并替换该脚本同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.registerEvents(&#39;content-change&#39;, {\n    onAccessibilityEvent(event) { console.log(event); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZW1vdmVFdmVudA\"></a></p>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.registerEvents(name, listener)</code>；产品版本直接委托给单数方法，不接受事件映射表</li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <code>AccessibilityEventCallback | Object | null</code> }</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>registerEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只注册一个 name；会确保服务并替换该脚本同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.registerEvents(&#39;content-change&#39;, {\n    onAccessibilityEvent(event) { console.log(event); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZW1vdmVFdmVudA\"></a></p>\n",
               "signatures": [
                 {
                   "params": [
@@ -226,7 +226,7 @@
               "textRaw": "[m] auto.removeEvents(name)",
               "type": "method",
               "name": "removeEvents",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.removeEvents(name)</code>；固定提交直接委托给 <code>removeEvent</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 仍然只接受一个名称</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>removeEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：不会一次清除全部事件，只删除一个同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.removeEvents(&#39;content-change&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by53YWl0Rm9y\"></a></p>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.removeEvents(name)</code>；产品版本直接委托给 <code>removeEvent</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 仍然只接受一个名称</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>removeEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：不会一次清除全部事件，只删除一个同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.removeEvents(&#39;content-change&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by53YWl0Rm9y\"></a></p>\n",
               "signatures": [
                 {
                   "params": [
@@ -514,7 +514,7 @@
               "textRaw": "[m] automator.isServiceRunning()",
               "type": "method",
               "name": "isServiceRunning",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.isServiceRunning()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 固定提交只检查当前进程是否有服务实例</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读状态；不等同于 <code>auto.isOperational()</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.isServiceRunning());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmVuc3VyZVNlcnZpY2U\"></a></p>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.isServiceRunning()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 产品版本只检查当前进程是否有服务实例</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读状态；不等同于 <code>auto.isOperational()</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.isServiceRunning());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmVuc3VyZVNlcnZpY2U\"></a></p>\n",
               "signatures": [
                 {
                   "params": []
@@ -810,7 +810,7 @@
             {
               "textRaw": "[dynamic] RootAutomator 实例转发方法",
               "name": "[dynamic]_rootautomator_实例转发方法",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>ra.&lt;publicMethod&gt;(...)</code>；方法来自核心 <code>RootAutomator</code> Java 对象</li>\n<li><strong>参数</strong>：依具体 public 方法而定；常用方法包括 <code>sendEvent</code>、<code>touch</code>、<code>setScreenMetrics</code>、<code>tap</code>、<code>swipe</code>、<code>press</code>、<code>longPress</code>、<code>touchDown</code>、<code>touchUp</code>、<code>touchMove</code>、<code>getDefaultId</code>、<code>setDefaultId</code> 与 <code>exit</code></li>\n<li><ins><strong>returns</strong></ins> { <code>any</code> } - 保留对应 Java 方法的返回值</li>\n<li><strong>异常</strong>：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出</li>\n<li><strong>权限</strong>：沿用构造实例时选择的 root 或 Shizuku 后端</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；固定提交未采用旧 JavaScript 模块的名称过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(5000);\nconst tap = ra.tap; // 已绑定内部 receiver\ntry {\n    ra.setScreenMetrics(device.width, device.height);\n    tap(320, 640);\n} finally {\n    ra.exit();\n}\n</code></pre>\n",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>ra.&lt;publicMethod&gt;(...)</code>；方法来自核心 <code>RootAutomator</code> Java 对象</li>\n<li><strong>参数</strong>：依具体 public 方法而定；常用方法包括 <code>sendEvent</code>、<code>touch</code>、<code>setScreenMetrics</code>、<code>tap</code>、<code>swipe</code>、<code>press</code>、<code>longPress</code>、<code>touchDown</code>、<code>touchUp</code>、<code>touchMove</code>、<code>getDefaultId</code>、<code>setDefaultId</code> 与 <code>exit</code></li>\n<li><ins><strong>returns</strong></ins> { <code>any</code> } - 保留对应 Java 方法的返回值</li>\n<li><strong>异常</strong>：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出</li>\n<li><strong>权限</strong>：沿用构造实例时选择的 root 或 Shizuku 后端</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；产品版本未采用旧 JavaScript 模块的名称过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(5000);\nconst tap = ra.tap; // 已绑定内部 receiver\ntry {\n    ra.setScreenMetrics(device.width, device.height);\n    tap(320, 640);\n} finally {\n    ra.exit();\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "[dynamic] RootAutomator 实例转发方法"
             }

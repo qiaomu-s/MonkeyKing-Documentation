@@ -34,7 +34,7 @@
 let client = web.newInjectableWebClient();
 client.inject('navigator.userAgent', value => console.log(value));
 
-let webView = web.newInjectableWebView('https://www.github.com');
+let webView = web.newInjectableWebView('https://example.com');
 webView.setWebViewClient(client);
 activity.setContentView(webView);
 ```

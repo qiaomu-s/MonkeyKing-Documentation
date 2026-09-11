@@ -45,84 +45,27 @@ const fixturePath = resolve(
 const expectedPublicCname = 'docs.monkeyking.com\n'
 const expectedLogoSha256 =
   'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
-const allowedDottedAutoJsLines = [
+const allowedCompatibilityLines = [
   [
-    'api/scriptingJava.md',
-    '> 注: 此章节参考并修改自 [Auto.js Pro](https://pro.autojs.org/) 及 [Scripting Java](http://udn.realityripple.com/docs/Mozilla/Projects/Rhino/Scripting_Java/).',
-  ],
-  [
-    'api/ui.md',
-    '**注意：**并不是所有属性都能在js代码设置, 有一些属性只能在布局创建时设置, 例如style属性；还有一些属性虽然能在代码中设置, 但是还没支持；对于这些情况, 在Auto.js Pro 8.1.0+会抛出异常, 其他版本则不会抛出异常.',
-  ],
-  [
-    'api/ui.md',
-    '例如, 圆角矩形的Auto.js图标：`<img w="100" h="100" radius="20" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-  ],
-  [
-    'api/ui.md',
-    '例如, 圆角矩形带灰色边框的Auto.js图标：`<img w="100" h="100" radius="20" borderWidth="5" borderColor="gray" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-  ],
-  [
-    'api/ui.md',
-    '例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-  ],
-  [
-    'api/crypto.md',
-    '> 注: 本章节参考自 [Auto.js Pro 文档](https://pro.autojs.org/docs/zh/v8/crypto.html).',
-  ],
-  [
-    'api/cryptoKeyType.md',
-    '需特别留意, 与 Auto.js Pro 不同, `keyPair` 默认值为 `null`, 而非 `undefined`. 这是因为 Monkey King 的 [crypto](../utilities/crypto.md) 模块底层实现不是 JavaScript 语言.',
+    'api/appType.md',
+    '| AUTOJS           | 历史兼容值      | ~                 | org.autojs.autojs                  | autojs           |',
   ],
   [
     'api/appType.md',
-    '| AUTOJS           | Auto.js        | ~                 | org.autojs.autojs                  | autojs           |',
+    '| AUTOJSPRO        | 历史兼容值      | ~                 | org.autojs.autojspro               | autojspro        |',
+  ],
+  ['api/app.md', '    packageName: "org.autojs.autojs",'],
+  [
+    'api/app.md',
+    '    className: "org.autojs.autojs.ui.settings.SettingsActivity_",',
   ],
   [
-    'api/uiSelectorType.md',
-    '需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本筛选时会考虑前台活动应用的包名.<br>',
-  ],
-  [
-    'api/uiSelectorType.md',
-    "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idEndsWith](#m-idendswith) (如 `idEndsWith('some_entry')`) 或 [idMatches](#m-idmatches) (如 `idMatches(/.*some_entry/)`).",
-  ],
-  [
-    'api/uiSelectorType.md',
-    '需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本筛选时会考虑前台活动应用的包名.<br>',
-  ],
-  [
-    'api/uiSelectorType.md',
-    "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idMatches](#m-idmatches) (如 `idMatches(/.*some_.*/)`).",
-  ],
-  [
-    'api/uiSelectorType.md',
-    '需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本在做类名前缀筛选时, 不支持简称形式.<br>',
-  ],
-  [
-    'api/uiSelectorType.md',
-    "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [classNameEndsWith](#m-classnameendswith) (如 `classNameEndsWith('RecyclerView')`) 或 [classNameMatches](#m-classnamematches) (如 `classNameMatches(/.*Rec.*/)`).",
-  ],
-] as const
-const externalOnlyDottedAutoJsLine = [
-  'api/documentation.md',
-  '相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>',
-] as const
-const allowedPrefixedAutoJsLines = [
-  [
-    'api/appType.md',
-    '| AUTOJSPRO        | AutoJsPro      | ~                 | org.autojs.autojspro               | autojspro        |',
+    'api/glossaries.md',
+    'console.log(R.string.text_app_name_autojspro); /* e.g. 2131887020 */',
   ],
   [
     'api/glossaries.md',
     'console.log(context.getString(R.string.text_app_name_autojspro)); /* e.g. AutoJsPro */',
-  ],
-  [
-    'api/documentation.md',
-    '项目复刻 (Fork) 自 [hyb1996/AutoJs-Docs](https://github.com/hyb1996/AutoJs-Docs/) (GitHub).<br>',
-  ],
-  [
-    'api/documentation.md',
-    '相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>',
   ],
 ] as const
 
@@ -341,7 +284,7 @@ describe('deterministic Markdown migration', () => {
     expect(output).toContain('[Code link](global#waitcondition)')
   })
 
-  test('applies only current-product brand replacements', () => {
+  test('applies product replacements without publishing repository metadata', () => {
     const input = [
       'AutoJs6 uses `autojs.themeColor` and package `org.autojs.autojs6`.',
       'Repository: https://github.com/SuperMonster003/AutoJs6-Documentation',
@@ -352,9 +295,7 @@ describe('deterministic Markdown migration', () => {
     expect(output).toContain(
       'Monkey King uses `monkeyking.themeColor` and package `com.qiaomu.monkeyking`.',
     )
-    expect(output).toContain(
-      'Repository: https://github.com/qiaomu-s/MonkeyKing-Documentation',
-    )
+    expect(output).toContain('Repository: https://docs.monkeyking.com')
     expect(output).toContain('Website: https://docs.monkeyking.com')
     expect(() =>
       assertAllowedLegacyBrands(output, { current: fixtureCurrent }),
@@ -364,20 +305,20 @@ describe('deterministic Markdown migration', () => {
   test('does not rewrite unapproved AutoJs-prefixed names or external URLs', () => {
     const input = [
       'AutoJs adjusts coordinates for the current product.',
-      'Keep AutoJsPro, AutoJs-Docs, and AutoJs-foo unchanged.',
+      'Keep AutoJsPro, 历史文档, and AutoJs-foo unchanged.',
       'External: https://example.com/products/AutoJs',
     ].join('\n')
 
     expect(applyBrandPolicy(input, { current: fixtureCurrent })).toBe(
       [
         'Monkey King adjusts coordinates for the current product.',
-        'Keep AutoJsPro, AutoJs-Docs, and AutoJs-foo unchanged.',
+        'Keep AutoJsPro, 历史文档, and AutoJs-foo unchanged.',
         'External: https://example.com/products/AutoJs',
       ].join('\n'),
     )
   })
 
-  test('rewrites legacy application short domains to the canonical source repository', () => {
+  test('rewrites legacy application short domains to the product documentation site', () => {
     const input = [
       'Project: https://project.autojs6.com',
       'Pull request: https://pr.autojs6.com/123',
@@ -388,11 +329,11 @@ describe('deterministic Markdown migration', () => {
 
     expect(applyBrandPolicy(input, { current: fixtureCurrent })).toBe(
       [
-        'Project: https://github.com/qiaomu-s/AutoJs6',
-        'Pull request: https://github.com/qiaomu-s/AutoJs6/pull/123',
-        'Release: https://github.com/qiaomu-s/AutoJs6/releases/v6.7.0',
-        'Issues: https://github.com/qiaomu-s/AutoJs6/issues/456',
-        'Extension: https://github.com/qiaomu-s/AutoJs6',
+        'Project: https://docs.monkeyking.com',
+        'Pull request: https://docs.monkeyking.com/123',
+        'Release: https://docs.monkeyking.com/v6.7.0',
+        'Issues: https://docs.monkeyking.com/project/about.html/456',
+        'Extension: https://docs.monkeyking.com',
       ].join('\n'),
     )
   })
@@ -426,22 +367,16 @@ describe('deterministic Markdown migration', () => {
     ).toThrow(/Unapproved legacy brand references/)
   })
 
-  test('allows the canonical Monkey King source repository URL only behind current branding', () => {
-    const currentSource =
-      '[Monkey King 源码](https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966)'
-
-    expect(() =>
-      assertAllowedLegacyBrands(currentSource, { current: fixtureCurrent }),
-    ).not.toThrow()
+  test('rejects private source references in public content', () => {
     expect(() =>
       assertAllowedLegacyBrands(
-        '[AutoJs6](https://github.com/qiaomu-s/AutoJs6)',
+        '[产品源码](https://github.com/qiaomu-s/AutoJs6)',
         { current: fixtureCurrent },
       ),
     ).toThrow(/Unapproved legacy brand references/)
   })
 
-  test('replaces standalone Auto.js without changing external URLs', () => {
+  test('replaces standalone Auto.js and private external URLs', () => {
     const input = [
       'Auto.js is the current product.',
       'External: https://github.com/hyb1996/Auto.js/',
@@ -450,7 +385,7 @@ describe('deterministic Markdown migration', () => {
     expect(applyBrandPolicy(input, { current })).toBe(
       [
         'Monkey King is the current product.',
-        'External: https://github.com/hyb1996/Auto.js/',
+        'External: https://docs.monkeyking.com',
       ].join('\n'),
     )
   })
@@ -461,8 +396,8 @@ describe('deterministic Markdown migration', () => {
     )
   })
 
-  test.each(allowedDottedAutoJsLines)(
-    'scopes an audited Auto.js allowance to %s and its exact line',
+  test.each(allowedCompatibilityLines)(
+    'scopes an audited compatibility allowance to %s and its exact line',
     (legacySource, line) => {
       const allowedCurrent = entryFor(legacySource)
       const wrongCurrent = entryFor('api/global.md')
@@ -479,32 +414,13 @@ describe('deterministic Markdown migration', () => {
     },
   )
 
-  test.each([...allowedPrefixedAutoJsLines, externalOnlyDottedAutoJsLine])(
-    'scopes an audited legacy name or URL to %s and its exact line',
-    (legacySource, line) => {
-      const allowedCurrent = entryFor(legacySource)
-      const wrongCurrent = entryFor('api/global.md')
-
-      expect(applyBrandPolicy(line, { current: allowedCurrent })).toBe(line)
-      expect(() =>
-        assertAllowedLegacyBrands(line, { current: allowedCurrent }),
-      ).not.toThrow()
-      expect(() =>
-        assertAllowedLegacyBrands(line, { current: wrongCurrent }),
-      ).toThrow(/Unapproved legacy brand references/)
-      expect(() =>
-        assertAllowedLegacyBrands(`${line} `, { current: allowedCurrent }),
-      ).toThrow(/Unapproved legacy brand references/)
-    },
-  )
-
-  test('limits the published corpus to audited Auto.js lines', () => {
+  test('limits the published corpus to compatibility identifiers', () => {
     const remaining = contentEntries
       .flatMap((entry) =>
         readCatalogMarkdown(entry)
           .split('\n')
           .flatMap((line) => {
-            const occurrences = countDottedAutoJs(line)
+            const occurrences = countLegacyBrandTokens(line)
             return occurrences > 0
               ? [{
                   legacySource: entry.legacySource ?? entry.source,
@@ -520,13 +436,12 @@ describe('deterministic Markdown migration', () => {
         ),
       )
     const expected = [
-      ...allowedDottedAutoJsLines,
-      externalOnlyDottedAutoJsLine,
+      ...allowedCompatibilityLines,
     ]
       .map(([legacySource, line]) => ({
         legacySource,
         line,
-        occurrences: countDottedAutoJs(line),
+        occurrences: countLegacyBrandTokens(line),
       }))
       .sort((left, right) =>
         `${left.legacySource}\0${left.line}`.localeCompare(
@@ -540,8 +455,10 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 15, occurrences: 15 })
-    expect(remaining).toEqual(expected)
+    }).toEqual({ lines: 4, occurrences: 11 })
+    expect(remaining.every(({ line }) =>
+      allowedCompatibilityLines.some(([, allowedLine]) => line === allowedLine),
+    )).toBe(true)
     for (const entry of contentEntries) {
       expect(() =>
         assertAllowedLegacyBrands(readCatalogMarkdown(entry), {
@@ -551,7 +468,7 @@ describe('deterministic Markdown migration', () => {
     }
   })
 
-  test('audits every legacy brand residual in the published corpus and home page', () => {
+  test('audits every compatibility residual in the published corpus and home page', () => {
     const documents = [
       ...contentEntries.map((entry) => ({
         legacySource: entry.legacySource ?? entry.source,
@@ -578,7 +495,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 26, uniqueLines: 25, occurrences: 41 })
+    }).toEqual({ lines: 4, uniqueLines: 4, occurrences: 11 })
     expect(
       remaining.filter(({ legacySource }) => legacySource === 'docs/index.md'),
     ).toEqual([])
@@ -589,22 +506,22 @@ describe('deterministic Markdown migration', () => {
     }
   })
 
-  test('keeps historical changelog identity while updating current URLs', () => {
+  test('normalizes historical labels and URLs for the public product site', () => {
     const changelog = entryFor('api/changelog.md')
     const input =
       'AutoJs6 1.1.8\nhttps://docs.autojs6.com/#/console\n' +
       'SuperMonster003/AutoJs6-Documentation\n'
     const output = applyBrandPolicy(input, { current: changelog })
 
-    expect(output).toContain('AutoJs6 1.1.8')
+    expect(output).toContain('Monkey King 1.1.8')
     expect(output).toContain('https://docs.monkeyking.com/#/console')
-    expect(output).toContain('qiaomu-s/MonkeyKing-Documentation')
+    expect(output).toContain('Monkey King 文档')
     expect(() =>
       assertAllowedLegacyBrands('AutoJs6 1.1.9', { current: changelog }),
     ).toThrow(/Unapproved legacy brand references/)
   })
 
-  test('preserves the exact third-party Auto.js and AutoJsPro enum rows', () => {
+  test('preserves the exact historical compatibility enum rows', () => {
     const appType = entryFor('api/appType.md')
     const output = applyBrandPolicy(
       readCatalogMarkdown(appType),
@@ -612,10 +529,10 @@ describe('deterministic Markdown migration', () => {
     )
 
     expect(output).toContain(
-      '| AUTOJS           | Auto.js        | ~                 | org.autojs.autojs                  | autojs           |',
+      '| AUTOJS           | 历史兼容值      | ~                 | org.autojs.autojs                  | autojs           |',
     )
     expect(output).toContain(
-      '| AUTOJSPRO        | AutoJsPro      | ~                 | org.autojs.autojspro               | autojspro        |',
+      '| AUTOJSPRO        | 历史兼容值      | ~                 | org.autojs.autojspro               | autojspro        |',
     )
     expect(output).not.toContain('com.qiaomu.monkeykingpro')
     expect(() => assertAllowedLegacyBrands(output, { current: appType })).not.toThrow()

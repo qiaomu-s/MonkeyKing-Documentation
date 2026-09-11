@@ -118,9 +118,11 @@ describe('API coverage generator', () => {
       coverage.rules.map((rule: { patterns: string[] }) => [rule.patterns[0], rule]),
     )
 
-    expect(coverage.sourceRef).toBe(
-      '1111111111111111111111111111111111111111',
-    )
+    expect(coverage).toMatchObject({
+      schemaVersion: 2,
+      productVersion: '6.7.0',
+    })
+    expect(coverage).not.toHaveProperty('sourceRef')
     expect(coverage.rules).toHaveLength(3)
     expect(
       coverage.rules.every(

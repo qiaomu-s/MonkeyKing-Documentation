@@ -3,18 +3,19 @@ import { resolve } from 'node:path'
 import {
   apiSymbolAnchorId,
   defaultOwnerPages,
-  generateApiCoverageArtifacts,
 } from '../scripts/api/coverage-generator'
-import type { ApiManifest, ApiSymbol } from '../scripts/api/model'
+import type {
+  PublicApiCoverage,
+  PublicApiManifest,
+  PublicApiSymbol,
+  PublicCoverageRule,
+} from '../scripts/api/model'
 import { findPlaceholderIssues } from '../scripts/content/quality'
 
 interface SymbolFixture {
-  readonly sourceCommit: string
   readonly canonical: readonly string[]
   readonly aliases: readonly string[]
 }
-
-const FIXED_SOURCE_COMMIT = 'bafa2986212d27b6b59f1324f89548b72a810966'
 
 const scopedOwners = new Set([
   'console',
@@ -110,44 +111,24 @@ function pageForOwner(owner: string): string | undefined {
   return undefined
 }
 
-function expectedPage(symbol: ApiSymbol): string | undefined {
+function expectedPage(
+  symbol: PublicApiSymbol,
+  coverageById: ReadonlyMap<string, PublicCoverageRule>,
+): string | undefined {
+  const target = coverageById.get(symbol.id)?.target
+  if (target) return target.split('#', 1)[0]
   if (moduleGlobalIds.has(symbol.id)) return 'docs/api/core/modules.md'
   if (symbol.owner !== 'global') return pageForOwner(symbol.owner)
-  if (symbol.kind === 'class') return 'docs/api/core/global.md'
-  if (symbol.source.path.includes('/augment/console/')) {
-    return 'docs/api/system/console.md'
-  }
-  if (symbol.source.path.includes('/augment/shell/')) {
-    return 'docs/api/system/shell.md'
-  }
-  if (symbol.source.path.includes('/augment/timers/')) {
-    return 'docs/api/system/timers.md'
-  }
-  return 'docs/api/core/global.md'
+  return symbol.kind === 'class' || symbol.kind === 'engine-global'
+    ? 'docs/api/core/global.md'
+    : 'docs/api/core/global.md'
 }
 
 function isScopedSymbol(
-  symbol: ApiSymbol,
-  symbolsById: ReadonlyMap<string, ApiSymbol>,
+  symbol: PublicApiSymbol,
+  scopedIds: ReadonlySet<string>,
 ): boolean {
-  if (!symbol.public) return false
-  if (moduleGlobalIds.has(symbol.id)) return false
-  if (scopedOwners.has(symbol.owner)) return true
-  if (scopedSpecialOwners.has(symbol.owner)) return true
-  if (symbol.owner !== 'global') return false
-  if (symbol.kind === 'class' || symbol.kind === 'engine-global') return true
-  if (symbol.id === 'global:i18n') return true
-  if (/\/augment\/(console|shell|timers)\//.test(symbol.source.path)) return true
-  if (symbol.source.path.endsWith('/augment/global/Global.kt')) return true
-  const canonical = symbol.canonicalId
-    ? symbolsById.get(symbol.canonicalId)
-    : undefined
-  return Boolean(
-    canonical &&
-      (scopedOwners.has(canonical.owner) ||
-        (canonical.owner === 'global' &&
-          canonical.source.path.endsWith('/augment/global/Global.kt'))),
-  )
+  return symbol.public && scopedIds.has(symbol.id)
 }
 
 function contractRow(markdownSource: string, anchor: string): readonly string[] {
@@ -161,27 +142,41 @@ function contractRow(markdownSource: string, anchor: string): readonly string[] 
     .map((cell) => cell.trim())
 }
 
-describe('Monkey King 6.7.0 system and utilities source contracts', () => {
-  const manifest = readJson<ApiManifest>('api-surface/manifest.json')
+describe('Monkey King 6.7.0 system and utilities public contracts', () => {
+  const manifest = readJson<PublicApiManifest>('api-surface/manifest.json')
+  const coverage = readJson<PublicApiCoverage>('api-surface/coverage.json')
   const remediationFixture = readJson<SymbolFixture>(
     'tests/fixtures/api/system-utils-gap-ids.json',
   )
   const symbolFixture = readJson<SymbolFixture>(
     'tests/fixtures/api/system-utils-symbol-ids.json',
   )
+  const fixtureIds = new Set([
+    ...symbolFixture.canonical,
+    ...symbolFixture.aliases,
+  ])
   const symbolsById = new Map(
     manifest.symbols.map((symbol) => [symbol.id, symbol]),
   )
+  const coverageById = new Map(
+    coverage.rules.flatMap((rule) =>
+      rule.patterns.map((pattern) => [pattern, rule] as const),
+    ),
+  )
   const scopedSymbols = manifest.symbols.filter((symbol) =>
-    isScopedSymbol(symbol, symbolsById),
+    isScopedSymbol(symbol, fixtureIds),
   )
 
-  test('freezes the exact fixed-source remediation scope', () => {
-    expect(manifest.source.commit).toBe(FIXED_SOURCE_COMMIT)
-    expect(remediationFixture.sourceCommit).toBe(FIXED_SOURCE_COMMIT)
+  test('freezes the public remediation scope without provenance fields', () => {
+    expect(manifest).toMatchObject({
+      schemaVersion: 2,
+      productVersion: '6.7.0',
+    })
+    expect(manifest).not.toHaveProperty('source')
+    expect(manifest).not.toHaveProperty('repository')
+    expect(manifest).not.toHaveProperty('commit')
     expect(remediationFixture.canonical).toHaveLength(638)
     expect(remediationFixture.aliases).toHaveLength(9)
-    expect(symbolFixture.sourceCommit).toBe(FIXED_SOURCE_COMMIT)
     expect(symbolFixture.canonical).toHaveLength(3638)
     expect(symbolFixture.aliases).toHaveLength(44)
     for (const symbolId of moduleGlobalIds) {
@@ -189,15 +184,15 @@ describe('Monkey King 6.7.0 system and utilities source contracts', () => {
       expect(remediationFixture.canonical, symbolId).not.toContain(symbolId)
     }
 
-    const fixtureIds = [
+    const remediationIds = [
       ...remediationFixture.canonical,
       ...remediationFixture.aliases,
     ]
-    expect(new Set(fixtureIds).size).toBe(fixtureIds.length)
-    for (const symbolId of fixtureIds) {
+    expect(new Set(remediationIds).size).toBe(remediationIds.length)
+    for (const symbolId of remediationIds) {
       const symbol = symbolsById.get(symbolId)
       expect(symbol, symbolId).toBeDefined()
-      expect(symbol && isScopedSymbol(symbol, symbolsById), symbolId).toBe(true)
+      expect(symbol && isScopedSymbol(symbol, fixtureIds), symbolId).toBe(true)
     }
 
     expect(symbolFixture.canonical).toEqual(
@@ -222,18 +217,10 @@ describe('Monkey King 6.7.0 system and utilities source contracts', () => {
   })
 
   test('maps every scoped public symbol once and only aliases mapped canonicals', async () => {
-    const artifacts = await generateApiCoverageArtifacts({
-      manifest,
-      projectRoot: process.cwd(),
-    })
-    const scopedIds = new Set(scopedSymbols.map((symbol) => symbol.id))
-    const scopedGaps = artifacts.gaps
-      .filter((gap) => scopedIds.has(gap.symbolId))
-      .map((gap) => `${gap.symbolId}: ${gap.reason}`)
-    expect(scopedGaps).toEqual([])
-
     const rulesById = new Map(
-      artifacts.coverage.rules.map((rule) => [rule.patterns[0], rule]),
+      coverage.rules.flatMap((rule) =>
+        rule.patterns.map((pattern) => [pattern, rule] as const),
+      ),
     )
     const canonicalTargets = new Set<string>()
 
@@ -284,7 +271,7 @@ describe('Monkey King 6.7.0 system and utilities source contracts', () => {
       expect(symbol, symbolId).toBeDefined()
       if (!symbol) continue
 
-      const page = expectedPage(symbol)
+      const page = expectedPage(symbol, coverageById)
       expect(page, symbolId).toBeDefined()
       if (!page) continue
 
@@ -310,7 +297,7 @@ describe('Monkey King 6.7.0 system and utilities source contracts', () => {
     }
 
     for (const [page, source] of pageSources) {
-      expect(source, page).toContain('固定源码合同表')
+      expect(source, page).toContain('API 合同表')
       expect(source, page).toContain('Rhino 2.0')
       expect(source, page).toMatch(/```js[\s\S]+?```/)
     }

@@ -1,6 +1,6 @@
 # 消息通知 (Notice)
 
-`notice` 与 `$notice` 指向同一个可调用模块对象；`notice.builder` 每次读取都会创建新的 AndroidX `NotificationCompat.Builder`。本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+`notice` 与 `$notice` 指向同一个可调用模块对象；`notice.builder` 每次读取都会创建新的 AndroidX `NotificationCompat.Builder`。本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 发送通知会写入系统通知栏；创建、修改和删除渠道会改变应用级系统设置。Android 8.0 及以上使用通知渠道，渠道提交后除名称和描述外的大部分属性不能由应用自由提高或修改；Android 13 及以上还可能需要用户授予通知权限。
 
@@ -213,7 +213,7 @@ typeof notice.channel; // "object"
 typeof notice.getBuilder; // "function"
 ```
 
-所有 `notice` 调用形式最多接受 3 个参数，并同步向 Android 通知服务提交通知。content/title 重载要求相应位置为字符串，builder 重载最多接受 2 个参数，且其 options 必须是 JavaScript 对象；其他带 options 的重载也会校验 options 所在参数。priority、intent 或渠道配置不合法时抛出异常。固定提交中，无法匹配字符串或 builder 的单个首参数会按空 options 处理并发送默认测试通知。若 `POST_NOTIFICATIONS` 权限检查未通过，调用会在提交给 NotificationManager 之前同步抛出 RuntimeException，而不是仅由系统静默拒绝显示。
+所有 `notice` 调用形式最多接受 3 个参数，并同步向 Android 通知服务提交通知。content/title 重载要求相应位置为字符串，builder 重载最多接受 2 个参数，且其 options 必须是 JavaScript 对象；其他带 options 的重载也会校验 options 所在参数。priority、intent 或渠道配置不合法时抛出异常。产品版本中，无法匹配字符串或 builder 的单个首参数会按空 options 处理并发送默认测试通知。若 `POST_NOTIFICATIONS` 权限检查未通过，调用会在提交给 NotificationManager 之前同步抛出 RuntimeException，而不是仅由系统静默拒绝显示。
 
 ```js
 try {
@@ -806,24 +806,24 @@ notice.channel.getAll().map(ch => ch.getId()); /* 获取所有渠道的 ID. */
 
 在 Android 8.0 以下，`contains` 和 `remove` 返回 `false`，`get` 返回 `null`，`getAll` 返回空数组；系统不会创建真正的通知渠道。
 
-<!-- fixed-source-contracts:start -->
+<!-- api-contracts:start -->
 
-## 固定源码合同表
+## API 合同表
 
-下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| <a id="api-symbol-Y2FsbDpub3RpY2U"></a> `call:notice` | `notice(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L53` | 参数：0 至 3 个参数；可选项与默认值见本页说明或源码守卫 | 返回：void;；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice);` |
-| <a id="api-symbol-bW9kdWxlOm5vdGljZQ"></a> `module:notice` | `notice` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L790` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice);` |
-| <a id="api-symbol-bW9kdWxlOm5vdGljZS5jaGFubmVs"></a> `module:notice.channel` | `notice.channel` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L791` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.channel);` |
-| <a id="api-symbol-bm90aWNlLmJ1aWxkZXI"></a> `notice.builder` | `notice.builder` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L49` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(notice.builder);` |
-| <a id="api-symbol-bm90aWNlLmNhbmNlbA"></a> `notice.cancel` | `notice.cancel(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L268` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.cancel);` |
-| <a id="api-symbol-bm90aWNlLmNvbmZpZw"></a> `notice.config` | `notice.config(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L236` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.config);` |
-| <a id="api-symbol-bm90aWNlLmVuc3VyZUVuYWJsZWQ"></a> `notice.ensureEnabled` | `notice.ensureEnabled(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L224` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.ensureEnabled);` |
-| <a id="api-symbol-bm90aWNlLmdldEJ1aWxkZXI"></a> `notice.getBuilder` | `notice.getBuilder(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L279` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.getBuilder);` |
-| <a id="api-symbol-bm90aWNlLmlzRW5hYmxlZA"></a> `notice.isEnabled` | `notice.isEnabled(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L218` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.isEnabled);` |
-| <a id="api-symbol-bm90aWNlLmxhdW5jaFNldHRpbmdz"></a> `notice.launchSettings` | `notice.launchSettings(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/notice/Notice.kt:L230` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.launchSettings);` |
+| <a id="api-symbol-Y2FsbDpub3RpY2U"></a> `call:notice` | `notice(...args)` · 实现合同  | 参数：0 至 3 个参数；可选项与默认值见本页说明或页面约束 | 返回：void;；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice);` |
+| <a id="api-symbol-bW9kdWxlOm5vdGljZQ"></a> `module:notice` | `notice` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice);` |
+| <a id="api-symbol-bW9kdWxlOm5vdGljZS5jaGFubmVs"></a> `module:notice.channel` | `notice.channel` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.channel);` |
+| <a id="api-symbol-bm90aWNlLmJ1aWxkZXI"></a> `notice.builder` | `notice.builder` · 实现合同  | 属性访问；无调用参数 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(notice.builder);` |
+| <a id="api-symbol-bm90aWNlLmNhbmNlbA"></a> `notice.cancel` | `notice.cancel(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.cancel);` |
+| <a id="api-symbol-bm90aWNlLmNvbmZpZw"></a> `notice.config` | `notice.config(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.config);` |
+| <a id="api-symbol-bm90aWNlLmVuc3VyZUVuYWJsZWQ"></a> `notice.ensureEnabled` | `notice.ensureEnabled(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.ensureEnabled);` |
+| <a id="api-symbol-bm90aWNlLmdldEJ1aWxkZXI"></a> `notice.getBuilder` | `notice.getBuilder(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.getBuilder);` |
+| <a id="api-symbol-bm90aWNlLmlzRW5hYmxlZA"></a> `notice.isEnabled` | `notice.isEnabled(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.isEnabled);` |
+| <a id="api-symbol-bm90aWNlLmxhdW5jaFNldHRpbmdz"></a> `notice.launchSettings` | `notice.launchSettings(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：Android 13 及以上发送通知需要通知权限且通知必须启用；线程：构建与提交同步执行 | 生命周期：提交后由 NotificationManager 管理；副作用：创建渠道并显示、更新或取消通知 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof notice.launchSettings);` |
 
 ### Rhino 2.0 表格读取示例
 
@@ -831,4 +831,4 @@ notice.channel.getAll().map(ch => ch.getId()); /* 获取所有渠道的 ID. */
 console.log('Rhino 2.0 contract table: notice');
 ```
 
-<!-- fixed-source-contracts:end -->
+<!-- api-contracts:end -->

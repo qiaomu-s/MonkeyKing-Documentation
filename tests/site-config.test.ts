@@ -47,18 +47,9 @@ describe('VitePress site configuration', () => {
         },
       },
     })
-    expect(theme?.editLink).toEqual({
-      pattern:
-        'https://github.com/qiaomu-s/MonkeyKing-Documentation/edit/master/docs/:path',
-      text: '在 GitHub 上编辑此页',
-    })
-    expect(theme?.socialLinks).toEqual([
-      {
-        icon: 'github',
-        link: 'https://github.com/qiaomu-s/MonkeyKing-Documentation',
-        ariaLabel: 'MonkeyKing-Documentation GitHub 仓库',
-      },
-    ])
+    expect(theme?.editLink).toBeUndefined()
+    expect(theme?.socialLinks).toBeUndefined()
+    expect(theme?.footer?.message).toBe('Monkey King 文档')
     expect(theme?.notFound).toMatchObject({
       code: '404',
       title: '没有找到这页 Monkey King 文档',

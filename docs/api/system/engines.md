@@ -221,23 +221,23 @@ e.getEngine().emit("say", "你好");
 
 返回一个字符串数组表示脚本运行时模块寻找的路径.
 
-<!-- fixed-source-contracts:start -->
+<!-- api-contracts:start -->
 
-## 固定源码合同表
+## API 合同表
 
-下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| <a id="api-symbol-ZW5naW5lcy5hbGw"></a> `engines.all` | `engines.all(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L72` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.all);` |
-| <a id="api-symbol-ZW5naW5lcy5leGVjQXV0b0ZpbGU"></a> `engines.execAutoFile` | `engines.execAutoFile(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L116` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execAutoFile);` |
-| <a id="api-symbol-ZW5naW5lcy5leGVjU2NyaXB0"></a> `engines.execScript` | `engines.execScript(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L102` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execScript);` |
-| <a id="api-symbol-ZW5naW5lcy5leGVjU2NyaXB0RmlsZQ"></a> `engines.execScriptFile` | `engines.execScriptFile(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L109` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execScriptFile);` |
-| <a id="api-symbol-ZW5naW5lcy5nZXRFbmdpbmVz"></a> `engines.getEngines` | `engines.getEngines()` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L84` | 参数：无参数；可选项与默认值见本页说明或源码守卫 | 返回：Set&lt;ScriptEngine&lt;out ScriptSource&gt;&gt;；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.getEngines);` |
-| <a id="api-symbol-ZW5naW5lcy5teUVuZ2luZQ"></a> `engines.myEngine` | `engines.myEngine(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L78` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.myEngine);` |
-| <a id="api-symbol-ZW5naW5lcy5zdG9wQWxs"></a> `engines.stopAll` | `engines.stopAll(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L90` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.stopAll);` |
-| <a id="api-symbol-ZW5naW5lcy5zdG9wQWxsQW5kVG9hc3Q"></a> `engines.stopAllAndToast` | `engines.stopAllAndToast(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/engines/Engines.kt:L96` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.stopAllAndToast);` |
-| <a id="api-symbol-bW9kdWxlOmVuZ2luZXM"></a> `module:engines` | `engines` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L781` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines);` |
+| <a id="api-symbol-ZW5naW5lcy5hbGw"></a> `engines.all` | `engines.all(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.all);` |
+| <a id="api-symbol-ZW5naW5lcy5leGVjQXV0b0ZpbGU"></a> `engines.execAutoFile` | `engines.execAutoFile(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execAutoFile);` |
+| <a id="api-symbol-ZW5naW5lcy5leGVjU2NyaXB0"></a> `engines.execScript` | `engines.execScript(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execScript);` |
+| <a id="api-symbol-ZW5naW5lcy5leGVjU2NyaXB0RmlsZQ"></a> `engines.execScriptFile` | `engines.execScriptFile(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.execScriptFile);` |
+| <a id="api-symbol-ZW5naW5lcy5nZXRFbmdpbmVz"></a> `engines.getEngines` | `engines.getEngines()` · 实现合同  | 参数：无参数；可选项与默认值见本页说明或页面约束 | 返回：Set&lt;ScriptEngine&lt;out ScriptSource&gt;&gt;；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.getEngines);` |
+| <a id="api-symbol-ZW5naW5lcy5teUVuZ2luZQ"></a> `engines.myEngine` | `engines.myEngine(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.myEngine);` |
+| <a id="api-symbol-ZW5naW5lcy5zdG9wQWxs"></a> `engines.stopAll` | `engines.stopAll(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.stopAll);` |
+| <a id="api-symbol-ZW5naW5lcy5zdG9wQWxsQW5kVG9hc3Q"></a> `engines.stopAllAndToast` | `engines.stopAllAndToast(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines.stopAllAndToast);` |
+| <a id="api-symbol-bW9kdWxlOmVuZ2luZXM"></a> `module:engines` | `engines` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无额外 Android 运行时权限；线程：同步读取引擎注册表 | 生命周期：返回对象由 ScriptEngineService 管理；副作用：仅枚举不修改引擎 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof engines);` |
 
 ### Rhino 2.0 表格读取示例
 
@@ -245,4 +245,4 @@ e.getEngine().emit("say", "你好");
 console.log('Rhino 2.0 contract table: engines');
 ```
 
-<!-- fixed-source-contracts:end -->
+<!-- api-contracts:end -->

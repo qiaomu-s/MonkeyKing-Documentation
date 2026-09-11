@@ -4,7 +4,7 @@
     {
       "textRaw": "悬浮窗 (Floaty)",
       "name": "悬浮窗_(floaty)",
-      "desc": "<p><code>floaty</code> 创建覆盖在其他应用之上的脚本窗口。窗口依赖“显示在其他应用上层”权限，并与当前脚本运行时绑定；脚本结束时运行时会关闭其窗口。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmZsb2F0eQ\"></a></p>\n",
+      "desc": "<p><code>floaty</code> 创建覆盖在其他应用之上的脚本窗口。窗口依赖“显示在其他应用上层”权限，并与当前脚本运行时绑定；脚本结束时运行时会关闭其窗口。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmZsb2F0eQ\"></a></p>\n",
       "modules": [
         {
           "textRaw": "[@] floaty",
@@ -89,7 +89,7 @@
           "textRaw": "[m] floaty.closeAll()",
           "type": "method",
           "name": "closeAll",
-          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>floaty.closeAll()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> } - 固定提交的增强包装直接返回底层 Kotlin <code>Unit</code></li>\n<li><strong>异常</strong>：传入参数时抛出异常；各窗口关闭异常由内部 <code>runCatching</code> 吞掉</li>\n<li><strong>权限</strong>：无需新增权限</li>\n<li><strong>线程 / 生命周期</strong>：UI 线程同步关闭；其他线程投递到 UI 线程并最多等待 1500 ms，然后清空当前脚本窗口集合</li>\n<li><strong>副作用</strong>：关闭并注销当前脚本创建的全部悬浮窗</li>\n</ul>\n<pre><code class=\"lang-js\">floaty.closeAll();\n</code></pre>\n<p><a id=\"api-symbol-ZmxvYXR5LmdldENsaXA\"></a></p>\n",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>floaty.closeAll()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> } - 产品版本的增强包装直接返回底层 Kotlin <code>Unit</code></li>\n<li><strong>异常</strong>：传入参数时抛出异常；各窗口关闭异常由内部 <code>runCatching</code> 吞掉</li>\n<li><strong>权限</strong>：无需新增权限</li>\n<li><strong>线程 / 生命周期</strong>：UI 线程同步关闭；其他线程投递到 UI 线程并最多等待 1500 ms，然后清空当前脚本窗口集合</li>\n<li><strong>副作用</strong>：关闭并注销当前脚本创建的全部悬浮窗</li>\n</ul>\n<pre><code class=\"lang-js\">floaty.closeAll();\n</code></pre>\n<p><a id=\"api-symbol-ZmxvYXR5LmdldENsaXA\"></a></p>\n",
           "signatures": [
             {
               "params": []

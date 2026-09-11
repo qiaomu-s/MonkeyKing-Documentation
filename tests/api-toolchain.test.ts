@@ -49,6 +49,20 @@ describe('API tooling command contract', () => {
       gaps: 'api-surface/gaps.json',
       check: true,
     })
+
+    expect(
+      coverageCli.parseCoverageArguments([
+        '--internal-manifest',
+        '/tmp/internal-api.json',
+      ]),
+    ).toEqual({
+      root: process.cwd(),
+      manifest: 'api-surface/manifest.json',
+      output: 'api-surface/coverage.json',
+      gaps: 'api-surface/gaps.json',
+      check: false,
+      internalManifest: '/tmp/internal-api.json',
+    })
   })
 
   test('parses source, ref and manifest drift flags explicitly', async () => {
@@ -71,6 +85,14 @@ describe('API tooling command contract', () => {
       output: 'api-surface/manifest.json',
     })
     expect(() => extractCli.parseExtractArguments([])).toThrow(/--source/)
+    expect(
+      extractCli.parseExtractArguments([
+        '--source',
+        '/tmp/MonkeyKing',
+        '--internal-output',
+        '/tmp/internal-api.json',
+      ]),
+    ).toMatchObject({ internalOutput: '/tmp/internal-api.json' })
   })
 
   test('allows the checker root and input files to be overridden', async () => {

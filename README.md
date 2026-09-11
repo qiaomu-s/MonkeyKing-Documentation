@@ -1,100 +1,57 @@
 # Monkey King 文档
 
-Monkey King 6.7.0 的中文使用指南、API 参考与兼容数据说明。文档站点使用 VitePress 构建，
-适合在浏览器中阅读，也可作为应用内离线帮助页发布。
+Monkey King 官方产品文档。站点使用 VitePress 构建，面向授权用户提供使用指南、API 参考、兼容性说明和版本记录。
 
-> 文档版本：**6.7.0** · 内容更新时间：**2026-09-11**
+文档版本：**6.7.0** · 内容更新时间：**2026-09-11**
+
+当前文档基线包含 113 个页面、4,499 个公开 API 符号和 125 个兼容 JSON 文件。
 
 站点入口：<https://docs.monkeyking.com>
 
-## 本地开发
+## 本地预览
 
-仓库使用 Node.js 22.23.2（见 `.nvmrc`）和 `npm@11.17.0`；`package.json`
-声明支持 `>=22.9 <23`。切换到正确的 Node.js 版本并确认 npm 版本后，使用锁文件安装依赖：
+项目使用 Node.js 22.23.2（见 `.nvmrc`）和 `npm@11.17.0`：
 
 ```bash
 nvm use
-npm --version
 npm ci
+npm run docs:dev
 ```
 
 常用命令：
 
 | 命令 | 用途 |
 | --- | --- |
-| `npm run docs:dev` | 启动 VitePress 本地开发服务器 |
-| `npm run docs:preview` | 预览已生成的 `dist/web/` 网站产物 |
+| `npm run docs:dev` | 启动本地文档开发服务器 |
+| `npm run docs:preview` | 预览已生成的网站产物 |
 | `npx tsc --noEmit` | 检查 TypeScript 类型 |
-| `npm run api:extract -- --source <source> --ref <ref> --check` | 校验公开 API manifest |
-| `npm run api:mime -- --source <source> --ref <ref> --check` | 校验 MIME 常量附录 |
-| `npm run api:coverage -- --check` | 校验每个公开符号唯一映射到有效文档锚点 |
-| `npm run api:check` | 校验 manifest、coverage、页面与锚点契约 |
-| `npm run examples:check` | 校验 Rhino 2.0 JavaScript 示例和占位代码 |
-| `npm run check:content` | 校验内容目录、路径和迁移约束 |
-| `npm run json:build` | 重新生成根目录兼容 JSON |
-| `git diff --exit-code -- json` | 确认 JSON 生成结果已提交且没有漂移 |
-| `npm test` | 运行 Vitest 单元测试和结构契约测试 |
-| `npm run build:web` | 构建网站产物到 `dist/web/` |
-| `npm run check:links` | 校验构建后的页面、锚点和资源链接 |
-| `npm run build:android` | 构建 Android 离线产物到 `dist/android/` |
-| `npm run test:e2e` | 构建并预览网站后运行 Playwright 浏览器测试 |
-| `npm run api:smoke -- --serial emulator-5554` | 在已安装 Monkey King 6.7.0 的设备上执行 API smoke 脚本 |
+| `npm run api:check` | 检查公开 API 清单与页面锚点 |
+| `npm run public:scan` | 检查发布内容是否包含内部实现信息 |
+| `npm run examples:check` | 检查 Rhino 2.0 示例 |
+| `npm run check:content` | 检查页面目录和内容契约 |
+| `npm run json:build` | 重新生成兼容 JSON |
+| `npm test` | 运行结构与契约测试 |
+| `npm run build:web` | 构建 Web 文档 |
+| `npm run check:links` | 检查页面、锚点和资源链接 |
+| `npm run build:android` | 构建 Android 离线文档 |
+| `npm run test:e2e` | 运行浏览器验收测试 |
 
-提交前至少应运行与改动相关的检查。完整验证顺序与 CI 一致：
-
-```bash
-npm ci
-npx tsc --noEmit
-npm run api:extract -- --source /path/to/MonkeyKing --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
-npm run api:mime -- --source /path/to/MonkeyKing --ref bafa2986212d27b6b59f1324f89548b72a810966 --check
-npm run api:coverage -- --check
-npm run api:check
-npm run examples:check
-npm run check:content
-npm run json:build
-git diff --exit-code -- api-surface json
-npm test
-npm run build:web
-npm run check:links
-npm run build:android
-npx playwright install --with-deps chromium
-npm run test:e2e
-npm run api:smoke -- --serial emulator-5554
-```
+公开文档只发布面向使用者的 API 清单和兼容数据；内部校验不会改变文档使用方式。
 
 ## 兼容 JSON
 
-根目录 `json/` 是对既有消费者承诺的兼容接口，必须提交到 Git。修改文档或内容目录后运行
-`npm run json:build`，并通过 `git diff --exit-code -- json` 验证生成结果已经纳入提交。
-网站构建还会把这些文件逐字节复制到 `dist/web/json/`，供公开 URL 使用。
+根目录 `json/` 是既有脚本消费者使用的兼容接口。修改 Markdown 后运行 `npm run json:build`，并确认工作区中的生成文件没有漂移。
 
-兼容规则如下：
-
-- `monkeyking.json` 是当前产品入口；`autojs.json` 是必须保留的历史兼容别名，两者内容字节一致。
-- 生成器只更新活动页面和聚合输出，不得手工修改生成文件来绕过 Schema、清单或黄金样本检查。
-- 以下 10 个冻结 JSON 文件受 SHA-256 清单保护，构建时保持原始字节，不重写、不重命名：
-  `accessibilityActionsType.json`、`coordinates-based-automation.json`、
-  `coordinatesBasedAutomation.json`、`errors.json`、`globals.json`、
-  `imageWrapper.json`、`intent.json`、`intrinsicTypes.json`、
-  `widgets-based-automation.json`、`widgetsBasedAutomation.json`。
+- `monkeyking.json` 是当前产品入口；`autojs.json` 是保留的历史兼容别名，两者内容保持一致。
+- 兼容 JSON 保留既有文件名、字段结构和 `all.json` 的历史页面顺序。
+- 生成文件由目录清单和 schema 校验，不应手工绕过生成器修改。
 
 ## 构建产物
 
-### Web
+`npm run build:web` 生成 `dist/web/`，包含站点页面、静态资源、`CNAME` 和公开兼容 JSON。
 
-`npm run build:web` 生成 `dist/web/`，包含页面、静态资源和兼容 JSON。构建产物不提交到版本库。
+`npm run build:android` 生成 `dist/android/`，供 Monkey King Android 工程通过 `WebViewAssetLoader` 加载离线文档。
 
-### Android
+## 反馈
 
-`npm run build:android` 生成 `dist/android/`，稳定入口为 `dist/android/index.html`，内部页面与
-资源使用 `/assets/docs/` 基路径。该目录供后续 Monkey King Android 工程复制到
-`app/src/main/assets/docs/`。
-
-Android 集成属于独立工作：应用应使用 `WebViewAssetLoader` 通过 HTTPS 虚拟域加载离线站点，
-而不是继续使用 `file:///android_asset/docs/`。本仓库只生成并验证离线产物，不修改应用代码。
-
-## 内容质量
-
-提交内容前建议运行 `npm run check:content`、`npm run examples:check`、`npm run public:scan`
-和 `npm test`。`public:scan` 会检查 README、文档、兼容 JSON、API 清单与构建产物中的公开文案，
-避免把内部路径、版本提交标识或维护流程带到用户界面。
+如需报告文档或 API 问题，请通过应用内反馈入口或授权支持渠道提交 Monkey King 版本、Android API 级别、设备信息、最小复现脚本和完整日志。

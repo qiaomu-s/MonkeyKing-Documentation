@@ -17,6 +17,7 @@
     "api:check": "tsx scripts/api/check.ts",
     "api:mime": "tsx scripts/api/mime-appendix.ts",
     "check:content": "tsx scripts/check-content.ts",
+    "public:scan": "tsx scripts/content/public-scan.ts",
     "examples:check": "tsx scripts/examples/check.ts",
     "api:smoke": "tsx scripts/smoke/api.ts",
     "check:links": "tsx scripts/check-links.ts",

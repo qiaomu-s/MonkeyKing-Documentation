@@ -2,7 +2,7 @@
 
 本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文按 Monkey King 6.7.0 的公开行为核对。
 
 ## 内置模块
 
@@ -10,21 +10,16 @@ Monkey King 内置模块是随 APK 发布、在每个 Rhino runtime 初始化时
 
 多数模块可通过模块名和 `$` 前缀别名访问；部分方法还会被全局化。准确入口以各 API 页面和 [模块系统](../../api/core/modules.md) 为准。
 
-### 查看内置模块源代码
+### 查看内置模块
 
-6.7.0 文档使用 Monkey King 私有源码仓的固定提交作为事实来源：
-
-- Kotlin / Java 增强器位于 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/`。
-- JavaScript 资产模块位于 `app/src/main/assets/modules/`。
-- 引擎注册顺序位于 `ScriptRuntime.augment()`；CommonJS 初始化与 `require` 安装位于 `RhinoJavaScriptEngine`。
-
-APK 是 ZIP 容器，也可以解压后检查 `assets/modules`。压缩或打包后的资产可能不便阅读，源码提交仍是更可靠的审计入口。
+内置模块随 Monkey King 6.7.0 发布，并在 Rhino runtime 初始化时注册或加载。APK 是 ZIP 容器，
+但普通脚本只需要通过模块名、`$` 前缀别名或全局入口调用公开能力。
 
 ### 修改或增加内置模块
 
 修改内置模块属于应用源码开发，需要重新构建并签名 APK。自建 APK 能否覆盖安装取决于 applicationId、签名和构建变体；不要假设修改模块一定会改变包名，也不要直接修改已安装 APK 来绕过签名或权限限制。
 
-在已获授权的源码工作区中使用 Android Studio 或 Gradle 构建，并保留应用许可证和上游署名。普通脚本项目若只需要复用代码，应优先创建本地 CommonJS 模块，再通过 `require()` 加载，无需修改 APK。
+应用构建和签名由产品维护流程管理。普通脚本项目若只需要复用代码，应优先创建本地 CommonJS 模块，再通过 `require()` 加载，无需修改 APK。
 
 #### 修改模块
 

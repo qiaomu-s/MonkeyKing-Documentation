@@ -29,10 +29,8 @@ describe('Monkey King VitePress theme', () => {
     expect(homepage).toContain('alt: Monkey King 标志')
     expect(homepage).toContain('text: 开始阅读')
     expect(homepage).toContain('link: /guide/overview.html')
-    expect(homepage).toContain('text: GitHub')
-    expect(homepage).toContain(
-      'link: https://github.com/qiaomu-s/MonkeyKing-Documentation',
-    )
+    expect(homepage).not.toMatch(/GitHub|github\.com/i)
+    expect(homepage).toContain('text: 版本说明')
     expect(homepage).toContain('link: /api/core/monkeyking.html')
     expect(homepage).toContain('link: /reference/android/activity.html')
     expect(homepage).toContain('link: /project/changelog.html')

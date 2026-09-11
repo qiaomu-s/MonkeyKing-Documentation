@@ -1,6 +1,6 @@
 # 通用应用 (App)
 
-`app` 用于解析和启动 Android `Intent`、查询安装应用、打开系统页面，以及通过 Shizuku、root 或普通 shell 操作双开用户。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+`app` 用于解析和启动 Android `Intent`、查询安装应用、打开系统页面，以及通过 Shizuku、root 或普通 shell 操作双开用户。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 <a id="api-symbol-bW9kdWxlOmFwcA"></a>
 ## [@] app
@@ -200,7 +200,7 @@ console.log(app.getAppByAlias('settings'));
 **`≤ 6.6.4`**
 
 - **入口 / 别名**：`app.isInstalled(...)`、全局 `isInstalled(...)`
-- **appNameOrAlias** { `PresetApp | string | null` } - 固定提交的增强入口先经 `getPackageName` 解析，因此普通字符串按应用显示名称而不是直接按包名查询
+- **appNameOrAlias** { `PresetApp | string | null` } - 产品版本的增强入口先经 `getPackageName` 解析，因此普通字符串按应用显示名称而不是直接按包名查询
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
 - **异常**：参数数量不是 1 时抛出；解析或查询失败返回 false
 - **权限**：受包可见性限制
@@ -381,7 +381,7 @@ console.log(String(app.parseUri('https://example.com/path')));
 
 - **入口 / 别名**：`app.getUriForFile(path)`
 - **path** { [string](../types/data-types.md#string) } - 可含 `file://` 前缀；非 nullish 值按字符串转换
-- <ins>**returns**</ins> { [android.net.Uri](https://developer.android.com/reference/android/net/Uri) | [null](../types/data-types.md#null) } - 固定提交返回 `Uri.fromFile`，不是 FileProvider content URI
+- <ins>**returns**</ins> { [android.net.Uri](https://developer.android.com/reference/android/net/Uri) | [null](../types/data-types.md#null) } - 产品版本返回 `Uri.fromFile`，不是 FileProvider content URI
 - **异常**：参数数量不是 1 时抛出；nullish 或路径解析失败返回 null
 - **权限**：只构造 Uri；后续跨应用共享仍受 Android 文件 URI 限制
 - **线程 / 生命周期 / 副作用**：同步解析当前脚本路径；不检查文件是否存在
@@ -435,7 +435,7 @@ app.startActivity('docs');
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：参数数量、类型、短名或双开 shell 失败时抛出
 - **权限**：需要 Shizuku、root 或 shell 能力访问另一 Android 用户
-- **线程 / 生命周期 / 副作用**：为每个非当前用户执行带 `--user` 的 `am start`；固定提交的 `java.net.URI` 分支仍调用普通 `openUrl`
+- **线程 / 生命周期 / 副作用**：为每个非当前用户执行带 `--user` 的 `am start`；产品版本的 `java.net.URI` 分支仍调用普通 `openUrl`
 
 ```js
 app.startDualActivity({ packageName: 'com.example.app' });
@@ -486,7 +486,7 @@ app.sendBroadcast('inspect_layout_bounds');
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：非 Intent 且非 null 时抛出；后台任务异常只打印堆栈
 - **权限**：无额外权限
-- **线程 / 生命周期 / 副作用**：名称保留“Sync”，但固定提交会在 IO 调度器查询定时 Intent 任务，再投递到主线程执行，调用本身不会等任务完成
+- **线程 / 生命周期 / 副作用**：名称保留“Sync”，但产品版本会在 IO 调度器查询定时 Intent 任务，再投递到主线程执行，调用本身不会等任务完成
 
 ```js
 const intent = app.intent({ action: 'com.example.LOCAL_TASK' });
@@ -635,7 +635,7 @@ app.uninstallDual('com.example.app');
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - nullish 为 false，否则返回底层安全启动结果
 - **异常**：参数数量不是 1、非字符串、文件不存在或不是普通文件时抛出
 - **权限**：跨应用读取由 FileProvider URI 授权处理
-- **线程 / 生命周期 / 副作用**：解析真实路径并启动可查看该文件的 Activity；该入口已在源码注释中标记待迁移到 files
+- **线程 / 生命周期 / 副作用**：解析真实路径并启动可查看该文件的 Activity；该入口已在兼容说明中标记待迁移到 files
 
 ```js
 app.viewFile(files.path('./report.txt'));
@@ -651,7 +651,7 @@ app.viewFile(files.path('./report.txt'));
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - nullish 为 false，否则返回底层安全启动结果
 - **异常**：参数数量不是 1、非字符串、文件不存在或不是普通文件时抛出
 - **权限**：跨应用写入由 FileProvider URI 授权和目标编辑器决定
-- **线程 / 生命周期 / 副作用**：启动可编辑该文件的 Activity；该入口已在源码注释中标记待迁移到 files
+- **线程 / 生命周期 / 副作用**：启动可编辑该文件的 Activity；该入口已在兼容说明中标记待迁移到 files
 
 ```js
 app.editFile(files.path('./draft.txt'));

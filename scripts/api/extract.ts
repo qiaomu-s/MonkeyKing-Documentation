@@ -2,7 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { extractApiManifest } from './extractor'
-import { manifestMatches, stableJson } from './model'
+import { stableJson } from './model'
+import { projectApiManifest } from './public-projection'
 import { dynamicOverrides, MONKEYKING_API_BASELINE } from './overrides'
 import {
   GitSourceReader,
@@ -14,6 +15,8 @@ export interface ExtractArguments {
   readonly ref: string
   readonly check: boolean
   readonly output: string
+  /** Optional private-audit destination; never part of the public artifact. */
+  readonly internalOutput?: string
 }
 
 export function parseExtractArguments(args: readonly string[]): ExtractArguments {
@@ -21,6 +24,7 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
   let ref: string = MONKEYKING_API_BASELINE
   let check = false
   let output = 'api-surface/manifest.json'
+  let internalOutput: string | undefined
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index]
@@ -33,6 +37,9 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
         break
       case '--output':
         output = args[++index] ?? ''
+        break
+      case '--internal-output':
+        internalOutput = args[++index] ?? ''
         break
       case '--check':
         check = true
@@ -47,7 +54,16 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
   }
   if (!ref) throw new Error('api:extract requires a non-empty --ref value.')
   if (!output) throw new Error('api:extract requires a non-empty --output value.')
-  return { source, ref, check, output }
+  if (internalOutput === '') {
+    throw new Error('api:extract requires a non-empty --internal-output value.')
+  }
+  return {
+    source,
+    ref,
+    check,
+    output,
+    ...(internalOutput ? { internalOutput } : {}),
+  }
 }
 
 export async function runExtract(arguments_: ExtractArguments): Promise<void> {
@@ -58,20 +74,27 @@ export async function runExtract(arguments_: ExtractArguments): Promise<void> {
     overrides: dynamicOverrides,
   })
   const outputPath = resolve(process.cwd(), arguments_.output)
-  const output = stableJson(manifest)
+  const publicManifest = projectApiManifest(manifest)
+  const output = stableJson(publicManifest)
+
+  if (arguments_.internalOutput) {
+    const internalOutputPath = resolve(process.cwd(), arguments_.internalOutput)
+    mkdirSync(dirname(internalOutputPath), { recursive: true })
+    writeFileSync(internalOutputPath, stableJson(manifest))
+  }
 
   if (arguments_.check) {
     if (!existsSync(outputPath)) {
       throw new Error(`API manifest is missing: ${arguments_.output}`)
     }
-    if (!manifestMatches(readFileSync(outputPath, 'utf8'), manifest)) {
+    if (readFileSync(outputPath, 'utf8') !== output) {
       throw new Error(
-        `API manifest drift detected. Run api:extract for ${manifest.source.commit}.`,
+        'API manifest drift detected. Run api:extract to refresh the public artifact.',
       )
     }
     process.stdout.write(
-      `API manifest matches ${manifest.source.commit}: ` +
-        `${manifest.modules.length} modules, ${manifest.symbols.length} symbols.\n`,
+      `API manifest matches: ${publicManifest.modules.length} modules, ` +
+        `${publicManifest.symbols.length} public symbols.\n`,
     )
     return
   }
@@ -79,8 +102,8 @@ export async function runExtract(arguments_: ExtractArguments): Promise<void> {
   mkdirSync(dirname(outputPath), { recursive: true })
   writeFileSync(outputPath, output)
   process.stdout.write(
-    `Wrote ${arguments_.output} from ${manifest.source.commit}: ` +
-      `${manifest.modules.length} modules, ${manifest.symbols.length} symbols.\n`,
+    `Wrote ${arguments_.output}: ${publicManifest.modules.length} modules, ` +
+      `${publicManifest.symbols.length} public symbols.\n`,
   )
 }
 

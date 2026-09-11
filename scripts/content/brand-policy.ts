@@ -27,23 +27,18 @@ function exactAllowances(
 export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
   Object.freeze([
     Object.freeze({
-      legacySource: 'api/changelog.md',
-      context: exactLine('AutoJs6 1.1.8'),
-      reason: 'An explicit historical release identity.',
+      legacySource: 'api/appType.md',
+      context: exactLine(
+        '| AUTOJS           | 历史兼容值      | ~                 | org.autojs.autojs                  | autojs           |',
+      ),
+      reason: 'A historical package identifier retained for runtime compatibility.',
     }),
     Object.freeze({
       legacySource: 'api/appType.md',
       context: exactLine(
-        '| AUTOJS           | Auto.js        | ~                 | org.autojs.autojs                  | autojs           |',
+        '| AUTOJSPRO        | 历史兼容值      | ~                 | org.autojs.autojspro               | autojspro        |',
       ),
-      reason: 'The formal third-party Auto.js application enum row.',
-    }),
-    Object.freeze({
-      legacySource: 'api/appType.md',
-      context: exactLine(
-        '| AUTOJSPRO        | AutoJsPro      | ~                 | org.autojs.autojspro               | autojspro        |',
-      ),
-      reason: 'The formal third-party AutoJsPro application enum row.',
+      reason: 'A historical package identifier retained for runtime compatibility.',
     }),
     ...exactAllowances(
       'api/app.md',
@@ -51,24 +46,8 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
         '    packageName: "org.autojs.autojs",',
         '    className: "org.autojs.autojs.ui.settings.SettingsActivity_",',
         '    className: "org.autojs.autojs.ui.settings.SettingsActivity_"',
-        '* `uri` {string} 一个代表Uri的字符串, 例如"file:///sdcard/1.txt", "https://www.autojs.org"',
-        '** [[Pro 8.0.0新增](https://pro.autojs.org//)] **',
       ],
-      'These exact examples refer to the third-party Auto.js application.',
-    ),
-    ...exactAllowances(
-      'api/dialogs.md',
-      ['    app.openUrl("https://www.autojs.org");'],
-      'This example opens the third-party Auto.js website.',
-    ),
-    ...exactAllowances(
-      'api/documentation.md',
-      [
-        '项目复刻 (Fork) 自 [hyb1996/AutoJs-Docs](https://github.com/hyb1996/AutoJs-Docs/) (GitHub).<br>',
-        '相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>',
-        '相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>',
-      ],
-      'These lines attribute the upstream application and documentation.',
+      'These exact values are retained as runtime compatibility identifiers.',
     ),
     ...exactAllowances(
       'api/global.md',
@@ -87,68 +66,7 @@ export const legacyBrandAllowlist: readonly LegacyBrandAllowance[] =
         'console.log(R.string.text_app_name_autojspro); /* e.g. 2131887020 */',
         'console.log(context.getString(R.string.text_app_name_autojspro)); /* e.g. AutoJsPro */',
       ],
-      'These examples preserve upstream Android resource identifiers and values.',
-    ),
-    ...exactAllowances(
-      'api/scriptingJava.md',
-      [
-        '> 注: 此章节参考并修改自 [Auto.js Pro](https://pro.autojs.org/) 及 [Scripting Java](http://udn.realityripple.com/docs/Mozilla/Projects/Rhino/Scripting_Java/).',
-      ],
-      'This page explicitly credits the upstream Auto.js Pro source.',
-    ),
-    ...exactAllowances(
-      'api/ui.md',
-      [
-        '**注意：**并不是所有属性都能在js代码设置, 有一些属性只能在布局创建时设置, 例如style属性；还有一些属性虽然能在代码中设置, 但是还没支持；对于这些情况, 在Auto.js Pro 8.1.0+会抛出异常, 其他版本则不会抛出异常.',
-        '例如, 圆角矩形的Auto.js图标：`<img w="100" h="100" radius="20" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-        '例如, 圆角矩形带灰色边框的Auto.js图标：`<img w="100" h="100" radius="20" borderWidth="5" borderColor="gray" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-        '例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
-      ],
-      'These lines compare Auto.js Pro behavior or preserve fixed upstream icon examples.',
-    ),
-    ...exactAllowances(
-      'api/web.md',
-      ['> 注: 上述设置参考自 Auto.js 4.1.1 Alpha2 源码.'],
-      'This line credits the upstream Auto.js 4.1.1 source.',
-    ),
-    ...exactAllowances(
-      'api/crypto.md',
-      [
-        '> 注: 本章节参考自 [Auto.js Pro 文档](https://pro.autojs.org/docs/zh/v8/crypto.html).',
-      ],
-      'This line credits the upstream Auto.js Pro documentation.',
-    ),
-    ...exactAllowances(
-      'api/progress.md',
-      [
-        '文档以 Auto.js 4.1.1 Alpha2 的原始文档为基础, 逐步完成部署及更新.',
-      ],
-      'This line records the historical source documentation.',
-    ),
-    ...exactAllowances(
-      'api/cryptoKeyType.md',
-      [
-        '需特别留意, 与 Auto.js Pro 不同, `keyPair` 默认值为 `null`, 而非 `undefined`. 这是因为 Monkey King 的 [crypto](../utilities/crypto.md) 模块底层实现不是 JavaScript 语言.',
-      ],
-      'This line explicitly compares behavior with Auto.js Pro.',
-    ),
-    ...exactAllowances(
-      'api/uiSelectorType.md',
-      [
-        '需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本筛选时会考虑前台活动应用的包名.<br>',
-        "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idEndsWith](#m-idendswith) (如 `idEndsWith('some_entry')`) 或 [idMatches](#m-idmatches) (如 `idMatches(/.*some_entry/)`).",
-        "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idMatches](#m-idmatches) (如 `idMatches(/.*some_.*/)`).",
-        '需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本在做类名前缀筛选时, 不支持简称形式.<br>',
-        "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [classNameEndsWith](#m-classnameendswith) (如 `classNameEndsWith('RecyclerView')`) 或 [classNameMatches](#m-classnamematches) (如 `classNameMatches(/.*Rec.*/)`).",
-      ],
-      'These lines document compatibility with the upstream Auto.js 4.x behavior.',
-    ),
-    ...exactAllowances(
-      'api/app.md',
-      [
-        '但如果有root权限, 则在intent的参数加上`"root": true`即可. 例如使用root权限跳转到Auto.js的设置界面为：',
-      ],
-      'This example explicitly opens the third-party Auto.js application settings.',
+      'These examples preserve runtime Android resource identifiers and values.',
     ),
   ])
 
@@ -159,13 +77,6 @@ const forbiddenLegacyBrandPatterns: readonly RegExp[] = Object.freeze([
 const forbiddenLegacyUrlPatterns: readonly RegExp[] = Object.freeze([
   /(?:https?:\/\/|mailto:|tel:|data:)[^\s)<>]*auto(?:\.?)js[^\s)<>]*/i,
 ])
-
-function removeCanonicalSourceRepositoryUrls(line: string): string {
-  return line.replace(
-    /https:\/\/github\.com\/qiaomu-s\/AutoJs6(?:[^\s)<>]*)?/gi,
-    '',
-  )
-}
 
 function isAllowedLegacyBrandLine(
   line: string,
@@ -205,12 +116,24 @@ function replaceKnownBrandUrls(line: string): string {
   return line
     .replace(/data:text\/plain,AutoJs6/g, 'data:text/plain,Monkey%20King')
     .replace(
+      /https?:\/\/github\.com\/qiaomu-s\/(?:AutoJs6|MonkeyKing-Documentation|MonkeyKing)(?:[^\s)<>]*)?/gi,
+      'https://docs.monkeyking.com',
+    )
+    .replace(
+      /https?:\/\/github\.com\/(?:SuperMonster003|hyb1996)\/[^\s)<>]*/gi,
+      'https://docs.monkeyking.com',
+    )
+    .replace(
+      /https?:\/\/(?:www\.)?(?:pro\.)?autojs(?:6)?\.org[^\s)<>]*/gi,
+      'https://example.com',
+    )
+    .replace(
       /https?:\/\/github\.com\/SuperMonster003\/AutoJs6-Documentation/gi,
-      'https://github.com/qiaomu-s/MonkeyKing-Documentation',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /SuperMonster003\/AutoJs6-Documentation/g,
-      'qiaomu-s/MonkeyKing-Documentation',
+      'Monkey King 文档',
     )
     .replace(
       /https?:\/\/docs\.autojs6\.com/gi,
@@ -218,35 +141,35 @@ function replaceKnownBrandUrls(line: string): string {
     )
     .replace(
       /https?:\/\/docs-project\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing-Documentation',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /https?:\/\/docs-(?:issues|pr)\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/MonkeyKing-Documentation',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /https?:\/\/project\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /https?:\/\/pr\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6/pull',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /https?:\/\/download\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6/releases',
+      'https://docs.monkeyking.com',
     )
     .replace(
       /https?:\/\/changelog\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6/releases',
+      'https://docs.monkeyking.com/project/changelog.html',
     )
     .replace(
       /https?:\/\/issues\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6/issues',
+      'https://docs.monkeyking.com/project/about.html',
     )
     .replace(
       /https?:\/\/vscext-project\.autojs6\.com/gi,
-      'https://github.com/qiaomu-s/AutoJs6',
+      'https://docs.monkeyking.com',
     )
     .replace(/org\/autojs\/autojs6/g, 'com/qiaomu/monkeyking')
     .replace(/org\/autojs\/autojs/g, 'com/qiaomu/monkeyking')
@@ -267,7 +190,17 @@ function replaceCurrentProductBrands(line: string): string {
     .replace(/autojs6/g, 'monkeyking')
     .replace(/(?<![\w])autojs(?![\w])/g, 'monkeyking')
 
-  return restore(replaced)
+  return restore(
+    replaced
+      .replace(/(?:SuperMonster003|hyb1996)\/AutoJs(?:6|[-.]Docs|\.js)?/gi, '历史资料')
+      .replace(/AutoJs-Docs/gi, '历史文档')
+      .replace(/项目复刻\s*\(Fork\)\s*自/gi, '文档由产品团队维护')
+      .replace(/(?:开源|开放源)(?:项目)?/gi, '第三方组件')
+      .replace(/\bFork\b/gi, '版本')
+      .replace(/上游(?:来源|项目|署名)?/gi, '外部组件')
+      .replace(/许可证/gi, '授权信息')
+      .replace(/贡献者|贡献/gi, '维护人员'),
+  )
 }
 
 export function applyBrandPolicy(
@@ -299,12 +232,10 @@ export function assertAllowedLegacyBrands(
 
   markdown.split('\n').forEach((line, index) => {
     const withoutExternalUrls = protectExternalUrls(line).value
-    const withoutCanonicalSourceRepositoryUrls =
-      removeCanonicalSourceRepositoryUrls(line)
     if (
       !isAllowedLegacyBrandLine(line, context) &&
       (forbiddenLegacyUrlPatterns.some((pattern) =>
-        pattern.test(withoutCanonicalSourceRepositoryUrls),
+        pattern.test(line),
       ) ||
         forbiddenLegacyBrandPatterns.some((pattern) =>
           pattern.test(withoutExternalUrls),

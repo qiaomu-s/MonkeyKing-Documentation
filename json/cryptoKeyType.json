@@ -16,7 +16,7 @@
         {
           "textRaw": "[p] keyPair",
           "name": "[p]_keypair",
-          "desc": "<p><strong><code>READONLY</code></strong></p>\n<ul>\n<li>[ <code>null</code> ] { <code>&#39;public&#39;</code> | <code>&#39;private&#39;</code> } - 公私性质</li>\n</ul>\n<p>密钥的公私性质, 用于非对称加密.</p>\n<pre><code class=\"lang-js\">console.log(new crypto.Key(&#39;Y&#39;).keyPair); // null\nconsole.log(new crypto.Key(&#39;Y&#39;, { keyPair: &#39;public&#39; }).keyPair); // public\n</code></pre>\n<p>需特别留意, 与 Auto.js Pro 不同, <code>keyPair</code> 默认值为 <code>null</code>, 而非 <code>undefined</code>. 这是因为 Monkey King 的 <a href=\"../utilities/crypto.md\">crypto</a> 模块底层实现不是 JavaScript 语言.</p>\n",
+          "desc": "<p><strong><code>READONLY</code></strong></p>\n<ul>\n<li>[ <code>null</code> ] { <code>&#39;public&#39;</code> | <code>&#39;private&#39;</code> } - 公私性质</li>\n</ul>\n<p>密钥的公私性质, 用于非对称加密.</p>\n<pre><code class=\"lang-js\">console.log(new crypto.Key(&#39;Y&#39;).keyPair); // null\nconsole.log(new crypto.Key(&#39;Y&#39;, { keyPair: &#39;public&#39; }).keyPair); // public\n</code></pre>\n<p>需特别留意, <code>keyPair</code> 默认值为 <code>null</code>, 而非 <code>undefined</code>；这是 Monkey King crypto 模块的运行时约定。</p>\n",
           "type": "module",
           "displayName": "[p] keyPair"
         },

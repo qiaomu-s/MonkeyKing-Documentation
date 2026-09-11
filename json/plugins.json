@@ -4,12 +4,12 @@
     {
       "textRaw": "插件 (Plugins)",
       "name": "插件_(plugins)",
-      "desc": "<p><code>plugins</code> 用于装载应用插件或当前项目根目录下的 JavaScript 插件。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对；旧文档中的 <code>extend</code>、<code>extendAll</code> 与 <code>extendAllBut</code> 不在该提交的公开 <code>plugins</code> 表面中，因而不再作为现行接口列出。</p>\n<p><a id=\"内置扩展插件\"></a></p>\n",
+      "desc": "<p><code>plugins</code> 用于装载应用插件或当前项目根目录下的 JavaScript 插件。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对；旧文档中的 <code>extend</code>、<code>extendAll</code> 与 <code>extendAllBut</code> 不在该提交的公开 <code>plugins</code> 表面中，因而不再作为现行接口列出。</p>\n<p><a id=\"内置扩展插件\"></a></p>\n",
       "modules": [
         {
           "textRaw": "旧版“内置扩展插件”名称",
           "name": "旧版“内置扩展插件”名称",
-          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<p>旧版文档曾把 <code>Arrayx</code>、<code>Numberx</code>、<code>Mathx</code> 称为“内置扩展插件”，并通过 <code>plugins.extend*</code> 启用。Monkey King 6.7.0 的固定源码仍分别提供这些全局增强模块，但 <code>plugins</code> 已不公开 <code>extend</code>、<code>extendAll</code> 或 <code>extendAllBut</code>；旧类型名称只用于解释历史文档，不能作为当前 <code>plugins</code> API 调用。</p>\n<pre><code class=\"lang-js\">console.log(typeof Arrayx, typeof Numberx, typeof Mathx);\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOnBsdWdpbnM\"></a></p>\n",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<p>旧版文档曾把 <code>Arrayx</code>、<code>Numberx</code>、<code>Mathx</code> 称为“内置扩展插件”，并通过 <code>plugins.extend*</code> 启用。Monkey King 6.7.0 的实现合同仍分别提供这些全局增强模块，但 <code>plugins</code> 已不公开 <code>extend</code>、<code>extendAll</code> 或 <code>extendAllBut</code>；旧类型名称只用于解释历史文档，不能作为当前 <code>plugins</code> API 调用。</p>\n<pre><code class=\"lang-js\">console.log(typeof Arrayx, typeof Numberx, typeof Mathx);\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOnBsdWdpbnM\"></a></p>\n",
           "type": "module",
           "displayName": "旧版“内置扩展插件”名称"
         },

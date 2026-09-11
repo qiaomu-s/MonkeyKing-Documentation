@@ -2,19 +2,21 @@ import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import {
-  API_COVERAGE_SCHEMA_VERSION,
-  type ApiCoverage,
   type ApiManifest,
   type ApiSymbol,
   type CoverageRule,
+  type PublicApiCoverage,
+  type PublicApiManifest,
+  type PublicApiSymbol,
 } from './model'
+import { projectApiCoverage } from './public-projection'
 import {
   buildMarkdownDocumentIndexes,
   type MarkdownHeadingRecord,
 } from '../content/markdown-links'
 
 export interface GenerateApiCoverageOptions {
-  readonly manifest: ApiManifest
+  readonly manifest: ApiManifest | PublicApiManifest
   readonly projectRoot: string
   readonly ownerPages?: Readonly<Record<string, string>>
 }
@@ -24,17 +26,18 @@ export interface ApiCoverageGap {
   readonly owner: string
   readonly name: string
   readonly kind: ApiSymbol['kind']
-  readonly source: ApiSymbol['source']
+  readonly source?: ApiSymbol['source']
   readonly expectedPage?: string
   readonly reason: string
 }
 
 export interface ApiCoverageArtifacts {
-  readonly coverage: ApiCoverage
+  readonly coverage: PublicApiCoverage
   readonly gaps: readonly ApiCoverageGap[]
 }
 
 type HeadingRecord = MarkdownHeadingRecord
+type CoverageSymbol = ApiSymbol | PublicApiSymbol
 
 export const defaultOwnerPages: Readonly<Record<string, string>> = Object.freeze({
   global: 'docs/api/core/global.md',
@@ -144,7 +147,7 @@ export function apiSymbolAnchorId(symbolId: string): string {
   return `api-symbol-${Buffer.from(symbolId, 'utf8').toString('base64url')}`
 }
 
-function mimeConstantAnchorId(symbol: ApiSymbol): string | undefined {
+function mimeConstantAnchorId(symbol: CoverageSymbol): string | undefined {
   if (
     symbol.owner !== 'mime' ||
     symbol.kind !== 'property' ||
@@ -157,7 +160,7 @@ function mimeConstantAnchorId(symbol: ApiSymbol): string | undefined {
 }
 
 function explicitSymbolAnchor(
-  symbol: ApiSymbol,
+  symbol: CoverageSymbol,
   anchors: ReadonlySet<string>,
 ): string | undefined {
   const apiAnchor = apiSymbolAnchorId(symbol.id)
@@ -168,7 +171,7 @@ function explicitSymbolAnchor(
 
 function headingMatchRank(
   heading: HeadingRecord,
-  symbol: ApiSymbol,
+  symbol: CoverageSymbol,
   allowModuleH1: boolean,
 ): number | undefined {
   const text = normalizedHeading(heading.text)
@@ -217,14 +220,15 @@ function pageForOwner(
 }
 
 function pageForSymbol(
-  symbol: ApiSymbol,
+  symbol: CoverageSymbol,
   ownerPages: Readonly<Record<string, string>>,
 ): string | undefined {
   if (symbol.owner !== 'global') return pageForOwner(symbol.owner, ownerPages)
-  if (symbol.source.path.endsWith('/core/accessibility/UiSelector.kt')) {
+  const sourcePath = 'source' in symbol ? symbol.source.path : undefined
+  if (sourcePath?.endsWith('/core/accessibility/UiSelector.kt')) {
     return 'docs/api/automation/ui-selector.md'
   }
-  if (symbol.source.path.includes('/augment/selector/')) {
+  if (sourcePath?.includes('/augment/selector/')) {
     return 'docs/api/automation/ui-selector.md'
   }
   const augmentablePage = [
@@ -234,7 +238,7 @@ function pageForSymbol(
     ['/augment/timers/', 'docs/api/system/timers.md'],
   ] as const
   for (const [sourceSegment, page] of augmentablePage) {
-    if (symbol.source.path.includes(sourceSegment)) return page
+    if (sourcePath?.includes(sourceSegment)) return page
   }
   if (
     [
@@ -252,7 +256,7 @@ function pageForSymbol(
   return pageForOwner(symbol.owner, ownerPages)
 }
 
-function isExternalSymbol(symbol: ApiSymbol): boolean {
+function isExternalSymbol(symbol: CoverageSymbol): boolean {
   return (
     symbol.kind === 'engine-global' ||
     (symbol.kind === 'class' && symbol.owner === 'global') ||
@@ -262,7 +266,7 @@ function isExternalSymbol(symbol: ApiSymbol): boolean {
 }
 
 function gap(
-  symbol: ApiSymbol,
+  symbol: CoverageSymbol,
   reason: string,
   expectedPage?: string,
 ): ApiCoverageGap {
@@ -271,7 +275,7 @@ function gap(
     owner: symbol.owner,
     name: symbol.name,
     kind: symbol.kind,
-    source: symbol.source,
+    ...('source' in symbol ? { source: symbol.source } : {}),
     ...(expectedPage ? { expectedPage } : {}),
     reason,
   }
@@ -282,7 +286,7 @@ export async function generateApiCoverageArtifacts(
 ): Promise<ApiCoverageArtifacts> {
   const ownerPages = options.ownerPages ?? defaultOwnerPages
   const claimedTargets = new Map<string, string>()
-  const publicSymbols = options.manifest.symbols
+  const publicSymbols: CoverageSymbol[] = options.manifest.symbols
     .filter((symbol) => symbol.public)
     .sort((left, right) => compareText(left.id, right.id))
   const rules: CoverageRule[] = []
@@ -416,17 +420,13 @@ export async function generateApiCoverageArtifacts(
   gaps.sort((left, right) => compareText(left.symbolId, right.symbolId))
 
   return {
-    coverage: {
-      schemaVersion: API_COVERAGE_SCHEMA_VERSION,
-      sourceRef: options.manifest.source.commit,
-      rules,
-    },
+    coverage: projectApiCoverage({ rules }),
     gaps,
   }
 }
 
 export async function generateApiCoverage(
   options: GenerateApiCoverageOptions,
-): Promise<ApiCoverage> {
+): Promise<PublicApiCoverage> {
   return (await generateApiCoverageArtifacts(options)).coverage
 }

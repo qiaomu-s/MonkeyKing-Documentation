@@ -8,8 +8,10 @@ const sourceLocationSchema = {
   },
 } as const
 
-export const manifestSchema = {
-  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-manifest.schema.json',
+/** Internal source-backed schema.  It is used by the extractor and private
+ * audit fixtures, never by the published `api-surface/manifest.json`. */
+export const internalManifestSchema = {
+  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/internal-api-manifest.schema.json',
   type: 'object',
   additionalProperties: false,
   required: [
@@ -174,8 +176,9 @@ export const manifestSchema = {
   },
 } as const
 
-export const coverageSchema = {
-  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-coverage.schema.json',
+/** Internal coverage schema retained for source-backed audit fixtures. */
+export const internalCoverageSchema = {
+  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/internal-api-coverage.schema.json',
   type: 'object',
   additionalProperties: false,
   required: ['schemaVersion', 'sourceRef', 'rules'],
@@ -230,6 +233,171 @@ export const coverageSchema = {
             then: { not: { required: ['target'] } },
           },
         ],
+      },
+    },
+  },
+} as const
+
+const publicSymbolKind = {
+  enum: [
+    'module',
+    'callable',
+    'constructor',
+    'dynamic',
+    'function',
+    'property',
+    'getter',
+    'class',
+    'alias',
+    'global',
+    'engine-global',
+  ],
+} as const
+
+/** Public manifest schema (v2).  No source/provenance fields are permitted. */
+export const manifestSchema = {
+  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-manifest.schema.json',
+  type: 'object',
+  additionalProperties: false,
+  required: ['schemaVersion', 'productVersion', 'modules', 'symbols'],
+  properties: {
+    schemaVersion: { type: 'integer', const: 2 },
+    productVersion: { type: 'string', const: '6.7.0' },
+    modules: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['id', 'name', 'className', 'aliases'],
+        properties: {
+          id: { type: 'string', minLength: 1 },
+          name: { type: 'string', minLength: 1 },
+          className: { type: 'string', minLength: 1 },
+          aliases: {
+            type: 'array',
+            items: { type: 'string', minLength: 1 },
+          },
+          dynamic: { type: 'boolean' },
+        },
+      },
+    },
+    symbols: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: [
+          'id',
+          'owner',
+          'name',
+          'kind',
+          'public',
+          'annotations',
+          'signatures',
+          'overloads',
+        ],
+        properties: {
+          id: { type: 'string', minLength: 1 },
+          owner: { type: 'string', minLength: 1 },
+          name: { type: 'string', minLength: 1 },
+          kind: publicSymbolKind,
+          public: { const: true },
+          canonicalId: { type: ['string', 'null'], minLength: 1 },
+          annotations: {
+            type: 'array',
+            items: { type: 'string', minLength: 1 },
+          },
+          signatures: {
+            type: 'array',
+            items: { type: 'string', minLength: 1 },
+          },
+          overloads: {
+            type: 'array',
+            items: { type: 'string', minLength: 1 },
+          },
+        },
+      },
+    },
+  },
+} as const
+
+/** Public coverage schema (v2).  Rules intentionally have no source ref. */
+export const coverageSchema = {
+  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-coverage.schema.json',
+  type: 'object',
+  additionalProperties: false,
+  required: ['schemaVersion', 'productVersion', 'rules'],
+  properties: {
+    schemaVersion: { type: 'integer', const: 2 },
+    productVersion: { type: 'string', const: '6.7.0' },
+    rules: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['id', 'patterns', 'status'],
+        properties: {
+          id: { type: 'string', minLength: 1 },
+          patterns: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: { type: 'string', minLength: 1 },
+          },
+          status: {
+            enum: ['documented', 'alias', 'external', 'excluded'],
+          },
+          target: { type: 'string', minLength: 1 },
+          reason: { type: 'string', minLength: 1, pattern: '\\S' },
+        },
+        allOf: [
+          {
+            if: {
+              properties: { status: { enum: ['documented', 'external'] } },
+              required: ['status'],
+            },
+            then: { required: ['target'] },
+          },
+          {
+            if: {
+              properties: { status: { const: 'excluded' } },
+              required: ['status'],
+            },
+            then: { required: ['reason'] },
+          },
+          {
+            if: {
+              properties: { status: { const: 'alias' } },
+              required: ['status'],
+            },
+            then: { not: { required: ['target'] } },
+          },
+        ],
+      },
+    },
+  },
+} as const
+
+export const gapsSchema = {
+  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-gaps.schema.json',
+  type: 'object',
+  additionalProperties: false,
+  required: ['gaps'],
+  properties: {
+    gaps: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['symbolId', 'owner', 'name', 'kind', 'reason'],
+        properties: {
+          symbolId: { type: 'string', minLength: 1 },
+          owner: { type: 'string', minLength: 1 },
+          name: { type: 'string', minLength: 1 },
+          kind: publicSymbolKind,
+          expectedPage: { type: 'string', minLength: 1 },
+          reason: { type: 'string', minLength: 1, pattern: '\\S' },
+        },
       },
     },
   },

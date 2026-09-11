@@ -134,10 +134,7 @@ try {
 > 因此多数语法错误会被重新解析后再抛出,<br>
 > 而其他多数 JavaScript 引擎则直接抛出 SyntaxError.
 
-> Rhino 相关类或文件:<br>
-> [org.mozilla.javascript.Parser](https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/Parser.java)<br>
-> [org.mozilla.javascript.TokenStream](https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/TokenStream.java)<br>
-> [Messages.properties](https://github.com/mozilla/rhino/blob/master/src/org/mozilla/javascript/resources/Messages.properties)
+> Rhino 相关实现细节请参阅 [Rhino 官方文档](https://mozilla.github.io/rhino/)。
 
 ### TypeError
 

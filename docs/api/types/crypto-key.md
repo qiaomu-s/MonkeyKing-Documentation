@@ -41,7 +41,7 @@ console.log(new crypto.Key('Y').keyPair); // null
 console.log(new crypto.Key('Y', { keyPair: 'public' }).keyPair); // public
 ```
 
-需特别留意, 与 Auto.js Pro 不同, `keyPair` 默认值为 `null`, 而非 `undefined`. 这是因为 Monkey King 的 [crypto](../utilities/crypto.md) 模块底层实现不是 JavaScript 语言.
+需特别留意, `keyPair` 默认值为 `null`, 而非 `undefined`；这是 Monkey King crypto 模块的运行时约定。
 
 ## [m] toKeySpec
 

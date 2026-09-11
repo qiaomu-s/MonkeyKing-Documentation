@@ -7,9 +7,6 @@ import { sidebar, topNav } from './navigation'
 export type DocsBuildTarget = 'web' | 'android'
 
 const repositoryRoot = fileURLToPath(new URL('../..', import.meta.url))
-const repositoryUrl =
-  'https://github.com/qiaomu-s/MonkeyKing-Documentation'
-
 export function resolveBuildTarget(value?: string): DocsBuildTarget {
   if (value === undefined || value === '' || value === 'web') return 'web'
   if (value === 'android') return 'android'
@@ -77,17 +74,6 @@ export function createSiteConfig(
           },
         },
       },
-      editLink: {
-        pattern: `${repositoryUrl}/edit/master/docs/:path`,
-        text: '在 GitHub 上编辑此页',
-      },
-      socialLinks: [
-        {
-          icon: 'github',
-          link: repositoryUrl,
-          ariaLabel: 'MonkeyKing-Documentation GitHub 仓库',
-        },
-      ],
       lastUpdated: {
         text: '最后更新',
         formatOptions: {
@@ -116,7 +102,6 @@ export function createSiteConfig(
       },
       footer: {
         message: 'Monkey King 文档',
-        copyright: '基于 Apache-2.0 许可证发布',
       },
     },
   }

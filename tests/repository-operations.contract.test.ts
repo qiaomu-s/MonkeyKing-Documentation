@@ -6,7 +6,10 @@ const workflowPath = resolve(rootDirectory, '.github/workflows/pages.yml')
 const readmePath = resolve(rootDirectory, 'README.md')
 const projectMetadataPath = resolve(rootDirectory, 'project.json')
 const gitignorePath = resolve(rootDirectory, '.gitignore')
-const sourceRef = 'bafa2986212d27b6b59f1324f89548b72a810966'
+const internalAuditWorkflowPath = resolve(
+  rootDirectory,
+  '.github/workflows/internal-api-audit.yml',
+)
 
 function readOptionalText(path: string): string {
   return existsSync(path) ? readFileSync(path, 'utf8') : ''
@@ -26,27 +29,21 @@ function expectInOrder(source: string, values: readonly string[]): void {
 }
 
 describe('repository operations contract', () => {
-  test('runs the complete Node 22.23.2 quality gate for pull requests and master', () => {
+  test('runs the complete Node 22.23.2 quality gate for trusted master runs', () => {
     const workflow = readOptionalText(workflowPath)
 
     expect(existsSync(workflowPath), 'Pages workflow must exist').toBe(true)
     expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
-    expect(workflow).toMatch(/pull_request:\s*\n\s+branches:\s*\n\s+- master/)
+    expect(workflow).toContain('workflow_dispatch:')
+    expect(workflow).not.toContain('pull_request:')
+    expect(workflow).not.toContain('MONKEYKING_SOURCE_TOKEN')
+    expect(workflow).not.toContain('AutoJs6')
+    expect(workflow).not.toContain('.source/monkeyking')
     expect(workflow).toContain('node-version: 22.23.2')
     expect(workflow).toContain('uses: actions/checkout@v7')
     expect(workflow).toContain('uses: actions/setup-node@v7')
     expect(workflow).toMatch(
       /uses: actions\/checkout@v7\s*\n\s+with:\s*\n\s+persist-credentials: false/,
-    )
-    expect(workflow).toMatch(
-      new RegExp(
-        String.raw`uses: actions/checkout@v7\s*\n\s+with:\s*\n` +
-          String.raw`\s+repository: qiaomu-s/AutoJs6\s*\n` +
-          String.raw`\s+ref: ${sourceRef}\s*\n` +
-          String.raw`\s+token: \$\{\{ secrets\.MONKEYKING_SOURCE_TOKEN \}\}\s*\n` +
-          String.raw`\s+path: \.source/monkeyking\s*\n` +
-          String.raw`\s+persist-credentials: false`,
-      ),
     )
     expect(workflow).toContain('cache: npm')
     expectInOrder(workflow, [
@@ -54,8 +51,6 @@ describe('repository operations contract', () => {
       'run: test "$(npm --version)" = "11.17.0"',
       'run: npm ci',
       'run: npx tsc --noEmit',
-      `run: npm run api:extract -- --source .source/monkeyking --ref ${sourceRef} --check`,
-      `run: npm run api:mime -- --source .source/monkeyking --ref ${sourceRef} --check`,
       'run: npm run api:coverage -- --check',
       'run: npm run api:check',
       'run: npm run examples:check',
@@ -64,8 +59,9 @@ describe('repository operations contract', () => {
       'run: git diff --exit-code -- api-surface json',
       'run: npm test',
       'run: npm run build:web',
-      'run: npm run check:links',
       'run: npm run build:android',
+      'run: npm run public:scan',
+      'run: npm run check:links',
       'run: npx playwright install --with-deps chromium',
       'run: npm run test:e2e',
     ])
@@ -74,7 +70,7 @@ describe('repository operations contract', () => {
   test('publishes only the master web artifact with least-required Pages access', () => {
     const workflow = readOptionalText(workflowPath)
     const masterOnlyCondition =
-      "if: github.event_name == 'push' && github.ref == 'refs/heads/master'"
+      "if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')"
 
     expect(workflow).toContain('permissions:\n  contents: read')
     expect(workflow).toContain('group: pages-${{ github.ref }}')
@@ -83,31 +79,47 @@ describe('repository operations contract', () => {
     expect(workflow).toContain('uses: actions/upload-pages-artifact@v3')
     expect(workflow).toContain('path: ./dist/web')
     expect(workflow).toMatch(
-      /deploy:\s*\n\s+if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/master'[\s\S]*?needs: quality[\s\S]*?permissions:\s*\n\s+pages: write\s*\n\s+id-token: write/,
+      /deploy:\s*\n\s+if: github\.ref == 'refs\/heads\/master' && \(github\.event_name == 'push' \|\| github\.event_name == 'workflow_dispatch'\)[\s\S]*?needs: quality[\s\S]*?permissions:\s*\n\s+pages: write\s*\n\s+id-token: write/,
     )
     expect(workflow).toContain('name: github-pages')
     expect(workflow).toContain('url: ${{ steps.deployment.outputs.page_url }}')
     expect(workflow).toContain('uses: actions/deploy-pages@v4')
   })
 
-  test('documents the MonkeyKing repository and local workflows in Chinese', () => {
+  test('keeps protected API auditing separate from public Pages builds', () => {
+    const workflow = readOptionalText(internalAuditWorkflowPath)
+
+    expect(existsSync(internalAuditWorkflowPath)).toBe(true)
+    expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
+    expect(workflow).toContain('workflow_dispatch:')
+    expect(workflow).not.toContain('pull_request:')
+    expect(workflow).toContain('permissions:\n  contents: read')
+    expect(workflow).toContain('persist-credentials: false')
+    expect(workflow).toContain('SOURCE_REPOSITORY: ${{ vars.MONKEYKING_SOURCE_REPOSITORY }}')
+    expect(workflow).toContain('SOURCE_REF: ${{ vars.MONKEYKING_SOURCE_REF }}')
+    expect(workflow).toContain('SOURCE_TOKEN: ${{ secrets.MONKEYKING_SOURCE_TOKEN }}')
+    expect(workflow).not.toContain('cache: npm')
+    expect(workflow).toContain('--internal-output')
+    expect(workflow).toContain('--internal-manifest')
+    expect(workflow).toContain('if: always()')
+    expect(workflow).not.toContain('actions/upload-artifact')
+    expect(workflow).toContain('Protected API audit completed.')
+  })
+
+  test('documents local installation and product workflows in Chinese', () => {
     const readme = readOptionalText(readmePath)
 
     expect(readme).toContain('MonkeyKing-Documentation')
-    expect(readme).toContain('qiaomu-s/MonkeyKing-Documentation')
-    expect(readme).toContain('https://docs.monkeyking.com')
+    expect(readme).toContain('Monkey King 官方产品文档')
     expect(readme).toContain('Node.js 22.23.2')
     expect(readme).toContain('npm@11.17.0')
     for (const command of [
       'npm ci',
       'npm run docs:dev',
       'npm run docs:preview',
-      'npm run api:extract',
-      'npm run api:mime',
-      'npm run api:coverage',
       'npm run api:check',
+      'npm run public:scan',
       'npm run examples:check',
-      'npm run api:smoke',
       'npm run check:content',
       'npm run json:build',
       'npm run build:web',
@@ -125,28 +137,18 @@ describe('repository operations contract', () => {
 
     expect(readme).toContain('monkeyking.json')
     expect(readme).toContain('autojs.json')
-    expect(readme).toMatch(/monkeyking\.json[\s\S]*autojs\.json[\s\S]*字节一致/)
-    expect(readme).toMatch(/10\s*个冻结/)
-    expect(readme).toContain('git diff --exit-code -- json')
-    expect(readme).toContain('dist/web/json/')
+    expect(readme).toMatch(/monkeyking\.json[\s\S]*autojs\.json[\s\S]*内容保持一致/)
     expect(readme).toContain('dist/web/')
     expect(readme).toContain('dist/android/')
-    expect(readme).toContain('/assets/docs/')
     expect(readme).toContain('WebViewAssetLoader')
-    expect(readme).toContain('file:///android_asset/docs/')
   })
 
-  test('documents Pages setup, DNS, HTTPS, phase two, and upstream attribution', () => {
+  test('keeps internal deployment and source-audit details out of public README', () => {
     const readme = readOptionalText(readmePath)
 
-    expect(readme).toContain('GitHub Actions')
-    expect(readme).toContain('docs.monkeyking.com')
-    expect(readme).toContain('qiaomu-s.github.io')
-    expect(readme).toContain('Enforce HTTPS')
-    expect(readme).toMatch(/阶段二[\s\S]*Monkey King 6\.7\.0[\s\S]*API[\s\S]*全量对账/)
-    expect(readme).toContain('hyb1996/AutoJs-Docs')
-    expect(readme).toContain('AutoJs6-Documentation')
-    expect(readme).toContain('LICENSE')
+    expect(readme).toContain('内部校验')
+    expect(readme).toContain('应用内反馈入口或授权支持渠道')
+    expect(readme).not.toMatch(/github\.com|Fork|上游|许可证|\bIssue\b|\bPR\b|提交 SHA/i)
   })
 
   test('removes obsolete project metadata', () => {
