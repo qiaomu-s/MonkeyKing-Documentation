@@ -9,7 +9,8 @@
 
 - [web.newInjectableWebView](../network/web.md#m-newinjectablewebview)
 
-> 注: 本章节仅列出 InjectableWebView 独有的而不包含继承的属性及方法.
+> 注：本页展开 `InjectableWebView` 自有成员；继承自 `WebView` 的成员请参阅
+> [Android 官方参考](https://developer.android.com/reference/android/webkit/WebView)。
 
 ---
 
@@ -31,7 +32,7 @@
 
 ```js
 'ui';
-let webView = web.newInjectableWebView('www.github.com');
+let webView = web.newInjectableWebView('https://www.github.com');
 webView.inject('navigator.userAgent', value => console.log(value));
 activity.setContentView(webView);
 ```
@@ -40,3 +41,7 @@ activity.setContentView(webView);
 使用 `evaluateJavascript` 异步执行。回调值是 WebView 返回的 JSON 编码字符串。
 WebView 的创建、附加和大多数操作必须在 UI 线程进行。加载 `file:` URL 时会额外开启
 文件访问和 file URL 的跨源访问能力，只应对可信本地内容使用。
+
+页面不再使用时应先从父容器移除并在 UI 线程调用继承的 `webView.destroy()`；
+`InjectableWebView` 没有额外的自动销毁钩子。若在页面加载完成前排队注入脚本，
+队列会一直保留到 `onPageFinished`，没有取消单条排队脚本的公开方法。

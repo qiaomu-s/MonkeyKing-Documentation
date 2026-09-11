@@ -333,9 +333,7 @@ TLS 握手失败，例如证书未通过验证。
 var socket = new WebSocket('wss://echo.websocket.events');
 socket.on(WebSocket.EVENT_OPEN, function () {
     console.log(socket.send('text message'));
-    var bytes = new okio.ByteString(
-        new java.lang.String('binary message').getBytes()
-    );
+    var bytes = okio.ByteString.encodeUtf8('binary message');
     console.log(socket.send(bytes));
     socket.close();
 });

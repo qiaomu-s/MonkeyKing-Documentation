@@ -1525,10 +1525,10 @@ Color('#010101').isSimilar('#020202', { similarity: 0.95 }); // true
 **`6.3.0`** **`Overload[1-2]/2`**
 
 - **other** { [ColorHex](data-types.md#colorhex) | [ColorInt](data-types.md#colorint) | [ColorName](data-types.md#colorname) } - 颜色参数
-- **[ thresholdOrOptions ]** { [number](data-types.md#number) | [object](data-types.md#object) } - 颜色匹配阈值，或包含 `threshold`、`similarity`、`algorithm` 的选项对象
-- <ins>**returns**</ins> { [boolean](data-types.md#boolean) } - 实例颜色与参数颜色是否达到匹配条件
+- **[ thresholdOrOptions ]** { [number](data-types.md#number) | [object](data-types.md#object) } - 与 `colors.isSimilar` 相同的阈值或选项对象，可包含 `threshold`、`similarity`、`algorithm`
+- <ins>**returns**</ins> { [boolean](data-types.md#boolean) } - 实例颜色与参数颜色是否通过相似度检测
 
-`Color#isEqual` 是静态 `colors.isEqual` 的实例转发，使用与 `colors.isSimilar` 相同的颜色检测器。省略第三个参数时采用默认阈值 `4` 和 `diff` 算法；传入数字时将其作为阈值；传入对象时读取 `threshold` 或 `similarity`，并可指定 `algorithm`。第三个参数不是 `alphaMatters`，不会启用完整 ARGB 严格相等比较。
+当前实现通过 `colors.isEqual` 的动态转发执行与 `colors.isSimilar` 相同的检测：默认阈值为 `4`、算法为 `diff`，第二个实参可为数字阈值或包含 `threshold`、`similarity`、`algorithm` 的选项对象。比较只使用 `R/G/B` 分量，不考虑 `A (alpha)`，因此名称中的 “Equal” 不代表逐通道精确相等。
 
 ```js
 /* Hex 代码. */
@@ -1543,10 +1543,10 @@ Color('dark-gray').isEqual('DARK_GRAY'); /* true, 连字符与下划线均被支
 /* 不同类型比较. */
 Color('red').isEqual('#FF0000'); // true
 Color('orange').isEqual('#FFA500'); // true
-/* 第三个参数沿用 isSimilar 的阈值/选项语义. */
-Color('#A1FF0000').isEqual('#A2FF0000', 4); // true 或 false 取决于颜色检测算法
-Color('#A1FF0000').isEqual('#A2FF0000', { threshold: 4, algorithm: 'diff' });
-Color('#A1FF0000').isEqual('#A2FF0000', { similarity: 0.99 });
+/* A (alpha) 分量不参与检测. */
+Color('#A1FF0000').isEqual('#A2FF0000'); // true
+/* 数字第三参数是阈值，而不是 alphaMatters. */
+Color('#FF0000').isEqual('#FB0000', 4); // true
 ```
 
 ## [m#] equals
@@ -1573,9 +1573,17 @@ Color('red').equals('#FF0000'); // true
 Color('#A1FF0000').equals('#A2FF0000'); // true
 ```
 
-`equals` 只接受一个参数，并调用底层 `isEqualRhino`：默认比较 RGB 分量、忽略 alpha，
-但不会接受 `threshold`、`similarity` 或 `algorithm` 选项。需要颜色检测阈值或算法时，
-请使用上面的 `Color#isEqual`/`colors.isSimilar`。
+`Color#equals` 由实例直接实现，调用内部精确 RGB 比较；默认忽略 `A (alpha)`，并接受颜色名称、三位/六位/八位 Hex 和颜色整数。无效颜色参数会被捕获并返回 `false`，不会把解析异常继续抛出。因此以下等价形式也会返回 `true`：
+
+```js
+Color('orange').equals('#FFA500'); // true
+Color('dark-gray').equals('#444'); // true
+Color('#FF0000').equals('#F00'); // true
+```
+
+无效或无法解析的参数返回 `false`，例如 `Color('red').equals({})`。
+
+需要阈值、相似度或算法选项时，请使用 [Color#isEqual](#m-isequal) 或 [colors.isSimilar](../media/color.md#m-issimilar)；需要精确 RGB 比较时使用 `Color#equals`。
 
 ## [m#] luminance
 

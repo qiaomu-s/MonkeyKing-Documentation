@@ -4,7 +4,7 @@
     {
       "textRaw": "OpenCVPoint",
       "name": "opencvpoint",
-      "desc": "<p><a href=\"https://docs.opencv.org/4.x/javadoc/org/opencv/core/Point.html\">org.opencv.core.Point</a> 别名.</p>\n<p>Point 表示一个点, 作为控件信息时则表示点在屏幕的相对位置.</p>\n<pre><code class=\"lang-js\">let point = pickup(/.+/, &#39;.&#39;);\nconsole.log(`${point.x}, ${point.y}`);\n</code></pre>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../automation/ui-selector.md#m-pickup\">UiSelector.pickup</a></li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出部分属性或方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">org.opencv.core.Point</p>\n\n<hr>\n",
+      "desc": "<p><a href=\"https://docs.opencv.org/4.x/javadoc/org/opencv/core/Point.html\">org.opencv.core.Point</a> 别名.</p>\n<p>Point 表示一个点, 作为控件信息时则表示点在屏幕的相对位置.</p>\n<pre><code class=\"lang-js\">let point = pickup(/.+/, &#39;.&#39;);\nconsole.log(`${point.x}, ${point.y}`);\n</code></pre>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../automation/ui-selector.md#m-pickup\">UiSelector.pickup</a></li>\n</ul>\n<blockquote>\n<p>本页聚焦 MonkeyKing 脚本中实际使用的构造与坐标属性；OpenCV 的其余 Java 方法请查阅上方官方类参考。</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">org.opencv.core.Point</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[C] org.opencv.core.Point",

@@ -4,7 +4,72 @@
     {
       "textRaw": "二维码 (QR Code)",
       "name": "二维码_(qr_code)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 30, 2023.</p>\n\n<hr>\n<p>qrcode 模块用于识别图像中的二维码.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">qrcode</p>\n\n<hr>\n<pre><code class=\"lang-ts\">interface QrCode {\n\n    (options?: DetectOptions): string | string[] | null;\n    (isAll: boolean): string | string[] | null;\n    (img: ImageWrapper | string, options?: DetectOptions): string | string[] | null;\n    (img: ImageWrapper | string, isAll: boolean): string | string[] | null;\n\n    detect(options?: DetectOptions): QrCode.Result | QrCode.Result[] | null;\n    detect(isAll: boolean): QrCode.Result | QrCode.Result[] | null;\n    detect(img: ImageWrapper | string, options?: DetectOptions): QrCode.Result | QrCode.Result[] | null;\n    detect(img: ImageWrapper | string, isAll: boolean): QrCode.Result | QrCode.Result[] | null;\n\n    detectAll(options?: DetectOptionsWithoutIsAll): QrCode.Result[];\n    detectAll(img: ImageWrapper | string, options?: DetectOptionsWithoutIsAll): QrCode.Result[];\n\n    recognizeText(options?: DetectOptions): string | string[] | null;\n    recognizeText(isAll: boolean): string | string[] | null;\n    recognizeText(img: ImageWrapper | string, options?: DetectOptions): string | string[] | null;\n    recognizeText(img: ImageWrapper | string, isAll: boolean): string | string[] | null;\n\n    recognizeTexts(options?: DetectOptionsWithoutIsAll): string[];\n    recognizeTexts(img: ImageWrapper | string, options?: DetectOptionsWithoutIsAll): string[];\n\n}\n</code></pre>\n",
+      "desc": "<p><code>qrcode</code> 是只识别 QR Code 的全局可调用模块。它与 <a href=\"barcode.md\">barcode</a> 共用检测实现，但格式固定为 <code>FORMAT_QR_CODE</code>，适合不希望其他条码格式参与匹配的场景。</p>\n<p>输入可以是 <code>ImageWrapper</code>、图片路径或省略。省略图像会同步捕获当前屏幕，因此需要预先取得屏幕捕获权限。检测入口会等待 ML Kit 任务完成后再返回。</p>\n",
+      "modules": [
+        {
+          "textRaw": "公共选项",
+          "name": "公共选项",
+          "desc": "<pre><code class=\"lang-ts\">interface QrCodeDetectOptions {\n  /** true 时返回全部结果；仅用于 qrcode()/detect()/recognizeText()。默认 false。 */\n  isAll?: boolean\n  /** 同时报告尚不能完整解码的候选 QR Code。默认 false。 */\n  enableAllPotentialQrCodes?: boolean\n  /** 兼容 barcode 模块的同义选项。默认 false。 */\n  enableAllPotentialBarcodes?: boolean\n}\n</code></pre>\n<p>当两个候选选项同时出现时，<code>enableAllPotentialQrCodes</code> 优先。完整结果对象与 <code>barcode.detect</code> 返回的 <code>Barcode.Result</code> 结构相同，包含文本、格式、类型、边界和结构化载荷等字段。</p>\n<p><a id=\"api-symbol-bW9kdWxlOnFyY29kZQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "公共选项"
+        },
+        {
+          "textRaw": "`qrcode` 模块",
+          "name": "`qrcode`_模块",
+          "desc": "<p>脚本运行时自动提供，无需导入。它可直接调用，也公开 <code>detect</code>、<code>detectAll</code>、<code>recognizeText</code> 和 <code>recognizeTexts</code>。</p>\n<p><a id=\"api-symbol-Y2FsbDpxcmNvZGU\"></a></p>\n",
+          "type": "module",
+          "displayName": "`qrcode` 模块"
+        },
+        {
+          "textRaw": "`qrcode(input?, options?)`",
+          "name": "`qrcode(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">qrcode(options?: QrCodeDetectOptions): string | string[] | null\nqrcode(image: ImageWrapper | string, options?: QrCodeDetectOptions): string | string[] | null\nqrcode(isAll: true): string[]\n</code></pre>\n<p>模块调用是 <code>qrcode.recognizeText</code> 的快捷形式。默认返回第一条 <code>rawValue</code> 或 <code>null</code>；<code>options.isAll === true</code> 或以 <code>true</code> 作为唯一参数时返回所有非空文本。最多接受三个实参。</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture(false)\nconst values = qrcode(true)\nconsole.log(JSON.stringify(values))\n</code></pre>\n<p><a id=\"api-symbol-cXJjb2RlLmRldGVjdA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`qrcode(input?, options?)`"
+        },
+        {
+          "textRaw": "`qrcode.detect(input?, options?)`",
+          "name": "`qrcode.detect(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">qrcode.detect(options?: QrCodeDetectOptions): Barcode.Result | Barcode.Result[] | null\nqrcode.detect(image: ImageWrapper | string, options?: QrCodeDetectOptions): Barcode.Result | Barcode.Result[] | null\n</code></pre>\n<p>默认返回第一个完整结果，无匹配时返回 <code>null</code>；<code>options.isAll</code> 为 <code>true</code> 时返回数组。路径无法读取为图像时抛出 <code>WrappedIllegalArgumentException</code>；图像已回收或扫描失败时返回空结果形态。</p>\n<pre><code class=\"lang-js\">const result = qrcode.detect(&#39;/sdcard/Download/login-qr.png&#39;)\nif (result) console.log(result.rawValue, result.boundingBox)\n</code></pre>\n<p><a id=\"api-symbol-cXJjb2RlLmRldGVjdEFsbA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`qrcode.detect(input?, options?)`"
+        },
+        {
+          "textRaw": "`qrcode.detectAll(input?, options?)`",
+          "name": "`qrcode.detectall(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">qrcode.detectAll(options?: Omit&lt;QrCodeDetectOptions, &#39;isAll&#39;&gt;): Barcode.Result[]\nqrcode.detectAll(image: ImageWrapper | string, options?: Omit&lt;QrCodeDetectOptions, &#39;isAll&#39;&gt;): Barcode.Result[]\n</code></pre>\n<p>始终返回全部 QR Code 结果数组；无匹配、图像已回收或扫描失败时返回 <code>[]</code>。</p>\n<pre><code class=\"lang-js\">const results = qrcode.detectAll(&#39;/sdcard/Download/poster.png&#39;, {\n  enableAllPotentialQrCodes: true,\n})\nresults.forEach(result =&gt; console.log(result.rawValue))\n</code></pre>\n<p><a id=\"api-symbol-cXJjb2RlLnJlY29nbml6ZVRleHQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`qrcode.detectAll(input?, options?)`"
+        },
+        {
+          "textRaw": "`qrcode.recognizeText(input?, options?)`",
+          "name": "`qrcode.recognizetext(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">qrcode.recognizeText(options?: QrCodeDetectOptions): string | string[] | null\nqrcode.recognizeText(image: ImageWrapper | string, options?: QrCodeDetectOptions): string | string[] | null\n</code></pre>\n<p>默认返回第一条非空 <code>rawValue</code> 或 <code>null</code>；<code>options.isAll</code> 为 <code>true</code> 时返回全部非空文本。只需要文本时优先使用该入口。</p>\n<pre><code class=\"lang-js\">const value = qrcode.recognizeText(&#39;/sdcard/Download/payment.png&#39;)\ntoastLog(value == null ? &#39;未识别到二维码&#39; : value)\n</code></pre>\n<p><a id=\"api-symbol-cXJjb2RlLnJlY29nbml6ZVRleHRz\"></a></p>\n",
+          "type": "module",
+          "displayName": "`qrcode.recognizeText(input?, options?)`"
+        },
+        {
+          "textRaw": "`qrcode.recognizeTexts(input?, options?)`",
+          "name": "`qrcode.recognizetexts(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">qrcode.recognizeTexts(options?: Omit&lt;QrCodeDetectOptions, &#39;isAll&#39;&gt;): string[]\nqrcode.recognizeTexts(image: ImageWrapper | string, options?: Omit&lt;QrCodeDetectOptions, &#39;isAll&#39;&gt;): string[]\n</code></pre>\n<p>返回所有非空 <code>rawValue</code>；无结果时返回 <code>[]</code>。如需边界或类型信息，请改用 <code>qrcode.detectAll</code>。</p>\n<pre><code class=\"lang-js\">const values = qrcode.recognizeTexts(&#39;/sdcard/Download/qr-grid.png&#39;)\nconsole.log(values.join(&#39;\\n&#39;))\n</code></pre>\n",
+          "type": "module",
+          "displayName": "`qrcode.recognizeTexts(input?, options?)`"
+        },
+        {
+          "textRaw": "权限、线程与生命周期",
+          "name": "权限、线程与生命周期",
+          "desc": "<ul>\n<li>文件路径会经 MonkeyKing 文件模块规范化；无效图片路径会抛出参数异常。</li>\n<li>省略图像时需要屏幕捕获授权。同步扫描不适合放在 UI 线程的紧密循环中。</li>\n<li>路径读取产生的临时图像由检测流程按一次性资源处理；调用方持有的普通 <code>ImageWrapper</code> 仍由调用方管理。</li>\n<li>API 在 MonkeyKing 6.7.0 中可用；底层识别能力由应用内置的 ML Kit 版本决定。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:qrcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>module:qrcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>qrcode.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detect);\n</code></pre>\n<p><code>qrcode.detectAll</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detectAll);\n</code></pre>\n<p><code>qrcode.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeText);\n</code></pre>\n<p><code>qrcode.recognizeTexts</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeTexts);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
       "type": "module",
       "displayName": "二维码 (QR Code)"
     }

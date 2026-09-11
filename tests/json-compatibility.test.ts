@@ -287,7 +287,7 @@ describe('legacy JSON compatibility', () => {
     const ocrOptions = document.modules[0]
     expect(ocrOptions.textRaw).toBe('OcrOptions')
     expect(ocrOptions.desc ?? '').toContain(
-      'OcrOptions 是一个代表 OCR 识别选项的接口.',
+      'OcrOptions</code> 是 <a href="../media/ocr.md">ocr</a> 主模块及三个固定引擎入口共享的选项对象。',
     )
     expect(ocrOptions.modules?.map(({ textRaw }) => textRaw)).not.toContain(
       'OcrOptions',

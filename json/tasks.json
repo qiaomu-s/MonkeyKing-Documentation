@@ -4,7 +4,167 @@
     {
       "textRaw": "任务 (Tasks)",
       "name": "任务_(tasks)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n",
+      "desc": "<p><code>tasks</code> 管理 Monkey King 的定时任务与广播触发任务；<code>$tasks</code> 指向同一个模块对象。当前固定源码未保留这些旧 API 的首次发布标签，因此本页统一标记为 <strong>≤ v6.6.4（旧文档未记录精确版本）</strong>。</p>\n<p>本页示例面向 Monkey King <strong>Rhino 2.0</strong>。任务增删改查会同步访问 <code>TimedTaskManager</code> 的持久化数据；不需要额外 Android 运行时权限，但脚本路径必须可读，系统能否准时触发仍受 Android 后台、闹钟与省电策略影响。</p>\n",
+      "modules": [
+        {
+          "textRaw": "通用选项",
+          "name": "通用选项",
+          "desc": "<p><code>addDailyTask</code>、<code>addWeeklyTask</code>、<code>addDisposableTask</code> 与 <code>addIntentTask</code> 接受 0 或 1 个选项对象。</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>默认值</th>\n<th>合法值与作用</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>path</code></td>\n<td>无</td>\n<td>必填脚本路径；相对路径按当前脚本运行目录解析。</td>\n</tr>\n<tr>\n<td><code>time</code> / <code>date</code></td>\n<td>当前时间</td>\n<td>数字时间戳、JavaScript <code>Date</code> 或 Joda-Time 可解析的字符串；<code>time</code> 优先。</td>\n</tr>\n<tr>\n<td><code>delay</code></td>\n<td><code>0</code></td>\n<td>首次执行前延迟毫秒数。</td>\n</tr>\n<tr>\n<td><code>interval</code></td>\n<td><code>0</code></td>\n<td>循环间隔毫秒数。</td>\n</tr>\n<tr>\n<td><code>loopTimes</code></td>\n<td><code>1</code></td>\n<td>执行次数。</td>\n</tr>\n<tr>\n<td><code>callback</code></td>\n<td>无</td>\n<td>JavaScript 函数；任务写入后以任务对象为唯一参数调用。</td>\n</tr>\n<tr>\n<td><code>isAsync</code> / <code>async</code></td>\n<td><code>false</code></td>\n<td>为真时在线程模块启动的工作线程中完成回调；从 UI 线程调用时也会自动切到工作线程。</td>\n</tr>\n<tr>\n<td><code>daysOfWeek</code></td>\n<td>当前星期</td>\n<td>仅周任务使用。接受星期英文全称、三字母缩写、中文“一”至“日”，以及数字 <code>0..6</code> 或 <code>1..7</code>。</td>\n</tr>\n<tr>\n<td><code>action</code></td>\n<td>无</td>\n<td>仅 Intent 任务使用的广播 action；启动广播会自动设为本地广播。</td>\n</tr>\n<tr>\n<td><code>dataType</code></td>\n<td>无</td>\n<td>仅 Intent 任务使用的 MIME data type。</td>\n</tr>\n<tr>\n<td><code>isLocal</code> / <code>local</code></td>\n<td>由 action 决定</td>\n<td>是否监听应用内本地广播；显式值优先。</td>\n</tr>\n</tbody>\n</table>\n<p>同步调用返回任务对象，若提供 <code>callback</code> 则返回回调结果。异步调用或 UI 线程调用返回 <code>threads.start(...)</code> 创建的线程对象。未知日期、未知星期、缺少 <code>path</code>、错误参数数量或非函数 <code>callback</code> 都会抛出参数异常。</p>\n",
+          "type": "module",
+          "displayName": "通用选项"
+        },
+        {
+          "textRaw": "创建任务",
+          "name": "创建任务",
+          "methods": [
+            {
+              "textRaw": "tasks.addTask(task)",
+              "type": "method",
+              "name": "addTask",
+              "desc": "<p>只接受一个 <code>TimedTask</code> 或 <code>IntentTask</code> 实例，同步写入任务管理器并返回原实例；其他类型抛出异常。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "task"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "tasks.addDailyTask(options?)",
+              "type": "method",
+              "name": "addDailyTask",
+              "desc": "<p>创建每天在指定时间运行的任务。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "tasks.addWeeklyTask(options?)",
+              "type": "method",
+              "name": "addWeeklyTask",
+              "desc": "<p>创建每周任务；<code>daysOfWeek</code> 会被转换为 <code>TimedTask</code> 使用的星期位掩码。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "tasks.addDisposableTask(options?)",
+              "type": "method",
+              "name": "addDisposableTask",
+              "desc": "<p>创建只执行一次的任务，<code>time</code> / <code>date</code> 表示完整日期时间。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "tasks.addIntentTask(options?)",
+              "type": "method",
+              "name": "addIntentTask",
+              "desc": "<p>创建收到指定广播后执行的任务。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "options?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "创建任务"
+        },
+        {
+          "textRaw": "查询、更新与删除",
+          "name": "查询、更新与删除",
+          "desc": "<table>\n<thead>\n<tr>\n<th>方法</th>\n<th>参数</th>\n<th>返回值与异常</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>tasks.getTimedTask(id)</code></td>\n<td>一个可转换为长整数的任务 ID</td>\n<td>对应 <code>TimedTask</code>，不存在时返回 <code>null</code>。</td>\n</tr>\n<tr>\n<td><code>tasks.getIntentTask(id)</code></td>\n<td>一个可转换为长整数的任务 ID</td>\n<td>对应 <code>IntentTask</code>，不存在时返回 <code>null</code>。</td>\n</tr>\n<tr>\n<td><code>tasks.removeTask(task)</code></td>\n<td><code>TimedTask</code>、<code>IntentTask</code> 或 nullish</td>\n<td>删除成功返回 <code>true</code>；nullish 返回 <code>false</code>；其他类型抛出异常。</td>\n</tr>\n<tr>\n<td><code>tasks.removeTimedTask(id)</code></td>\n<td>一个整数 ID</td>\n<td>查找并删除定时任务，返回布尔值。</td>\n</tr>\n<tr>\n<td><code>tasks.removeIntentTask(id)</code></td>\n<td>一个整数 ID</td>\n<td>查找并删除 Intent 任务，返回布尔值。</td>\n</tr>\n<tr>\n<td><code>tasks.updateTask(task)</code></td>\n<td><code>TimedTask</code>、<code>IntentTask</code> 或 nullish</td>\n<td>更新成功返回 <code>true</code>；nullish 返回 <code>false</code>；其他类型抛出异常。</td>\n</tr>\n<tr>\n<td><code>tasks.queryTimedTasks(options?)</code></td>\n<td>可选 <code>{ path }</code></td>\n<td>返回全部定时任务；提供路径时只返回脚本路径完全相同的任务。</td>\n</tr>\n<tr>\n<td><code>tasks.queryIntentTasks(options?)</code></td>\n<td>可选 <code>{ path, action }</code></td>\n<td>返回同时满足已提供过滤条件的 Intent 任务。</td>\n</tr>\n</tbody>\n</table>\n",
+          "type": "module",
+          "displayName": "查询、更新与删除"
+        },
+        {
+          "textRaw": "星期位掩码",
+          "name": "星期位掩码",
+          "methods": [
+            {
+              "textRaw": "tasks.timeFlagToDays(flag)",
+              "type": "method",
+              "name": "timeFlagToDays",
+              "desc": "<p>把整数位掩码转换为星期索引数组。索引使用 <code>0..6</code>，其中 <code>0</code> 表示星期日。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "flag"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "tasks.daysToTimeFlag(days)",
+              "type": "method",
+              "name": "daysToTimeFlag",
+              "desc": "<p>把星期索引数组转换为位掩码。只检查 <code>0..6</code> 七个位；重复值不会重复计数。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "days"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "星期位掩码"
+        },
+        {
+          "textRaw": "Rhino 2.0 示例",
+          "name": "rhino_2.0_示例",
+          "desc": "<p>下面创建一个一次性任务，随后通过脚本路径查回它。示例会写入任务数据库，确认后可调用 <code>tasks.removeTask(task)</code> 清理。</p>\n<pre><code class=\"lang-js\">const task = tasks.addDisposableTask({\n    path: files.path(&#39;./scheduled-job.js&#39;),\n    time: Date.now() + 60 * 1000,\n    delay: 0,\n    interval: 0,\n    loopTimes: 1,\n});\n\nconsole.log(task);\nconsole.log(tasks.queryTimedTasks({ path: files.path(&#39;./scheduled-job.js&#39;) }));\n</code></pre>\n<p>生命周期上，任务写入后独立于创建它的脚本保存，直到执行策略完成、应用数据被清除，或调用删除 API。副作用包括持久化任务、注册广播触发条件以及未来启动脚本；查询与位掩码转换不会修改任务。</p>\n<!-- fixed-source-contracts:start -->\n",
+          "type": "module",
+          "displayName": "Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "固定源码合同表",
+          "name": "固定源码合同表",
+          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOnRhc2tz\"></a> <code>module:tasks</code></td>\n<td><code>tasks</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L759</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuYWRkRGFpbHlUYXNr\"></a> <code>tasks.addDailyTask</code></td>\n<td><code>tasks.addDailyTask(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L96</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.addDailyTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuYWRkRGlzcG9zYWJsZVRhc2s\"></a> <code>tasks.addDisposableTask</code></td>\n<td><code>tasks.addDisposableTask(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L123</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.addDisposableTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuYWRkSW50ZW50VGFzaw\"></a> <code>tasks.addIntentTask</code></td>\n<td><code>tasks.addIntentTask(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L136</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.addIntentTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuYWRkVGFzaw\"></a> <code>tasks.addTask</code></td>\n<td><code>tasks.addTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L76</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.addTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuYWRkV2Vla2x5VGFzaw\"></a> <code>tasks.addWeeklyTask</code></td>\n<td><code>tasks.addWeeklyTask(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L109</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.addWeeklyTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuZGF5c1RvVGltZUZsYWc\"></a> <code>tasks.daysToTimeFlag</code></td>\n<td><code>tasks.daysToTimeFlag(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L276</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Int；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.daysToTimeFlag);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuZ2V0SW50ZW50VGFzaw\"></a> <code>tasks.getIntentTask</code></td>\n<td><code>tasks.getIntentTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L173</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：IntentTask?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.getIntentTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MuZ2V0VGltZWRUYXNr\"></a> <code>tasks.getTimedTask</code></td>\n<td><code>tasks.getTimedTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L163</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：TimedTask?；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.getTimedTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MucXVlcnlJbnRlbnRUYXNrcw\"></a> <code>tasks.queryIntentTasks</code></td>\n<td><code>tasks.queryIntentTasks(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L240</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：NativeArray；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.queryIntentTasks);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MucXVlcnlUaW1lZFRhc2tz\"></a> <code>tasks.queryTimedTasks</code></td>\n<td><code>tasks.queryTimedTasks(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L227</code></td>\n<td>参数：0 至 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：NativeArray；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.queryTimedTasks);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MucmVtb3ZlSW50ZW50VGFzaw\"></a> <code>tasks.removeIntentTask</code></td>\n<td><code>tasks.removeIntentTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L205</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Boolean；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.removeIntentTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MucmVtb3ZlVGFzaw\"></a> <code>tasks.removeTask</code></td>\n<td><code>tasks.removeTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L183</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Boolean；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.removeTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MucmVtb3ZlVGltZWRUYXNr\"></a> <code>tasks.removeTimedTask</code></td>\n<td><code>tasks.removeTimedTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L198</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Boolean；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.removeTimedTask);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MudGltZUZsYWdUb0RheXM\"></a> <code>tasks.timeFlagToDays</code></td>\n<td><code>tasks.timeFlagToDays(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L260</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：NativeArray；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.timeFlagToDays);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-dGFza3MudXBkYXRlVGFzaw\"></a> <code>tasks.updateTask</code></td>\n<td><code>tasks.updateTask(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/tasks/Tasks.kt:L212</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Boolean；参数校验、状态或底层异常原样传播</td>\n<td>权限：模块不额外请求权限，未来执行受后台和闹钟策略影响；线程：管理器同步，async 或 UI 调用启动工作线程</td>\n<td>生命周期：任务持久化并可在创建脚本结束后继续存在；副作用：增删改写任务数据库并注册未来触发</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof tasks.updateTask);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "modules": [
+            {
+              "textRaw": "Rhino 2.0 表格读取示例",
+              "name": "rhino_2.0_表格读取示例",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: tasks&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "type": "module",
+              "displayName": "Rhino 2.0 表格读取示例"
+            }
+          ],
+          "type": "module",
+          "displayName": "固定源码合同表"
+        }
+      ],
       "type": "module",
       "displayName": "任务 (Tasks)"
     }

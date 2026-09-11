@@ -4,17 +4,18 @@
     {
       "textRaw": "MediaInfo - 媒体信息",
       "name": "mediainfo_-_媒体信息",
-      "desc": "<p><code>mediainfo</code> 同步读取本地媒体文件的容器、视频、音频、字幕等元数据。运行时同时注册 <code>mediainfo</code> 与 <code>$mediainfo</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
+      "desc": "<p><code>mediainfo</code> 同步读取本地媒体文件的容器、视频、音频、字幕等元数据。运行时同时注册 <code>mediainfo</code> 与 <code>$mediainfo</code>，两者引用同一个模块对象。</p>\n<p>版本：<strong>v6.7.0</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n<p><a id=\"api-symbol-bW9kdWxlOm1lZGlhaW5mbw\"></a></p>\n",
       "modules": [
         {
           "textRaw": "mediainfo",
           "name": "mediainfo",
+          "desc": "<p><a id=\"api-symbol-Y2FsbDptZWRpYWluZm8\"></a></p>\n",
           "methods": [
             {
               "textRaw": "mediainfo(path)",
               "type": "method",
               "name": "mediainfo",
-              "desc": "<p>等价于 <code>mediainfo.read(path)</code>。</p>\n<pre><code class=\"lang-js\">let info = mediainfo(files.path(&#39;./sample.mp4&#39;));\nconsole.log(info.path);\nconsole.log(info.general(&#39;Format&#39;));\nconsole.log(info.video(&#39;Width&#39;));\n</code></pre>\n",
+              "desc": "<p>等价于 <code>mediainfo.read(path)</code>。</p>\n<pre><code class=\"lang-js\">let info = mediainfo(files.path(&#39;./sample.mp4&#39;));\nconsole.log(info.path);\nconsole.log(info.general(&#39;Format&#39;));\nconsole.log(info.video(&#39;Width&#39;));\n</code></pre>\n<p><a id=\"api-symbol-bWVkaWFpbmZvLnJlYWQ\"></a></p>\n",
               "signatures": [
                 {
                   "params": [
@@ -36,7 +37,19 @@
             {
               "textRaw": "固定属性",
               "name": "固定属性",
-              "desc": "<table>\n<thead>\n<tr>\n<th>属性</th>\n<th>类型</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>path</code></td>\n<td><code>string</code></td>\n<td>解析后的绝对路径，只读</td>\n</tr>\n<tr>\n<td><code>inform</code></td>\n<td><code>string</code></td>\n<td>MediaInfo 生成的完整文本报告，只读</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>属性</th>\n<th>类型</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a href=\"#info-path\"><code>path</code></a></td>\n<td><code>string</code></td>\n<td>解析后的绝对路径，只读</td>\n</tr>\n<tr>\n<td><a href=\"#info-inform\"><code>inform</code></a></td>\n<td><code>string</code></td>\n<td>MediaInfo 生成的完整文本报告，只读</td>\n</tr>\n</tbody>\n</table>\n<p><a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5wYXRo\"></a></p>\n",
+              "properties": [
+                {
+                  "textRaw": "info.path",
+                  "name": "path",
+                  "desc": "<p>版本：<strong>6.7.0</strong>。读取时解析后的绝对路径，只读。</p>\n<p><a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5pbmZvcm0\"></a></p>\n"
+                },
+                {
+                  "textRaw": "info.inform",
+                  "name": "inform",
+                  "desc": "<p>版本：<strong>6.7.0</strong>。MediaInfo 生成的完整文本报告，只读。</p>\n<p><a id=\"api-symbol-ZHluYW1pYzptZWRpYWluZm8ucmVzdWx0Lm1ldGFkYXRh\"></a></p>\n"
+                }
+              ],
               "type": "module",
               "displayName": "固定属性"
             },
@@ -50,7 +63,7 @@
             {
               "textRaw": "查询函数",
               "name": "查询函数",
-              "desc": "<p>对象始终提供以下函数，均接受可选的 <code>parameter</code> 字符串并返回 MediaInfo 对应值：</p>\n<ul>\n<li><code>info.general(parameter = &#39;&#39;)</code></li>\n<li><code>info.video(parameter = &#39;&#39;)</code></li>\n<li><code>info.audio(parameter = &#39;&#39;)</code></li>\n<li><code>info.text(parameter = &#39;&#39;)</code></li>\n<li><code>info.other(parameter = &#39;&#39;)</code></li>\n<li><code>info.image(parameter = &#39;&#39;)</code></li>\n<li><code>info.menu(parameter = &#39;&#39;)</code></li>\n<li><code>info.max(parameter = &#39;&#39;)</code></li>\n</ul>\n<p>查询固定使用相应流类型的第 <code>0</code> 个流。省略参数时返回该流的默认信息；指定参数时，名称应使用 MediaInfo 支持的字段名称。文件没有该流或字段时，底层库通常返回空字符串。</p>\n<pre><code class=\"lang-js\">let info = $mediainfo.read(&#39;/sdcard/Movies/demo.mp4&#39;);\nconsole.log(info.general(&#39;FileSize/String&#39;));\nconsole.log(info.video(&#39;Format&#39;));\nconsole.log(info.audio(&#39;Channel(s)&#39;));\n</code></pre>\n",
+              "desc": "<p>对象始终提供以下函数，均接受可选的 <code>parameter</code> 字符串并返回 MediaInfo 对应值：</p>\n<p><a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5nZW5lcmFs\"></a></p>\n<ul>\n<li><code>info.general(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC52aWRlbw\"></a></li>\n<li><code>info.video(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5hdWRpbw\"></a></li>\n<li><code>info.audio(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC50ZXh0\"></a></li>\n<li><code>info.text(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5vdGhlcg\"></a></li>\n<li><code>info.other(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5pbWFnZQ\"></a></li>\n<li><code>info.image(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5tZW51\"></a></li>\n<li><code>info.menu(parameter = &#39;&#39;)</code>\n<a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC5tYXg\"></a></li>\n<li><code>info.max(parameter = &#39;&#39;)</code></li>\n</ul>\n<p>查询固定使用相应流类型的第 <code>0</code> 个流。省略参数时返回该流的默认信息；指定参数时，名称应使用 MediaInfo 支持的字段名称。文件没有该流或字段时，底层库通常返回空字符串。</p>\n<pre><code class=\"lang-js\">let info = $mediainfo.read(&#39;/sdcard/Movies/demo.mp4&#39;);\nconsole.log(info.general(&#39;FileSize/String&#39;));\nconsole.log(info.video(&#39;Format&#39;));\nconsole.log(info.audio(&#39;Channel(s)&#39;));\n</code></pre>\n<p><a id=\"api-symbol-bWVkaWFpbmZvLnJlc3VsdC50b1N0cmluZw\"></a></p>\n",
               "type": "module",
               "displayName": "查询函数"
             },
@@ -70,7 +83,14 @@
           "name": "生命周期与副作用",
           "desc": "<ul>\n<li>创建对象时立即同步读取文件并解析全部区段，没有延迟加载。</li>\n<li>对象保存的是读取时的快照；文件后续发生变化时应重新调用 <code>mediainfo.read</code>。</li>\n<li>模块只读取媒体内容，不修改源文件。</li>\n<li>返回对象没有显式 <code>close()</code>；底层 MediaInfo 调用由运行时封装管理。</li>\n<li>路径、文件读取、格式解析或原生库加载异常会同步抛出，不会返回部分初始化对象。</li>\n<li>模块不请求额外 Android 运行时权限，但调用方必须对目标路径具有系统允许的读取权限；受分区存储限制的路径仍可能失败。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "生命周期与副作用"
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:mediainfo</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof mediainfo);\n</code></pre>\n<p><code>dynamic:mediainfo.result.metadata</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.metadata);\n</code></pre>\n<p><code>mediainfo.read</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof mediainfo.read);\n</code></pre>\n<p><code>mediainfo.result.audio</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.audio);\n</code></pre>\n<p><code>mediainfo.result.general</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.general);\n</code></pre>\n<p><code>mediainfo.result.image</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.image);\n</code></pre>\n<p><code>mediainfo.result.inform</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.inform);\n</code></pre>\n<p><code>mediainfo.result.max</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.max);\n</code></pre>\n<p><code>mediainfo.result.menu</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.menu);\n</code></pre>\n<p><code>mediainfo.result.other</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.other);\n</code></pre>\n<p><code>mediainfo.result.path</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.path);\n</code></pre>\n<p><code>mediainfo.result.text</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.text);\n</code></pre>\n<p><code>mediainfo.result.toString</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.toString);\n</code></pre>\n<p><code>mediainfo.result.video</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var info = mediainfo.read(&#39;/sdcard/demo.mp4&#39;);\nconsole.log(info.video);\n</code></pre>\n<p><code>module:mediainfo</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof mediainfo);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
       ],
       "methods": [

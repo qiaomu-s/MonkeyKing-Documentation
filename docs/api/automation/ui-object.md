@@ -913,7 +913,7 @@ console.log(w.size().height); // e.g. 12
 
 点击控件矩形的中心点坐标.
 
-点击操作借助 [automator.click(x, y)](automator.md#click-x-y) 完成, 此操作需要启用无障碍服务.
+点击操作借助 [automator.click(x, y)](automator.md#m-automator-click-target-index) 完成, 此操作需要启用无障碍服务.
 
 ```js
 let w = pickup(/.+/);

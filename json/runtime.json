@@ -4,82 +4,420 @@
     {
       "textRaw": "运行时 (Runtime)",
       "name": "运行时_(runtime)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 31, 2022.</p>\n\n<hr>\n",
-      "methods": [
+      "desc": "<p>每个 Monkey King JavaScript 引擎都拥有一个 <code>ScriptRuntime</code> 实例，并在执行用户脚本前把它注入为全局变量 <code>runtime</code>。它保存当前引擎的模块实现、线程与计时器、权限请求入口以及需要在脚本结束时释放的资源。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。除明确标注为 v6.7.0 的成员外，无法精确追溯的既有入口统一标记为 <code>≤ v6.6.4</code>。</p>\n",
+      "modules": [
         {
-          "textRaw": "runtime.requestPermissions(permissions)",
-          "type": "method",
-          "name": "requestPermissions",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`permissions` {Array} 权限的字符串数组 ",
-                  "name": "permissions",
-                  "type": "Array",
-                  "desc": "权限的字符串数组"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "permissions"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>动态申请安卓的权限. 例如：</p>\n<pre><code>//请求GPS权限\nruntime.requestPermissions([&quot;access_fine_location&quot;]);\n</code></pre><p>尽管安卓有很多权限, 但必须写入Manifest才能动态申请, 为了防止权限的滥用, 目前Monkey King只能额外申请两个权限：</p>\n<ul>\n<li><code>access_fine_location</code> GPS权限</li>\n<li><code>record_audio</code> 录音权限</li>\n</ul>\n<p>您可以通过APK编辑器来增加Monkey King以及Monkey King打包的应用的权限.</p>\n<p>安卓所有的权限列表参见<a href=\"https://developer.android.com/guide/topics/permissions/overview/\">Permissions Overview</a>. （并没有用）</p>\n"
+          "textRaw": "runtime",
+          "name": "runtime",
+          "desc": "<p><strong><code>≤ v6.6.4</code></strong> <strong><code>Global</code></strong></p>\n<ul>\n<li>{ <code>com.qiaomu.monkeyking.runtime.ScriptRuntime</code> }</li>\n<li><strong>生命周期</strong>：一台引擎对应一个 runtime；脚本退出时会清理该 runtime 注册的线程、计时器、事件、传感器、浮窗、截图器、 OCR 和 Closeable 资源</li>\n<li><strong>线程</strong>：对象可从脚本线程和子线程访问，但具体成员仍可能要求主线程或禁止 UI 线程阻塞</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(runtime instanceof ScriptRuntime); // true\nconsole.log(runtime.ownerId);\nconsole.log(runtime.engines.myEngine().id);\n</code></pre>\n<p>通常应优先使用文档中的全局模块，例如 <code>files</code>、<code>images</code>、<code>threads</code> 和 <code>shell</code>。<code>runtime.files</code> 等属性是它们的底层实现入口，Java 方法重载和参数转换规则可能与增强后的全局模块不同。</p>\n",
+          "type": "module",
+          "displayName": "runtime"
         },
         {
-          "textRaw": "runtime.loadJar(path)",
-          "type": "method",
-          "name": "loadJar",
-          "signatures": [
+          "textRaw": "核心状态",
+          "name": "核心状态",
+          "properties": [
             {
-              "params": [
-                {
-                  "textRaw": "`path` {string} jar文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "jar文件路径"
-                }
-              ]
+              "textRaw": "runtime.topLevelScope",
+              "name": "topLevelScope",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <code>TopLevelScope</code> } - 当前 Rhino 顶级作用域，与初始 <code>global</code> 对象相同</li>\n<li><strong>异常 / 副作用</strong>：正常脚本中只读使用；运行时只允许初始化一次，再次设置会抛出异常</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(runtime.topLevelScope === global); // true\nconsole.log(runtime.topLevelScope.require === require); // true\n</code></pre>\n"
             },
             {
-              "params": [
-                {
-                  "name": "path"
-                }
-              ]
+              "textRaw": "runtime.clip",
+              "name": "clip",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../../api/types/data-types.md#string\">string</a> } - 系统剪贴板文本</li>\n<li><strong>线程</strong>：后台线程会把读写操作投递到主线程并阻塞等待；写入最多等待 60 秒</li>\n<li><strong>权限 / 副作用</strong>：修改系统剪贴板；Android 版本和前台状态可能限制读取结果</li>\n</ul>\n<pre><code class=\"lang-js\">const previous = runtime.clip;\nruntime.clip = &#39;Monkey King&#39;;\nconsole.log(runtime.clip);\nruntime.clip = previous;\n</code></pre>\n"
+            },
+            {
+              "textRaw": "runtime.screenMetrics",
+              "name": "screenMetrics",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <code>ScreenMetrics</code> } - 坐标缩放基准</li>\n</ul>\n<p>优先使用全局 <code>setScreenMetrics()</code>、<code>setScaleBases()</code>、<code>cX()</code> 和 <code>cY()</code>。直接修改该对象会影响当前 runtime 的自动化坐标换算。</p>\n<pre><code class=\"lang-js\">runtime.setScreenMetrics(1080, 1920);\nconsole.log(runtime.screenMetrics.scaleX(540));\n</code></pre>\n"
+            },
+            {
+              "textRaw": "runtime.isJavaPrimitiveWrap",
+              "name": "isJavaPrimitiveWrap",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../../api/types/data-types.md#boolean\">boolean</a> } - 是否把 Java 原始类型返回值保留为 Java 包装值</li>\n<li><strong>副作用</strong>：改变当前 runtime 后续 Java / Rhino 值转换行为</li>\n</ul>\n<pre><code class=\"lang-js\">const previous = runtime.isJavaPrimitiveWrap;\nruntime.isJavaPrimitiveWrap = true;\nconsole.log(runtime.isJavaPrimitiveWrap);\nruntime.isJavaPrimitiveWrap = previous;\n</code></pre>\n"
             }
           ],
-          "desc": "<p>加载目标jar文件, 加载成功后将可以使用该Jar文件的类.</p>\n<pre><code>// 加载jsoup.jar\nruntime.loadJar(&quot;./jsoup.jar&quot;);\n// 使用jsoup解析html\nimportClass(org.jsoup.Jsoup);\nlog(Jsoup.parse(files.read(&quot;./test.html&quot;)));\n</code></pre><p>(jsoup是一个Java实现的解析Html DOM的库, 可以在<a href=\"https://jsoup.org/download/\">Jsoup</a>下载/)</p>\n"
+          "modules": [
+            {
+              "textRaw": "runtime.isStopped / runtime.isExiting",
+              "name": "runtime.isstopped_/_runtime.isexiting",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><code>isStopped</code> { <a href=\"../../api/types/data-types.md#boolean\">boolean</a> } - 当前脚本线程是否已收到中断</li>\n<li><code>isExiting</code> { <a href=\"../../api/types/data-types.md#boolean\">boolean</a> } - runtime 是否已进入退出清理阶段</li>\n<li><strong>副作用</strong>：读取无副作用；不要手动改写 <code>isExiting</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log({\n    stopped: runtime.isStopped,\n    exiting: runtime.isExiting,\n});\n</code></pre>\n",
+              "type": "module",
+              "displayName": "runtime.isStopped / runtime.isExiting"
+            }
+          ],
+          "type": "module",
+          "displayName": "核心状态"
         },
         {
-          "textRaw": "runtime.loadDex(path)",
-          "type": "method",
-          "name": "loadDex",
-          "signatures": [
+          "textRaw": "权限",
+          "name": "权限",
+          "methods": [
             {
-              "params": [
+              "textRaw": "runtime.requestPermissions(permissions)",
+              "type": "method",
+              "name": "requestPermissions",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>permissions</strong> { <a href=\"../../api/types/data-types.md#array\">string[]</a> } - Android 运行时权限名称</li>\n<li><ins><strong>returns</strong></ins> { <code>void</code> }</li>\n<li><strong>规范化</strong>：不以 <code>android.permission.</code> 开头的名称会转为大写并自动补齐此前缀</li>\n<li><strong>异常</strong>：数组中包含 <code>null</code> 等无法处理的值时可能抛出 Java 异常</li>\n<li><strong>权限 / 线程 / 副作用</strong>：筛掉已授权项后启动 Monkey King 的权限请求 Activity；方法本身不等待用户结果</li>\n</ul>\n<p>只能请求当前 APK Manifest 已声明且 Android 允许动态授予的权限。固定源码的 Manifest 不只声明定位和录音权限，但签名级、特殊访问权或不属于运行时权限的项目不能通过此方法获得。不要通过修改 APK 绕过平台权限模型。</p>\n<pre><code class=\"lang-js\">runtime.requestPermissions([\n    &#39;access_fine_location&#39;,\n    &#39;android.permission.RECORD_AUDIO&#39;,\n]);\n</code></pre>\n<p>权限概念和平台限制见 <a href=\"https://developer.android.com/guide/topics/permissions/overview\">Android 权限概览</a>。</p>\n",
+              "signatures": [
                 {
-                  "textRaw": "`path` {string} dex文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "dex文件路径"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "path"
+                  "params": [
+                    {
+                      "name": "permissions"
+                    }
+                  ]
                 }
               ]
             }
           ],
-          "desc": "<p>加载目标dex文件, 加载成功后将可以使用该dex文件的类.</p>\n<p>因为加载jar实际上是把jar转换为dex再加载的, 因此加载dex文件会比jar文件快得多. 可以使用Android SDK的build tools的dx工具把jar转换为dex.</p>\n"
+          "type": "module",
+          "displayName": "权限"
+        },
+        {
+          "textRaw": "动态加载",
+          "name": "动态加载",
+          "methods": [
+            {
+              "textRaw": "runtime.load(...paths)",
+              "type": "method",
+              "name": "load",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>paths</strong> { <a href=\"../../api/types/data-types.md#string\">...string[]</a> } - 一个或多个 JAR / DEX 路径</li>\n<li><strong>directory</strong> { <a href=\"../../api/types/data-types.md#string\">string</a> } - 待扫描目录</li>\n<li><strong>recursive</strong> { <a href=\"../../api/types/data-types.md#boolean\">boolean</a> } - 是否递归扫描子目录</li>\n<li><ins><strong>returns</strong></ins> { <code>void</code> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：读取文件并永久扩展当前进程类加载器；无效文件、不可读路径或加载失败会抛出异常</li>\n</ul>\n<p><code>load()</code> 根据扩展名同时接受 JAR 和 DEX。相对路径通过当前脚本的 <code>files</code> 工作目录解析。</p>\n<pre><code class=\"lang-js\">runtime.load(&#39;./libs/example.jar&#39;, &#39;./libs/feature.dex&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "...paths"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.load(directory, recursive)",
+              "type": "method",
+              "name": "load",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>paths</strong> { <a href=\"../../api/types/data-types.md#string\">...string[]</a> } - 一个或多个 JAR / DEX 路径</li>\n<li><strong>directory</strong> { <a href=\"../../api/types/data-types.md#string\">string</a> } - 待扫描目录</li>\n<li><strong>recursive</strong> { <a href=\"../../api/types/data-types.md#boolean\">boolean</a> } - 是否递归扫描子目录</li>\n<li><ins><strong>returns</strong></ins> { <code>void</code> }</li>\n<li><strong>异常 / 权限 / 副作用</strong>：读取文件并永久扩展当前进程类加载器；无效文件、不可读路径或加载失败会抛出异常</li>\n</ul>\n<p><code>load()</code> 根据扩展名同时接受 JAR 和 DEX。相对路径通过当前脚本的 <code>files</code> 工作目录解析。</p>\n<pre><code class=\"lang-js\">runtime.load(&#39;./libs/example.jar&#39;, &#39;./libs/feature.dex&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.loadJar(...paths)",
+              "type": "method",
+              "name": "loadJar",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<p>只加载 JAR 文件。Monkey King 会把 JAR 交给 Android 类加载器处理；类名冲突、字节码与 Android 不兼容或依赖缺失都会在加载或首次使用时失败。</p>\n<pre><code class=\"lang-js\">runtime.loadJar(&#39;./libs/jsoup.jar&#39;);\nimportClass(org.jsoup.Jsoup);\n\nconsole.log(Jsoup.parse(&#39;&lt;p&gt;Monkey King&lt;/p&gt;&#39;).text());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "...paths"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.loadJar(directory, recursive)",
+              "type": "method",
+              "name": "loadJar",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<p>只加载 JAR 文件。Monkey King 会把 JAR 交给 Android 类加载器处理；类名冲突、字节码与 Android 不兼容或依赖缺失都会在加载或首次使用时失败。</p>\n<pre><code class=\"lang-js\">runtime.loadJar(&#39;./libs/jsoup.jar&#39;);\nimportClass(org.jsoup.Jsoup);\n\nconsole.log(Jsoup.parse(&#39;&lt;p&gt;Monkey King&lt;/p&gt;&#39;).text());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.loadDex(...paths)",
+              "type": "method",
+              "name": "loadDex",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<p>只加载 DEX 文件。不要加载来源不可信的 JAR / DEX；动态代码与当前脚本拥有相同的应用权限和数据访问能力。</p>\n<pre><code class=\"lang-js\">runtime.loadDex(&#39;./libs/feature.dex&#39;);\nconsole.log(typeof Packages.com.example.Feature);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "...paths"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.loadDex(directory, recursive)",
+              "type": "method",
+              "name": "loadDex",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<p>只加载 DEX 文件。不要加载来源不可信的 JAR / DEX；动态代码与当前脚本拥有相同的应用权限和数据访问能力。</p>\n<pre><code class=\"lang-js\">runtime.loadDex(&#39;./libs/feature.dex&#39;);\nconsole.log(typeof Packages.com.example.Feature);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "directory"
+                    },
+                    {
+                      "name": "recursive"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "动态加载"
+        },
+        {
+          "textRaw": "兼容底层方法",
+          "name": "兼容底层方法",
+          "methods": [
+            {
+              "textRaw": "runtime.sleep(millis)",
+              "type": "method",
+              "name": "sleep",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>millis</strong> { <a href=\"../../api/types/data-types.md#number\">number</a> } - 毫秒数，转换为 Java <code>long</code></li>\n<li><ins><strong>returns</strong></ins> { <code>void</code> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：阻塞当前线程；线程被中断时抛出 <code>ScriptInterruptedException</code></li>\n</ul>\n<p>该底层方法没有全局 <code>sleep(min, max)</code> 的随机区间和 UI 线程保护，应优先使用全局版本。</p>\n<pre><code class=\"lang-js\">runtime.sleep(50);\nconsole.log(&#39;awake&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "millis"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.shell(command, withRoot)",
+              "type": "method",
+              "name": "shell",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>command</strong> { <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n<li><strong>withRoot</strong> { <a href=\"../../api/types/data-types.md#number\">number</a> } - <code>0</code> 为普通 shell，非 <code>0</code> 请求 Root</li>\n<li><ins><strong>returns</strong></ins> { <code>AbstractShell.Result</code> }</li>\n<li><strong>权限 / 副作用</strong>：同步创建进程并执行命令；Root 模式需要 <code>su</code> 授权</li>\n</ul>\n<pre><code class=\"lang-js\">const result = runtime.shell(&#39;id&#39;, 0);\nconsole.log(result.code);\nconsole.log(result.result);\n</code></pre>\n<p>增强后的 <code>shell()</code> 模块支持更清晰的布尔与选项参数，通常更适合脚本使用。</p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "command"
+                    },
+                    {
+                      "name": "withRoot"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.selector()",
+              "type": "method",
+              "name": "selector",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <code>UiSelector</code> } - 绑定当前 accessibility bridge 的新选择器</li>\n<li><strong>权限 / 副作用</strong>：创建选择器本身不阻塞；查询控件前需要无障碍服务</li>\n</ul>\n<pre><code class=\"lang-js\">auto.waitFor();\nconst selector = runtime.selector().text(&#39;确定&#39;);\nconsole.log(selector.exists());\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.setScreenMetrics(width, height)",
+              "type": "method",
+              "name": "setScreenMetrics",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>width</strong> { <a href=\"../../api/types/data-types.md#number\">number</a> } - 设计宽度整数</li>\n<li><strong>height</strong> { <a href=\"../../api/types/data-types.md#number\">number</a> } - 设计高度整数</li>\n<li><ins><strong>returns</strong></ins> { <code>void</code> }</li>\n<li><strong>副作用</strong>：更新当前 runtime 的自动化坐标缩放参数</li>\n</ul>\n<pre><code class=\"lang-js\">runtime.setScreenMetrics(1080, 1920);\nclick(540, 960);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "width"
+                    },
+                    {
+                      "name": "height"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.exit(error?)",
+              "type": "method",
+              "name": "exit",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong> <strong><code>stop: deprecated</code></strong></p>\n<ul>\n<li><strong>[ error ]</strong> { <a href=\"https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html\">java.lang.Throwable</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>never</code> }</li>\n<li><strong>异常 / 生命周期 / 副作用</strong>：可先把异常交给引擎未捕获异常处理器，然后中断当前脚本、停止子线程并触发 runtime 清理；后台线程调用时抛出 <code>ScriptInterruptedException</code></li>\n</ul>\n<p>优先使用全局 <code>exit(error?)</code>。<code>runtime.stop()</code> 仅为兼容入口。</p>\n<pre><code class=\"lang-js\">if (files.exists(&#39;./stop.flag&#39;)) {\n    runtime.exit();\n}\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                },
+                {
+                  "params": [
+                    {
+                      "name": "error?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.stop()",
+              "type": "method",
+              "name": "stop",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong> <strong><code>stop: deprecated</code></strong></p>\n<ul>\n<li><strong>[ error ]</strong> { <a href=\"https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html\">java.lang.Throwable</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>never</code> }</li>\n<li><strong>异常 / 生命周期 / 副作用</strong>：可先把异常交给引擎未捕获异常处理器，然后中断当前脚本、停止子线程并触发 runtime 清理；后台线程调用时抛出 <code>ScriptInterruptedException</code></li>\n</ul>\n<p>优先使用全局 <code>exit(error?)</code>。<code>runtime.stop()</code> 仅为兼容入口。</p>\n<pre><code class=\"lang-js\">if (files.exists(&#39;./stop.flag&#39;)) {\n    runtime.exit();\n}\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "兼容底层方法"
+        },
+        {
+          "textRaw": "runtime 属性仓库",
+          "name": "runtime_属性仓库",
+          "methods": [
+            {
+              "textRaw": "runtime.putProperty(key, value)",
+              "type": "method",
+              "name": "putProperty",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>key</strong> { <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n<li><strong>value</strong> { <a href=\"../../api/types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> - <code>getProperty</code> 返回当前值或 <code>null</code>；<code>putProperty</code> 返回被替换的旧值；<code>removeProperty</code> 返回被移除的值</li>\n<li><strong>线程 / 生命周期</strong>：由并发 Map 保存，可跨当前 runtime 的线程访问；runtime 销毁后不会持久化</li>\n</ul>\n<pre><code class=\"lang-js\">runtime.putProperty(&#39;job.state&#39;, { done: false });\nconsole.log(runtime.getProperty(&#39;job.state&#39;).done); // false\nruntime.removeProperty(&#39;job.state&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "key"
+                    }
+                  ]
+                },
+                {
+                  "params": [
+                    {
+                      "name": "key"
+                    },
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "runtime.removeProperty(key)",
+              "type": "method",
+              "name": "removeProperty",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>key</strong> { <a href=\"../../api/types/data-types.md#string\">string</a> }</li>\n<li><strong>value</strong> { <a href=\"../../api/types/data-types.md#any\">any</a> }</li>\n<li><ins><strong>returns</strong></ins> - <code>getProperty</code> 返回当前值或 <code>null</code>；<code>putProperty</code> 返回被替换的旧值；<code>removeProperty</code> 返回被移除的值</li>\n<li><strong>线程 / 生命周期</strong>：由并发 Map 保存，可跨当前 runtime 的线程访问；runtime 销毁后不会持久化</li>\n</ul>\n<pre><code class=\"lang-js\">runtime.putProperty(&#39;job.state&#39;, { done: false });\nconsole.log(runtime.getProperty(&#39;job.state&#39;).done); // false\nruntime.removeProperty(&#39;job.state&#39;);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "key"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "runtime 属性仓库"
+        },
+        {
+          "textRaw": "Continuation",
+          "name": "continuation",
+          "methods": [
+            {
+              "textRaw": "runtime.createContinuation(scope?)",
+              "type": "method",
+              "name": "createContinuation",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>[ scope = runtime.topLevelScope ]</strong> { <code>org.mozilla.javascript.Scriptable</code> }</li>\n<li><ins><strong>returns</strong></ins> { <code>Continuation</code> }</li>\n<li><strong>异常 / 线程 / 副作用</strong>：依赖当前 Rhino continuation 上下文与计时器；在不支持 continuation 的执行模式下可能失败</li>\n</ul>\n<p>这是低层入口。业务脚本优先使用 <code>continuation</code>、<code>Promise</code> 和 <code>ResultAdapter</code> 文档化接口。</p>\n<pre><code class=\"lang-js\">const current = runtime.createContinuation(global);\nconsole.log(current !== null);\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "scope?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "Continuation"
+        },
+        {
+          "textRaw": "原生对象",
+          "name": "原生对象",
+          "properties": [
+            {
+              "textRaw": "runtime.rootShell",
+              "name": "rootShell",
+              "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <code>AbstractShell</code> } - 延迟创建并缓存的 Root shell</li>\n<li><strong>权限 / 副作用</strong>：首次读取会尝试建立 Root shell；脚本退出时关闭</li>\n</ul>\n<pre><code class=\"lang-js\">if (monkeyking.isRootAvailable()) {\n    runtime.rootShell.exec(&#39;id&#39;);\n    console.log(runtime.rootShell.isExecWithRoot()); // true\n}\n</code></pre>\n"
+            },
+            {
+              "textRaw": "runtime.mediaInfo",
+              "name": "mediaInfo",
+              "desc": "<p><strong><code>v6.7.0</code></strong></p>\n<ul>\n<li>{ <a href=\"https://mediaarea.net/en/MediaInfo/Support/SDK\">org.mediainfo.android.MediaInfo</a> } - runtime 持有的原生 MediaInfo 实例</li>\n<li><strong>生命周期</strong>：由当前 runtime 管理；业务脚本优先使用 <a href=\"../../api/media/mediainfo.md\">mediainfo 模块</a></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(runtime.mediaInfo.getClass().getName());\n</code></pre>\n"
+            }
+          ],
+          "type": "module",
+          "displayName": "原生对象"
+        },
+        {
+          "textRaw": "模块实现属性",
+          "name": "模块实现属性",
+          "desc": "<p>以下属性暴露当前 runtime 使用的底层对象。它们用于桥接增强模块，版本兼容性不如同名全局 API；除调试或 Java 互操作外，不建议直接调用。</p>\n<table>\n<thead>\n<tr>\n<th>runtime 属性</th>\n<th>推荐脚本入口</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>app</code></td>\n<td><code>app</code></td>\n</tr>\n<tr>\n<td><code>console</code></td>\n<td><code>console</code></td>\n</tr>\n<tr>\n<td><code>automator</code> / <code>accessibilityBridge</code> / <code>info</code></td>\n<td><code>auto</code>、<code>automator</code>、<code>selector</code></td>\n</tr>\n<tr>\n<td><code>ui</code> / <code>uiHandler</code></td>\n<td><code>ui</code></td>\n</tr>\n<tr>\n<td><code>util</code></td>\n<td><code>util</code></td>\n</tr>\n<tr>\n<td><code>dialogs</code></td>\n<td><code>dialogs</code></td>\n</tr>\n<tr>\n<td><code>events</code></td>\n<td><code>events</code></td>\n</tr>\n<tr>\n<td><code>loopers</code> / <code>timers</code> / <code>threads</code></td>\n<td><code>timers</code>、<code>threads</code></td>\n</tr>\n<tr>\n<td><code>http</code></td>\n<td><code>http</code></td>\n</tr>\n<tr>\n<td><code>device</code></td>\n<td><code>device</code></td>\n</tr>\n<tr>\n<td><code>recorder</code></td>\n<td><code>recorder</code></td>\n</tr>\n<tr>\n<td><code>toaster</code></td>\n<td><code>toast</code></td>\n</tr>\n<tr>\n<td><code>ocr</code> / <code>ocrMLKit</code> / <code>ocrRapid</code></td>\n<td><code>ocr</code></td>\n</tr>\n<tr>\n<td><code>floaty</code></td>\n<td><code>floaty</code></td>\n</tr>\n<tr>\n<td><code>colors</code></td>\n<td><code>colors</code></td>\n</tr>\n<tr>\n<td><code>files</code></td>\n<td><code>files</code></td>\n</tr>\n<tr>\n<td><code>notice</code></td>\n<td><code>notice</code></td>\n</tr>\n<tr>\n<td><code>sensors</code></td>\n<td><code>sensors</code></td>\n</tr>\n<tr>\n<td><code>media</code></td>\n<td><code>media</code></td>\n</tr>\n<tr>\n<td><code>plugins</code></td>\n<td><code>plugins</code></td>\n</tr>\n<tr>\n<td><code>images</code></td>\n<td><code>images</code></td>\n</tr>\n<tr>\n<td><code>barcode</code></td>\n<td><code>barcode</code></td>\n</tr>\n<tr>\n<td><code>shizuku</code></td>\n<td><code>shizuku</code></td>\n</tr>\n<tr>\n<td><code>mime</code></td>\n<td><code>mime</code></td>\n</tr>\n<tr>\n<td><code>sqlite</code></td>\n<td><code>sqlite</code></td>\n</tr>\n<tr>\n<td><code>scale</code></td>\n<td><code>cX()</code>、<code>cY()</code>、<code>setScaleBases()</code></td>\n</tr>\n</tbody>\n</table>\n<pre><code class=\"lang-js\">console.log(runtime.files === files); // 底层对象与增强代理不保证严格相等\nconsole.log(typeof files.read, typeof runtime.files.read);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "模块实现属性"
+        },
+        {
+          "textRaw": "不应由脚本调用的生命周期成员",
+          "name": "不应由脚本调用的生命周期成员",
+          "desc": "<p><code>initPrologue()</code>、<code>initEpilogue()</code>、<code>cancelScriptJobs()</code> 和 <code>onExit()</code> 是引擎内部生命周期方法。它们虽然因 JVM 可见性可能被 Rhino 访问，但不属于稳定脚本契约；手动调用会重复安装模块、取消协程任务或提前释放资源。</p>\n<pre><code class=\"lang-js\">// 只检查名称，不调用生命周期方法。\nconsole.log(typeof runtime.onExit); // function\n</code></pre>\n",
+          "type": "module",
+          "displayName": "不应由脚本调用的生命周期成员"
+        },
+        {
+          "textRaw": "相关页面",
+          "name": "相关页面",
+          "desc": "<ul>\n<li><a href=\"../../api/core/global.md\">全局对象</a></li>\n<li><a href=\"../../api/core/modules.md\">模块系统、Promise 与 ResultAdapter</a></li>\n<li><a href=\"../android/scripting-java.md\">脚本化 Java</a></li>\n<li><a href=\"exceptions.md\">异常</a></li>\n</ul>\n",
+          "type": "module",
+          "displayName": "相关页面"
         }
       ],
       "type": "module",

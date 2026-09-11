@@ -4,197 +4,112 @@
     {
       "textRaw": "多媒体 (Media)",
       "name": "多媒体_(media)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>media模块提供多媒体编程的支持. 目前仅支持音乐播放和媒体文件扫描. 后续会结合UI加入视频播放等功能.</p>\n<p>需要注意是, 使用该模块播放音乐时是在后台异步播放的, 在脚本结束后会自动结束播放, 因此可能需要插入诸如<code>sleep()</code>的语句来使脚本保持运行. 例如：</p>\n<pre><code>//播放音乐\nmedia.playMusic(&quot;/sdcard/1.mp3&quot;);\n//让音乐播放完\nsleep(media.getMusicDuration());\n</code></pre>",
-      "methods": [
+      "desc": "<p><code>media</code> 提供媒体库扫描和单路本地音乐播放。模块在脚本运行时创建；音乐在后台播放，但控制方法本身是同步调用。脚本退出时运行时会自动执行 <code>media.recycle()</code>，断开媒体扫描连接并释放播放器，因此需要等待播放完成的脚本必须主动保持运行。</p>\n<p><a id=\"api-symbol-bW9kdWxlOm1lZGlh\"></a></p>\n",
+      "modules": [
         {
-          "textRaw": "media.scanFile(path)",
-          "type": "method",
-          "name": "scanFile",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`path` {string} 媒体文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "媒体文件路径"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "path"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>扫描路径path的媒体文件, 将它加入媒体库中；或者如果该文件以及被删除, 则通知媒体库移除该文件.</p>\n<p>媒体库包括相册、音乐库等, 因此该函数可以用于把某个图片文件加入相册.</p>\n<pre><code>//请求截图\nrequestScreenCapture(false);\n//截图\nvar im = captureScreen();\nvar path = &quot;/sdcard/screenshot.png&quot;;\n//保存图片\nim.saveTo(path);\n//把图片加入相册\nmedia.scanFile(path);\n</code></pre>"
+          "textRaw": "`media` 模块",
+          "name": "`media`_模块",
+          "desc": "<p>脚本运行时自动提供，无需导入。模块同时持有一个 Android <code>MediaScannerConnection</code> 和最多一个 <code>MediaPlayer</code>；再次调用 <code>playMusic</code> 会停止并重置之前的播放器，再加载新文件。</p>\n<p><a id=\"api-symbol-bWVkaWEuc2NhbkZpbGU\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media` 模块"
         },
         {
-          "textRaw": "media.playMusic(path[, volume, looping])",
-          "type": "method",
-          "name": "playMusic",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`path` {string} 音乐文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "音乐文件路径"
-                },
-                {
-                  "textRaw": "`volume` {number} 播放音量, 为0~1的浮点数, 默认为1 ",
-                  "name": "volume",
-                  "type": "number",
-                  "desc": "播放音量, 为0~1的浮点数, 默认为1",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`looping` {boolean} 是否循环播放, 如果looping为`true`则循环播放, 默认为`false` ",
-                  "name": "looping",
-                  "type": "boolean",
-                  "desc": "是否循环播放, 如果looping为`true`则循环播放, 默认为`false`",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "path"
-                },
-                {
-                  "name": "volume",
-                  "optional": true
-                },
-                {
-                  "name": "looping",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>播放音乐文件path. 该函数不会显示任何音乐播放界面. 如果文件不存在或者文件不是受支持的音乐格式, 则抛出<code>UncheckedIOException</code>异常.</p>\n<pre><code>//播放音乐\nmedia.playMusic(&quot;/sdcard/1.mp3&quot;);\n//让音乐播放完\nsleep(media.getMusicDuration());\n</code></pre><p>如果要循环播放音乐, 则使用looping参数：</p>\n<pre><code>\n</code></pre><p>//传递第三个参数为true以循环播放音乐\nmedia.playMusic(&quot;/sdcard/1.mp3&quot;, 1, true);\n//等待三次播放的时间\nsleep(media.getMusicDuration() * 3);</p>\n<pre><code>\n</code></pre><p>如果要使用音乐播放器播放音乐, 调用<code>app.viewFile(path)</code>函数.</p>\n"
+          "textRaw": "`media.scanFile(path)`",
+          "name": "`media.scanfile(path)`",
+          "desc": "<pre><code class=\"lang-ts\">media.scanFile(path: string): void\n</code></pre>\n<p>规范化 <code>path</code>，根据扩展名推断 MIME 类型，并异步通知 Android 媒体扫描器。该调用只提交扫描，不返回扫描结果；扫描完成后 Android 会调用 <code>onScanCompleted</code>。路径必须存在于脚本可访问的存储区域，写入或读取共享存储时仍需满足对应 Android 版本的存储权限与分区存储规则。</p>\n<pre><code class=\"lang-js\">const path = &#39;/sdcard/Pictures/monkeyking-shot.png&#39;\nconst image = images.captureScreen()\ntry {\n  images.save(image, path)\n  media.scanFile(path)\n} finally {\n  image.recycle()\n}\n</code></pre>\n<p><a id=\"api-symbol-bWVkaWEub25NZWRpYVNjYW5uZXJDb25uZWN0ZWQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.scanFile(path)`"
         },
         {
-          "textRaw": "media.musicSeekTo(msec)",
-          "type": "method",
-          "name": "musicSeekTo",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`msec` {number} 毫秒数, 表示音乐进度 ",
-                  "name": "msec",
-                  "type": "number",
-                  "desc": "毫秒数, 表示音乐进度"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "msec"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>把当前播放进度调整到时间msec的位置. 如果当前没有在播放音乐, 则调用函数没有任何效果.</p>\n<p>例如, 要把音乐调到1分钟的位置, 为<code>media.musicSeekTo(60 * 1000)</code>.</p>\n<pre><code>//播放音乐\nmedia.playMusic(&quot;/sdcard/1.mp3&quot;);\n//调整到30秒的位置\nmedia.musicSeekTo(30 * 1000);\n//等待音乐播放完成\nsleep(media.getMusicDuration() - 30 * 1000);\n</code></pre>"
+          "textRaw": "`media.onMediaScannerConnected()`",
+          "name": "`media.onmediascannerconnected()`",
+          "desc": "<pre><code class=\"lang-ts\">media.onMediaScannerConnected(): void\n</code></pre>\n<p>Android <code>MediaScannerConnectionClient</code> 的生命周期回调。当前实现为空，由系统在线程回调中调用；脚本不需要也不应手动调用它。它不表示某个文件已扫描完成。</p>\n<p><a id=\"api-symbol-bWVkaWEub25TY2FuQ29tcGxldGVk\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.onMediaScannerConnected()`"
         },
         {
-          "textRaw": "media.pauseMusic()",
-          "type": "method",
-          "name": "pauseMusic",
-          "desc": "<p>暂停音乐播放. 如果当前没有在播放音乐, 则调用函数没有任何效果.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "`media.onScanCompleted(path, uri)`",
+          "name": "`media.onscancompleted(path,_uri)`",
+          "desc": "<pre><code class=\"lang-ts\">media.onScanCompleted(path: string, uri: android.net.Uri | null): void\n</code></pre>\n<p>Android 在一次媒体扫描结束后调用的生命周期回调。当前实现为空，不向脚本返回结果，也不保存 <code>path</code> 或 <code>uri</code>。需要业务级完成通知时，应使用应用自己的文件/媒体流程，而不是直接调用此方法。</p>\n<p><a id=\"api-symbol-bWVkaWEucGxheU11c2lj\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.onScanCompleted(path, uri)`"
         },
         {
-          "textRaw": "media.resumeMusic()",
-          "type": "method",
-          "name": "resumeMusic",
-          "desc": "<p>继续音乐播放. 如果当前没有播放过音乐, 则调用该函数没有任何效果.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "`media.playMusic(path, volume?, looping?)`",
+          "name": "`media.playmusic(path,_volume?,_looping?)`",
+          "desc": "<pre><code class=\"lang-ts\">media.playMusic(path: string, volume?: number, looping?: boolean): void\n</code></pre>\n<ul>\n<li><code>volume</code>：同时设置左右声道，默认 <code>1.0</code>。</li>\n<li><code>looping</code>：是否循环，默认 <code>false</code>。</li>\n</ul>\n<p>方法同步完成路径规范化、数据源设置和 <code>prepare()</code>，然后开始播放。文件不可读或媒体格式无法准备时，I/O 异常会包装为 <code>UncheckedIOException</code>；播放器状态非法时可能抛出 <code>IllegalStateException</code>。调用成功后音频异步播放。</p>\n<pre><code class=\"lang-js\">media.playMusic(&#39;/sdcard/Music/notice.mp3&#39;, 0.7, false)\nsleep(media.getMusicDuration())\n</code></pre>\n<p><a id=\"api-symbol-bWVkaWEubXVzaWNTZWVrVG8\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.playMusic(path, volume?, looping?)`"
         },
         {
-          "textRaw": "media.stopMusic()",
-          "type": "method",
-          "name": "stopMusic",
-          "desc": "<p>停止音乐播放. 如果当前没有在播放音乐, 则调用函数没有任何效果.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "`media.musicSeekTo(msec)`",
+          "name": "`media.musicseekto(msec)`",
+          "desc": "<pre><code class=\"lang-ts\">media.musicSeekTo(msec: number): void\n</code></pre>\n<p>把当前播放器定位到毫秒位置。尚未创建播放器时静默返回；播放器已释放或处于不允许跳转的状态时，底层 <code>MediaPlayer</code> 可能抛出状态异常。</p>\n<pre><code class=\"lang-js\">media.playMusic(&#39;/sdcard/Music/lesson.mp3&#39;)\nmedia.musicSeekTo(30_000)\n</code></pre>\n<p><a id=\"api-symbol-bWVkaWEuaXNNdXNpY1BsYXlpbmc\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.musicSeekTo(msec)`"
         },
         {
-          "textRaw": "media.isMusicPlaying()",
-          "type": "method",
-          "name": "isMusicPlaying",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>返回当前是否正在播放音乐.</p>\n"
+          "textRaw": "`media.isMusicPlaying()`",
+          "name": "`media.ismusicplaying()`",
+          "desc": "<pre><code class=\"lang-ts\">media.isMusicPlaying(): boolean\n</code></pre>\n<p>播放器存在且当前处于播放状态时返回 <code>true</code>，尚未创建播放器时返回 <code>false</code>。</p>\n<p><a id=\"api-symbol-bWVkaWEucGF1c2VNdXNpYw\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.isMusicPlaying()`"
         },
         {
-          "textRaw": "media.getMusicDuration()",
-          "type": "method",
-          "name": "getMusicDuration",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {number} ",
-                  "name": "返回",
-                  "type": "number"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>返回当前音乐的时长. 单位毫秒.</p>\n"
+          "textRaw": "`media.pauseMusic()`",
+          "name": "`media.pausemusic()`",
+          "desc": "<pre><code class=\"lang-ts\">media.pauseMusic(): void\n</code></pre>\n<p>暂停当前播放器；尚未创建播放器时静默返回。只能在 Android <code>MediaPlayer</code> 允许暂停的状态调用。</p>\n<p><a id=\"api-symbol-bWVkaWEucmVzdW1lTXVzaWM\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.pauseMusic()`"
         },
         {
-          "textRaw": "media.getMusicCurrentPosition()",
-          "type": "method",
-          "name": "getMusicCurrentPosition",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {number} ",
-                  "name": "返回",
-                  "type": "number"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>返回当前音乐的播放进度(已经播放的时间), 单位毫秒.</p>\n"
+          "textRaw": "`media.resumeMusic()`",
+          "name": "`media.resumemusic()`",
+          "desc": "<pre><code class=\"lang-ts\">media.resumeMusic(): void\n</code></pre>\n<p>调用播放器的 <code>start()</code> 继续播放；尚未创建播放器时静默返回。若播放器未准备、已停止或已释放，底层状态异常会向脚本传播。</p>\n<p><a id=\"api-symbol-bWVkaWEuc3RvcE11c2lj\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.resumeMusic()`"
+        },
+        {
+          "textRaw": "`media.stopMusic()`",
+          "name": "`media.stopmusic()`",
+          "desc": "<pre><code class=\"lang-ts\">media.stopMusic(): void\n</code></pre>\n<p>停止当前播放器；尚未创建播放器时静默返回。停止后如需再次播放，应重新调用 <code>playMusic</code>，该方法会重置并准备新的数据源。</p>\n<p><a id=\"api-symbol-bWVkaWEuZ2V0TXVzaWNEdXJhdGlvbg\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.stopMusic()`"
+        },
+        {
+          "textRaw": "`media.getMusicDuration()`",
+          "name": "`media.getmusicduration()`",
+          "desc": "<pre><code class=\"lang-ts\">media.getMusicDuration(): number\n</code></pre>\n<p>返回当前媒体总时长，单位毫秒。尚未创建播放器时返回 <code>0</code>；其他非法播放器状态遵循 Android <code>MediaPlayer.getDuration()</code> 的异常行为。</p>\n<p><a id=\"api-symbol-bWVkaWEuZ2V0TXVzaWNDdXJyZW50UG9zaXRpb24\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.getMusicDuration()`"
+        },
+        {
+          "textRaw": "`media.getMusicCurrentPosition()`",
+          "name": "`media.getmusiccurrentposition()`",
+          "desc": "<pre><code class=\"lang-ts\">media.getMusicCurrentPosition(): number\n</code></pre>\n<p>返回当前播放位置，单位毫秒。尚未创建播放器时返回 <code>-1</code>。</p>\n<p><a id=\"api-symbol-bWVkaWEucmVjeWNsZQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`media.getMusicCurrentPosition()`"
+        },
+        {
+          "textRaw": "`media.recycle()`",
+          "name": "`media.recycle()`",
+          "desc": "<pre><code class=\"lang-ts\">media.recycle(): void\n</code></pre>\n<p>断开媒体扫描连接，并释放已创建的播放器。脚本退出清理阶段会自动调用；也可以在不再需要媒体功能时提前调用。该方法是终止性生命周期操作：释放后不要继续复用当前 <code>media</code> 实例的播放器状态。</p>\n<pre><code class=\"lang-js\">try {\n  media.playMusic(&#39;/sdcard/Music/preview.mp3&#39;)\n  sleep(5_000)\n} finally {\n  media.recycle()\n}\n</code></pre>\n",
+          "type": "module",
+          "displayName": "`media.recycle()`"
+        },
+        {
+          "textRaw": "线程、权限与版本",
+          "name": "线程、权限与版本",
+          "desc": "<ul>\n<li><code>playMusic</code> 的准备阶段和所有控制方法在调用它们的脚本线程执行；实际音频播放由 Android 媒体栈异步完成。</li>\n<li><code>MediaScannerConnection</code> 的两个回调由 Android 驱动，不能假设与调用 <code>scanFile</code> 的脚本线程相同。</li>\n<li>模块不主动申请存储权限；路径能否访问取决于 MonkeyKing 文件解析和 Android 存储策略。</li>\n<li>本页合同对应 MonkeyKing 6.7.0；具体可播放格式与设备的 Android 媒体组件有关。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>media.getMusicCurrentPosition</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.getMusicCurrentPosition);\n</code></pre>\n<p><code>media.getMusicDuration</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.getMusicDuration);\n</code></pre>\n<p><code>media.isMusicPlaying</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.isMusicPlaying);\n</code></pre>\n<p><code>media.musicSeekTo</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.musicSeekTo);\n</code></pre>\n<p><code>media.onMediaScannerConnected</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.onMediaScannerConnected);\n</code></pre>\n<p><code>media.onScanCompleted</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.onScanCompleted);\n</code></pre>\n<p><code>media.pauseMusic</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.pauseMusic);\n</code></pre>\n<p><code>media.playMusic</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.playMusic);\n</code></pre>\n<p><code>media.recycle</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.recycle);\n</code></pre>\n<p><code>media.resumeMusic</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.resumeMusic);\n</code></pre>\n<p><code>media.scanFile</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.scanFile);\n</code></pre>\n<p><code>media.stopMusic</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media.stopMusic);\n</code></pre>\n<p><code>module:media</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof media);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
       ],
       "type": "module",

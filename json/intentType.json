@@ -4,7 +4,77 @@
     {
       "textRaw": "意图 (Intent)",
       "name": "意图_(intent)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Nov 18, 2022.</p>\n\n<hr>\n<p>作为概念, Intent (意图) 是一个消息传递对象.</p>\n<p>在 Monkey King 中, Intent 作为全局对象, 支持全局调用:</p>\n<pre><code class=\"lang-js\">/* 仅用作示例展示. */\napp.startActivity(new Intent()\n    .setAction(&quot;x&quot;)\n    .setData(&#39;x&#39;)\n    .setClass(&#39;x&#39;)\n    .setFlags(0));\n\n/* app.intent 方法返回 Intent 类型数据. */\nconsole.log(app.intent({ data: &#39;protocol://data&#39; }) instanceof Intent); // true\n\n/* Intent 是 android.conent.Intent 的别名. */\nconsole.log(Intent === android.content.Intent); // true\n</code></pre>\n<p>您可以使用它从其他应用组件请求操作. 尽管 Intent 可以通过多种方式促进组件之间的通信, 但其基本用例主要包括以下三个：</p>\n<ul>\n<li><p>启动活动(Activity)：\nActivity 表示应用中的一个&quot;屏幕&quot;. 例如应用主入口都是一个Activity, 应用的功能通常也以Activity的形式独立, 例如微信的主界面、朋友圈、聊天窗口都是不同的Activity. 通过将 Intent 传递给 startActivity(), 您可以启动新的 Activity 实例. Intent 描述了要启动的 Activity, 并携带了任何必要的数据.</p>\n</li>\n<li><p>启动服务(Service)：\nService 是一个不使用用户界面而在后台执行操作的组件. 通过将 Intent 传递给 startService(), 您可以启动服务执行一次性操作（例如, 下载文件）. Intent 描述了要启动的服务, 并携带了任何必要的数据.</p>\n</li>\n<li><p>传递广播：\n广播是任何应用均可接收的消息. 系统将针对系统事件（例如：系统启动或设备开始充电时）传递各种广播. 通过将 Intent 传递给 sendBroadcast()、sendOrderedBroadcast() 或 sendStickyBroadcast(), 您可以将广播传递给其他应用.</p>\n</li>\n</ul>\n<p>本模块提供了构建Intent的函数(<code>app.intent()</code>), 启动Activity的函数<code>app.startActivity()</code>, 发送广播的函数<code>app.sendBroadcast()</code>.</p>\n<p>使用这些方法可以用来方便的调用其他应用. 例如直接打开某个QQ号的个人卡片页, 打开某个QQ号的聊天窗口等.</p>\n<pre><code class=\"lang-js\">let qq = &quot;2732014414&quot;;\napp.startActivity({\n    action: &quot;android.intent.action.VIEW&quot;,\n    data: &quot;mqq://im/chat?chat_type=wpa&amp;version=1&amp;src_type=web&amp;uin=&quot; + qq,\n    packageName: &quot;com.tencent.mobileqq&quot;,\n});\n\n</code></pre>\n",
+      "desc": "<p>Android <code>Intent</code> 是组件之间传递操作请求和数据的消息对象。Monkey King 提供全局 Java 类 <code>Intent</code>，并由 <code>app</code> 模块负责把 JavaScript 对象转换为 Intent、启动 Activity 或 Service、发送广播。完整平台字段和方法请查阅 <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent 官方文档</a>。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n",
+      "modules": [
+        {
+          "textRaw": "Intent",
+          "name": "intent",
+          "desc": "<p><strong><code>≤ v6.6.4</code></strong> <strong><code>Global</code></strong></p>\n<p>全局 <code>Intent</code> 是 <code>android.content.Intent</code> 的 Java 类包装，可直接调用 Android 构造器、方法和静态常量。</p>\n<pre><code class=\"lang-js\">const intent = new Intent(Intent.ACTION_VIEW);\nintent.setData(Uri.parse(&#39;https://example.com&#39;));\nintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\n\nconsole.log(intent instanceof android.content.Intent); // true\n</code></pre>\n<p>构造器和实例方法属于 Android 外部 API；其可用性、参数和系统限制随设备 API 级别变化，Monkey King 不重新定义这些成员。</p>\n",
+          "type": "module",
+          "displayName": "Intent"
+        },
+        {
+          "textRaw": "启动与发送",
+          "name": "启动与发送",
+          "desc": "<p><code>app.startActivity()</code>、<code>app.startService()</code> 和 <code>app.sendBroadcast()</code> 都接受 Intent 或相应配置对象；部分方法也有全局别名。具体重载、Root / Shizuku / 双开选项和返回值见 <a href=\"../../api/core/app.md\">App 模块</a>。</p>\n",
+          "modules": [
+            {
+              "textRaw": "启动 Activity",
+              "name": "启动_activity",
+              "desc": "<p>启动外部 Activity 会切换前台界面，目标不存在或系统禁止后台启动时可能抛出 Android 异常。显式指定包名可以避免由多个应用处理同一 Intent 时出现系统选择器。</p>\n<pre><code class=\"lang-js\">app.startActivity({\n    action: &#39;VIEW&#39;,\n    data: &#39;https://docs.monkeyking.com&#39;,\n    packageName: &#39;com.android.chrome&#39;,\n});\n</code></pre>\n<p>若不要求特定浏览器，应省略 <code>packageName</code>，让 Android 选择可处理该 URI 的应用。</p>\n",
+              "type": "module",
+              "displayName": "启动 Activity"
+            },
+            {
+              "textRaw": "发送广播",
+              "name": "发送广播",
+              "desc": "<p>广播接收方是否可见取决于 Android 版本、目标应用的组件导出规则和权限。不要把密码、令牌等敏感值放入可被其他应用接收的隐式广播。</p>\n<pre><code class=\"lang-js\">app.sendBroadcast({\n    action: &#39;com.example.MONKEYKING_EVENT&#39;,\n    packageName: &#39;com.example.receiver&#39;,\n    extras: {\n        event: &#39;sync-complete&#39;,\n    },\n});\n</code></pre>\n",
+              "type": "module",
+              "displayName": "发送广播"
+            },
+            {
+              "textRaw": "启动 Service",
+              "name": "启动_service",
+              "desc": "<p>Android 8.0 及以上对后台 Service 有额外限制；能否启动由系统和目标应用决定。长时间后台任务通常需要目标应用提供前台 Service。</p>\n<pre><code class=\"lang-js\">const intent = app.intent({\n    packageName: &#39;com.example.service&#39;,\n    className: &#39;com.example.service.SyncService&#39;,\n    extras: { mode: &#39;incremental&#39; },\n});\n\napp.startService(intent);\n</code></pre>\n",
+              "type": "module",
+              "displayName": "启动 Service"
+            }
+          ],
+          "type": "module",
+          "displayName": "启动与发送"
+        },
+        {
+          "textRaw": "常见错误",
+          "name": "常见错误",
+          "desc": "<ul>\n<li><code>android.conent.Intent</code> 是错误包名；正确名称是 <code>android.content.Intent</code>。</li>\n<li><code>setClass()</code> 需要 Android <code>Context</code> 和 Java <code>Class</code>，不是两个字符串。使用包名和类名字符串时，应调用 <code>setClassName()</code> 或使用 <code>app.intent({ packageName, className })</code>。</li>\n<li>URI 必须能被目标应用处理；即使 Intent 构建成功，启动阶段仍可能抛出 <code>ActivityNotFoundException</code>。</li>\n<li>从 Application Context 启动 Activity 通常需要 <code>FLAG_ACTIVITY_NEW_TASK</code>；优先使用 <code>app.startActivity()</code> 让 Monkey King 处理常见标志和上下文。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "相关页面"
+        },
+        {
+          "textRaw": "相关页面",
+          "name": "相关页面",
+          "desc": "<ul>\n<li><a href=\"../../api/core/app.md\">App 模块</a></li>\n<li><a href=\"../android/context.md\">Context</a></li>\n<li><a href=\"../android/activity.md\">Activity</a></li>\n<li><a href=\"exceptions.md\">异常</a></li>\n</ul>\n",
+          "type": "module",
+          "displayName": "相关页面"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "app.intent(o)",
+          "type": "method",
+          "name": "intent",
+          "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li><strong>o</strong> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> | Object } - 已有 Intent，或用于构建 Intent 的配置对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> } - 传入 Intent 时原样返回；传入对象时返回新实例</li>\n<li><strong>异常</strong>：参数数量不为 1，或参数不是 Intent / JavaScript 对象时抛出 <code>IllegalArgumentException</code></li>\n<li><strong>权限 / 线程 / 副作用</strong>：同步构建对象，不启动组件，不请求权限</li>\n</ul>\n<p>配置对象支持以下字段：</p>\n<table>\n<thead>\n<tr>\n<th>字段</th>\n<th>类型</th>\n<th>行为</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>action</code></td>\n<td><code>string</code></td>\n<td>不含句点时自动加 <code>android.intent.action.</code> 前缀</td>\n</tr>\n<tr>\n<td><code>data</code></td>\n<td><code>string</code> / URI 兼容值</td>\n<td>转换为 Android <code>Uri</code></td>\n</tr>\n<tr>\n<td><code>type</code></td>\n<td><code>string</code></td>\n<td>与 <code>data</code> 同时存在时调用 <code>setDataAndType()</code></td>\n</tr>\n<tr>\n<td><code>packageName</code></td>\n<td><code>string</code> / App 枚举</td>\n<td>限制目标包；<code>package</code> 是兼容别名</td>\n</tr>\n<tr>\n<td><code>className</code></td>\n<td><code>string</code></td>\n<td>与 <code>packageName</code> 组合为显式组件</td>\n</tr>\n<tr>\n<td><code>category</code></td>\n<td><code>string</code> / Iterable</td>\n<td>添加一个或多个 category</td>\n</tr>\n<tr>\n<td><code>flags</code></td>\n<td><code>number</code> / <code>string</code> / Iterable</td>\n<td>接受整数、常量短名或按 `</td>\n<td>` 分隔的组合</td>\n</tr>\n<tr>\n<td><code>extras</code></td>\n<td><code>Object</code></td>\n<td>逐项写入 Intent extras</td>\n</tr>\n<tr>\n<td><code>url</code></td>\n<td><code>string</code> / Object</td>\n<td>先生成 URL，再写入 <code>data</code></td>\n</tr>\n</tbody>\n</table>\n<pre><code class=\"lang-js\">const intent = app.intent({\n    action: &#39;VIEW&#39;,\n    data: &#39;https://example.com/docs&#39;,\n    flags: [&#39;activity_new_task&#39;, &#39;clear_top&#39;],\n    extras: {\n        source: &#39;monkeyking&#39;,\n        retryCount: 1,\n    },\n});\n\nconsole.log(intent instanceof Intent); // true\nconsole.log(intent.getAction());       // android.intent.action.VIEW\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "o"
+                }
+              ]
+            }
+          ]
+        }
+      ],
       "type": "module",
       "displayName": "意图 (Intent)"
     }

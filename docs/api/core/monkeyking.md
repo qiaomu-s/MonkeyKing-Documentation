@@ -389,6 +389,8 @@ console.log(monkeyking.version.name, monkeyking.version.code);
 
 ### [p] name
 
+<a id="api-symbol-bW9ua2V5a2luZy52ZXJzaW9uLm5hbWU"></a>
+
 **`6.2.0`** **`PERMANENT`** **`Writable`**
 
 - { [string](../types/data-types.md#string) }

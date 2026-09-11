@@ -2,203 +2,224 @@
   "source": "..\\api\\qa.md",
   "modules": [
     {
-      "textRaw": "疑难解答 (Q & A)",
-      "name": "疑难解答_(q_&_a)",
-      "desc": "<hr>\n",
+      "textRaw": "疑难解答 (Troubleshooting)",
+      "name": "疑难解答_(troubleshooting)",
+      "desc": "<p>本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。</p>\n<p>本文于 2026-09-10 按 <a href=\"https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966\">Monkey King 源码</a> 固定提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n",
       "modules": [
         {
-          "textRaw": "Monkey King",
-          "name": "monkey_king",
+          "textRaw": "先确认版本与执行环境",
+          "name": "先确认版本与执行环境",
+          "desc": "<pre><code class=\"lang-js\">console.log({\n    versionName: monkeyking.versionName,\n    versionCode: monkeyking.versionCode,\n    packageName: monkeyking.packageName,\n    apiLevel: device.sdkInt,\n    engine: engines.myEngine().toString(),\n    cwd: files.cwd(),\n});\n</code></pre>\n<p>提交问题时保留这段输出，并说明脚本是普通、UI、定时任务、Intent 触发还是打包应用。Monkey King 主应用的正式包名是 <code>com.qiaomu.monkeyking</code>；构建变体或自建 APK 可能带后缀。</p>\n",
+          "type": "module",
+          "displayName": "先确认版本与执行环境"
+        },
+        {
+          "textRaw": "脚本无法运行",
+          "name": "脚本无法运行",
           "modules": [
             {
-              "textRaw": "Monkey King 功能简介",
-              "name": "monkey_king_功能简介",
-              "desc": "<p>Monkey King 是 Android 平台支持无障碍服务的 JavaScript 自动化工具.</p>\n<p>可用作 JavaScript IDE, 支持 [ 代码补全 / 变量重命名 / 代码格式化 ] 等.</p>\n<p>Monkey King 封装了丰富的 JavaScript 模块, 提供丰富功能, 内置实用工具:</p>\n<p>功能</p>\n<ul>\n<li>图像处理 / 文字识别</li>\n<li>自动化操作 / 控件操作 / 应用操作</li>\n<li>UI 交互 / 对话框交互 / 悬浮窗控件 / 画布控件</li>\n<li>多线程编程 / 协程 / 异步编程 / 事件监听</li>\n<li>文件处理 / 多媒体处理</li>\n<li>定时任务 / 消息通知</li>\n<li>HTTP 请求</li>\n<li>Shell 语句</li>\n<li>国际化</li>\n<li>... ...</li>\n</ul>\n<p>工具</p>\n<ul>\n<li>设备信息 / 传感器信息 / 控件信息</li>\n<li>Base64 编解码 / 密文生成</li>\n<li>数学运算 / 颜色转换</li>\n<li>... ...</li>\n</ul>\n",
+              "textRaw": "出现语法错误",
+              "name": "出现语法错误",
+              "desc": "<p>Monkey King 使用 Rhino 2.0，不是 V8、浏览器或 Node.js。先删除装饰器、可选链等不确定语法，确认最小 ES6 脚本可运行：</p>\n<pre><code class=\"lang-js\">&#39;use strict&#39;;\n\nconst values = [1, 2, 3];\nconsole.log(values.map(value =&gt; value * 2));\n</code></pre>\n<p>如果代码来自 npm 包，还要确认它没有依赖 DOM、Node.js 原生模块、动态 <code>import()</code> 或构建期注入变量。第三方库入口见 <a href=\"../api/core/modules.md\">模块系统</a>。</p>\n",
               "type": "module",
-              "displayName": "Monkey King 功能简介"
+              "displayName": "出现语法错误"
             },
             {
-              "textRaw": "Monkey King 如何使用",
-              "name": "monkey_king_如何使用",
-              "desc": "<p>详见 <a href=\"manual.md\">Monkey King 使用手册</a> 章节.</p>\n",
+              "textRaw": "相对路径找不到文件",
+              "name": "相对路径找不到文件",
+              "desc": "<p>相对路径以当前引擎工作目录为基准，不一定等于脚本文件所在目录。打印 <code>files.cwd()</code>，再用 <code>files.path()</code> 或 <code>files.join()</code> 解析：</p>\n<pre><code class=\"lang-js\">const path = files.join(files.cwd(), &#39;config.json&#39;);\nconsole.log({ path, exists: files.exists(path) });\n</code></pre>\n<p>定时任务、Intent 触发和打包应用可能使用不同工作目录，不要硬编码桌面开发时的绝对路径。</p>\n",
               "type": "module",
-              "displayName": "Monkey King 如何使用"
+              "displayName": "相对路径找不到文件"
             },
             {
-              "textRaw": "Monkey King 是否免费",
-              "name": "monkey_king_是否免费",
-              "desc": "<p>Monkey King 永久免费, 它是基于开源版本 (Auto.js 4.1.1 alpha2) 二次开发的, 将保持开源免费.</p>\n",
+              "textRaw": "`require()` 找不到模块",
+              "name": "`require()`_找不到模块",
+              "desc": "<p>先确认模块名、文件扩展名和目录中的 <code>package.json</code> / <code>index.js</code>。本地模块应使用 CommonJS：</p>\n<pre><code class=\"lang-js\">// lib/value.js\nmodule.exports = { value: 42 };\n\n// main.js\nconst local = require(&#39;./lib/value&#39;);\nconsole.log(local.value);\n</code></pre>\n<p>Monkey King 支持部分 <code>node_modules</code> 布局，但不保证 Node.js 原生模块或面向 V8 的预编译包可用。</p>\n",
               "type": "module",
-              "displayName": "Monkey King 是否免费"
-            },
-            {
-              "textRaw": "Monkey King 目标",
-              "name": "monkey_king_目标",
-              "desc": "<p>开源版本 (Auto.js 4.1.1 alpha2) 是非常好的学习资料, Monkey King 之所以存在, 恰恰是因为站在巨人的肩膀上.</p>\n<p>Monkey King 的目标是对开源版本 (Auto.js 4.1.1 alpha2) 进行完善及扩展.</p>\n",
-              "type": "module",
-              "displayName": "Monkey King 目标"
-            },
-            {
-              "textRaw": "Monkey King 特色",
-              "name": "monkey_king_特色",
-              "desc": "<p>Monkey King 对以下功能进行了十足的打磨:</p>\n<ul>\n<li>夜间模式</li>\n<li>多语言</li>\n</ul>\n<p>同时对已有模块进行了精心优化及扩展:</p>\n<ul>\n<li><a href=\"../api/media/color.md\">颜色 (colors)</a></li>\n<li><a href=\"../api/automation/ui-selector.md\">选择器 (UiSelector)</a></li>\n<li><a href=\"../api/automation/ui-object.md\">控件节点 (UiObject)</a></li>\n<li>... ...</li>\n</ul>\n<p>其中尤其具备 Monkey King 特色的, 当属 <a href=\"../api/automation/ui-selector.md#m-pickup\">pickup 选择器</a> 及 <a href=\"../api/automation/ui-object.md#m-compass\">compass 控件罗盘</a>.</p>\n<p>关于 Monkey King 的更多内容, 可参阅 <a href=\"https://github.com/qiaomu-s/MonkeyKing/releases\">项目更新日志</a>.</p>\n",
-              "type": "module",
-              "displayName": "Monkey King 特色"
+              "displayName": "`require()` 找不到模块"
             }
           ],
           "type": "module",
-          "displayName": "Monkey King"
+          "displayName": "脚本无法运行"
         },
         {
-          "textRaw": "文档",
-          "name": "文档",
+          "textRaw": "无障碍与自动化",
+          "name": "无障碍与自动化",
           "modules": [
             {
-              "textRaw": "文档格式不统一",
-              "name": "文档格式不统一",
-              "desc": "<p>Monkey King 文档是在开源版本文档的基础上进行更新和修改的, 目前仅完成部分章节的更新, 未更新的章节依然保留原始文档内容, 因此会存在新旧不同的文档编写格式.<br>\n因文档编写需要耗费巨量的时间及精力, 文档更新速度会相对缓慢.<br>\n当全部章节完成编写及更新后, 文档将实现格式统一.</p>\n",
+              "textRaw": "找不到控件或点击无效",
+              "name": "找不到控件或点击无效",
+              "desc": "<ol>\n<li>确认 Monkey King 无障碍服务已启用。</li>\n<li>在脚本开始调用 <code>auto.waitFor()</code>，不要只依赖系统设置页的开关状态。</li>\n<li>打印当前包名、Activity 和控件树中的关键属性。</li>\n<li>优先使用稳定的 <code>id</code>、文本与层级组合，避免只依赖屏幕坐标。</li>\n<li>WebView、游戏、自绘 Canvas 或安全窗口可能没有可用无障碍节点，此时再考虑坐标或图像方案。</li>\n</ol>\n<pre><code class=\"lang-js\">auto.waitFor();\n\nconsole.log({\n    packageName: currentPackage(),\n    activityName: currentActivity(),\n});\n\nconst target = text(&#39;确定&#39;).findOne(3000);\nif (target === null) {\n    throw new Error(&#39;未找到“确定”控件&#39;);\n}\nconsole.log(target.click());\n</code></pre>\n<p>自动化动作会影响当前前台应用。测试时使用专用账号和可恢复数据，避免在支付、删除或授权界面上直接运行未验证脚本。</p>\n",
               "type": "module",
-              "displayName": "文档格式不统一"
+              "displayName": "找不到控件或点击无效"
             },
             {
-              "textRaw": "不支持夜间模式",
-              "name": "不支持夜间模式",
-              "desc": "<p>使用 Monkey King 查看文档时, 若开启夜间模式后文档依然是亮色主题, 需检查 WebView (或 Google Chrome 等浏览器) 的版本条件:</p>\n<ul>\n<li>API 级别 29 (安卓 10) [Q] 及以上: 版本不低于 76</li>\n<li>API 级别 28 (安卓 9) [P] 及以下: 版本不低于 105</li>\n</ul>\n",
+              "textRaw": "坐标在另一台设备上偏移",
+              "name": "坐标在另一台设备上偏移",
+              "desc": "<p>确认设计分辨率、屏幕方向、状态栏和显示缩放。可用 <code>setScreenMetrics()</code> 或 <code>setScaleBases()</code> 建立缩放基准，但分屏、折叠屏和应用内缩放仍可能改变实际坐标。</p>\n<pre><code class=\"lang-js\">setScreenMetrics(1080, 1920);\nconsole.log({ x: cX(540), y: cY(960) });\n</code></pre>\n",
               "type": "module",
-              "displayName": "不支持夜间模式"
-            },
-            {
-              "textRaw": "内容难以理解",
-              "name": "内容难以理解",
-              "desc": "<p>对于存在阅读障碍的文档内容, 可尝试暂时略过, 继续阅读后续内容.<br>\n当完整阅读一个章节或小节后, 可能对之前略过内容的进一步理解有所帮助.<br>\n也可提交反馈至 GitHub 项目页面, 开发者可能会根据提交的反馈适当调整文档内容.</p>\n",
-              "type": "module",
-              "displayName": "内容难以理解"
+              "displayName": "坐标在另一台设备上偏移"
             }
           ],
           "type": "module",
-          "displayName": "文档"
+          "displayName": "无障碍与自动化"
         },
         {
-          "textRaw": "图像",
-          "name": "图像",
+          "textRaw": "截图、图像与 OCR",
+          "name": "截图、图像与_ocr",
           "modules": [
             {
-              "textRaw": "OCR 特性",
-              "name": "ocr_特性",
-              "desc": "<p>Monkey King 的 OCR 特性是基于 <a href=\"https://developers.google.com/ml-kit?hl=zh-cn\">Google ML Kit</a> 的 <a href=\"https://developers.google.com/ml-kit/vision/text-recognition/android?hl=zh-cn\">文字识别 API</a> 及 <a href=\"https://www.paddlepaddle.org.cn/\">Baidu PaddlePaddle</a> 的 <a href=\"https://github.com/PaddlePaddle/Paddle-Lite\">Paddle Lite</a> 实现的.</p>\n<blockquote>\n<p>注:<br>\nMonkey King 基于 MLKit 引擎的 <a href=\"https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrMLKit.kt\">OCR 实现源码</a> 参考自 <a href=\"https://github.com/TonyJiangWJ\">TonyJiangWJ</a> 的 <a href=\"https://github.com/TonyJiangWJ/Auto.js\">Auto.js</a> 项目.<br>\nMonkey King 基于 Paddle Lite 引擎的 <a href=\"https://github.com/qiaomu-s/MonkeyKing/blob/master/app/src/main/java/com/qiaomu/monkeyking/runtime/api/OcrPaddle.kt\">OCR 实现源码</a> 源自 <a href=\"https://github.com/TonyJiangWJ\">TonyJiangWJ</a> 的 <a href=\"https://github.com/qiaomu-s/MonkeyKing/pull/120\">GitHub PR</a>.</p>\n</blockquote>\n<blockquote>\n<p>参阅: <a href=\"../api/media/ocr.md\">光学字符识别 (OCR)</a> 模块</p>\n</blockquote>\n",
+              "textRaw": "截图返回失败或弹出授权窗口",
+              "name": "截图返回失败或弹出授权窗口",
+              "desc": "<p>调用 <code>images.requestScreenCapture()</code> 会触发 Android MediaProjection 授权；用户可拒绝，系统也可能在进程重启后要求重新授权。不要在 UI 线程等待授权。</p>\n<pre><code class=\"lang-js\">if (!images.requestScreenCapture()) {\n    throw new Error(&#39;用户拒绝截图权限&#39;);\n}\n\nconst image = images.captureScreen();\ntry {\n    console.log(image.getWidth(), image.getHeight());\n} finally {\n    image.recycle();\n}\n</code></pre>\n<p>图像包装对象占用原生内存。循环处理时应在 <code>finally</code> 中回收中间图像，并避免长期保存大量截图。</p>\n",
               "type": "module",
-              "displayName": "OCR 特性"
+              "displayName": "截图返回失败或弹出授权窗口"
             },
             {
-              "textRaw": "区域截图",
-              "name": "区域截图",
-              "desc": "<p>Monkey King 不支持区域截图.</p>\n<p>可通过 <a href=\"../api/media/image.md#images-capturescreen\">images.captureScreen</a> 截取屏幕后使用 <a href=\"../api/media/image.md#images-clip-img-x-y-w-h\">images.clip</a> 等方法做进一步处理.</p>\n",
+              "textRaw": "OCR 结果为空或差异很大",
+              "name": "ocr_结果为空或差异很大",
+              "desc": "<p>6.7.0 提供 ML Kit、Paddle 和 Rapid 三种入口。不同引擎的模型、语言、方向校正和输出类型不同；先用同一张清晰、正向、对比度足够的静态图片比较，再调整区域和选项。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;./ocr-sample.png&#39;);\ntry {\n    console.log(ocr.mlkit.recognizeText(image));\n    console.log(ocr.rapid.recognizeText(image));\n} finally {\n    image.recycle();\n}\n</code></pre>\n<p>Paddle 可使用内置实现或插件宿主，是否可用取决于当前构建和插件安装状态。完整选项见 <a href=\"../api/media/ocr.md\">OCR</a>。</p>\n",
               "type": "module",
-              "displayName": "区域截图"
+              "displayName": "OCR 结果为空或差异很大"
             }
           ],
           "type": "module",
-          "displayName": "图像"
+          "displayName": "截图、图像与 OCR"
         },
         {
-          "textRaw": "定时任务",
-          "name": "定时任务",
+          "textRaw": "权限问题",
+          "name": "权限问题",
           "modules": [
             {
-              "textRaw": "定时运行脚本",
-              "name": "定时运行脚本",
-              "desc": "<p>脚本右侧菜单 -&gt; 定时任务, 即可定时运行脚本.<br>\n需保持 Monkey King 后台运行, 包括 [ 自启动白名单 / 忽略电池优化 / 忽略后台活动限制 / 系统多任务保留 ] 等.<br>\n在设备关屏情况下, 可使用 <code>device.wakeUp()</code> 唤醒屏幕.<br>\n但 Monkey King 暂未提供解锁功能, 因此可能需要根据设备自行设计解锁代码.</p>\n",
+              "textRaw": "`runtime.requestPermissions()` 没有效果",
+              "name": "`runtime.requestpermissions()`_没有效果",
+              "desc": "<p>该方法只会请求 APK Manifest 已声明、且 Android 允许动态授予的运行时权限。Root、Shizuku、无障碍、通知监听、悬浮窗、所有文件访问、修改系统设置等属于特殊访问权，需要各自的系统设置或模块入口。</p>\n<pre><code class=\"lang-js\">runtime.requestPermissions([\n    &#39;record_audio&#39;,\n    &#39;android.permission.ACCESS_FINE_LOCATION&#39;,\n]);\n</code></pre>\n<p>方法会启动权限请求 Activity，但不会同步返回最终授权结果。需要继续使用权限时，应在用户操作后再次检查实际能力。</p>\n",
               "type": "module",
-              "displayName": "定时运行脚本"
+              "displayName": "`runtime.requestPermissions()` 没有效果"
             },
             {
-              "textRaw": "定时任务获取外部参数",
-              "name": "定时任务获取外部参数",
-              "desc": "<p>若脚本由 intent (如网络状态变化等特定事件) 触发启动, 可通过 <code>engines.myEngine().execArgv.intent</code> 获取 intent, 进而获取外部参数.</p>\n",
+              "textRaw": "悬浮窗或对话框无法显示",
+              "name": "悬浮窗或对话框无法显示",
+              "desc": "<ul>\n<li>检查“显示在其他应用上层”权限。</li>\n<li>后台脚本没有 <code>activity</code>，不要把 Application Context 当作 Activity 窗口使用。</li>\n<li>UI 脚本中的界面更新应切回 UI 线程。</li>\n<li>系统和厂商可能限制后台弹窗。</li>\n</ul>\n<pre><code class=\"lang-js\">if (!floaty.hasPermission()) {\n    floaty.requestPermission();\n    exit();\n}\n</code></pre>\n",
               "type": "module",
-              "displayName": "定时任务获取外部参数"
+              "displayName": "悬浮窗或对话框无法显示"
+            },
+            {
+              "textRaw": "Android 13 及以上通知不显示",
+              "name": "android_13_及以上通知不显示",
+              "desc": "<p>除通知渠道外，系统可能要求 <code>POST_NOTIFICATIONS</code> 运行时权限。用户关闭渠道后，应用不能用脚本强制重新打开，只能引导用户进入系统通知设置。</p>\n",
+              "type": "module",
+              "displayName": "Android 13 及以上通知不显示"
             }
           ],
           "type": "module",
-          "displayName": "定时任务"
+          "displayName": "权限问题"
         },
         {
-          "textRaw": "脚本执行差异",
-          "name": "脚本执行差异",
-          "desc": "<p>同样的脚本, 在不同环境 (如设备或系统等) 可能出现执行结果差异, 甚至出现异常而无法正常运行.</p>\n",
+          "textRaw": "UI 线程与阻塞",
+          "name": "ui_线程与阻塞",
           "modules": [
             {
-              "textRaw": "不同的系统版本",
-              "name": "不同的系统版本",
-              "desc": "<p>Monkey King 可以安装在 <code>Andoird API 24 (7.0) [N]</code> 及以上的操作系统.</p>\n<p>然而不同操作系统 <code>API</code> 是有区别的, 有些 <code>API</code> 在某个系统版本之后 (甚至之前) 才能使用.</p>\n<p>下面列出几个 Monkey King 中受系统版本影响的方法或属性:</p>\n<ul>\n<li><a href=\"../api/system/notice.md\">notice</a> 模块的渠道相关功能只能在 <code>Android API 26 (8.0) [O]</code> 及以上起作用</li>\n<li><a href=\"../api/system/device.md#device-getimei\">device.getIMEI()</a> 只能在 <code>Android API 29 (10) [Q]</code> 及以下获取到设备 IMEI 值</li>\n<li><a href=\"../api/automation/ui-selector.md#m-imeenter\">UiSelector#imeEnter</a> 只能在 <code>Android API 30 (11) [R]</code> 及以上才能起作用</li>\n<li><a href=\"../api/automation/ui-selector.md#m-dragstart\">UiSelector#dragStart</a> 只能在 <code>Android API 32 (12.1) [S_V2]</code> 及以上才能起作用</li>\n<li><a href=\"../api/automation/ui-selector.md#m-showtextsuggestions\">UiSelector#showTextSuggestions</a> 只能在 <code>Android API 33 (13) [TIRAMISU]</code> 及以上才能起作用</li>\n<li>... ...</li>\n</ul>\n",
+              "textRaw": "UI 点击后界面卡死",
+              "name": "ui_点击后界面卡死",
+              "desc": "<p>网络、文件大批量处理、<code>sleep()</code>、同步 OCR 和 Promise <code>wait()</code> 都不应直接在 UI 回调中执行。把耗时工作放入 <code>threads.start()</code>，只在 <code>ui.run()</code> 中更新视图：</p>\n<pre><code class=\"lang-js\">&#39;ui&#39;;\n\nui.layout(\n    &lt;vertical padding=&quot;16&quot;&gt;\n        &lt;button id=&quot;load&quot; text=&quot;加载&quot; /&gt;\n        &lt;text id=&quot;result&quot; text=&quot;未开始&quot; /&gt;\n    &lt;/vertical&gt;\n);\n\nui.load.on(&#39;click&#39;, () =&gt; {\n    threads.start(() =&gt; {\n        const response = http.get(&#39;https://example.com&#39;);\n        const text = response.body.string();\n        ui.run(() =&gt; ui.result.setText(`长度: ${text.length}`));\n    });\n});\n</code></pre>\n<p>脚本退出时 runtime 会清理其线程、计时器、事件和 UI 资源，但业务代码仍应主动关闭不再需要的响应体、文件和监听器。</p>\n",
               "type": "module",
-              "displayName": "不同的系统版本"
-            },
-            {
-              "textRaw": "不同的设备厂商",
-              "name": "不同的设备厂商",
-              "desc": "<p>因不同设备厂商对操作系统进行了不同程度的定制和修改, 一些 <code>API</code> 可能发生变更.</p>\n<p>下表列出了部分厂商及操作系统的信息 (排序无先后):</p>\n<table>\n<thead>\n<tr>\n<th>厂商或品牌</th>\n<th>操作系统</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>魅族 (MEIZU)</td>\n<td>Flyme OS</td>\n</tr>\n<tr>\n<td>欧珀 (OPPO / Realme)</td>\n<td>ColorOS</td>\n</tr>\n<tr>\n<td>小米 (XiaoMi / Redmi / BlackShark)</td>\n<td>MIUI</td>\n</tr>\n<tr>\n<td>一加 (OnePlus)</td>\n<td>氢OS / Oxygen OS</td>\n</tr>\n<tr>\n<td>维沃 (VIVO / IQOO)</td>\n<td>Funtouch OS / OriginOS</td>\n</tr>\n<tr>\n<td>华为 (Huawei / Honor)</td>\n<td>EMUI / HarmonyOS</td>\n</tr>\n<tr>\n<td>联想 (Lenovo)</td>\n<td>ZUI</td>\n</tr>\n<tr>\n<td>酷派 (Coolpad)</td>\n<td>CoolOS</td>\n</tr>\n<tr>\n<td>卓易 (Droi)</td>\n<td>Freeme OS</td>\n</tr>\n<tr>\n<td>锤子科技 (Smartisan)</td>\n<td>Smartisan OS</td>\n</tr>\n<tr>\n<td>中兴 (ZTE / 天机 / 远航 / Axon)</td>\n<td>MyOS</td>\n</tr>\n<tr>\n<td>努比亚 (Nubia / 红魔)</td>\n<td>REDMAGIC OS</td>\n</tr>\n<tr>\n<td>Google Pixel</td>\n<td>原生</td>\n</tr>\n<tr>\n<td>AVD (安卓虚拟机)</td>\n<td>原生</td>\n</tr>\n<tr>\n<td>索尼 (Sony / XPERIA)</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>三星 (Samsung)</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>黑莓 (BlackBerry)</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>LG</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>摩托罗拉 (Motorola)</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>诺基亚 (Nokia)</td>\n<td>类原生 (仅限部分机型)</td>\n</tr>\n<tr>\n<td>华硕 (ASUS / ZenFone / ROG Phone)</td>\n<td>类原生</td>\n</tr>\n<tr>\n<td>宏达电 (HTC)</td>\n<td>类原生</td>\n</tr>\n</tbody>\n</table>\n<p>由此可见, 想要在众多不同的操作系统中实现完全无差别且无异常的脚本执行效果, 难度是巨大的.</p>\n<p>往往需要在实际操作系统中进行功能测试并编写额外的兼容代码, 甚至可能需要查询定制操作系统的开放 <code>API</code> 文档 (如果有的话).</p>\n<blockquote>\n<p>注: 表格中的信息可能与实际存在出入, 仅供参考.</p>\n</blockquote>\n",
-              "type": "module",
-              "displayName": "不同的设备厂商"
-            },
-            {
-              "textRaw": "不同的 Auto.js 应用",
-              "name": "不同的_auto.js_应用",
-              "desc": "<p>不同的 Auto.js 应用对 [ JavaScript 封装模块 / Java 包名及类名 ] 等进行了不同程度的 [ 增添 / 修改 / 删减 ], 因此同样的脚本很难在不同 Auto.js 应用上达到同样的运行效果, 甚至出现无法运行的情况.</p>\n<p>有以下几种可能的解决方案:</p>\n<ul>\n<li>继续使用之前编写脚本代码的 Auto.js 应用</li>\n<li>修改脚本代码以适应新 Auto.js 应用</li>\n<li>在脚本代码中加入不同 Auto.js 应用的检测, 在对应分支编写兼容代码</li>\n</ul>\n",
-              "type": "module",
-              "displayName": "不同的 Auto.js 应用"
-            },
-            {
-              "textRaw": "不同的 Monkey King 版本",
-              "name": "不同的_monkey_king_版本",
-              "desc": "<p>随着 Monkey King 版本的更新, 一些 <code>API</code> 可能出现 [ 新增 / 修改 / 废弃 / 移除 ] 等操作.</p>\n<p>当升级 Monkey King 后, 某个或某些 <code>API</code> 出现异常时, 可查询应用文档并定位到相关章节, 根据文档的提示排查并解决上述问题.</p>\n<p>如问题仍未解决, 可在项目的 GitHub 议题页面提交 <a href=\"#反馈\">反馈</a>.</p>\n",
-              "type": "module",
-              "displayName": "不同的 Monkey King 版本"
+              "displayName": "UI 点击后界面卡死"
             }
           ],
           "type": "module",
-          "displayName": "脚本执行差异"
+          "displayName": "UI 线程与阻塞"
         },
         {
-          "textRaw": "打包应用",
-          "name": "打包应用",
-          "desc": "<p>Monkey King 打包功能尚不完善, 打包应用与 Monkey King 主应用可能有较大的功能和界面差异.</p>\n<p>Monkey King 开发者暂不考虑参与打包功能相关的开发工作, 目前以 <a href=\"https://github.com/LZX284\">LZX284</a> 为主要贡献者进行打包功能的开发及维护, 后续将继续由其他开发者贡献相关代码.</p>\n",
+          "textRaw": "网络与 WebSocket",
+          "name": "网络与_websocket",
           "modules": [
             {
-              "textRaw": "图片等资源共同打包及多脚本打包",
-              "name": "图片等资源共同打包及多脚本打包",
-              "desc": "<p>上述需求需使用 &quot;项目&quot; 功能.</p>\n<p>点击 Monkey King 主页面 &quot;+&quot; 图标, 选择项目, 填写信息后可新建一个项目.<br>\n项目支持存放多个 [ 脚本 / 模块 / 资源文件 ].<br>\n项目工具栏的 APK 打包图标, 点击可打包一个项目.</p>\n<p>例如:<br>\n脚本读取同目录 <code>1.png</code>: <code>images.read(&quot;./1.png&quot;)</code>.<br>\nUI 脚本图片控件引用同目录 <code>2.png</code>: <code>&lt;img src=&quot;file://2.png&quot;/&gt;</code>.<br>\nMonkey King 内置模块支持相对路径引用, 其他情况可能需借助 <code>files.path()</code> 转换为绝对路径.</p>\n",
+              "textRaw": "HTTP 请求失败",
+              "name": "http_请求失败",
+              "desc": "<p>先区分 DNS、TLS、超时、HTTP 状态码和 JSON 解析错误。服务器返回 404 或 500 不等于传输层异常；读取响应前检查状态码。</p>\n<pre><code class=\"lang-js\">try {\n    const response = http.get(&#39;https://example.com&#39;);\n    console.log({\n        statusCode: response.statusCode,\n        statusMessage: response.statusMessage,\n    });\n    console.log(response.body.string());\n} catch (error) {\n    console.error(error.stack || error);\n}\n</code></pre>\n<p>企业代理、自签名证书和旧 TLS 配置需要服务端或客户端证书策略配合。不要通过全局关闭证书校验来解决生产问题。</p>\n",
               "type": "module",
-              "displayName": "图片等资源共同打包及多脚本打包"
+              "displayName": "HTTP 请求失败"
             },
             {
-              "textRaw": "打包应用不显示主界面",
-              "name": "打包应用不显示主界面",
-              "desc": "<p>需使用 &quot;项目&quot; 功能.<br>\n新建项目后, 在项目目录 <code>project.json</code> 文件中增加以下条目:</p>\n<pre><code class=\"lang-json\">{\n  &quot;launchConfig&quot;: {\n    &quot;hideLogs&quot;: true\n  }\n}\n</code></pre>\n<p>例如:</p>\n<pre><code class=\"lang-json\">{\n  &quot;name&quot;: &quot;First-Project&quot;,\n  &quot;versionName&quot;: &quot;1.0.0&quot;,\n  &quot;versionCode&quot;: 1,\n  &quot;packageName&quot;: &quot;org.monkeyking.example.first&quot;,\n  &quot;main&quot;: &quot;main.js&quot;,\n  &quot;launchConfig&quot;: {\n    &quot;hideLogs&quot;: true\n  }\n}\n</code></pre>\n",
+              "textRaw": "WebSocket 连接后脚本立即退出",
+              "name": "websocket_连接后脚本立即退出",
+              "desc": "<p>保留 WebSocket 引用并注册事件；根据脚本设计维持事件循环。退出时关闭连接，避免远端仍认为会话有效。</p>\n<pre><code class=\"lang-js\">const socket = web.newWebSocket(&#39;wss://echo.websocket.events&#39;);\n\nsocket.on(&#39;open&#39;, () =&gt; socket.send(&#39;hello&#39;));\nsocket.on(&#39;text&#39;, text =&gt; {\n    console.log(text);\n    socket.close(1000, &#39;done&#39;);\n});\nsocket.on(&#39;failure&#39;, error =&gt; console.error(error));\n</code></pre>\n",
               "type": "module",
-              "displayName": "打包应用不显示主界面"
+              "displayName": "WebSocket 连接后脚本立即退出"
             }
           ],
           "type": "module",
-          "displayName": "打包应用"
+          "displayName": "网络与 WebSocket"
         },
         {
-          "textRaw": "代码转换",
-          "name": "代码转换",
-          "desc": "<p>Monkey King 支持直接调用 [ Java / Android / 扩展库 ] 等 API.<br>\n对于 Monkey King 没有内置的功能, 可进行 Java 脚本化, 即直接参照 Java (或 Kotlin 等) 源码, 转换为 JavaScript 代码.<br>\n例如:</p>\n<pre><code class=\"lang-java\">import android.graphics.Bitmap;\nimport android.graphics.Matrix;\n\npublic static Bitmap rotate(Bitmap src, int degrees, float px, float py) {\n    if (degrees == 0) return src;\n    Matrix matrix = new Matrix();\n    matrix.setRotate(degrees, px, py);\n    Bitmap ret = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);\n    return ret;\n}\n</code></pre>\n<p>转换为 JavaScript 代码:</p>\n<pre><code class=\"lang-js\">importClass(android.graphics.Bitmap);\nimportClass(android.graphics.Matrix);\n\nfunction rotate(src, degrees, px, py) {\n    if (degrees == 0) return src;\n    let matrix = new Matrix();\n    matrix.setRotate(degrees, px, py);\n    let ret = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);\n    return ret;\n}\n</code></pre>\n<p>关于脚本化 Java 的更多信息, 参阅 <a href=\"../reference/android/scripting-java.md\">Scripting Java - 脚本化 Java</a> 章节.</p>\n",
+          "textRaw": "Root 与 Shizuku",
+          "name": "root_与_shizuku",
+          "modules": [
+            {
+              "textRaw": "Root 命令失败",
+              "name": "root_命令失败",
+              "desc": "<p><code>su</code> 文件存在不代表授权成功。先检查 <code>monkeyking.isRootAvailable()</code>，再查看 shell 结果的 <code>code</code>、<code>result</code> 和 <code>error</code>。不要假设不同 Root 管理器的提示和挂载命名空间完全一致。</p>\n<pre><code class=\"lang-js\">const result = shell(&#39;id&#39;, true);\nconsole.log(result.toJson());\nresult.throwIfError();\n</code></pre>\n",
+              "type": "module",
+              "displayName": "Root 命令失败"
+            },
+            {
+              "textRaw": "Shizuku 未连接",
+              "name": "shizuku_未连接",
+              "desc": "<p>Shizuku 依赖管理器应用、Binder 服务和用户授权。设备重启后服务可能需要重新启动。调用命令前检查模块的 operational / permission 状态，失败时不要自动退化为 Root，除非脚本明确允许。</p>\n",
+              "type": "module",
+              "displayName": "Shizuku 未连接"
+            }
+          ],
           "type": "module",
-          "displayName": "代码转换"
+          "displayName": "Root 与 Shizuku"
         },
         {
-          "textRaw": "反馈",
-          "name": "反馈",
-          "desc": "<p>如有任何问题或建议, 可在 GitHub 项目议题页面发起新的反馈.</p>\n<p>关于 <strong>应用文档</strong> 的反馈:<br>\n<a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation\">https://github.com/qiaomu-s/MonkeyKing-Documentation</a></p>\n<p>关于 <strong>Monkey King</strong> 的反馈:<br>\n<a href=\"https://github.com/qiaomu-s/MonkeyKing/issues\">https://github.com/qiaomu-s/MonkeyKing/issues</a></p>\n",
+          "textRaw": "定时任务与外部启动",
+          "name": "定时任务与外部启动",
+          "modules": [
+            {
+              "textRaw": "定时任务没有按时运行",
+              "name": "定时任务没有按时运行",
+              "desc": "<p>检查 Android 精确闹钟权限、电池优化、自启动与后台限制。Monkey King 被强制停止、清除数据或卸载后，任务不能继续运行。厂商电源管理可能延迟或取消后台启动。</p>\n<p>定时或 Intent 启动的脚本可从当前引擎参数读取触发数据：</p>\n<pre><code class=\"lang-js\">const argv = engines.myEngine().execArgv;\nif (argv &amp;&amp; argv.intent) {\n    console.log(argv.intent.getAction());\n}\n</code></pre>\n",
+              "type": "module",
+              "displayName": "定时任务没有按时运行"
+            },
+            {
+              "textRaw": "锁屏后自动化失败",
+              "name": "锁屏后自动化失败",
+              "desc": "<p><code>device.wakeUp()</code> 只负责唤醒屏幕，不保证解除安全锁屏。不要在文档或脚本中保存 PIN、密码等敏感凭据；需要无人值守设备时，应使用专门测试设备和合规的设备管理方案。</p>\n",
+              "type": "module",
+              "displayName": "锁屏后自动化失败"
+            }
+          ],
           "type": "module",
-          "displayName": "反馈"
+          "displayName": "定时任务与外部启动"
+        },
+        {
+          "textRaw": "项目与打包 APK",
+          "name": "项目与打包_apk",
+          "desc": "<p>项目目录使用 <code>project.json</code> 描述入口、版本、包名和 <code>launchConfig</code>。6.7.0 同时识别兼容键 <code>hideLogs</code> 与规范键 <code>logsVisible</code>；新项目应优先使用语义明确的规范字段。</p>\n<pre><code class=\"lang-json\">{\n  &quot;name&quot;: &quot;First Project&quot;,\n  &quot;versionName&quot;: &quot;1.0.0&quot;,\n  &quot;versionCode&quot;: 1,\n  &quot;packageName&quot;: &quot;com.example.first&quot;,\n  &quot;main&quot;: &quot;main.js&quot;,\n  &quot;launchConfig&quot;: {\n    &quot;logsVisible&quot;: false,\n    &quot;splashVisible&quot;: false,\n    &quot;launcherVisible&quot;: true,\n    &quot;runOnBoot&quot;: false\n  }\n}\n</code></pre>\n<p>自建 APK 的功能、签名、包名、权限和系统升级路径都可能与 Monkey King 主应用不同。构建前确认资源许可、applicationId 唯一性和所需权限，不要依靠 APK 编辑器追加危险权限。</p>\n",
+          "type": "module",
+          "displayName": "项目与打包 APK"
+        },
+        {
+          "textRaw": "文档显示或搜索异常",
+          "name": "文档显示或搜索异常",
+          "desc": "<ul>\n<li>网页版支持浅色 / 深色主题和本地全文搜索。</li>\n<li>应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 <code>https://docs.monkeyking.com</code> 为准。</li>\n<li>搜索不到新 API 时，先确认页面底部更新时间与应用版本。</li>\n<li>失效链接或错误签名请提交文档 issue，并附页面 URL 和标题锚点。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "如何提交有效反馈"
+        },
+        {
+          "textRaw": "如何提交有效反馈",
+          "name": "如何提交有效反馈",
+          "desc": "<p>最小反馈应包含：</p>\n<ol>\n<li>Monkey King <code>versionName</code> 和 <code>versionCode</code>。</li>\n<li>Android API 级别、设备型号或模拟器镜像。</li>\n<li>脚本执行方式及已授予权限。</li>\n<li>可直接运行的最小复现脚本。</li>\n<li>完整日志、异常栈和预期结果。</li>\n</ol>\n<p>文档问题请提交到 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues\">MonkeyKing-Documentation issues</a>；应用行为问题请提交到 <a href=\"https://github.com/qiaomu-s/AutoJs6/issues\">Monkey King 源码仓 issues</a>。</p>\n",
+          "type": "module",
+          "displayName": "如何提交有效反馈"
         }
       ],
       "type": "module",
-      "displayName": "疑难解答 (Q & A)"
+      "displayName": "疑难解答 (Troubleshooting)"
     }
   ]
 }

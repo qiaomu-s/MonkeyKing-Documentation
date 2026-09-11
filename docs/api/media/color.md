@@ -1684,10 +1684,10 @@ colors.isSimilar('#010101', '#020202', { similarity: 0.95 }); // true
 
 - **colorA** { [OmniColor](../types/omni-types.md#omnicolor) } - 颜色参数
 - **colorB** { [OmniColor](../types/omni-types.md#omnicolor) } - 颜色参数
-- **[ thresholdOrOptions ]** { [number](../types/data-types.md#number) | [object](../types/data-types.md#object) } - 颜色匹配阈值，或包含 `threshold`、`similarity`、`algorithm` 的选项对象
-- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 两个颜色是否达到匹配条件
+- **[ thresholdOrOptions ]** { [number](../types/data-types.md#number) | [object](../types/data-types.md#object) } - 与 `isSimilar` 相同的阈值或选项对象，可包含 `threshold`、`similarity`、`algorithm`
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 两个颜色是否通过相似度检测
 
-`isEqual` 是历史兼容入口，公开实现与 `isSimilar` 使用同一颜色检测器：省略第三个参数时采用默认阈值 `4` 和 `diff` 算法；传入数字时将其作为阈值；传入对象时读取 `threshold` 或 `similarity`，并可指定 `algorithm`。第三个参数不是 `alphaMatters`，也不会切换为按完整 ARGB 整数严格相等的比较。
+当前 6.7.0 实现使用与 `colors.isSimilar` 相同的颜色检测器：省略第三个参数时阈值为 `4`、算法为 `diff`；传入数字时将其作为阈值，传入对象时可使用 `threshold`、`similarity` 和 `algorithm`。检测只比较 `R/G/B` 分量，`A (alpha)` 不参与比较。该入口名称虽为 `isEqual`，并不保证逐通道精确相等；需要精确比较时应使用 `Color(...).equals(...)` 或 `images.isEqual(...)`（按适用类型）。
 
 ```js
 /* Hex 代码. */
@@ -1702,10 +1702,10 @@ colors.isEqual('dark-gray', 'DARK_GRAY'); /* true, 连字符与下划线均被�
 /* 不同类型比较. */
 colors.isEqual('red', '#FF0000'); // true
 colors.isEqual('orange', '#FFA500'); // true
-/* 第三个参数沿用 isSimilar 的阈值/选项语义. */
-colors.isEqual('#A1FF0000', '#A2FF0000', 4); // true 或 false 取决于颜色检测算法
-colors.isEqual('#A1FF0000', '#A2FF0000', { threshold: 4, algorithm: 'diff' });
-colors.isEqual('#A1FF0000', '#A2FF0000', { similarity: 0.99 });
+/* A (alpha) 分量的不同情况. */
+colors.isEqual('#A1FF0000', '#A2FF0000'); /* true, RGB 相同且默认忽略 A 分量. */
+colors.isEqual('#FF0000', '#FB0000', 4); /* true, diff 阈值为 4. */
+colors.isEqual('#FF0000', '#FB0000', 0); /* false, 要求完全相同的 RGB. */
 ```
 
 ## [m] equals
@@ -1741,8 +1741,9 @@ colors.equals('dark-gray', '#444'); /* 抛出异常. */
 colors.equals('#FF0000', '#F00'); /* 抛出异常. */
 ```
 
-需要颜色匹配阈值或算法时，请使用 [colors.isEqual](#m-isequal) 或
-[colors.isSimilar](#m-issimilar)；`colors.equals` 仅保留为兼容入口。
+上述示例对于 [colors.isEqual](#m-isequal) 则全部返回 `true`。
+
+除非需要考虑多版本兼容，否则建议始终使用 `colors.isEqual` 替代 `colors.equals`。
 
 ## [m] luminance
 

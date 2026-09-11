@@ -4,7 +4,7 @@
     {
       "textRaw": "CryptoKey",
       "name": "cryptokey",
-      "desc": "<p>CryptoKey 是 <code>com.qiaomu.monkeyking.core.crypto.Crypto.Key</code> 的子类, 其实例可代表一个密钥 (确切地说, 是自定义密钥, 而非 Java 密钥), 主要用于 <a href=\"../utilities/crypto.md\">密文</a> 模块.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"crypto-key-pair.md#p-publickey\">CryptoKeyPair#publicKey</a></li>\n<li><a href=\"crypto-key-pair.md#p-privatekey\">CryptoKeyPair#privateKey</a></li>\n<li><a href=\"../utilities/crypto.md#c-key\">crypto.Key</a>::new</li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出 CryptoKey 独有的而不包含继承的属性及方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">CryptoKey</p>\n\n<hr>\n",
+      "desc": "<p>CryptoKey 是 <code>com.qiaomu.monkeyking.core.crypto.Crypto.Key</code> 的子类, 其实例可代表一个密钥 (确切地说, 是自定义密钥, 而非 Java 密钥), 主要用于 <a href=\"../utilities/crypto.md\">密文</a> 模块.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"crypto-key-pair.md#p-publickey\">CryptoKeyPair#publicKey</a></li>\n<li><a href=\"crypto-key-pair.md#p-privatekey\">CryptoKeyPair#privateKey</a></li>\n<li><a href=\"../utilities/crypto.md#c-key\">crypto.Key</a>::new</li>\n</ul>\n<blockquote>\n<p>注：本页展开 <code>CryptoKey</code> 自有成员；继承自 Java/Android 类型的成员请参阅对应官方参考。</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">CryptoKey</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[p] data",

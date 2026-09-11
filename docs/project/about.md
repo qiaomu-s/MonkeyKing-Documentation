@@ -447,4 +447,4 @@ typeof foo.bar('hello', 3); // string
 相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>
 相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>
 开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>
-如有任何不当之处, 欢迎提交 [Issue](https://github.com/qiaomu-s/MonkeyKing-Documentation) 或 [PR](https://github.com/qiaomu-s/MonkeyKing-Documentation).<br>
+如有任何不当之处, 欢迎提交 [Issue](https://github.com/qiaomu-s/MonkeyKing-Documentation/issues) 或 [PR](https://github.com/qiaomu-s/MonkeyKing-Documentation/pulls).<br>

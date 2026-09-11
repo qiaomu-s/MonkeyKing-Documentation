@@ -4,7 +4,51 @@
     {
       "textRaw": "综述 (Overview)",
       "name": "综述_(overview)",
-      "desc": "<hr>\n<p><a href=\"https://github.com/qiaomu-s/MonkeyKing\">Monkey King</a>: 安卓平台 JavaScript 自动化工具.</p>\n<ul>\n<li>脚本语言: <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/\">JavaScript</a><br></li>\n<li>脚本引擎: <a href=\"https://github.com/mozilla/rhino/\">Rhino</a><br></li>\n<li>支持特性: <a href=\"https://262.ecma-international.org/5.1/\">ES5</a> (全部), <a href=\"https://262.ecma-international.org/6.0/\">ES6</a> (部分)</li>\n</ul>\n<hr>\n<p>扩展阅读:</p>\n<ul>\n<li>了解 JavaScript<ul>\n<li><a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/\">MDN - JavaScript 基础</a></li>\n<li><a href=\"https://zh.javascript.info/\">JavaScript.info - JavaScript 教程</a></li>\n</ul>\n</li>\n<li>查看 Rhino 引擎兼容性列表<ul>\n<li><a href=\"https://mozilla.github.io/rhino/compat/engines.html\">Rhino ES2015 Support</a></li>\n</ul>\n</li>\n<li>使用 PC (个人计算机) 开发<ul>\n<li><a href=\"https://github.com/qiaomu-s/MonkeyKing\">Monkey King VSCode Extension</a></li>\n</ul>\n</li>\n<li>使用 Node.js 开发<ul>\n<li><a href=\"https://pro.autojs.org/\">Auto.js Pro</a></li>\n</ul>\n</li>\n<li>使用 TypeScript 开发<ul>\n<li><a href=\"https://github.com/pboymt/autojs-dev/\">Auto.js DevTools</a></li>\n</ul>\n</li>\n</ul>\n<hr>\n<p>阅读文档:</p>\n<ul>\n<li>宽屏设备网页阅读<ul>\n<li>点击左侧边栏条目 - 阅读相关章节</li>\n</ul>\n</li>\n<li>移动设备网页阅读<ul>\n<li>点击左下方抽屉按钮 - 展开侧边栏并点击条目 - 阅读相关章节</li>\n</ul>\n</li>\n<li>Monkey King 应用内阅读<ul>\n<li>点击首页 &quot;文档&quot; 标签 - 点击条目 - 阅读相关章节</li>\n<li>点击首页右上方 &quot;搜索&quot; 图标 - 在当前页面检索内容</li>\n<li>文档页面左上方的导航链接可实现页面跳转:<ul>\n<li>点击 &quot;索引&quot; - 跳转至章节索引页面</li>\n<li>点击 &quot;查看全部&quot; - 所有章节内容在同一页面列出</li>\n</ul>\n</li>\n<li>阅读文档时, &quot;文档&quot; 标签可作为快捷按钮使用:<ul>\n<li>点击 &quot;文档&quot; 标签 - 返回至当前页面顶部</li>\n<li>长按 &quot;文档&quot; 标签 - 跳转至章节索引页面</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>启动器快速启动阅读<ul>\n<li>Monkey King 设置页面 - 启动器快捷方式 - 点击 &quot;文档&quot; 图标</li>\n<li>将 &quot;文档&quot; 快捷方式添加到启动器 (俗称 &quot;桌面&quot;)</li>\n<li>在启动器点击 &quot;文档&quot; 图标即可阅读文档</li>\n<li>部分高版本安卓系统支持长按 Monkey King 应用图标直接激活快捷方式或拖放添加到启动器</li>\n</ul>\n</li>\n</ul>\n<blockquote>\n<p>注: 初次阅读文档或首次使用 Monkey King 建议从 <a href=\"../project/about.md\">关于文档</a> 开始.</p>\n</blockquote>\n",
+      "desc": "<p>Monkey King 6.7.0 是运行在 Android 上的 JavaScript 自动化与应用开发环境。它使用 Rhino 解释脚本，并提供无障碍自动化、图像与 OCR、UI、文件、网络、任务调度、Shell、SQLite 和媒体分析等模块。</p>\n<p>本文档于 2026-09-10 以 <a href=\"https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966\">Monkey King 源码</a> 固定提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 为事实来源。</p>\n",
+      "modules": [
+        {
+          "textRaw": "运行环境",
+          "name": "运行环境",
+          "desc": "<ul>\n<li><strong>平台</strong>：Android API 24 及以上。</li>\n<li><strong>语言</strong>：JavaScript；Rhino 上下文使用 <code>Context.VERSION_ES6</code>。</li>\n<li><strong>引擎</strong>：Monkey King 定制的 <a href=\"https://github.com/mozilla/rhino\">Mozilla Rhino</a>。</li>\n<li><strong>模块</strong>：内置增强模块、CommonJS <code>require()</code>、Java / Android 类互操作。</li>\n<li><strong>异步模型</strong>：线程、计时器、continuation 兼容的 <code>Promise</code> 与 <code>ResultAdapter</code>。</li>\n</ul>\n<p>Rhino 2.0 不是浏览器或 Node.js。脚本不能默认使用 DOM、Web Worker、Node.js 原生模块或 V8 专属语法；JavaScript 语法和内建对象也应以 Monkey King 实际引擎为准。</p>\n<pre><code class=\"lang-js\">console.log({\n    version: monkeyking.versionName,\n    engine: engines.myEngine().toString(),\n    apiLevel: device.sdkInt,\n});\n</code></pre>\n",
+          "type": "module",
+          "displayName": "运行环境"
+        },
+        {
+          "textRaw": "从哪里开始",
+          "name": "从哪里开始",
+          "desc": "<p>第一次使用建议按以下顺序阅读：</p>\n<ol>\n<li><a href=\"manual.md\">使用手册</a>：创建脚本、权限、线程、模块和资源释放。</li>\n<li><a href=\"../api/core/global.md\">全局对象</a>：默认变量、全局函数和类型入口。</li>\n<li><a href=\"../api/automation/automator.md\">自动化</a>：无障碍、坐标、Root 与 Shizuku 操作。</li>\n<li><a href=\"../api/core/modules.md\">模块系统</a>：<code>require</code>、<code>Module</code>、<code>Promise</code> 和 <code>ResultAdapter</code>。</li>\n<li><a href=\"../api/types/data-types.md\">数据类型</a>：Rhino、Java 与 Monkey King 包装类型。</li>\n</ol>\n<p>如果已经知道模块名，可直接从顶部 <strong>API</strong> 导航或左侧分类目录进入对应页面。</p>\n",
+          "type": "module",
+          "displayName": "从哪里开始"
+        },
+        {
+          "textRaw": "文档站使用方式",
+          "name": "文档站使用方式",
+          "desc": "<ul>\n<li>宽屏浏览器使用左侧目录和右侧本页目录。</li>\n<li>移动浏览器通过顶部菜单打开分类目录。</li>\n<li>点击导航栏“搜索文档”，或按 <code>/</code>、<code>Ctrl+K</code> / <code>Command+K</code> 打开本地全文搜索。</li>\n<li>每页底部可进入上一篇或下一篇；标题旁的链接可复制精确锚点。</li>\n<li>右上角外观按钮切换浅色、深色或跟随系统主题。</li>\n<li>“在 GitHub 上编辑此页”会打开当前 Markdown 源文件，便于提交修正。</li>\n</ul>\n<p>关于文档仓库、来源归属、许可证和发布流程，请参阅<a href=\"../project/about.md\">关于文档</a>。</p>\n<p>Monkey King 应用内的离线文档由具体 APK 构建决定，界面入口可能随版本或构建变体变化。站点导航不再依赖旧版“索引 / 查看全部 / 长按文档标签”等交互；找不到应用内入口时可直接访问 <code>https://docs.monkeyking.com</code>。</p>\n",
+          "type": "module",
+          "displayName": "文档站使用方式"
+        },
+        {
+          "textRaw": "编写脚本",
+          "name": "编写脚本",
+          "desc": "<p>Monkey King 自带编辑与运行能力，也可以在电脑上使用任意支持 JavaScript 的编辑器。桌面编辑器只负责文本与类型提示，实际行为仍应在 Android 设备或模拟器上的 Monkey King 6.7.0 验证。</p>\n<pre><code class=\"lang-js\">&#39;use strict&#39;;\n\nconst output = files.join(files.cwd(), &#39;hello.txt&#39;);\nfiles.write(output, &#39;Hello, Monkey King&#39;);\ntoastLog(output);\n</code></pre>\n<p>学习 JavaScript 可参考 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide\">MDN JavaScript 指南</a> 与 <a href=\"https://zh.javascript.info/\">JavaScript.info</a>。Rhino 的标准兼容性可参考 <a href=\"https://mozilla.github.io/rhino/compat/engines.html\">Rhino compatibility table</a>，但 Monkey King 还包含自身扩展与补丁。</p>\n",
+          "type": "module",
+          "displayName": "编写脚本"
+        },
+        {
+          "textRaw": "版本与可追溯性",
+          "name": "版本与可追溯性",
+          "desc": "<p>API 页面中的版本标签表示该成员的已知引入或变更版本：</p>\n<ul>\n<li><code>v6.7.0</code>：可追溯到当前版本新增或公开的能力。</li>\n<li><code>≤ v6.6.4</code>：固定源码中存在，但当前仓库历史不足以精确定位更早引入版本。</li>\n<li><code>Deprecated</code>：仍可调用但不建议在新脚本中使用。</li>\n</ul>\n<p>Android、Java、OkHttp、OpenCV 等外部类型只说明 Monkey King 的入口与差异；完整成员以对应项目官方文档为准。</p>\n",
+          "type": "module",
+          "displayName": "版本与可追溯性"
+        },
+        {
+          "textRaw": "反馈",
+          "name": "反馈",
+          "desc": "<ul>\n<li>文档问题：在 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues\">MonkeyKing-Documentation</a> 提交 issue。</li>\n<li>应用或 API 行为问题：在 <a href=\"https://github.com/qiaomu-s/AutoJs6/issues\">Monkey King 源码仓</a> 提交 issue；私有仓访问权限由仓库所有者管理。</li>\n<li>提交问题时请附上 Monkey King 版本、Android API 级别、设备或模拟器信息、最小复现脚本和完整错误日志。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "反馈"
+        }
+      ],
       "type": "module",
       "displayName": "综述 (Overview)"
     }

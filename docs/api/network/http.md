@@ -213,10 +213,10 @@ http.postJsonAsync('https://example.com/items', { name: 'Monkey' })
 
 <a id="api-symbol-aHR0cC5wb3N0TXVsdGlwYXJ0"></a>
 
-### `http.postMultipart(url, files, options?, callback?)`
+### `http.postMultipart(url, files?, options?, callback?)`
 
 ```ts
-http.postMultipart(url: string, files: Record<string, MultipartValue>, options?: HttpRequestBuilderOptions, callback?: HttpCallback): HttpResponse | undefined
+http.postMultipart(url: string, files?: Record<string, MultipartValue>, options?: HttpRequestBuilderOptions, callback?: HttpCallback): HttpResponse | undefined
 
 type MultipartValue =
   | string
@@ -226,14 +226,14 @@ type MultipartValue =
   | [fileName: string, mimeType: string, path: string | java.net.URI]
 ```
 
-强制 `POST` 和 `multipart/form-data`。字符串/数字成为普通表单字段；文件对象或二/三元素数组成为文件 part。二元素数组按扩展名推断 MIME，未知时使用 `application/octet-stream`。路径按当前脚本运行时解析；无效数组长度或值类型抛出参数异常。
+强制 `POST` 和 `multipart/form-data`。省略 `files` 时仍会构建一个空的 multipart body。字符串/数字成为普通表单字段；文件对象或二/三元素数组成为文件 part。二元素数组按扩展名推断 MIME，未知时使用 `application/octet-stream`。路径按当前脚本运行时解析；无效数组长度或值类型抛出参数异常。
 
 <a id="api-symbol-aHR0cC5wb3N0TXVsdGlwYXJ0QXN5bmM"></a>
 
-### `http.postMultipartAsync(url, files, options?, callback?)`
+### `http.postMultipartAsync(url, files?, options?, callback?)`
 
 ```ts
-http.postMultipartAsync(url: string, files: Record<string, MultipartValue>, options?: HttpRequestBuilderOptions, callback?: AsyncHttpCallback): Promise<HttpResponse>
+http.postMultipartAsync(url: string, files?: Record<string, MultipartValue>, options?: HttpRequestBuilderOptions, callback?: AsyncHttpCallback): Promise<HttpResponse>
 ```
 
 multipart POST 的 Promise 版本。

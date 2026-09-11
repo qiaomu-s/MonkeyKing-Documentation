@@ -4,7 +4,7 @@
     {
       "textRaw": "标准化 (Standardization)",
       "name": "标准化_(standardization)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Apr 9, 2023.</p>\n\n<hr>\n<p>s13n 模块用于将多种不同类型的数据统一转换为标准类型.</p>\n<p>例如在 Monkey King 中, 一个颜色参数通常可接受 [ <a href=\"../types/data-types.md#colorhex\">ColorHex</a> / <a href=\"../types/data-types.md#colorint\">ColorInt</a> / <a href=\"../types/data-types.md#colorname\">ColorName</a> / <a href=\"../types/color.md\">Color</a> / <a href=\"../types/data-types.md#themecolor\">ThemeColor</a> ] 等多种类型:</p>\n<pre><code class=\"lang-js\">console.setBackgroundColor(&#39;orange&#39;);\nconsole.setBackgroundColor(&#39;#663399&#39;);\nconsole.setBackgroundColor(monkeyking.themeColor);\nconsole.setBackgroundColor(Color(&#39;blue&#39;).setAlpha(0.75));\n</code></pre>\n<p>上述这些颜色设置方式均有效.<br>\n但安卓 API 中涉及颜色的参数往往只接受 <code>ColorInt</code> 类型:</p>\n<pre><code class=\"lang-js\">activity.window.setStatusBarColor(&#39;orange&#39;); /* 抛出异常. */\nactivity.window.setStatusBarColor(Color(&#39;orange&#39;)); /* 抛出异常. */\nactivity.window.setStatusBarColor(Color(&#39;orange&#39;).toInt()); /* 正常. */\nactivity.window.setStatusBarColor(colors.toInt(&#39;orange&#39;)); /* 效果同上. */\n</code></pre>\n<p>上述示例的颜色参数只能使用 <code>ColorInt</code>, 对应 JavaScript 的 <code>number</code> 类型.</p>\n<p>s13n 模块对颜色参数统一转换为 <code>ColorInt</code>:</p>\n<pre><code class=\"lang-js\">s13n.color(&#39;red&#39;); /* 相当于 colors.toInt(&#39;red&#39;) . */\n</code></pre>\n<p>因此对于上述设置通知栏颜色的示例, 使用 s13n 模块即可不必关心参数原本的类型:</p>\n<pre><code class=\"lang-js\">activity.window.setStatusBarColor(s13n.color(&#39;orange&#39;)); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;))); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;).toInt())); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;).toHex())); /* 正常. */\n</code></pre>\n<p>不过对于 Monkey King 内置模块 (colors, device, images 等), 传参时无需使用 s13n 进行标准化.<br>\n因为在模块内部的实现代码中, 已经借助 s13n 进行了标准化操作.<br>\n例如以下代码片段是 <code>console.setBackgroundColor</code> 的内部实现代码:</p>\n<pre><code class=\"lang-js\">function setBackgroundColor(c) {\n    return runtime.console.setBackgroundColor(s13n.color(c));\n}\n</code></pre>\n<p>上述示例可以看出, s13n 模块对参数 <code>c</code> 进行了颜色标准化操作.</p>\n<p>下表列出了 s13n 模块中不同方法接受类型与输出类型:</p>\n<table>\n<thead>\n<tr>\n<th>方法名称</th>\n<th>描述</th>\n<th>接受类型</th>\n<th>输出类型</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a href=\"#m-color\">color</a></td>\n<td>颜色</td>\n<td><a href=\"../types/omni-types.md#omnicolor\">OmniColor</a></td>\n<td><a href=\"../types/data-types.md#colorint\">ColorInt</a></td>\n</tr>\n</tbody>\n</table>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">s13n</p>\n\n<hr>\n",
+      "desc": "<p>s13n 模块用于将多种不同类型的数据统一转换为标准类型.</p>\n<p>例如在 Monkey King 中, 一个颜色参数通常可接受 [ <a href=\"../types/data-types.md#colorhex\">ColorHex</a> / <a href=\"../types/data-types.md#colorint\">ColorInt</a> / <a href=\"../types/data-types.md#colorname\">ColorName</a> / <a href=\"../types/color.md\">Color</a> / <a href=\"../types/data-types.md#themecolor\">ThemeColor</a> ] 等多种类型:</p>\n<pre><code class=\"lang-js\">console.setBackgroundColor(&#39;orange&#39;);\nconsole.setBackgroundColor(&#39;#663399&#39;);\nconsole.setBackgroundColor(monkeyking.themeColor);\nconsole.setBackgroundColor(Color(&#39;blue&#39;).setAlpha(0.75));\n</code></pre>\n<p>上述这些颜色设置方式均有效.<br>\n但安卓 API 中涉及颜色的参数往往只接受 <code>ColorInt</code> 类型:</p>\n<pre><code class=\"lang-js\">activity.window.setStatusBarColor(&#39;orange&#39;); /* 抛出异常. */\nactivity.window.setStatusBarColor(Color(&#39;orange&#39;)); /* 抛出异常. */\nactivity.window.setStatusBarColor(Color(&#39;orange&#39;).toInt()); /* 正常. */\nactivity.window.setStatusBarColor(colors.toInt(&#39;orange&#39;)); /* 效果同上. */\n</code></pre>\n<p>上述示例的颜色参数只能使用 <code>ColorInt</code>, 对应 JavaScript 的 <code>number</code> 类型.</p>\n<p>s13n 模块对颜色参数统一转换为 <code>ColorInt</code>:</p>\n<pre><code class=\"lang-js\">s13n.color(&#39;red&#39;); /* 相当于 colors.toInt(&#39;red&#39;) . */\n</code></pre>\n<p>因此对于上述设置通知栏颜色的示例, 使用 s13n 模块即可不必关心参数原本的类型:</p>\n<pre><code class=\"lang-js\">activity.window.setStatusBarColor(s13n.color(&#39;orange&#39;)); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;))); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;).toInt())); /* 正常. */\nactivity.window.setStatusBarColor(s13n.color(Color(&#39;orange&#39;).toHex())); /* 正常. */\n</code></pre>\n<p>不过对于 Monkey King 内置模块 (colors, device, images 等), 传参时无需使用 s13n 进行标准化.<br>\n因为在模块内部的实现代码中, 已经借助 s13n 进行了标准化操作.<br>\n例如以下代码片段是 <code>console.setBackgroundColor</code> 的内部实现代码:</p>\n<pre><code class=\"lang-js\">function setBackgroundColor(c) {\n    return runtime.console.setBackgroundColor(s13n.color(c));\n}\n</code></pre>\n<p>上述示例可以看出, s13n 模块对参数 <code>c</code> 进行了颜色标准化操作.</p>\n<p>下表列出了 s13n 模块中不同方法接受类型与输出类型:</p>\n<table>\n<thead>\n<tr>\n<th>方法名称</th>\n<th>描述</th>\n<th>接受类型</th>\n<th>输出类型</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a href=\"#m-color\">color</a></td>\n<td>颜色</td>\n<td><a href=\"../types/omni-types.md#omnicolor\">OmniColor</a></td>\n<td><a href=\"../types/data-types.md#colorint\">ColorInt</a></td>\n</tr>\n</tbody>\n</table>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">s13n</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[m] color",
@@ -79,6 +79,88 @@
           ],
           "type": "module",
           "displayName": "[m] throwable"
+        },
+        {
+          "textRaw": "固定源码补充方法",
+          "name": "固定源码补充方法",
+          "desc": "<p>以下方法与 <code>color</code>、<code>throwable</code> 一样同步执行，不持有外部资源，版本记作 <strong>≤ v6.6.4（旧文档未记录精确版本）</strong>。</p>\n",
+          "methods": [
+            {
+              "textRaw": "s13n.point(value, y?)",
+              "type": "method",
+              "name": "point",
+              "desc": "<p>接受 1 至 2 个参数并返回 <code>android.graphics.Point</code>：</p>\n<ul>\n<li>Android <code>Point</code>：原样返回。</li>\n<li>OpenCV <code>Point</code>：将 <code>x</code>、<code>y</code> 截断为整数。</li>\n<li>数组：读取前两个元素并转换为整数。</li>\n<li>对象：读取 <code>x</code>、<code>y</code> 属性并转换为整数。</li>\n<li>数字：作为 <code>x</code>；第二个参数缺省或转为 <code>NaN</code> 时令 <code>y = x</code>，否则将第二个参数四舍五入为整数。</li>\n</ul>\n<p>未知类型、缺少坐标或数值转换失败会抛出参数异常。</p>\n<pre><code class=\"lang-js\">console.log(s13n.point([10, 20]));     // Point(10, 20)\nconsole.log(s13n.point({ x: 3, y: 4 }));\nconsole.log(s13n.point(8));            // Point(8, 8)\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "value"
+                    },
+                    {
+                      "name": "y?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "s13n.time(source, fromUnit?, toUnit?)",
+              "type": "method",
+              "name": "time",
+              "desc": "<p>接受 1 至 3 个参数，返回转换后的 <code>number</code>。数字默认按毫秒解释，目标单位也默认毫秒；单位可使用 <code>java.util.concurrent.TimeUnit</code>，或不区分大小写的纳秒、微秒、毫秒、秒、分钟、小时、天的常见英文缩写。第二个参数也可写成 <code>{ fromUnit, toUnit }</code>。</p>\n<p><code>Date</code> 会先转换为时间戳；包含完整“年、月、日、时、分、秒”六段的字符串先按日期解析。非法数字、未知单位或找不到转换函数时抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(s13n.time(2, &#39;seconds&#39;, &#39;milliseconds&#39;)); // 2000\nconsole.log(s13n.time(3, { fromUnit: &#39;minutes&#39;, toUnit: &#39;seconds&#39; })); // 180\n</code></pre>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "fromUnit?"
+                    },
+                    {
+                      "name": "toUnit?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "s13n.bytes(source, fromUnit?)",
+              "type": "method",
+              "name": "bytes",
+              "desc": "<p>接受 1 至 2 个参数，把数值字节单位统一为整数 byte。省略 <code>fromUnit</code> 时按 byte 解释；提供第二个参数时必须是字符串单位，支持值以 <a href=\"converter.md\">cvt.bytes</a> 的字节单位解析规则为准。非法参数数量、非字符串单位或不可转换数值会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(s13n.bytes(2, &#39;KB&#39;));  // 2048\nconsole.log(s13n.bytes(1.5, &#39;MB&#39;));\n</code></pre>\n<p>这些转换本身无需 Android 权限且没有持久副作用；若上游值来自文件、网络或硬件，资源生命周期仍由上游 API 管理。</p>\n<!-- fixed-source-contracts:start -->\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "source"
+                    },
+                    {
+                      "name": "fromUnit?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "module",
+          "displayName": "固定源码补充方法"
+        },
+        {
+          "textRaw": "固定源码合同表",
+          "name": "固定源码合同表",
+          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOnMxM24\"></a> <code>module:s13n</code></td>\n<td><code>s13n</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L765</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5ieXRlcw\"></a> <code>s13n.bytes</code></td>\n<td><code>s13n.bytes(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L170</code></td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.bytes);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5jb2xvcg\"></a> <code>s13n.color</code></td>\n<td><code>s13n.color(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L74</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.color);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5wb2ludA\"></a> <code>s13n.point</code></td>\n<td><code>s13n.point(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L97</code></td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：AndroidPoint；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.point);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aHJvd2FibGU\"></a> <code>s13n.throwable</code></td>\n<td><code>s13n.throwable(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L84</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.throwable);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aW1l\"></a> <code>s13n.time</code></td>\n<td><code>s13n.time(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L123</code></td>\n<td>参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Double；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.time);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "modules": [
+            {
+              "textRaw": "Rhino 2.0 表格读取示例",
+              "name": "rhino_2.0_表格读取示例",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: s13n&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "type": "module",
+              "displayName": "Rhino 2.0 表格读取示例"
+            }
+          ],
+          "type": "module",
+          "displayName": "固定源码合同表"
         }
       ],
       "type": "module",

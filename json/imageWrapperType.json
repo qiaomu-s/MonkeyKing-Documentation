@@ -4,26 +4,129 @@
     {
       "textRaw": "包装图像类 (ImageWrapper)",
       "name": "包装图像类_(imagewrapper)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Mar 24, 2023.</p>\n\n<hr>\n<p>包装图像类用于 Monkey King 的图像处理.</p>\n<p>包装后的图像类隐藏了内部复杂的图像处理细节, 便于图像数据的 [ 生成 / 访问 / 传递 / 交互 ].</p>\n<pre><code class=\"lang-js\">util.getClassName(ImageWrapper); // com.qiaomu.monkeyking.core.image.ImageWrapper\nimages.read(&#39;./picture.jpg&#39;) instanceof ImageWrapper; /* ImageWrapper 实例判断. */\nImageWrapper.ofBitmap(bitmap); /* 将 Bitmap 包装为 ImageWrapper. */\n</code></pre>\n<p>在 [ <a href=\"../media/image.md\">images</a> / <a href=\"../media/ocr.md\">ocr</a> / <a href=\"../media/canvas.md\">canvas</a> ] 等模块的方法中, 均或多或少地涉及 <code>ImageWrapper</code> 类型参数或返回值.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">ImageWrapper</p>\n\n<hr>\n",
+      "desc": "<p><code>ImageWrapper</code> 统一包装 Android <code>Bitmap</code>、OpenCV <code>Mat</code> 和屏幕捕获图像。<code>images.read</code>、<code>images.captureScreen</code>、图像变换和 OCR 等入口都使用该类型传递像素与原生资源。</p>\n<p>实例拥有可回收资源。完成处理后应调用 <code>recycle()</code>，尤其是在循环截图或批量 OpenCV 处理中；脚本运行时退出时也会清理已登记的图像资源，但不应把退出清理当作长期脚本的内存管理策略。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;/sdcard/Download/input.png&#39;, true)\ntry {\n  console.log(image.width, image.height, image.pixel(0, 0))\n} finally {\n  image.recycle()\n}\n</code></pre>\n",
       "modules": [
         {
-          "textRaw": "[m#] oneShot",
-          "name": "[m#]_oneshot",
-          "methods": [
+          "textRaw": "属性",
+          "name": "属性",
+          "modules": [
             {
-              "textRaw": "oneShot()",
-              "type": "method",
-              "name": "oneShot",
-              "desc": "<p><strong><code>6.2.0</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"image-wrapper.md\">ImageWrapper</a> }</li>\n</ul>\n<p>//// -=-= PENDING =-=- ////</p>\n",
-              "signatures": [
-                {
-                  "params": []
-                }
-              ]
+              "textRaw": "`width`",
+              "name": "`width`",
+              "desc": "<pre><code class=\"lang-ts\">readonly width: number\n</code></pre>\n<p>图像宽度（像素）。图像已回收时抛出状态异常。</p>\n",
+              "type": "module",
+              "displayName": "`width`"
+            },
+            {
+              "textRaw": "`height`",
+              "name": "`height`",
+              "desc": "<pre><code class=\"lang-ts\">readonly height: number\n</code></pre>\n<p>图像高度（像素）。图像已回收时抛出状态异常。</p>\n",
+              "type": "module",
+              "displayName": "`height`"
+            },
+            {
+              "textRaw": "`size`",
+              "name": "`size`",
+              "desc": "<pre><code class=\"lang-ts\">readonly size: org.opencv.core.Size\n</code></pre>\n<p>返回新的 OpenCV <code>Size(width, height)</code>。图像已回收时抛出状态异常。</p>\n",
+              "type": "module",
+              "displayName": "`size`"
+            },
+            {
+              "textRaw": "`bitmap`",
+              "name": "`bitmap`",
+              "desc": "<pre><code class=\"lang-ts\">readonly bitmap: android.graphics.Bitmap\n</code></pre>\n<p>返回内部位图；若实例当前只持有 <code>Mat</code>，则按需创建位图并转换像素。返回值与包装器共享生命周期：回收包装器后不要继续使用该位图，也不要单独回收它后再复用包装器。</p>\n",
+              "type": "module",
+              "displayName": "`bitmap`"
+            },
+            {
+              "textRaw": "`mat`",
+              "name": "`mat`",
+              "desc": "<pre><code class=\"lang-ts\">readonly mat: com.qiaomu.monkeyking.core.opencv.Mat\n</code></pre>\n<p>返回内部 OpenCV 矩阵；若实例当前只持有位图，则按需创建并转换。矩阵由包装器管理，调用方不应在包装器仍会使用它时单独 <code>release()</code>。</p>\n",
+              "type": "module",
+              "displayName": "`mat`"
+            },
+            {
+              "textRaw": "`bgrMat`",
+              "name": "`bgrmat`",
+              "desc": "<pre><code class=\"lang-ts\">readonly bgrMat: com.qiaomu.monkeyking.core.opencv.Mat\n</code></pre>\n<p>把当前矩阵从 BGRA 转为新的 BGR 矩阵并返回。每次读取都会创建转换结果；应避免无意义地重复读取，并让包装器负责最终释放最近一次结果。</p>\n",
+              "type": "module",
+              "displayName": "`bgrMat`"
+            },
+            {
+              "textRaw": "`plane`",
+              "name": "`plane`",
+              "desc": "<pre><code class=\"lang-ts\">readonly plane: android.media.Image.Plane | null\n</code></pre>\n<p>底层媒体图像平面（如果仍存在）。6.7.0 的屏幕媒体图像构造流程会立即复制像素并关闭原始 <code>Image</code>，因此常规截图包装器通常不再保留该引用。</p>\n",
+              "type": "module",
+              "displayName": "`plane`"
             }
           ],
           "type": "module",
-          "displayName": "[m#] oneShot"
+          "displayName": "属性"
+        },
+        {
+          "textRaw": "方法",
+          "name": "方法",
+          "desc": "<p><a id=\"m-oneshot\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "`oneShot()`",
+              "name": "`oneshot()`",
+              "desc": "<pre><code class=\"lang-ts\">oneShot(): ImageWrapper\n</code></pre>\n<p>把当前实例标记为“一次性”并返回同一个对象。之后 MonkeyKing 图像 API 在完成一次操作后调用内部 <code>shoot()</code> 时会自动 <code>recycle()</code>；普通实例的 <code>shoot()</code> 不执行回收。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;/sdcard/Download/input.png&#39;, true).oneShot()\nconst gray = images.grayscale(image) // 操作结束后 image 自动回收\ntry {\n  images.save(gray, &#39;/sdcard/Download/gray.png&#39;)\n} finally {\n  gray.recycle()\n}\n</code></pre>\n<p>标记不可撤销。不要在把实例交给会触发 <code>shoot()</code> 的 API 后继续访问它。</p>\n",
+              "type": "module",
+              "displayName": "`oneShot()`"
+            },
+            {
+              "textRaw": "`saveTo(path)`",
+              "name": "`saveto(path)`",
+              "desc": "<pre><code class=\"lang-ts\">saveTo(path: string): boolean\n</code></pre>\n<p>确保父目录存在并保存图像。内部只有位图时按 PNG、质量 100 写入；只有 OpenCV 矩阵时使用 <code>Imgcodecs.imwrite</code>，格式由路径扩展名决定。目录创建失败会抛出运行时异常；位图输出路径不可创建时抛出 <code>UncheckedIOException</code>；部分编码失败以 <code>false</code> 返回。</p>\n<pre><code class=\"lang-js\">const shot = images.captureScreen()\ntry {\n  if (!shot.saveTo(&#39;/sdcard/Pictures/shot.png&#39;)) {\n    throw new Error(&#39;保存失败&#39;)\n  }\n} finally {\n  shot.recycle()\n}\n</code></pre>\n",
+              "type": "module",
+              "displayName": "`saveTo(path)`"
+            },
+            {
+              "textRaw": "`pixel(x, y)`",
+              "name": "`pixel(x,_y)`",
+              "desc": "<pre><code class=\"lang-ts\">pixel(x: number, y: number): ColorInt\n</code></pre>\n<p>返回指定像素的 ARGB 颜色整数。坐标必须满足 <code>0 &lt;= x &lt; width</code>、<code>0 &lt;= y &lt; height</code>，越界抛出 <code>ArrayIndexOutOfBoundsException</code>。</p>\n<p>对于矩阵图像：单通道值扩展为不透明灰度，三通道按 RGB 转为不透明色，四个及以上通道取前四个 RGBA 分量；不支持的通道数会抛出异常。</p>\n",
+              "type": "module",
+              "displayName": "`pixel(x, y)`"
+            },
+            {
+              "textRaw": "`clone()`",
+              "name": "`clone()`",
+              "desc": "<pre><code class=\"lang-ts\">clone(): ImageWrapper\n</code></pre>\n<p>深复制当前图像并返回独立包装器。位图会复制为可变位图（缺失配置时使用 <code>ARGB_8888</code>），矩阵会调用 <code>clone()</code>；调用方负责回收新实例。</p>\n",
+              "type": "module",
+              "displayName": "`clone()`"
+            },
+            {
+              "textRaw": "`ensureNotRecycled()`",
+              "name": "`ensurenotrecycled()`",
+              "desc": "<pre><code class=\"lang-ts\">ensureNotRecycled(): void\n</code></pre>\n<p>实例仍可用时返回；已回收时抛出带本地化消息的状态异常。公开属性和像素方法会自动执行此检查。</p>\n",
+              "type": "module",
+              "displayName": "`ensureNotRecycled()`"
+            },
+            {
+              "textRaw": "`isRecycled()`",
+              "name": "`isrecycled()`",
+              "desc": "<pre><code class=\"lang-ts\">isRecycled(): boolean\n</code></pre>\n<p>返回包装器是否已执行回收。该查询本身不会抛出“已回收”异常。</p>\n",
+              "type": "module",
+              "displayName": "`isRecycled()`"
+            },
+            {
+              "textRaw": "`recycle()`",
+              "name": "`recycle()`",
+              "desc": "<pre><code class=\"lang-ts\">recycle(): void\n</code></pre>\n<p>同步释放持有的 <code>Bitmap</code>、OpenCV <code>Mat</code>、BGR 矩阵和媒体图像，并把实例标记为已回收。方法使用实例锁保护清理过程，重复调用不会再次访问已置空的成员。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;/sdcard/Download/large.png&#39;, true)\nimage.recycle()\nconsole.log(image.isRecycled()) // true\n// image.width // 抛出异常\n</code></pre>\n",
+              "type": "module",
+              "displayName": "`recycle()`"
+            }
+          ],
+          "type": "module",
+          "displayName": "方法"
+        },
+        {
+          "textRaw": "所有权、线程与异常",
+          "name": "所有权、线程与异常",
+          "desc": "<ul>\n<li><code>images.read</code>、<code>images.load</code>、<code>images.captureScreen</code> 和大多数变换返回的新包装器由调用方负责回收。</li>\n<li>路径参数被转换为当前脚本运行时路径；共享存储访问仍受 Android 权限和分区存储规则约束。</li>\n<li>包装器的 <code>recycle()</code> 有同步保护，但像素读取、位图/矩阵转换和其他属性访问并非并发事务；不要在一个线程回收的同时从另一个线程使用同一实例。</li>\n<li>调用图像 API 时，如果输入是路径，运行时通常创建一次性包装器并在操作后自动回收；这不影响方法返回的新图像。</li>\n<li>本页描述 MonkeyKing 6.7.0 的资源合同。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "所有权、线程与异常"
         }
       ],
       "type": "module",

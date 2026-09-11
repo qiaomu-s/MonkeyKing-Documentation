@@ -224,9 +224,13 @@ function pageForSymbol(
   if (symbol.source.path.endsWith('/core/accessibility/UiSelector.kt')) {
     return 'docs/api/automation/ui-selector.md'
   }
+  if (symbol.source.path.includes('/augment/selector/')) {
+    return 'docs/api/automation/ui-selector.md'
+  }
   const augmentablePage = [
     ['/augment/console/', 'docs/api/system/console.md'],
     ['/augment/shell/', 'docs/api/system/shell.md'],
+    ['/augment/threads/', 'docs/api/system/threads.md'],
     ['/augment/timers/', 'docs/api/system/timers.md'],
   ] as const
   for (const [sourceSegment, page] of augmentablePage) {

@@ -4,38 +4,33 @@
     {
       "textRaw": "图像 (Images)",
       "name": "图像_(images)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>images模块提供了一些手机设备中常见的图片处理函数, 包括截图、读写图片、图片剪裁、旋转、二值化、找色找图等.</p>\n<p>该模块分为两个部分, 找图找色部分和图片处理部分.</p>\n<p>需要注意的是, image对象创建后尽量在不使用时进行回收, 同时避免循环创建大量图片. 因为图片是一种占用内存比较大的资源, 尽管Monkey King通过各种方式（比如图片缓存机制、垃圾回收时回收图片、脚本结束时回收所有图片）尽量降低图片资源的泄漏和内存占用, 但是糟糕的代码仍然可以占用大量内存.</p>\n<p>Image对象通过调用<code>recycle()</code>函数来回收. 例如：</p>\n<pre><code>// 读取图片\nvar img = images.read(&quot;./1.png&quot;);\n//对图片进行操作\n...\n// 回收图片\nimg.recycle();\n</code></pre><p>例外的是, <code>captureScreen()</code> 返回的图片不需要回收.</p>\n",
-      "methods": [
+      "desc": "<p><a id=\"api-symbol-bW9kdWxlOmltYWdlcw\"></a></p>\n",
+      "modules": [
+        {
+          "textRaw": "`images` 模块",
+          "name": "`images`_模块",
+          "desc": "<p><code>images</code> 是全局图像模块，另有 <code>$images</code> 同义入口；<code>captureScreen</code>、<code>requestScreenCapture</code> 和 <code>requestScreenCaptureAsync</code> 还会直接导出为同名全局函数。模块覆盖截图、编解码、OpenCV 变换、找色找图、特征匹配和相似度计算。</p>\n<p>该模块分为两个部分, 找图找色部分和图片处理部分.</p>\n<p>图像和 OpenCV 矩阵占用原生内存。除明确返回布尔值、数字或普通对象的入口外，创建出的 <code>ImageWrapper</code>、<code>Mat</code>、<code>ImageFeatures</code> 应在不用时回收；脚本退出清理只是最后保障。路径输入通常会被包装为一次性图像并在该次操作后自动回收，方法返回的新图像仍由调用方负责。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;./1.png&#39;, true)\ntry {\n  const gray = images.grayscale(image)\n  try {\n    images.save(gray, &#39;./gray.png&#39;)\n  } finally {\n    gray.recycle()\n  }\n} finally {\n  image.recycle()\n}\n</code></pre>\n<p>所有变换和匹配入口同步运行在调用脚本线程；网络加载异步入口和屏幕授权异步入口返回 Promise。OpenCV 函数首次使用时可能触发按需初始化。</p>\n",
+          "type": "module",
+          "displayName": "`images` 模块"
+        },
         {
           "textRaw": "图片处理",
           "name": "图片处理",
-          "type": "method",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`path` {string} 图片路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "图片路径"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "path"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>读取在路径path的图片文件并返回一个Image对象. 如果文件不存在或者文件无法解码则返回null.</p>\n"
+          "desc": "<p><a id=\"api-symbol-aW1hZ2VzLnJlYWQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "图片处理"
         },
         {
-          "textRaw": "images.read(path)",
+          "textRaw": "找图找色",
+          "name": "找图找色",
+          "desc": "<p><a id=\"api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJl\"></a></p>\n",
+          "type": "module",
+          "displayName": "找图找色"
+        }
+      ],
+      "methods": [
+        {
+          "textRaw": "images.read(path[, isStrict])",
           "type": "method",
           "name": "read",
           "signatures": [
@@ -46,6 +41,13 @@
                   "name": "path",
                   "type": "string",
                   "desc": "图片路径"
+                },
+                {
+                  "textRaw": "`isStrict` {boolean} 是否在读取失败时抛出异常，默认为 `false` ",
+                  "name": "isStrict",
+                  "type": "boolean",
+                  "desc": "是否在读取失败时抛出异常，默认为 `false`",
+                  "optional": true
                 }
               ]
             },
@@ -53,11 +55,15 @@
               "params": [
                 {
                   "name": "path"
+                },
+                {
+                  "name": "isStrict",
+                  "optional": true
                 }
               ]
             }
           ],
-          "desc": "<p>读取在路径path的图片文件并返回一个Image对象. 如果文件不存在或者文件无法解码则返回null.</p>\n"
+          "desc": "<p>读取路径 <code>path</code> 的图片文件并返回一个 <code>ImageWrapper</code>。默认 <code>isStrict = false</code> 时，文件不存在或无法解码返回 <code>null</code>；传入 <code>true</code> 时会抛出异常。</p>\n"
         },
         {
           "textRaw": "images.load(url)",
@@ -82,7 +88,7 @@
               ]
             }
           ],
-          "desc": "<p>加载在地址URL的网络图片并返回一个Image对象. 如果地址不存在或者图片无法解码则返回null.</p>\n"
+          "desc": "<p>加载 URL 指向的网络图片并返回一个 <code>ImageWrapper</code>。URL 无效、连接/读取失败或响应无法解码时可能抛出异常；该入口不保证以 <code>null</code> 表示失败。</p>\n"
         },
         {
           "textRaw": "images.copy(img)",
@@ -148,6 +154,16 @@
                     {
                       "textRaw": "`webp` ",
                       "name": "webp"
+                    },
+                    {
+                      "textRaw": "`webp_lossless`/`webp-lossless` ",
+                      "name": "webp_lossless",
+                      "desc": "/`webp-lossless`"
+                    },
+                    {
+                      "textRaw": "`webp_lossy`/`webp-lossy` ",
+                      "name": "webp_lossy",
+                      "desc": "/`webp-lossy`"
                     }
                   ],
                   "name": "format",
@@ -187,7 +203,7 @@
               ]
             }
           ],
-          "desc": "<p>把图片image以PNG格式保存到path中. 如果文件不存在会被创建；文件存在会被覆盖.</p>\n<pre><code>//把图片压缩为原来的一半质量并保存\nvar img = images.read(&quot;/sdcard/1.png&quot;);\nimages.save(img, &quot;/sdcard/1.jpg&quot;, &quot;jpg&quot;, 50);\napp.viewFile(&quot;/sdcard/1.jpg&quot;);\n</code></pre>"
+          "desc": "<p>把图片 <code>image</code> 按指定格式和质量保存到 <code>path</code> 中；省略 <code>format</code> 时默认为 PNG，省略 <code>quality</code> 时默认为 100。父目录不存在时会尝试创建，目标文件存在会被覆盖。</p>\n<pre><code>//把图片压缩为原来的一半质量并保存\nvar img = images.read(&quot;/sdcard/1.png&quot;);\nimages.save(img, &quot;/sdcard/1.jpg&quot;, &quot;jpg&quot;, 50);\napp.viewFile(&quot;/sdcard/1.jpg&quot;);\n</code></pre>"
         },
         {
           "textRaw": "images.fromBase64(base64)",
@@ -771,67 +787,25 @@
           ]
         },
         {
-          "textRaw": "找图找色",
-          "name": "找图找色",
-          "type": "method",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`landscape` {boolean} 布尔值,  表示将要执行的截屏是否为横屏. 如果landscape为false, 则表示竖屏截图; true为横屏截图. ",
-                  "name": "landscape",
-                  "type": "boolean",
-                  "desc": "布尔值,  表示将要执行的截屏是否为横屏. 如果landscape为false, 则表示竖屏截图; true为横屏截图.",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "landscape",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>向系统申请屏幕截图权限, 返回是否请求成功.</p>\n<p>第一次使用该函数会弹出截图权限请求, 建议选择“总是允许”.</p>\n<p>这个函数只是申请截图权限, 并不会真正执行截图, 真正的截图函数是<code>captureScreen()</code>.</p>\n<p>该函数在截图脚本中只需执行一次, 而无需每次调用<code>captureScreen()</code>都调用一次.</p>\n<p><strong>如果不指定landscape值, 则截图方向由当前设备屏幕方向决定</strong>, 因此务必注意执行该函数时的屏幕方向.</p>\n<p>建议在本软件界面运行该函数, 在其他软件界面运行时容易出现一闪而过的黑屏现象.</p>\n<p>示例:</p>\n<pre><code>//请求截图\nif(!requestScreenCapture()){\n    toast(&quot;请求截图失败&quot;);\n    exit();\n}\n//连续截图10张图片(间隔1秒)并保存到存储卡目录\nfor(var i = 0; i &lt; 10; i++){\n    captureScreen(&quot;/sdcard/screencapture&quot; + i + &quot;.png&quot;);\n    sleep(1000);\n}\n\n</code></pre><p>该函数也可以作为全局函数使用.</p>\n"
-        },
-        {
-          "textRaw": "images.requestScreenCapture([landscape])",
+          "textRaw": "images.requestScreenCapture(options?)",
           "type": "method",
           "name": "requestScreenCapture",
+          "desc": "<pre><code class=\"lang-ts\">images.requestScreenCapture(landscape?: boolean): boolean\nimages.requestScreenCapture(options?: {\n  orientation?: &#39;none&#39; | &#39;auto&#39; | &#39;portrait&#39; | &#39;landscape&#39; | number\n  width?: number\n  height?: number\n  isAsync?: boolean\n  async?: boolean\n}): boolean\nimages.requestScreenCapture(width: number, height: number): boolean\n</code></pre>\n<p>布尔参数表示截图方向：<code>false</code> 为竖屏，<code>true</code> 为横屏；省略时使用自动方向。对象形式还可指定 <code>orientation</code>、固定 <code>width</code>/<code>height</code>，以及连续异步帧的 <code>isAsync</code>（兼容名 <code>async</code>）。传入两个数字时使用固定宽高并采用 <code>orientation = none</code>。</p>\n<p>向系统申请屏幕截图权限, 返回是否请求成功.</p>\n<p>第一次使用该函数会弹出截图权限请求, 建议选择“总是允许”.</p>\n<p>这个函数只是申请截图权限, 并不会真正执行截图, 真正的截图函数是<code>captureScreen()</code>.</p>\n<p>该函数在截图脚本中只需执行一次, 而无需每次调用<code>captureScreen()</code>都调用一次.</p>\n<p>同步入口不能在 UI 线程调用；UI 场景应使用 <code>requestScreenCaptureAsync</code>。如果不指定方向，截图方向由当前设备屏幕方向决定。</p>\n<p>建议在本软件界面运行该函数, 在其他软件界面运行时容易出现一闪而过的黑屏现象.</p>\n<p>示例:</p>\n<pre><code>//请求截图\nif(!requestScreenCapture()){\n    toast(&quot;请求截图失败&quot;);\n    exit();\n}\n//连续截图10张图片(间隔1秒)并保存到存储卡目录\nfor(var i = 0; i &lt; 10; i++){\n    captureScreen(&quot;/sdcard/screencapture&quot; + i + &quot;.png&quot;);\n    sleep(1000);\n}\n\n</code></pre><p>该函数也可以作为全局函数使用.</p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`landscape` {boolean} 布尔值,  表示将要执行的截屏是否为横屏. 如果landscape为false, 则表示竖屏截图; true为横屏截图. ",
-                  "name": "landscape",
-                  "type": "boolean",
-                  "desc": "布尔值,  表示将要执行的截屏是否为横屏. 如果landscape为false, 则表示竖屏截图; true为横屏截图.",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "landscape",
-                  "optional": true
+                  "name": "options?"
                 }
               ]
             }
-          ],
-          "desc": "<p>向系统申请屏幕截图权限, 返回是否请求成功.</p>\n<p>第一次使用该函数会弹出截图权限请求, 建议选择“总是允许”.</p>\n<p>这个函数只是申请截图权限, 并不会真正执行截图, 真正的截图函数是<code>captureScreen()</code>.</p>\n<p>该函数在截图脚本中只需执行一次, 而无需每次调用<code>captureScreen()</code>都调用一次.</p>\n<p><strong>如果不指定landscape值, 则截图方向由当前设备屏幕方向决定</strong>, 因此务必注意执行该函数时的屏幕方向.</p>\n<p>建议在本软件界面运行该函数, 在其他软件界面运行时容易出现一闪而过的黑屏现象.</p>\n<p>示例:</p>\n<pre><code>//请求截图\nif(!requestScreenCapture()){\n    toast(&quot;请求截图失败&quot;);\n    exit();\n}\n//连续截图10张图片(间隔1秒)并保存到存储卡目录\nfor(var i = 0; i &lt; 10; i++){\n    captureScreen(&quot;/sdcard/screencapture&quot; + i + &quot;.png&quot;);\n    sleep(1000);\n}\n\n</code></pre><p>该函数也可以作为全局函数使用.</p>\n"
+          ]
         },
         {
           "textRaw": "images.captureScreen()",
           "type": "method",
           "name": "captureScreen",
-          "desc": "<p>截取当前屏幕并返回一个Image对象.</p>\n<p>没有截图权限时执行该函数会抛出SecurityException.</p>\n<p>该函数不会返回null, 两次调用可能返回相同的Image对象. 这是因为设备截图的更新需要一定的时间, 短时间内（一般来说是16ms）连续调用则会返回同一张截图.</p>\n<p>截图需要转换为Bitmap格式, 从而该函数执行需要一定的时间(0~20ms).</p>\n<p>另外在requestScreenCapture()执行成功后需要一定时间后才有截图可用, 因此如果立即调用captureScreen(), 会等待一定时间后(一般为几百ms)才返回截图.</p>\n<p>例子:</p>\n<pre><code>//请求横屏截图\nrequestScreenCapture(true);\n//截图\nvar img = captureScreen();\n//获取在点(100, 100)的颜色值\nvar color = images.pixel(img, 100, 100);\n//显示该颜色值\ntoast(colors.toString(color));\n</code></pre><p>该函数也可以作为全局函数使用.</p>\n",
+          "desc": "<p>截取当前屏幕并返回一个 <code>ImageWrapper</code>；传入保存路径时返回是否保存成功。</p>\n<p>没有截图权限时执行该函数会抛出SecurityException.</p>\n<p>没有截图权限，或多次重试后仍没有有效帧时会抛出异常。两次调用可能返回相同的 <code>ImageWrapper</code>，这是因为设备截图更新需要一定时间，短时间内（一般约 16ms）连续调用可能复用同一帧。</p>\n<p>截图需要转换为Bitmap格式, 从而该函数执行需要一定的时间(0~20ms).</p>\n<p>另外在requestScreenCapture()执行成功后需要一定时间后才有截图可用, 因此如果立即调用captureScreen(), 会等待一定时间后(一般为几百ms)才返回截图.</p>\n<p>例子:</p>\n<pre><code>//请求横屏截图\nrequestScreenCapture(true);\n//截图\nvar img = captureScreen();\n//获取在点(100, 100)的颜色值\nvar color = images.pixel(img, 100, 100);\n//显示该颜色值\ntoast(colors.toString(color));\n</code></pre><p>该函数也可以作为全局函数使用.</p>\n",
           "signatures": [
             {
               "params": []
@@ -861,7 +835,7 @@
               ]
             }
           ],
-          "desc": "<p>截取当前屏幕并以PNG格式保存到path中. 如果文件不存在会被创建；文件存在会被覆盖.</p>\n<p>该函数不会返回任何值. 该函数也可以作为全局函数使用.</p>\n"
+          "desc": "<p>截取当前屏幕并以 PNG 格式保存到 <code>path</code> 中。父目录不存在时会尝试创建，文件存在会被覆盖；返回 <code>boolean</code> 表示保存是否成功。</p>\n<p>该函数也可以作为全局函数使用。</p>\n"
         },
         {
           "textRaw": "images.pixel(image, x, y)",
@@ -1661,7 +1635,7 @@
               ]
             }
           ],
-          "desc": "<p>返回图片image在点(x, y)处的像素的ARGB值.</p>\n<p>该值的格式为0xAARRGGBB, 是一个&quot;32位整数&quot;(虽然JavaScript中并不区分整数类型和其他数值类型).</p>\n<p>坐标系以图片左上角为原点. 以图片左侧边为y轴, 上侧边为x轴.</p>\n<p>##</p>\n"
+          "desc": "<p>返回图片image在点(x, y)处的像素的ARGB值.</p>\n<p>该值的格式为0xAARRGGBB, 是一个&quot;32位整数&quot;(虽然JavaScript中并不区分整数类型和其他数值类型).</p>\n<p>坐标系以图片左上角为原点. 以图片左侧边为y轴, 上侧边为x轴.</p>\n"
         }
       ],
       "type": "module",
@@ -1680,7 +1654,373 @@
         {
           "textRaw": "Point.y",
           "name": "y",
-          "desc": "<p>纵坐标.</p>\n"
+          "desc": "<p>纵坐标.</p>\n<hr>\n"
+        }
+      ],
+      "modules": [
+        {
+          "textRaw": "MonkeyKing 6.7.0 补充合同",
+          "name": "monkeyking_6.7.0_补充合同",
+          "desc": "<p>以下入口由 6.7.0 Kotlin 运行时直接导出。图片参数除特别说明外可传 <code>ImageWrapper</code> 或路径；路径会严格读取为一次性图像，失败时抛出参数/读取异常，并在调用结束后自动回收。返回的新图像不随输入一起回收。</p>\n",
+          "modules": [
+            {
+              "textRaw": "读取、保存与屏幕捕获",
+              "name": "读取、保存与屏幕捕获",
+              "desc": "<p><a id=\"api-symbol-aW1hZ2VzLmltcmVhZA\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.imread(path)`",
+                  "name": "`images.imread(path)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.imread(path: string): com.qiaomu.monkeyking.core.opencv.Mat\n</code></pre>\n<p>规范化路径后直接调用 OpenCV <code>Imgcodecs.imread</code>，返回 MonkeyKing <code>Mat</code> 包装。与 <code>images.read</code> 不同，它不返回 <code>ImageWrapper</code>，也不把空矩阵转换为 <code>null</code>；调用方必须在用完后 <code>release()</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmxvYWRBc3luYw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.imread(path)`"
+                },
+                {
+                  "textRaw": "`images.loadAsync(url)`",
+                  "name": "`images.loadasync(url)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.loadAsync(url: string): Promise&lt;ImageWrapper&gt;\n</code></pre>\n<p>在异步操作适配器中通过 HTTP URL 加载并解码图片。成功时 Promise 解析为新 <code>ImageWrapper</code>；连接、读取或解码错误使 Promise 拒绝。模块不会缓存响应，调用方负责回收结果。</p>\n<pre><code class=\"lang-js\">images.loadAsync(&#39;https://example.com/image.png&#39;).then(image =&gt; {\n  try {\n    console.log(image.width, image.height)\n  } finally {\n    image.recycle()\n  }\n})\n</code></pre>\n<p><a id=\"api-symbol-aW1hZ2VzLmNhcHR1cmVTY3JlZW4\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.loadAsync(url)`"
+                },
+                {
+                  "textRaw": "`images.captureScreen(path?)`",
+                  "name": "`images.capturescreen(path?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.captureScreen(): ImageWrapper\nimages.captureScreen(path: string): boolean\n</code></pre>\n<p>无参数时返回当前有效屏幕帧；带路径时捕获并保存，返回保存是否成功。后台脚本线程在尚无捕获器时会先同步请求授权；UI 线程不会隐式执行同步授权，应先用 <code>requestScreenCaptureAsync</code>。没有授权或多次重试后仍无有效帧时抛出 <code>SecurityException</code> 或 <code>WrappedRuntimeException</code>。</p>\n<p>同步捕获器可能复用内部帧包装；不要长期持有或跨线程共享截图。需要长期保存时先 <code>images.copy</code>，并回收副本。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJlQXN5bmM\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.captureScreen(path?)`"
+                },
+                {
+                  "textRaw": "`images.requestScreenCaptureAsync(options?)`",
+                  "name": "`images.requestscreencaptureasync(options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.requestScreenCaptureAsync(landscape?: boolean): Promise&lt;boolean&gt;\nimages.requestScreenCaptureAsync(options?: ScreenCaptureRequestOptions): Promise&lt;boolean&gt;\nimages.requestScreenCaptureAsync(width: number, height: number): Promise&lt;boolean&gt;\n\ninterface ScreenCaptureRequestOptions {\n  orientation?: &#39;none&#39; | &#39;auto&#39; | &#39;portrait&#39; | &#39;landscape&#39; | number\n  width?: number\n  height?: number\n  isAsync?: boolean\n  async?: boolean\n}\n</code></pre>\n<p>先停止旧捕获器，再异步请求 MediaProjection。布尔值 <code>true</code> 表示横屏、<code>false</code> 表示竖屏；两个数值参数指定固定宽高并使用 <code>orientation = none</code>。Promise 解析为授权结果。</p>\n<p><code>isAsync</code>（兼容名 <code>async</code>）为 <code>true</code> 时，捕获器会连续把可用帧作为 <code>screen_capture_available</code>、<code>capture_available</code> 和兼容事件 <code>screen_capture</code> 从 <code>images</code> 事件发射器发出。事件图像仍需遵守 <code>ImageWrapper</code> 生命周期。</p>\n<pre><code class=\"lang-js\">images.requestScreenCaptureAsync({\n  orientation: &#39;portrait&#39;,\n  isAsync: false,\n}).then(granted =&gt; {\n  if (!granted) throw new Error(&#39;用户未授权截图&#39;)\n})\n</code></pre>\n<p><a id=\"api-symbol-aW1hZ2VzLnN0b3BTY3JlZW5DYXB0dXJl\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.requestScreenCaptureAsync(options?)`"
+                },
+                {
+                  "textRaw": "`images.stopScreenCapture()`",
+                  "name": "`images.stopscreencapture()`",
+                  "desc": "<pre><code class=\"lang-ts\">images.stopScreenCapture(): void\n</code></pre>\n<p>不接受参数，释放捕获器、上一帧缓存和授权请求绑定。之后再次截图需要重新请求授权。脚本退出时运行时也会执行捕获清理。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmdldFNjcmVlbkNhcHR1cmVPcHRpb25z\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.stopScreenCapture()`"
+                },
+                {
+                  "textRaw": "`images.getScreenCaptureOptions()`",
+                  "name": "`images.getscreencaptureoptions()`",
+                  "desc": "<pre><code class=\"lang-ts\">images.getScreenCaptureOptions(): {\n  width: number\n  height: number\n  orientation: number\n  density: number\n  isAsync: boolean\n} | null\n</code></pre>\n<p>不接受参数。捕获器尚未建立时返回 <code>null</code>；否则返回当前捕获器实际宽高、方向、密度和连续异步模式标记的只读记录。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnNhdmVJbWFnZQ\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.getScreenCaptureOptions()`"
+                },
+                {
+                  "textRaw": "`images.saveImage(image, path, format?, quality?)`",
+                  "name": "`images.saveimage(image,_path,_format?,_quality?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.saveImage(image: ImageWrapper | string, path: string, format?: string, quality?: number): boolean\n</code></pre>\n<p>与 <code>images.save</code> 共用实现。格式默认 <code>png</code>，允许 <code>png</code>、<code>jpg</code>、<code>jpeg</code>、<code>webp</code>、<code>webp_lossless</code>、<code>webp_lossy</code>（连字符形式也可）；质量默认 <code>100</code> 并限制到 <code>0..100</code>。父目录会自动创建；未知格式、空路径、写入失败或不支持的 WebP lossless 质量会抛出异常。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnBpeGVs\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.saveImage(image, path, format?, quality?)`"
+                },
+                {
+                  "textRaw": "`images.pixel(image, x, y)`",
+                  "name": "`images.pixel(image,_x,_y)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.pixel(image: ImageWrapper | string, x: number, y: number): ColorInt\n</code></pre>\n<p>将坐标转为整数并返回 ARGB 像素。坐标越界、输入不是图像或矩阵通道不受支持时抛出异常。实例形式 <code>image.pixel(x, y)</code> 使用同一像素合同。</p>\n",
+                  "type": "module",
+                  "displayName": "`images.pixel(image, x, y)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "读取、保存与屏幕捕获"
+            },
+            {
+              "textRaw": "OpenCV 变换与几何",
+              "name": "opencv_变换与几何",
+              "desc": "<p><a id=\"api-symbol-aW1hZ2VzLmludmVydA\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.invert(image)`",
+                  "name": "`images.invert(image)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.invert(image: ImageWrapper | string): ImageWrapper\n</code></pre>\n<p>返回颜色反相的新图像。6.7.0 实现反转 BGR 颜色通道并保留原 alpha 通道；输入不会原地修改。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmlzR3JheXNjYWxl\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.invert(image)`"
+                },
+                {
+                  "textRaw": "`images.isGrayscale(imageOrMat)`",
+                  "name": "`images.isgrayscale(imageormat)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.isGrayscale(value: ImageWrapper | string | org.opencv.core.Mat): boolean\n</code></pre>\n<p>单通道矩阵直接返回 <code>true</code>；多通道矩阵逐通道比较，所有通道值完全相同才返回 <code>true</code>。输入类型无效时抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmJpbGF0ZXJhbEZpbHRlcg\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.isGrayscale(imageOrMat)`"
+                },
+                {
+                  "textRaw": "`images.bilateralFilter(image, d?, sigmaColor?, sigmaSpace?, borderType?)`",
+                  "name": "`images.bilateralfilter(image,_d?,_sigmacolor?,_sigmaspace?,_bordertype?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.bilateralFilter(\n  image: ImageWrapper | string,\n  d?: number,\n  sigmaColor?: number,\n  sigmaSpace?: number,\n  borderType?: string | number,\n): ImageWrapper\n</code></pre>\n<p>调用 OpenCV bilateral filter，默认 <code>d = 0</code>、<code>sigmaColor = 40</code>、<code>sigmaSpace = 20</code>、<code>borderType = BORDER_DEFAULT</code>。字符串边界类型可省略 <code>BORDER_</code> 前缀；未知名称或 OpenCV 不接受的参数会抛出异常。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRDaXJjbGVz\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.bilateralFilter(image, d?, sigmaColor?, sigmaSpace?, borderType?)`"
+                },
+                {
+                  "textRaw": "`images.findCircles(image, options?)`",
+                  "name": "`images.findcircles(image,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findCircles(image: ImageWrapper | string, options?: {\n  region?: OmniRegion\n  dp?: number\n  minDst?: number\n  param1?: number\n  param2?: number\n  minRadius?: number\n  maxRadius?: number\n}): Array&lt;{ x: number; y: number; radius: number }&gt;\n</code></pre>\n<p>必要时先转为灰度图，再调用 OpenCV <code>HoughCircles</code>。默认 <code>dp = 1</code>、<code>minDst = image.height / 8</code>、<code>param1 = 100</code>、<code>param2 = 100</code>、<code>minRadius = 0</code>、<code>maxRadius = 0</code>。指定 <code>region</code> 时返回坐标相对于该处理区域；无圆时返回空数组。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZsaXA\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findCircles(image, options?)`"
+                },
+                {
+                  "textRaw": "`images.flip(image, orientation?, vertical?)`",
+                  "name": "`images.flip(image,_orientation?,_vertical?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.flip(image: ImageWrapper | string): ImageWrapper\nimages.flip(image: ImageWrapper | string, orientation: boolean | string | boolean[] | object): ImageWrapper\nimages.flip(image: ImageWrapper | string, horizontal: boolean, vertical: boolean): ImageWrapper\n</code></pre>\n<p>省略方向时默认水平翻转。字符串接受 <code>h|horizontal|x</code>、<code>v|vertical|y</code>、<code>both|all|xy</code> 等；对象可用 <code>x/h/horizontal</code> 和 <code>y/v/vertical</code>，数组前两项分别表示水平与垂直。无法识别的单值会退化为布尔转换或“不翻转”。返回新图像。</p>\n",
+                  "type": "module",
+                  "displayName": "`images.flip(image, orientation?, vertical?)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "OpenCV 变换与几何"
+            },
+            {
+              "textRaw": "找色与找图",
+              "name": "找色与找图",
+              "desc": "<p>以下找色选项共用 <code>region</code>、<code>threshold</code> 和 <code>similarity</code>。<code>threshold</code> 默认 <code>4</code>，是 <code>0..255</code> 色差阈值；<code>similarity</code> 会换算为 <code>round(255 * (1 - similarity))</code>。同一对象同时提供二者会抛出异常。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmRldGVjdENvbG9y\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.detectColor(image, color, x, y, threshold?, algorithm?)`",
+                  "name": "`images.detectcolor(image,_color,_x,_y,_threshold?,_algorithm?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.detectColor(\n  image: ImageWrapper | string,\n  color: OmniColor,\n  x: number,\n  y: number,\n  threshold?: number,\n  algorithm?: string,\n): boolean\n</code></pre>\n<p>读取整数坐标像素并用 <code>ColorDetector</code> 比较目标色。默认 <code>threshold = 4</code>、<code>algorithm = &#39;diff&#39;</code>；未知算法、非法颜色或越界坐标会抛出异常。已废弃的 <code>images.detectsColor</code> 使用同一实现。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmRldGVjdE11bHRpQ29sb3Jz\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.detectColor(image, color, x, y, threshold?, algorithm?)`"
+                },
+                {
+                  "textRaw": "`images.detectMultiColors(image, x, y, firstColor, paths, options?)`",
+                  "name": "`images.detectmulticolors(image,_x,_y,_firstcolor,_paths,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.detectMultiColors(\n  image: ImageWrapper | string,\n  x: number,\n  y: number,\n  firstColor: OmniColor,\n  paths: Array&lt;[dx: number, dy: number, color: OmniColor]&gt;,\n  options?: { region?: OmniRegion; threshold?: number; similarity?: number },\n): boolean\n</code></pre>\n<p>先在 <code>(x, y)</code> 比较 <code>firstColor</code>，再按每个相对偏移比较其颜色；全部满足才返回 <code>true</code>。<code>paths</code> 必须是 JavaScript 数组，每项也必须可解构为 <code>[dx, dy, color]</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmRldGVjdHNNdWx0aUNvbG9ycw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.detectMultiColors(image, x, y, firstColor, paths, options?)`"
+                },
+                {
+                  "textRaw": "`images.detectsMultiColors(...)`",
+                  "name": "`images.detectsmulticolors(...)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.detectsMultiColors(\n  image: ImageWrapper | string,\n  x: number,\n  y: number,\n  firstColor: OmniColor,\n  paths: Array&lt;[number, number, OmniColor]&gt;,\n  options?: object,\n): boolean\n</code></pre>\n<p>已废弃的兼容名，完整转发到 <code>images.detectMultiColors</code>。新代码应使用不带 <code>s</code> 的名称。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3I\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.detectsMultiColors(...)`"
+                },
+                {
+                  "textRaw": "`images.findPointByColor(image, color, optionsOrX?, y?, width?, height?, threshold?)`",
+                  "name": "`images.findpointbycolor(image,_color,_optionsorx?,_y?,_width?,_height?,_threshold?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointByColor(\n  image: ImageWrapper | string,\n  color: OmniColor,\n  options?: { region?: OmniRegion; threshold?: number; similarity?: number },\n): org.opencv.core.Point | null\n\nimages.findPointByColor(\n  image: ImageWrapper | string,\n  color: OmniColor,\n  x?: number,\n  y?: number,\n  width?: number,\n  height?: number,\n  threshold?: number,\n): org.opencv.core.Point | null\n</code></pre>\n<p>在区域内返回第一处匹配颜色的点，无匹配时返回 <code>null</code>。位置式区域是兼容形式；对象形式更清晰。坐标和区域会转换为整数并验证不超出图像。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3JFeGFjdGx5\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointByColor(image, color, optionsOrX?, y?, width?, height?, threshold?)`"
+                },
+                {
+                  "textRaw": "`images.findPointByColorExactly(image, color, optionsOrX?, y?, width?, height?)`",
+                  "name": "`images.findpointbycolorexactly(image,_color,_optionsorx?,_y?,_width?,_height?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointByColorExactly(\n  image: ImageWrapper | string,\n  color: OmniColor,\n  optionsOrX?: object | number,\n  y?: number,\n  width?: number,\n  height?: number,\n): org.opencv.core.Point | null\n</code></pre>\n<p>与 <code>findPointByColor</code> 相同，但强制色差阈值为 <code>0</code>。兼容名 <code>findColorEquals</code> 已废弃。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludHNCeUNvbG9y\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointByColorExactly(image, color, optionsOrX?, y?, width?, height?)`"
+                },
+                {
+                  "textRaw": "`images.findPointsByColor(image, color, options?)`",
+                  "name": "`images.findpointsbycolor(image,_color,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointsByColor(\n  image: ImageWrapper | string,\n  color: OmniColor,\n  options?: { region?: OmniRegion; threshold?: number; similarity?: number },\n): org.opencv.core.Point[]\n</code></pre>\n<p>返回区域内全部匹配点；无匹配时返回空数组。高分辨率图片可能生成很大的数组，应尽量限制 <code>region</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRBbGxQb2ludHNGb3JDb2xvcg\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointsByColor(image, color, options?)`"
+                },
+                {
+                  "textRaw": "`images.findAllPointsForColor(...)`",
+                  "name": "`images.findallpointsforcolor(...)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findAllPointsForColor(image: ImageWrapper | string, color: OmniColor, options?: object): org.opencv.core.Point[]\n</code></pre>\n<p>已废弃的兼容名，转发到 <code>images.findPointsByColor</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5Q29sb3Jz\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findAllPointsForColor(...)`"
+                },
+                {
+                  "textRaw": "`images.findPointByColors(image, firstColor, paths, options?)`",
+                  "name": "`images.findpointbycolors(image,_firstcolor,_paths,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointByColors(\n  image: ImageWrapper | string,\n  firstColor: OmniColor,\n  paths: Array&lt;[dx: number, dy: number, color: OmniColor]&gt;,\n  options?: { region?: OmniRegion; threshold?: number; similarity?: number },\n): org.opencv.core.Point | null\n</code></pre>\n<p>在区域中搜索第一处满足多点颜色模式的锚点。<code>paths</code> 中坐标相对候选锚点；无匹配返回 <code>null</code>。已废弃的 <code>findMultiColors</code> 是同义入口。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludHNCeUNvbG9ycw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointByColors(image, firstColor, paths, options?)`"
+                },
+                {
+                  "textRaw": "`images.findPointsByColors(image, firstColor, paths, options?)`",
+                  "name": "`images.findpointsbycolors(image,_firstcolor,_paths,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointsByColors(\n  image: ImageWrapper | string,\n  firstColor: OmniColor,\n  paths: Array&lt;[number, number, OmniColor]&gt;,\n  options?: { region?: OmniRegion; threshold?: number; similarity?: number },\n): org.opencv.core.Point[]\n</code></pre>\n<p>返回全部满足多点颜色模式的锚点，无匹配时返回空数组。</p>\n<pre><code class=\"lang-js\">const points = images.findPointsByColors(\n  &#39;/sdcard/Download/buttons.png&#39;,\n  &#39;#1976D2&#39;,\n  [[10, 0, &#39;#FFFFFF&#39;], [0, 10, &#39;#FFFFFF&#39;]],\n  { region: [0, 0, -1, 0.5], similarity: 0.95 },\n)\nconsole.log(points.length)\n</code></pre>\n<p><a id=\"api-symbol-aW1hZ2VzLmZpbmRQb2ludEJ5SW1hZ2U\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointsByColors(image, firstColor, paths, options?)`"
+                },
+                {
+                  "textRaw": "`images.findPointByImage(image, template, optionsOrX?, y?, width?, height?, threshold?)`",
+                  "name": "`images.findpointbyimage(image,_template,_optionsorx?,_y?,_width?,_height?,_threshold?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.findPointByImage(\n  image: ImageWrapper | string,\n  template: ImageWrapper | string,\n  options?: {\n    region?: OmniRegion\n    weakThreshold?: number\n    threshold?: number\n    similarity?: number\n    level?: number\n  },\n): org.opencv.core.Point | null\n</code></pre>\n<p>返回模板第一次匹配的位置，无匹配时返回 <code>null</code>。默认 <code>weakThreshold = 0.6</code>、<code>threshold = 0.9</code>、<code>level = -1</code>；也保留位置式区域兼容重载。旧名称 <code>findImage</code>、<code>findImageInRegion</code> 使用同一实现。</p>\n",
+                  "type": "module",
+                  "displayName": "`images.findPointByImage(image, template, optionsOrX?, y?, width?, height?, threshold?)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "找色与找图"
+            },
+            {
+              "textRaw": "像素批量读取与特征匹配",
+              "name": "像素批量读取与特征匹配",
+              "desc": "<p><a id=\"api-symbol-aW1hZ2VzLnJlYWRQaXhlbHM\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.readPixels(path)`",
+                  "name": "`images.readpixels(path)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.readPixels(path: string): {\n  data: int[]\n  width: number\n  height: number\n}\n</code></pre>\n<p>严格读取路径，把整张位图按行复制为 ARGB <code>int[]</code>，并返回尺寸。无效路径抛出异常。临时图像和位图在返回前回收，因此返回对象只持有独立像素数组；数组长度为 <code>width * height</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmRldGVjdEFuZENvbXB1dGVGZWF0dXJlcw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.readPixels(path)`"
+                },
+                {
+                  "textRaw": "`images.detectAndComputeFeatures(image, options?)`",
+                  "name": "`images.detectandcomputefeatures(image,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.detectAndComputeFeatures(image: ImageWrapper | string, options?: {\n  method?: &#39;SIFT&#39; | &#39;ORB&#39; | number\n  scale?: number\n  grayscale?: boolean\n  region?: OmniRegion\n}): ImageFeatures\n</code></pre>\n<p>在指定区域检测并计算特征描述子。默认方法 <code>SIFT</code>；<code>scale</code> 缺省时按约一百万像素且最长边不超过 1600 的策略自动计算，最终限制到 <code>0..1</code>；<code>grayscale</code> 默认 <code>false</code>。返回对象包含 <code>javaObject</code>、<code>scale</code>、<code>region</code>、<code>recycled</code> 和 <code>recycle()</code>，必须释放。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLm1hdGNoRmVhdHVyZXM\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.detectAndComputeFeatures(image, options?)`"
+                },
+                {
+                  "textRaw": "`images.matchFeatures(sceneFeatures, objectFeatures, options?)`",
+                  "name": "`images.matchfeatures(scenefeatures,_objectfeatures,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.matchFeatures(scene: ImageFeatures, object: ImageFeatures, options?: {\n  matcher?: string\n  threshold?: number\n  drawMatches?: string\n}): ObjectFrame | null\n</code></pre>\n<p>匹配两组特征并返回目标四边形，无足够匹配或无法计算四边形时返回 <code>null</code>。ORB 类描述子默认 <code>BRUTEFORCE_HAMMING</code>、阈值 <code>0.8</code>；其他描述子默认 <code>FLANNBASED</code>、阈值 <code>0.7</code>。<code>matcher</code> 按 OpenCV <code>DescriptorMatcher</code> 静态字段名解析；<code>drawMatches</code> 会把调试匹配图以 JPEG 质量 100 保存到指定路径。</p>\n<p><code>ObjectFrame</code> 包含 <code>topLeft</code>、<code>topRight</code>、<code>bottomLeft</code>、<code>bottomRight</code>、<code>centerX</code>、<code>centerY</code> 和 <code>center</code>。坐标会撤销特征缩放并加回场景区域偏移。</p>\n<pre><code class=\"lang-js\">const scene = images.detectAndComputeFeatures(&#39;/sdcard/Download/scene.png&#39;, {\n  method: &#39;ORB&#39;,\n})\nconst object = images.detectAndComputeFeatures(&#39;/sdcard/Download/logo.png&#39;, {\n  method: &#39;ORB&#39;,\n})\ntry {\n  const frame = images.matchFeatures(scene, object)\n  if (frame) console.log(frame.center)\n} finally {\n  scene.recycle()\n  object.recycle()\n}\n</code></pre>\n",
+                  "type": "module",
+                  "displayName": "`images.matchFeatures(sceneFeatures, objectFeatures, options?)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "像素批量读取与特征匹配"
+            },
+            {
+              "textRaw": "生命周期、压缩与尺寸",
+              "name": "生命周期、压缩与尺寸",
+              "desc": "<p><a id=\"api-symbol-aW1hZ2VzLmlzUmVjeWNsZWQ\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.isRecycled(...values)`",
+                  "name": "`images.isrecycled(...values)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.isRecycled(...values: unknown[]): boolean\n</code></pre>\n<p>只有每个参数都是已回收的 <code>ImageWrapper</code> 时返回 <code>true</code>；出现普通值、未回收图像时返回 <code>false</code>。无参数时按空集合“全部满足”规则返回 <code>true</code>。方法不修改参数。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnJlY3ljbGU\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.isRecycled(...values)`"
+                },
+                {
+                  "textRaw": "`images.recycle(...values)`",
+                  "name": "`images.recycle(...values)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.recycle(...values: unknown[]): boolean\n</code></pre>\n<p>依次回收每个尚未回收的 <code>ImageWrapper</code>。所有参数都是图像且清理成功时返回 <code>true</code>；任一参数类型不符或回收抛错时返回 <code>false</code>。已回收图像视为成功，无参数也返回 <code>true</code>。</p>\n<pre><code class=\"lang-js\">const a = images.read(&#39;/sdcard/Download/a.png&#39;, true)\nconst b = images.read(&#39;/sdcard/Download/b.png&#39;, true)\nconsole.log(images.recycle(a, b))\nconsole.log(images.isRecycled(a, b))\n</code></pre>\n<p><a id=\"api-symbol-aW1hZ2VzLmNvbXByZXNz\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.recycle(...values)`"
+                },
+                {
+                  "textRaw": "`images.compress(image, format?, quality?)`",
+                  "name": "`images.compress(image,_format?,_quality?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.compress(\n  image: ImageWrapper | string,\n  format?: &#39;png&#39; | &#39;jpg&#39; | &#39;jpeg&#39; | &#39;webp&#39; | &#39;webp_lossless&#39; | &#39;webp_lossy&#39;,\n  quality?: number,\n): ImageWrapper\n</code></pre>\n<p>把图像编码为字节后重新解码，返回新的包装器。格式默认 <code>png</code>，质量默认 <code>60</code> 并限制到 <code>0..100</code>。PNG 在质量不是 100 时使用 PNG 量化桥；量化失败会抛出 <code>WrappedRuntimeException</code>。Android 11 及以上的 lossless WebP 不接受非 100 质量。返回图像必须回收。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmNvbXByZXNzVG9CeXRlcw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.compress(image, format?, quality?)`"
+                },
+                {
+                  "textRaw": "`images.compressToBytes(image, format?, quality?)`",
+                  "name": "`images.compresstobytes(image,_format?,_quality?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.compressToBytes(image: ImageWrapper | string, format?: string, quality?: number): byte[]\n</code></pre>\n<p>使用与 <code>images.compress</code> 相同的格式、默认质量 <code>60</code> 和异常规则，但直接返回编码字节，不再解码为图像。返回数组不持有原生图像资源。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmRvd25zYW1wbGU\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.compressToBytes(image, format?, quality?)`"
+                },
+                {
+                  "textRaw": "`images.downsample(source, requestedWidth, requestedHeight, withAlpha?)`",
+                  "name": "`images.downsample(source,_requestedwidth,_requestedheight,_withalpha?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.downsample(\n  source: byte[] | string | java.net.URL | android.net.Uri | android.graphics.Bitmap | ImageWrapper,\n  requestedWidth: number,\n  requestedHeight: number,\n  withAlpha?: boolean,\n): ImageWrapper\n</code></pre>\n<p>按请求尺寸执行降采样并返回新图像；<code>withAlpha</code> 默认 <code>true</code>。字符串既可为普通文件路径，也可为 URI。无法识别来源类型时抛出 <code>WrappedIllegalArgumentException</code>，解码失败时抛出 <code>WrappedRuntimeException</code>。对于编码字节、文件、URL 和 URI，降采样发生在解码流程中，可降低峰值内存；对现有位图/包装器则从已有像素生成缩小结果。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmdldFNpemU\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.downsample(source, requestedWidth, requestedHeight, withAlpha?)`"
+                },
+                {
+                  "textRaw": "`images.getSize(source)`",
+                  "name": "`images.getsize(source)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.getSize(source: ImageWrapper | org.opencv.core.Mat | android.graphics.Bitmap | string): org.opencv.core.Size\n</code></pre>\n<p>返回 <code>Size(width, height)</code>。路径形式只读取图片边界而不完整解码，文件不存在时抛出异常；未知类型抛出 <code>WrappedIllegalArgumentException</code>。一次性图像会在读取尺寸后触发回收。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmJ1aWxkUmVnaW9u\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.getSize(source)`"
+                },
+                {
+                  "textRaw": "`images.buildRegion(image, region)`",
+                  "name": "`images.buildregion(image,_region)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.buildRegion(\n  image: ImageWrapper | string,\n  region: number[] | android.graphics.Rect | org.opencv.core.Rect | null | undefined,\n): org.opencv.core.Rect\n</code></pre>\n<p>把通用区域规范化为 OpenCV <code>Rect(x, y, width, height)</code>。空值表示整张图；数组缺失项分别默认为 <code>x = 0</code>、<code>y = 0</code>、<code>width = image.width - x</code>、<code>height = image.height - y</code>。<code>-1</code> 和 <code>0..1</code> 小数按 MonkeyKing 屏幕度量规则换算。运行时要求 <code>x/y</code> 非负且区域右、下边界不超过图像，否则抛出异常。</p>\n",
+                  "type": "module",
+                  "displayName": "`images.buildRegion(image, region)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "生命周期、压缩与尺寸"
+            },
+            {
+              "textRaw": "图像相似度",
+              "name": "图像相似度",
+              "desc": "<p>以下方法都接受两个 <code>ImageWrapper</code>、路径或 OpenCV <code>Mat</code>，路径/包装器会转换为 BGR 矩阵。除 <code>isEqual</code> 外，尺寸不一致会抛出异常；<code>mse</code> 还要求类型一致。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnBzbnI\"></a></p>\n",
+              "modules": [
+                {
+                  "textRaw": "`images.psnr(imageA, imageB)`",
+                  "name": "`images.psnr(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.psnr(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>返回 OpenCV PSNR（峰值信噪比）。值越高通常表示像素误差越小；完全相同图像由 OpenCV 的实现决定其极大值/无穷表示。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLnNzaW0\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.psnr(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.ssim(imageA, imageB)`",
+                  "name": "`images.ssim(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.ssim(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>返回结构相似度。实现使用 11×11 高斯窗口与固定常数，并把与 <code>1</code> 相差小于 <code>1e-6</code> 的结果校正为 <code>1</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLm1zc2lt\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.ssim(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.mssim(imageA, imageB)`",
+                  "name": "`images.mssim(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.mssim(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>返回平均结构相似度，是 <code>images.getSimilarity</code> 的默认指标；接近 <code>1</code> 表示更相似。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmhpc3Q\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.mssim(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.hist(imageA, imageB)`",
+                  "name": "`images.hist(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.hist(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>计算各图第一通道的 256 桶归一化直方图，并用 OpenCV correlation 比较；结果理论范围为 <code>-1..1</code>，越接近 <code>1</code> 越相似。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLm1zZQ\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.hist(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.mse(imageA, imageB)`",
+                  "name": "`images.mse(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.mse(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>返回所有通道的均方误差；<code>0</code> 表示逐像素相同，数值越小越相似。图像尺寸或矩阵类型不同会抛出异常。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLm5jYw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.mse(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.ncc(imageA, imageB)`",
+                  "name": "`images.ncc(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.ncc(imageA: ImageLike, imageB: ImageLike): number\n</code></pre>\n<p>先转灰度再计算归一化交叉相关，返回值限制在 <code>-1..1</code>；越接近 <code>1</code> 表示正相关越强。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmlzRXF1YWw\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.ncc(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.isEqual(imageA, imageB)`",
+                  "name": "`images.isequal(imagea,_imageb)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.isEqual(imageA: ImageWrapper | string, imageB: ImageWrapper | string): boolean\n</code></pre>\n<p>尺寸或矩阵类型不同直接返回 <code>false</code>；否则对矩阵逐位异或并检查是否存在非零像素，完全一致才返回 <code>true</code>。</p>\n<p><a id=\"api-symbol-aW1hZ2VzLmdldFNpbWlsYXJpdHk\"></a></p>\n",
+                  "type": "module",
+                  "displayName": "`images.isEqual(imageA, imageB)`"
+                },
+                {
+                  "textRaw": "`images.getSimilarity(imageA, imageB, options?)`",
+                  "name": "`images.getsimilarity(imagea,_imageb,_options?)`",
+                  "desc": "<pre><code class=\"lang-ts\">images.getSimilarity(\n  imageA: ImageLike,\n  imageB: ImageLike,\n  options?: { metric?: &#39;psnr&#39; | &#39;ssim&#39; | &#39;mssim&#39; | &#39;hist&#39; | &#39;mse&#39; | &#39;ncc&#39; },\n): number\n</code></pre>\n<p>按名称分派到上面的指标，默认 <code>metric = &#39;mssim&#39;</code>。指标名转为小写后反射查找；未知名称或返回类型不符合 <code>Double</code> 合同会抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<pre><code class=\"lang-js\">const score = images.getSimilarity(\n  &#39;/sdcard/Download/before.png&#39;,\n  &#39;/sdcard/Download/after.png&#39;,\n  { metric: &#39;ssim&#39; },\n)\nconsole.log(score)\n</code></pre>\n",
+                  "type": "module",
+                  "displayName": "`images.getSimilarity(imageA, imageB, options?)`"
+                }
+              ],
+              "type": "module",
+              "displayName": "图像相似度"
+            }
+          ],
+          "type": "module",
+          "displayName": "MonkeyKing 6.7.0 补充合同"
+        },
+        {
+          "textRaw": "权限、线程与版本",
+          "name": "权限、线程与版本",
+          "desc": "<ul>\n<li>屏幕捕获需要 Android MediaProjection 授权；同步 <code>requestScreenCapture</code> 禁止在 UI 线程调用，UI 场景使用异步入口。</li>\n<li>URL 加载需要网络访问；共享存储路径受 Android 存储策略约束。模块不会自动弹出存储授权界面。</li>\n<li>OpenCV 变换、找色找图、特征和相似度调用均同步占用调用线程，并可能分配较大的临时矩阵。</li>\n<li>输入为一次性图像时，运行时在 <code>finally</code> 中触发回收；普通输入不会自动回收，返回的新资源始终由调用方管理。</li>\n<li>本节描述 MonkeyKing 6.7.0 的公开入口；底层编码格式和 OpenCV 参数限制以应用内置版本为准。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>images.adaptiveThreshold</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.adaptiveThreshold);\n</code></pre>\n<p><code>images.bilateralFilter</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.bilateralFilter);\n</code></pre>\n<p><code>images.blur</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.blur);\n</code></pre>\n<p><code>images.buildRegion</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.buildRegion);\n</code></pre>\n<p><code>images.captureScreen</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.captureScreen);\n</code></pre>\n<p><code>images.clip</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.clip);\n</code></pre>\n<p><code>images.compress</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.compress);\n</code></pre>\n<p><code>images.compressToBytes</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.compressToBytes);\n</code></pre>\n<p><code>images.concat</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.concat);\n</code></pre>\n<p><code>images.copy</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.copy);\n</code></pre>\n<p><code>images.cvtColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.cvtColor);\n</code></pre>\n<p><code>images.detectAndComputeFeatures</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.detectAndComputeFeatures);\n</code></pre>\n<p><code>images.detectColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.detectColor);\n</code></pre>\n<p><code>images.detectMultiColors</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.detectMultiColors);\n</code></pre>\n<p><code>images.detectsColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.detectsColor);\n</code></pre>\n<p><code>images.detectsMultiColors</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.detectsMultiColors);\n</code></pre>\n<p><code>images.downsample</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.downsample);\n</code></pre>\n<p><code>images.findAllPointsForColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findAllPointsForColor);\n</code></pre>\n<p><code>images.findCircles</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findCircles);\n</code></pre>\n<p><code>images.findColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findColor);\n</code></pre>\n<p><code>images.findColorEquals</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findColorEquals);\n</code></pre>\n<p><code>images.findColorInRegion</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findColorInRegion);\n</code></pre>\n<p><code>images.findImage</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findImage);\n</code></pre>\n<p><code>images.findImageInRegion</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findImageInRegion);\n</code></pre>\n<p><code>images.findMultiColors</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findMultiColors);\n</code></pre>\n<p><code>images.findPointByColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointByColor);\n</code></pre>\n<p><code>images.findPointByColorExactly</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointByColorExactly);\n</code></pre>\n<p><code>images.findPointByColors</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointByColors);\n</code></pre>\n<p><code>images.findPointByImage</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointByImage);\n</code></pre>\n<p><code>images.findPointsByColor</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointsByColor);\n</code></pre>\n<p><code>images.findPointsByColors</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.findPointsByColors);\n</code></pre>\n<p><code>images.flip</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.flip);\n</code></pre>\n<p><code>images.fromBase64</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.fromBase64);\n</code></pre>\n<p><code>images.fromBytes</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.fromBytes);\n</code></pre>\n<p><code>images.gaussianBlur</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.gaussianBlur);\n</code></pre>\n<p><code>images.getHeight</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.getHeight);\n</code></pre>\n<p><code>images.getScreenCaptureOptions</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.getScreenCaptureOptions);\n</code></pre>\n<p><code>images.getSimilarity</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.getSimilarity);\n</code></pre>\n<p><code>images.getSize</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.getSize);\n</code></pre>\n<p><code>images.getWidth</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.getWidth);\n</code></pre>\n<p><code>images.grayscale</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.grayscale);\n</code></pre>\n<p><code>images.hist</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.hist);\n</code></pre>\n<p><code>images.imread</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.imread);\n</code></pre>\n<p><code>images.inRange</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.inRange);\n</code></pre>\n<p><code>images.interval</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.interval);\n</code></pre>\n<p><code>images.invert</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.invert);\n</code></pre>\n<p><code>images.isEqual</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.isEqual);\n</code></pre>\n<p><code>images.isGrayscale</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.isGrayscale);\n</code></pre>\n<p><code>images.isRecycled</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.isRecycled);\n</code></pre>\n<p><code>images.load</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.load);\n</code></pre>\n<p><code>images.loadAsync</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.loadAsync);\n</code></pre>\n<p><code>images.matchFeatures</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.matchFeatures);\n</code></pre>\n<p><code>images.matchTemplate</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.matchTemplate);\n</code></pre>\n<p><code>images.matToImage</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.matToImage);\n</code></pre>\n<p><code>images.medianBlur</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.medianBlur);\n</code></pre>\n<p><code>images.mse</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.mse);\n</code></pre>\n<p><code>images.mssim</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.mssim);\n</code></pre>\n<p><code>images.ncc</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.ncc);\n</code></pre>\n<p><code>images.pixel</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.pixel);\n</code></pre>\n<p><code>images.psnr</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.psnr);\n</code></pre>\n<p><code>images.read</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.read);\n</code></pre>\n<p><code>images.readPixels</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.readPixels);\n</code></pre>\n<p><code>images.recycle</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.recycle);\n</code></pre>\n<p><code>images.requestScreenCapture</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.requestScreenCapture);\n</code></pre>\n<p><code>images.requestScreenCaptureAsync</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.requestScreenCaptureAsync);\n</code></pre>\n<p><code>images.resize</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.resize);\n</code></pre>\n<p><code>images.rotate</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.rotate);\n</code></pre>\n<p><code>images.save</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.save);\n</code></pre>\n<p><code>images.saveImage</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.saveImage);\n</code></pre>\n<p><code>images.scale</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.scale);\n</code></pre>\n<p><code>images.ssim</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.ssim);\n</code></pre>\n<p><code>images.stopScreenCapture</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.stopScreenCapture);\n</code></pre>\n<p><code>images.threshold</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.threshold);\n</code></pre>\n<p><code>images.toBase64</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.toBase64);\n</code></pre>\n<p><code>images.toBytes</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images.toBytes);\n</code></pre>\n<p><code>module:images</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof images);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
       ],
       "type": "module",

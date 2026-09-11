@@ -4,7 +4,94 @@
     {
       "textRaw": "Okhttp3HttpUrl",
       "name": "okhttp3httpurl",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Mar 2, 2023.</p>\n\n<hr>\n",
+      "desc": "<p><code>Okhttp3HttpUrl</code> 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 <code>okhttp3.HttpUrl</code>。<code>HttpResponse.url</code> 和 <code>HttpResponse.request.url()</code> 返回该不可变对象；它已经完成 URL 解析和规范化，比重新拆分字符串更可靠。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/\"><code>okhttp3.HttpUrl</code></a>。</p>\n<pre><code class=\"lang-js\">const response = http.get(&#39;https://example.com:8443/a/b?q=monkey#top&#39;)\ntry {\n  const url = response.url\n  console.log(url.scheme())       // https\n  console.log(url.host())         // example.com\n  console.log(url.port())         // 8443\n  console.log(url.encodedPath())  // /a/b\n  console.log(url.query())        // q=monkey\n} finally {\n  response.body.close()\n}\n</code></pre>\n",
+      "modules": [
+        {
+          "textRaw": "常用方法",
+          "name": "常用方法",
+          "modules": [
+            {
+              "textRaw": "`scheme()`",
+              "name": "`scheme()`",
+              "desc": "<pre><code class=\"lang-ts\">scheme(): string\n</code></pre>\n<p>返回规范化的小写 scheme，OkHttp <code>HttpUrl</code> 支持 <code>http</code> 和 <code>https</code>。</p>\n",
+              "type": "module",
+              "displayName": "`scheme()`"
+            },
+            {
+              "textRaw": "`isHttps()`",
+              "name": "`ishttps()`",
+              "desc": "<pre><code class=\"lang-ts\">isHttps(): boolean\n</code></pre>\n<p>scheme 为 <code>https</code> 时返回 <code>true</code>。</p>\n",
+              "type": "module",
+              "displayName": "`isHttps()`"
+            },
+            {
+              "textRaw": "`host()` / `port()`",
+              "name": "`host()`_/_`port()`",
+              "desc": "<pre><code class=\"lang-ts\">host(): string\nport(): number\n</code></pre>\n<p>返回规范化主机和有效端口。URL 未显式给端口时返回 scheme 默认端口。</p>\n",
+              "type": "module",
+              "displayName": "`host()` / `port()`"
+            },
+            {
+              "textRaw": "`username()` / `password()`",
+              "name": "`username()`_/_`password()`",
+              "desc": "<pre><code class=\"lang-ts\">username(): string\npassword(): string\n</code></pre>\n<p>返回解码后的 user-info；未提供时为空字符串。需要编码形式可用 <code>encodedUsername()</code>、<code>encodedPassword()</code>。</p>\n",
+              "type": "module",
+              "displayName": "`username()` / `password()`"
+            },
+            {
+              "textRaw": "`encodedPath()` / `pathSegments()`",
+              "name": "`encodedpath()`_/_`pathsegments()`",
+              "desc": "<pre><code class=\"lang-ts\">encodedPath(): string\npathSegments(): java.util.List&lt;string&gt;\n</code></pre>\n<p>分别返回保留百分号编码的完整路径和解码后的路径段。另有 <code>encodedPathSegments()</code>、<code>pathSize()</code>。</p>\n",
+              "type": "module",
+              "displayName": "`encodedPath()` / `pathSegments()`"
+            },
+            {
+              "textRaw": "`query()` / `encodedQuery()`",
+              "name": "`query()`_/_`encodedquery()`",
+              "desc": "<pre><code class=\"lang-ts\">query(): string | null\nencodedQuery(): string | null\n</code></pre>\n<p>返回解码/编码查询串，没有 query 时为 <code>null</code>。可用 <code>queryParameter(name)</code>、<code>queryParameterValues(name)</code>、<code>queryParameterName(index)</code>、<code>queryParameterValue(index)</code> 和 <code>querySize()</code> 精确访问参数。</p>\n",
+              "type": "module",
+              "displayName": "`query()` / `encodedQuery()`"
+            },
+            {
+              "textRaw": "`fragment()` / `encodedFragment()`",
+              "name": "`fragment()`_/_`encodedfragment()`",
+              "desc": "<pre><code class=\"lang-ts\">fragment(): string | null\nencodedFragment(): string | null\n</code></pre>\n<p>返回解码/编码 fragment，没有时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "`fragment()` / `encodedFragment()`"
+            },
+            {
+              "textRaw": "`resolve(link)`",
+              "name": "`resolve(link)`",
+              "desc": "<pre><code class=\"lang-ts\">resolve(link: string): okhttp3.HttpUrl | null\n</code></pre>\n<p>相对当前 URL 解析链接；无法解析时返回 <code>null</code>，原对象不变。</p>\n",
+              "type": "module",
+              "displayName": "`resolve(link)`"
+            },
+            {
+              "textRaw": "`newBuilder()`",
+              "name": "`newbuilder()`",
+              "desc": "<pre><code class=\"lang-ts\">newBuilder(): okhttp3.HttpUrl.Builder\n</code></pre>\n<p>返回以当前 URL 为起点的可变 builder。构建结果仍是新的不可变 <code>HttpUrl</code>。</p>\n",
+              "type": "module",
+              "displayName": "`newBuilder()`"
+            },
+            {
+              "textRaw": "`uri()` / `url()` / `toString()`",
+              "name": "`uri()`_/_`url()`_/_`tostring()`",
+              "desc": "<pre><code class=\"lang-ts\">uri(): java.net.URI\nurl(): java.net.URL\ntoString(): string\n</code></pre>\n<p>转换为 Java URI、URL 或规范化字符串。Java 转换可能对目标类型不能表示的内容抛出异常。</p>\n",
+              "type": "module",
+              "displayName": "`uri()` / `url()` / `toString()`"
+            }
+          ],
+          "type": "module",
+          "displayName": "常用方法"
+        },
+        {
+          "textRaw": "生命周期、线程与版本",
+          "name": "生命周期、线程与版本",
+          "desc": "<ul>\n<li><code>HttpUrl</code> 不持有响应体或连接资源，不需要关闭；关闭责任仍属于 <code>HttpResponse.body</code>。</li>\n<li>对象不可变，可安全地只读共享；builder 可变，不应并发修改。</li>\n<li>本页只描述 MonkeyKing 固定依赖 OkHttp 4.12.0 的公开方法；更多方法以官方 4.x API 为准。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "生命周期、线程与版本"
+        }
+      ],
       "type": "module",
       "displayName": "Okhttp3HttpUrl"
     }

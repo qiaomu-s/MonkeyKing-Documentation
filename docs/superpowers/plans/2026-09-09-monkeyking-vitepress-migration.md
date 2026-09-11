@@ -202,3 +202,23 @@
 - [x] **Step 6: Run `npm run test:e2e` and record the browser result.**
 - [x] **Step 7: Audit `git status`, `git diff --check`, generated inventory, brand allowlist residue, and the final commit range.**
 - [ ] **Step 8: Merge the completed migration branch into `master` without rewriting history, preserving the approved root lock file.**
+
+### Final 6.7.0 API-audit addendum
+
+The 101-page figures in the historical migration steps above describe the
+initial legacy-to-VitePress baseline and are intentionally retained. The
+completed Monkey King 6.7.0 release scope supersedes that baseline for the
+published outputs:
+
+- The canonical catalog contains 113 pages, including the 12 canonical-only
+  utility, system, and media pages added during the API audit.
+- Compatibility output contains 125 JSON files: 114 catalog-generated names
+  plus the 10 byte-frozen legacy files. The 42-page `all.json` order is
+  unchanged.
+- The fixed source commit
+  `bafa2986212d27b6b59f1324f89548b72a810966` exposes 4,499 public symbols;
+  coverage maps all 4,499 symbols to valid documentation targets and
+  `api-surface/gaps.json` is empty.
+- Local API, content, example, JSON, build, link, browser, and emulator smoke
+  gates pass for this release scope. The remaining unchecked Step 8 is the
+  non-rewriting integration merge into `master`.

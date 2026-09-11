@@ -14,7 +14,8 @@ console.log(`${bounds.centerX()}, ${bounds.centerY()}`);
 - [UiObject#bounds](../automation/ui-object.md#m-bounds)
 - [UiSelector.pickup](../automation/ui-selector.md#m-pickup)
 
-> 注: 本章节仅列出部分属性或方法.
+> 注：本页展开 Monkey King 直接使用的构造器和矩形操作；继承自 `android.graphics.Rect`
+> 的其他成员请参阅 [Android 官方参考](https://developer.android.com/reference/android/graphics/Rect)。
 
 ---
 

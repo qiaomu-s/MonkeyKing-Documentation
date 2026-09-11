@@ -4,396 +4,168 @@
     {
       "textRaw": "光学字符识别 (OCR)",
       "name": "光学字符识别_(ocr)",
-      "desc": "<p>ocr 模块用于识别图像中的文本.</p>\n<p>Monkey King 的 OCR 特性是基于 <a href=\"https://developers.google.com/ml-kit?hl=zh-cn\">Google ML Kit</a> 的 <a href=\"https://developers.google.com/ml-kit/vision/text-recognition/android?hl=zh-cn\">文字识别 API</a> 及 <a href=\"https://www.paddlepaddle.org.cn/\">Baidu PaddlePaddle</a> 的 <a href=\"https://github.com/PaddlePaddle/Paddle-Lite\">Paddle Lite</a> 实现的.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">ocr</p>\n\n<hr>\n",
+      "desc": "<p><code>ocr</code> 从图片或当前屏幕中识别文本。MonkeyKing 6.7.0 提供三种工作模式：<code>mlkit</code>（默认）、<code>paddle</code> 和 <code>rapid</code>。主模块根据 <code>ocr.mode</code> 或单次调用的 <code>options.mode</code> 分派；<code>ocr.mlkit</code>、<code>ocr.paddle</code>、<code>ocr.rapid</code> 则固定使用对应引擎。</p>\n<p>所有公开识别入口对 Rhino 脚本表现为同步调用：它们在返回前完成推理。省略图片时会捕获当前屏幕，必须先取得屏幕捕获权限；在 UI 线程或紧密循环中反复调用可能造成明显阻塞。</p>\n",
       "modules": [
         {
-          "textRaw": "[@] ocr",
-          "name": "[@]_ocr",
-          "desc": "<p>ocr 可作为全局对象使用:</p>\n<pre><code class=\"lang-js\">typeof ocr; // &quot;function&quot;\ntypeof ocr.detect; // &quot;function&quot;\ntypeof ocr.recognizeText; // &quot;function&quot;\n</code></pre>\n",
-          "methods": [
-            {
-              "textRaw": "ocr(options?)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload [1-2]/9</code></strong></p>\n<ul>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图中包含的所有文本, 返回文本数组.</p>\n<p><code>ocr()</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr(img);\n</code></pre>\n<p>同时也是 <a href=\"#m-recognizetext\">ocr.recognizeText(options?)</a> 的别名方法.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "ocr(region)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload 3/9</code></strong></p>\n<ul>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图指定区域内包含的所有文本, 返回文本数组.</p>\n<p><code>ocr(region)</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr(img, region);\n</code></pre>\n<p>同时也是 <a href=\"#ocr\">ocr({ region: region })</a> 的便捷方法,</p>\n<p>以及 <a href=\"#m-recognizetext\">ocr.recognizeText(region)</a> 的别名方法.</p>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "ocr(img, options?)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [4-5]/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别图像包含的所有文本, 返回文本数组.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(img, options?)</a> 的别名方法.</p>\n<pre><code class=\"lang-js\">/* 申请屏幕截图权限. */\nimages.requestScreenCapture();\n\n/* 截屏并获取包装图像对象. */\nlet img = images.captureScreen();\n\n/* OCR 识别并获取结果, 结果为字符串数组. */\nlet results = ocr(img);\n\n/* 结果过滤, 筛选出文本中可部分匹配 &quot;app&quot; 的结果, 如 &quot;apple&quot;, &quot;disappear&quot; 等. */\nresults.filter(text =&gt; text.includes(&#39;app&#39;));\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "ocr(img, region)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 6/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定区域内图像包含的所有文本, 返回文本数组.</p>\n<p><a href=\"#ocr\">ocr(img, { region: region })</a> 的便捷方法.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(img, region)</a> 的别名方法.</p>\n<pre><code class=\"lang-js\">/* 申请屏幕截图权限. */\nimages.requestScreenCapture();\n\n/* 截屏并获取包装图像对象. */\nlet img = images.captureScreen();\n\n/* 在区域 [ 0, 0, 100, 150 ] 内进行 OCR 识别并获取结果, 结果为字符串数组. */\nlet results = ocr(img, [ 0, 0, 100, 150 ]);\n\n/* 结果过滤, 筛选出文本中可部分匹配 &quot;app&quot; 的结果, 如 &quot;apple&quot;, &quot;disappear&quot; 等. */\nresults.filter(text =&gt; text.includes(&#39;app&#39;));\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "ocr(imgPath, options?)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [7-8]/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像包含的所有文本, 返回文本数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(imgPath, options?)</a> 的别名方法.</p>\n<pre><code class=\"lang-js\">ocr(&#39;./picture.jpg&#39;); /* 获取本地图像文件中的所有文本. */\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "ocr(imgPath, region)",
-              "type": "method",
-              "name": "ocr",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 9/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像在指定区域内包含的所有文本, 返回文本数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<p><a href=\"#ocr\">ocr(imgPath, { region: region })</a> 的便捷方法.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(imgPath, region)</a> 的别名方法.</p>\n<pre><code class=\"lang-js\">/* 获取本地图像文件在区域 [ 0, 0, 100, 150 ] 内的所有文本. */\nocr(&#39;./picture.jpg&#39;, [ 0, 0, 100, 150 ]);\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "通用输入与结果",
+          "name": "通用输入与结果",
+          "desc": "<pre><code class=\"lang-ts\">type OcrMode = &#39;mlkit&#39; | &#39;paddle&#39; | &#39;rapid&#39;\ntype OcrImage = ImageWrapper | string\ntype OcrRegion = number[] | android.graphics.Rect | org.opencv.core.Rect\n\ninterface OcrResult {\n  text: string\n  label: string       // text 的同义字段\n  confidence: number  // 0..1\n  bounds: android.graphics.Rect\n}\n</code></pre>\n<p>每个 <code>recognizeText</code>、<code>detect</code> 和可调用模块都接受同一组输入形式：</p>\n<pre><code class=\"lang-ts\">fn(options?: OcrOptions): Result[]\nfn(region: OcrRegion): Result[]\nfn(image: OcrImage, options?: OcrOptions): Result[]\nfn(image: OcrImage, region: OcrRegion): Result[]\n</code></pre>\n<ul>\n<li><code>image</code> 是路径时，运行时先用 <code>images.read</code> 解码；路径无效会抛出 <code>WrappedIllegalArgumentException</code>。</li>\n<li>省略 <code>image</code> 时同步捕获屏幕；调用前应先执行 <code>images.requestScreenCapture(...)</code>。</li>\n<li><code>options.region</code> 缺省或为 <code>undefined</code> 时识别整张图；显式为 <code>null</code> 时返回空数组。区域也可作为第二个位置参数直接传入。</li>\n<li>区域识别先裁剪图像；<code>detect</code> 返回的 <code>bounds</code> 会重新偏移到原图坐标系。</li>\n<li>每个公开入口最多接受三个实参。未知模式、错误参数数量或无法解析的图片会抛出参数异常。</li>\n<li>识别所需的引擎库会在首次调用对应引擎时检查并准备。</li>\n</ul>\n<p>完整选项见 <a href=\"../types/ocr-options.md\">OcrOptions</a>。</p>\n<p><a id=\"api-symbol-bW9kdWxlOm9jcg\"></a></p>\n",
           "type": "module",
-          "displayName": "[@] ocr"
+          "displayName": "通用输入与结果"
         },
         {
-          "textRaw": "[p] mode",
-          "name": "[p]_mode",
-          "desc": "<p><strong><code>6.3.4</code></strong> <strong><code>Getter/Setter</code></strong></p>\n<ul>\n<li><strong>[ &lt;get&gt; = <code>&#39;mlkit&#39;</code> ]</strong> { <a href=\"../types/data-types.md#ocrmodename\">OcrModeName</a> }</li>\n<li><strong>&lt;set&gt;</strong> { <a href=\"../types/data-types.md#ocrmodename\">OcrModeName</a> }</li>\n</ul>\n<p>获取或设置 OCR 的工作模式名称.</p>\n<pre><code class=\"lang-js\">/* Monkey King OCR 默认采用 MLKit 工作模式. */\nconsole.log(ocr.mode); // &quot;mlkit&quot;\n\nocr.mode = &#39;paddle&#39;; /* 切换到 Paddle 工作模式. */\nconsole.log(ocr.mode); // &quot;paddle&quot;\n\nocr.mode = &#39;mlkit&#39;; /* 再次切换到 MLKit 工作模式. */\nconsole.log(ocr.mode); // &quot;mlkit&quot;\n</code></pre>\n<p>当使用不同的工作模式名称时, <code>ocr</code> 全局方法及其相关方法 (如 <a href=\"#m-detect\">ocr.detect</a>) 将使用不同的引擎, 进而可能获得不同的识别速度和结果.</p>\n<blockquote>\n<p>注: 使用 Paddle 工作模式时, 建议开启 Monkey King 的 &quot;忽略电池优化&quot; 开关, 并降低对 Monkey King 节电及后台运行等方面的限制, 否则可能导致应用崩溃.</p>\n</blockquote>\n",
+          "textRaw": "`ocr` 模块",
+          "name": "`ocr`_模块",
+          "desc": "<p>运行时自动提供，无需导入。主模块公开模式切换、文本识别、结构化检测和摘要方法，并可直接作为函数调用。</p>\n<p><a id=\"api-symbol-b2NyLm1vZGU\"></a></p>\n",
           "type": "module",
-          "displayName": "[p] mode"
+          "displayName": "`ocr` 模块"
         },
         {
-          "textRaw": "[m] recognizeText",
-          "name": "[m]_recognizetext",
-          "desc": "<p>用于识别图像中的全部文本.</p>\n<p><code>recognizeText</code> 方法与工作模式有关, 例如当工作模式为 <code>paddle</code> 时, <code>ocr.recognizeText(...)</code> 与 <code>ocr.paddle.recognizeText(...)</code> 等价.</p>\n<p><code>ocr.recognizeText(...)</code> 相关方法均可简写为 <code>ocr(...)</code>.</p>\n",
-          "methods": [
-            {
-              "textRaw": "recognizeText(options?)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload [1-2]/9</code></strong></p>\n<ul>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图中包含的所有文本, 返回文本数组.</p>\n<p><code>ocr.recognizeText()</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr.recognizeText(img);\n</code></pre>\n<p><code>ocr.recognizeText(options?)</code> 与 <code>ocr(options?)</code> 等价.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recognizeText(region)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload 3/9</code></strong></p>\n<ul>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图指定区域内包含的所有文本, 返回文本数组.</p>\n<p><code>ocr.recognizeText(region)</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr.recognizeText(img, region);\n</code></pre>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText({ region: region })</a> 的便捷方法.</p>\n<p><code>ocr.recognizeText(region)</code> 与 <code>ocr(region)</code> 等价.</p>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recognizeText(img, options?)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [4-5]/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别图像包含的所有文本, 返回文本数组.</p>\n<p><code>ocr.recognizeText(img, options?)</code> 与 <code>ocr(img, options?)</code> 等价.</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture(); /* 申请屏幕截图权限. */\nlet img = images.captureScreen(); /* 截屏并获取包装图像对象. */\nocr.recognizeText(img).filter(text =&gt; text.includes(&#39;app&#39;)); /* 过滤结果. */\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recognizeText(img, region)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 6/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定区域内图像包含的所有文本, 返回文本数组.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(img, { region: region })</a> 的便捷方法.</p>\n<p><code>ocr.recognizeText(img, region)</code> 与 <code>ocr(img, region)</code> 等价.</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture(); /* 申请屏幕截图权限. */\nlet img = images.captureScreen(); /* 截屏并获取包装图像对象. */\nocr.recognizeText(img, [ 0, 0, 100, 150 ]).filter(text =&gt; text.includes(&#39;app&#39;)); /* 过滤结果. */\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recognizeText(imgPath, options?)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [7-8]/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像包含的所有文本, 返回文本数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<p><code>ocr.recognizeText(imgPath, options?)</code> 与 <code>ocr(imgPath, options?)</code> 等价.</p>\n<pre><code class=\"lang-js\">ocr.recognizeText(&#39;./picture.jpg&#39;); /* 获取本地图像文件中的所有文本. */\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recognizeText(imgPath, region)",
-              "type": "method",
-              "name": "recognizeText",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 9/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像在指定区域内包含的所有文本, 返回文本数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<p><a href=\"#m-recognizetext\">ocr.recognizeText(imgPath, { region: region })</a> 的便捷方法.</p>\n<p><code>ocr.recognizeText(imgPath, region)</code> 与 <code>ocr(imgPath, region)</code> 等价.</p>\n<pre><code class=\"lang-js\">/* 获取本地图像文件在区域 [ 0, 0, 100, 150 ] 内的所有文本. */\nocr.recognizeText(&#39;./picture.jpg&#39;, [ 0, 0, 100, 150 ]);\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`ocr(input?, optionsOrRegion?)`",
+          "name": "`ocr(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr(options?: OcrOptions): string[]\nocr(region: OcrRegion): string[]\nocr(image: OcrImage, options?: OcrOptions): string[]\nocr(image: OcrImage, region: OcrRegion): string[]\n</code></pre>\n<p><code>ocr(...)</code> 是 <code>ocr.recognizeText(...)</code> 的快捷形式，使用当前模式或 <code>options.mode</code>。始终返回字符串数组；没有结果或引擎任务失败时返回 <code>[]</code>。</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture(false)\nconst labels = ocr({\n  mode: &#39;mlkit&#39;,\n  region: [0, 0, 0.75, 0.5],\n})\nconsole.log(labels.join(&#39;\\n&#39;))\n</code></pre>\n<p><a id=\"api-symbol-b2NyLnJlY29nbml6ZVRleHQ\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] recognizeText"
+          "displayName": "`ocr(input?, optionsOrRegion?)`"
         },
         {
-          "textRaw": "[m] detect",
-          "name": "[m]_detect",
-          "desc": "<p>用于识别图像中的全部文本.</p>\n<p><code>detect</code> 方法与工作模式有关, 例如当工作模式为 <code>paddle</code> 时, <code>ocr.detect(...)</code> 与 <code>ocr.paddle.detect(...)</code> 等价.</p>\n<p>与 <a href=\"#m-recognizetext\">recognizeText</a> 不同, <code>detect</code> 返回的结果包含更多信息, 包括 [ 文本标签, 置信度, 位置矩形 ] 等, <code>recognizeText</code> 精简了 <code>detect</code> 返回的结果, 仅包含文本标签数据.</p>\n",
-          "methods": [
-            {
-              "textRaw": "detect(options?)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload [1-2]/9</code></strong></p>\n<ul>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图中包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<p><code>ocr.detect()</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr.detect(img);\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "detect(region)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.4.0</code></strong> <strong><code>Overload 3/9</code></strong></p>\n<ul>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别当前屏幕截图指定区域内包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<p><code>ocr.detect(region)</code> 相当于以下代码的整合:</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture();\nlet img = images.captureScreen();\nocr.detect(img, region);\n</code></pre>\n<p>同时也是 <a href=\"#m-detect\">ocr.detect({ region: region })</a> 的便捷方法.</p>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "detect(img, options?)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [4-5]/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别图像包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<pre><code class=\"lang-js\">/* 申请屏幕截图权限. */\nimages.requestScreenCapture();\n\n/* 截屏并获取包装图像对象. */\nlet img = images.captureScreen();\n\n/* 获取本地图像文件中的所有识别结果. */\nlet result = ocr.detect(img);\n\n/* 筛选置信度高于 0.8 的结果. */\nresult.filter(o =&gt; o.confidence &gt;= 0.8);\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "detect(img, region)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 6/9</code></strong></p>\n<ul>\n<li><strong>img</strong> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 包装图像对象</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像在指定区域内包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<p><a href=\"#m-detect\">ocr.detect(img, { region: region })</a> 的便捷方法.</p>\n<pre><code class=\"lang-js\">/* 申请屏幕截图权限. */\nimages.requestScreenCapture();\n\n/* 截屏并获取包装图像对象. */\nlet img = images.captureScreen();\n\n/* 获取本地图像文件在区域 [ 0, 0, 100, 150 ] 内的所有识别结果. */\nlet result = ocr.detect(img, [ 0, 0, 100, 150 ]);\n\n/* 筛选置信度高于 0.8 的结果. */\nresult.filter(o =&gt; o.confidence &gt;= 0.8);\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "img"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "detect(imgPath, options?)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload [7-8]/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/ocr-options.md\">OcrOptions</a> } - OCR 识别选项</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<pre><code class=\"lang-js\">let result = ocr.detect(&#39;./picture.jpg&#39;); /* 获取本地图像文件中的所有识别结果. */\nresult.filter(o =&gt; o.confidence &gt;= 0.8); /* 筛选置信度高于 0.8 的结果. */\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "options?"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "detect(imgPath, region)",
-              "type": "method",
-              "name": "detect",
-              "desc": "<p><strong><code>6.3.0</code></strong> <strong><code>Overload 9/9</code></strong></p>\n<ul>\n<li><strong>imgPath</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 图像路径</li>\n<li><strong>region</strong> { <a href=\"../types/omni-types.md#omniregion\">OmniRegion</a> } - OCR 识别区域</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#ocrresult\">OcrResult</a><a href=\"../types/data-types.md#array\">[]</a> }</li>\n</ul>\n<p>识别指定路径对应图像在指定区域内包含的所有文本, 返回 <a href=\"../types/data-types.md#ocrresult\">OcrResult</a> 数组.</p>\n<p>当指定路径无法解析为包装图像对象时, 将抛出 <code>TypeError</code> 异常.</p>\n<p><a href=\"#m-detect\">ocr.detect(imgPath, { region: region })</a> 的便捷方法.</p>\n<pre><code class=\"lang-js\">/* 获取本地图像文件在区域 [ 0, 0, 100, 150 ] 内的所有识别结果. */\nlet result = ocr.detect(&#39;./picture.jpg&#39;, [ 0, 0, 100, 150 ]);\n\n/* 筛选置信度高于 0.8 的结果. */\nresult.filter(o =&gt; o.confidence &gt;= 0.8);\n</code></pre>\n<p>关于 OCR 区域参数 <code>region</code> 的更多用法, 参阅 <a href=\"../types/ocr-options.md#p-region\">OcrOptions#region</a> 小节.</p>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "imgPath"
-                    },
-                    {
-                      "name": "region"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`ocr.recognizeText(input?, optionsOrRegion?)`",
+          "name": "`ocr.recognizetext(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.recognizeText(options?: OcrOptions): string[]\nocr.recognizeText(region: OcrRegion): string[]\nocr.recognizeText(image: OcrImage, options?: OcrOptions): string[]\nocr.recognizeText(image: OcrImage, region: OcrRegion): string[]\n</code></pre>\n<p>返回引擎输出的文本标签。需要置信度和位置时改用 <code>ocr.detect</code>。</p>\n<pre><code class=\"lang-js\">const labels = ocr.recognizeText(&#39;/sdcard/Download/receipt.jpg&#39;, {\n  mode: &#39;paddle&#39;,\n  scoreThreshold: 0.6,\n})\nlabels.forEach(label =&gt; console.log(label))\n</code></pre>\n<p><a id=\"api-symbol-b2NyLmRldGVjdA\"></a></p>\n<p><a id=\"m-detect\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] detect"
+          "displayName": "`ocr.recognizeText(input?, optionsOrRegion?)`"
         },
         {
-          "textRaw": "[m] tap",
-          "name": "[m]_tap",
-          "methods": [
-            {
-              "textRaw": "tap(mode)",
-              "type": "method",
-              "name": "tap",
-              "desc": "<p><strong><code>6.3.4</code></strong></p>\n<ul>\n<li><strong>mode</strong> { <a href=\"../types/data-types.md#ocrmodename\">OcrModeName</a> } - OCR 工作模式</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n</ul>\n<p>用于切换 OCR 工作模式, 相当于 <a href=\"#p-mode\">ocr.mode</a> 的 setter 形式.</p>\n<pre><code class=\"lang-js\">ocr.tap(&#39;paddle&#39;);\nocr.mode = &#39;paddle&#39;; /* 同上. */\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "mode"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`ocr.detect(input?, optionsOrRegion?)`",
+          "name": "`ocr.detect(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.detect(options?: OcrOptions): OcrResult[]\nocr.detect(region: OcrRegion): OcrResult[]\nocr.detect(image: OcrImage, options?: OcrOptions): OcrResult[]\nocr.detect(image: OcrImage, region: OcrRegion): OcrResult[]\n</code></pre>\n<p>返回包含文本、置信度和 Android 边界矩形的结果。使用区域时，边界仍以原始图片左上角为坐标原点。</p>\n<pre><code class=\"lang-js\">const results = ocr.detect(&#39;/sdcard/Download/page.png&#39;, {\n  mode: &#39;rapid&#39;,\n  region: [40, 80, 800, 1200],\n})\nresults\n  .filter(result =&gt; result.confidence &gt;= 0.7)\n  .forEach(result =&gt; console.log(result.text, result.bounds))\n</code></pre>\n<p><a id=\"api-symbol-b2NyLnRhcA\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] tap"
+          "displayName": "`ocr.detect(input?, optionsOrRegion?)`"
         },
         {
-          "textRaw": "[m] summary",
-          "name": "[m]_summary",
-          "methods": [
-            {
-              "textRaw": "summary()",
-              "type": "method",
-              "name": "summary",
-              "desc": "<p><strong><code>6.4.0</code></strong></p>\n<p>获取 Monkey King OCR 功能的摘要.</p>\n<p>摘要中表述了 OCR 功能当前使用的工作模式, 以及全部可用的工作模式.</p>\n<pre><code class=\"lang-js\">/* e.g. [ OCR summary ]\n * Current mode: mlkit\n * Available modes: [ mlkit, paddle ]\n */\nconsole.log(ocr.summary());\n</code></pre>\n",
-              "signatures": [
-                {
-                  "params": []
-                }
-              ]
-            }
-          ],
+          "textRaw": "`ocr.tap(mode)`",
+          "name": "`ocr.tap(mode)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.tap(mode: OcrMode | typeof ocr.mlkit | typeof ocr.paddle | typeof ocr.rapid): void\n</code></pre>\n<p>切换默认引擎。除模式字符串外，也接受三个引擎模块对象。未知值抛出 <code>WrappedIllegalArgumentException</code>，不会产生识别结果。</p>\n<pre><code class=\"lang-js\">ocr.tap(&#39;rapid&#39;)\nconsole.log(ocr.mode) // rapid\nocr.tap(ocr.mlkit)\n</code></pre>\n<p><a id=\"api-symbol-b2NyLnN1bW1hcnk\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] summary"
+          "displayName": "`ocr.tap(mode)`"
         },
         {
-          "textRaw": "工作模式与代码形式",
-          "name": "工作模式与代码形式",
-          "desc": "<p>截止 2023 年 9 月, Monkey King 的 ocr 支持两种工作模式, <code>mlkit</code> (默认) 及 <code>paddle</code>.</p>\n<p>工作模式的获取或设置可通过 <a href=\"#p-mode\">ocr.mode</a> 实现.</p>\n<p>下面以 <code>mlkit</code> 为例, 总结 <code>mlkit</code> 工作模式可用的全部代码形式.</p>\n<ol>\n<li>ocr.mlkit.detect(...)</li>\n<li>ocr.mlkit.recognizeText(...)</li>\n<li>ocr.mlkit(...)</li>\n<li><a href=\"#m-detect\">ocr.detect(...)</a></li>\n<li><a href=\"#m-recognizetext\">ocr.recognizeText(...)</a></li>\n<li><a href=\"#ocr\">ocr(...)</a></li>\n</ol>\n<p>上述 6 种代码形式均可实现使用 <code>mlkit</code> 引擎进行光学字符识别.</p>\n<p>其中, [ 3 ] 是 [ 2 ] 的简便写法, [ 6 ] 是 [ 5 ] 的简便写法.</p>\n<p>另外, [ 4, 5, 6 ] 三种形式的条件, 是 OCR 工作模式为 <code>mlkit</code>, 即 <code>ocr.mode</code> 返回 <code>mlkit</code>. 否则需要调用 <code>ocr.mode = &#39;mlkit&#39;</code> 切换工作模式.</p>\n<p>下面再以 <code>paddle</code> 为例, 总结 <code>paddle</code> 工作模式可用的全部代码形式.</p>\n<ol>\n<li>ocr.paddle.detect(...)</li>\n<li>ocr.paddle.recognizeText(...)</li>\n<li>ocr.paddle(...)</li>\n<li><a href=\"#m-detect\">ocr.detect(...)</a></li>\n<li><a href=\"#m-recognizetext\">ocr.recognizeText(...)</a></li>\n<li><a href=\"#ocr\">ocr(...)</a></li>\n</ol>\n<p>同样, [ 4, 5, 6 ] 三种形式的条件, 是 OCR 工作模式为 <code>paddle</code>, 即 <code>ocr.mode</code> 返回 <code>paddle</code>. 否则需要调用 <code>ocr.mode = &#39;paddle&#39;</code> 切换工作模式.</p>\n<p>由此可见, <code>ocr(...)</code> 和 <code>ocr.detect(...)</code> 等方法是动态变化的, 其功能取决于工作模式. 这种形式的优点是写法简单, 但可读性相对较差, 可能难以辨识 OCR 的具体工作引擎. 如需兼顾可读性, 则可使用 <code>ocr.mlkit(...)</code> 和 <code>ocr.mlkit.detect(...)</code> 等形式.</p>\n",
+          "textRaw": "`ocr.summary()`",
+          "name": "`ocr.summary()`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.summary(): string\n</code></pre>\n<p>不接受参数，返回包含当前模式和全部可用模式（<code>mlkit</code>、<code>paddle</code>、<code>rapid</code>）的多行摘要。传入参数会触发参数数量异常。</p>\n<p><a id=\"api-symbol-b2NyLnRvU3RyaW5n\"></a></p>\n",
           "type": "module",
-          "displayName": "工作模式与代码形式"
+          "displayName": "`ocr.summary()`"
+        },
+        {
+          "textRaw": "`ocr.toString()`",
+          "name": "`ocr.tostring()`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.toString(): string\n</code></pre>\n<p>返回值与 <code>ocr.summary()</code> 相同。该函数由运行时作为字面量 <code>toString</code> 属性导出，不接受参数。</p>\n<pre><code class=\"lang-js\">console.log(String(ocr))\nconsole.log(ocr.toString())\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOm9jci5tbGtpdA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.toString()`"
+        },
+        {
+          "textRaw": "`ocr.mlkit` 模块",
+          "name": "`ocr.mlkit`_模块",
+          "desc": "<p>固定使用 ML Kit 中文文字识别器，不读取 <code>options.mode</code>。识别器按需创建，并在脚本运行时回收阶段关闭。当前实现会等待 ML Kit Task 完成；任务取消或失败时记录警告并返回空数组。</p>\n<p><a id=\"api-symbol-Y2FsbDpvY3IubWxraXQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.mlkit` 模块"
+        },
+        {
+          "textRaw": "`ocr.mlkit(input?, optionsOrRegion?)`",
+          "name": "`ocr.mlkit(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.mlkit(options?: OcrOptions): string[]\nocr.mlkit(region: OcrRegion): string[]\nocr.mlkit(image: OcrImage, options?: OcrOptions): string[]\nocr.mlkit(image: OcrImage, region: OcrRegion): string[]\n</code></pre>\n<p><code>ocr.mlkit.recognizeText</code> 的快捷形式。除通用 <code>region</code> 外，6.7.0 的 ML Kit 实现不消费 Paddle 专用选项。</p>\n<p><a id=\"api-symbol-b2NyLm1sa2l0LnJlY29nbml6ZVRleHQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.mlkit(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.mlkit.recognizeText(input?, optionsOrRegion?)`",
+          "name": "`ocr.mlkit.recognizetext(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.mlkit.recognizeText(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): string[]\n</code></pre>\n<p>返回按版面顺序整理的文本行。已回收图像、空结果或失败任务返回 <code>[]</code>。</p>\n<p><a id=\"api-symbol-b2NyLm1sa2l0LmRldGVjdA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.mlkit.recognizeText(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.mlkit.detect(input?, optionsOrRegion?)`",
+          "name": "`ocr.mlkit.detect(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.mlkit.detect(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): OcrResult[]\n</code></pre>\n<p>把 ML Kit 的每一条文字行转换为 <code>OcrResult</code>。置信度和边界来自内置识别器；失败不会抛出 ML Kit Task 异常，而是返回空数组。</p>\n<pre><code class=\"lang-js\">const results = ocr.mlkit.detect(&#39;/sdcard/Download/chinese.png&#39;)\nresults.forEach(result =&gt; console.log(result.text, result.confidence))\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOm9jci5wYWRkbGU\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.mlkit.detect(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.paddle` 模块",
+          "name": "`ocr.paddle`_模块",
+          "desc": "<p>固定使用 Paddle OCR。在 MonkeyKing 主应用中，它通过可用的 Paddle OCR 插件执行；没有可用插件时抛出 <code>WrappedIllegalArgumentException</code>。打包后的 INRT 应用使用内置本地引擎。实现通过当前脚本的协程上下文阻塞等待结果。</p>\n<p><a id=\"api-symbol-Y2FsbDpvY3IucGFkZGxl\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.paddle` 模块"
+        },
+        {
+          "textRaw": "`ocr.paddle(input?, optionsOrRegion?)`",
+          "name": "`ocr.paddle(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.paddle(options?: OcrOptions): string[]\nocr.paddle(region: OcrRegion): string[]\nocr.paddle(image: OcrImage, options?: OcrOptions): string[]\nocr.paddle(image: OcrImage, region: OcrRegion): string[]\n</code></pre>\n<p><code>ocr.paddle.recognizeText</code> 的快捷形式。可使用 <code>cpuThreadNum</code>、<code>useSlim</code>、<code>useOpenCL</code>、<code>detLongSize</code>、<code>scoreThreshold</code>、<code>useRaw</code>、<code>imageQuality</code> 和 <code>imageFormat</code>；<code>mergeLine</code> 只影响结构化 <code>detect</code> 结果。</p>\n<p><a id=\"api-symbol-b2NyLnBhZGRsZS5yZWNvZ25pemVUZXh0\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.paddle(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.paddle.recognizeText(input?, optionsOrRegion?)`",
+          "name": "`ocr.paddle.recognizetext(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.paddle.recognizeText(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): string[]\n</code></pre>\n<p>返回 Paddle 输出的文本数组。默认 <code>cpuThreadNum = 4</code>、<code>useSlim = true</code>、<code>useOpenCL = false</code>、<code>useRaw = true</code>；其他选项和设备/插件能力会影响推理。</p>\n<p><a id=\"api-symbol-b2NyLnBhZGRsZS5kZXRlY3Q\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.paddle.recognizeText(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.paddle.detect(input?, optionsOrRegion?)`",
+          "name": "`ocr.paddle.detect(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.paddle.detect(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): OcrResult[]\n</code></pre>\n<p>返回 Paddle 文本、置信度和矩形。<code>mergeLine: true</code> 时，只有在 <code>splitWords</code> 与 <code>useWordSegmentation</code> 都为 <code>false</code> 的情况下才会合并同一行；合并后的置信度按各段文本长度加权，边界为各段并集。</p>\n<pre><code class=\"lang-js\">const results = ocr.paddle.detect(&#39;/sdcard/Download/document.jpg&#39;, {\n  cpuThreadNum: 4,\n  scoreThreshold: 0.55,\n  mergeLine: true,\n})\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOm9jci5yYXBpZA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.paddle.detect(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.rapid` 模块",
+          "name": "`ocr.rapid`_模块",
+          "desc": "<p>固定使用 Rapid OCR 本地引擎。6.7.0 的实现使用内置固定推理参数，除通用 <code>region</code> 外不消费 <code>OcrOptions</code>；无需 Paddle 插件。</p>\n<p><a id=\"api-symbol-Y2FsbDpvY3IucmFwaWQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.rapid` 模块"
+        },
+        {
+          "textRaw": "`ocr.rapid(input?, optionsOrRegion?)`",
+          "name": "`ocr.rapid(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.rapid(options?: OcrOptions): string[]\nocr.rapid(region: OcrRegion): string[]\nocr.rapid(image: OcrImage, options?: OcrOptions): string[]\nocr.rapid(image: OcrImage, region: OcrRegion): string[]\n</code></pre>\n<p><code>ocr.rapid.recognizeText</code> 的快捷形式。调用同步执行本地推理。</p>\n<p><a id=\"api-symbol-b2NyLnJhcGlkLnJlY29nbml6ZVRleHQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.rapid(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.rapid.recognizeText(input?, optionsOrRegion?)`",
+          "name": "`ocr.rapid.recognizetext(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.rapid.recognizeText(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): string[]\n</code></pre>\n<p>返回 Rapid OCR 文本块的 <code>text</code> 字段数组。无图像、位图已回收或无检测结果时返回 <code>[]</code>。</p>\n<p><a id=\"api-symbol-b2NyLnJhcGlkLmRldGVjdA\"></a></p>\n",
+          "type": "module",
+          "displayName": "`ocr.rapid.recognizeText(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "`ocr.rapid.detect(input?, optionsOrRegion?)`",
+          "name": "`ocr.rapid.detect(input?,_optionsorregion?)`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.rapid.detect(input?: OcrImage | OcrRegion | OcrOptions, optionsOrRegion?: OcrOptions | OcrRegion): OcrResult[]\n</code></pre>\n<p>把每个 Rapid 文本块转换为 <code>OcrResult</code>：边界取文本块左上与右下点，置信度取 <code>boxScore</code>。</p>\n<pre><code class=\"lang-js\">const results = ocr.rapid.detect(&#39;/sdcard/Download/sign.png&#39;)\nresults.forEach(result =&gt; console.log(result.text, result.bounds))\n</code></pre>\n",
+          "type": "module",
+          "displayName": "`ocr.rapid.detect(input?, optionsOrRegion?)`"
+        },
+        {
+          "textRaw": "生命周期、权限与错误恢复",
+          "name": "生命周期、权限与错误恢复",
+          "desc": "<ul>\n<li>省略图片时需要屏幕捕获授权；读取文件路径时需要相应存储访问能力。OCR 模块不会代替脚本请求这些权限。</li>\n<li>引擎调用同步占用调用线程。批量识别时应在工作线程串行执行，并及时回收不再使用的图像。</li>\n<li>ML Kit 识别器由运行时缓存并在退出时关闭；Paddle/Rapid 的库文件由引擎准备流程管理。</li>\n<li>使用区域时会产生临时裁剪图像；避免同时在其他线程回收原始图像。</li>\n<li>本页描述 MonkeyKing 6.7.0 的公开合同。底层模型、插件或设备能力差异可能改变识别质量，但不改变这里的返回形态。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:ocr</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr);\n</code></pre>\n<p><code>call:ocr.mlkit</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.mlkit);\n</code></pre>\n<p><code>call:ocr.paddle</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.paddle);\n</code></pre>\n<p><code>call:ocr.rapid</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.rapid);\n</code></pre>\n<p><code>module:ocr</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr);\n</code></pre>\n<p><code>module:ocr.mlkit</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.mlkit);\n</code></pre>\n<p><code>module:ocr.paddle</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.paddle);\n</code></pre>\n<p><code>module:ocr.rapid</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.rapid);\n</code></pre>\n<p><code>ocr.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.detect);\n</code></pre>\n<p><code>ocr.mlkit.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.mlkit.detect);\n</code></pre>\n<p><code>ocr.mlkit.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.mlkit.recognizeText);\n</code></pre>\n<p><code>ocr.mode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(ocr.mode);\n</code></pre>\n<p><code>ocr.paddle.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.paddle.detect);\n</code></pre>\n<p><code>ocr.paddle.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.paddle.recognizeText);\n</code></pre>\n<p><code>ocr.rapid.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.rapid.detect);\n</code></pre>\n<p><code>ocr.rapid.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.rapid.recognizeText);\n</code></pre>\n<p><code>ocr.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.recognizeText);\n</code></pre>\n<p><code>ocr.summary</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.summary);\n</code></pre>\n<p><code>ocr.tap</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.tap);\n</code></pre>\n<p><code>ocr.toString</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof ocr.toString);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
+      "properties": [
+        {
+          "textRaw": "`ocr.mode`",
+          "name": "mode`",
+          "desc": "<pre><code class=\"lang-ts\">ocr.mode: &#39;mlkit&#39; | &#39;paddle&#39; | &#39;rapid&#39;\n</code></pre>\n<p>读写当前默认引擎，初始值为 <code>mlkit</code>。赋值会走与 <code>ocr.tap</code> 相同的模式解析；模式名不区分大小写。未知名称会抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<pre><code class=\"lang-js\">console.log(ocr.mode) // mlkit\nocr.mode = &#39;paddle&#39;\nconst text = ocr(&#39;/sdcard/Download/page.png&#39;)\n</code></pre>\n<p><a id=\"api-symbol-Y2FsbDpvY3I\"></a></p>\n"
         }
       ],
       "type": "module",

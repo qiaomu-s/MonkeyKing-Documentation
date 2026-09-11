@@ -1,7 +1,9 @@
 # MonkeyKing Documentation VitePress 迁移设计
 
 日期：2026-09-09
-状态：已完成方案确认，待规格审阅
+状态：已完成（阶段一迁移与阶段二 6.7.0 API 对账均已落地）
+
+> 本文第 1、8、9 节保留了最初设计时的阶段边界，作为历史记录。阶段二的文档仓库工作已于 2026-09-10 按固定源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 完成；Android 应用侧 WebView 改造仍按原计划另行处理。
 
 ## 1. 目标与阶段边界
 
@@ -9,11 +11,11 @@
 
 阶段一完成后，站点应可独立开发、构建、搜索、预览和部署，并生成供后续 Android 应用集成使用的离线产物。
 
-以下工作明确延后到阶段二：
+以下事项曾在初始设计中延后到阶段二；当前文档仓库状态如下：
 
-- 对照 `/Users/muqiao/Desktop/Github/MonkeyKing` 的 6.7.0 源码，对全部 API 文档做新增、变更、删除项核对。
+- 对照 `/Users/muqiao/Desktop/Github/MonkeyKing` 的 6.7.0 源码，对全部 API 文档做新增、变更、删除项核对：已完成。
 - 修改 MonkeyKing Android 应用的 WebView 加载实现和资源复制流程。
-- 宣称整套文档内容已经完整覆盖 Monkey King 6.7.0。
+- 宣称整套文档内容已经完整覆盖 Monkey King 6.7.0：已完成；覆盖门禁记录在 `api-surface/coverage.json`。
 
 阶段一不保留旧 Docsify URL。原有 `/#/console?id=m-show` 等页面和深链接允许失效，仓库内部链接必须全部迁移到新地址并通过校验。
 
@@ -199,15 +201,15 @@ GitHub Pages 的自定义域设置保持 `docs.monkeyking.com`，DNS 与仓库 P
 - `dist/android/index.html`、页面、搜索和静态资源在 `/assets/docs/` 基路径下加载成功。
 - 除明确允许的历史归属外，用户可见页面不再把 AutoJs6 作为当前产品身份。
 - GitHub Actions 成功将站点发布到 `docs.monkeyking.com`。
-- README 明确注明阶段一内容基线尚未完成 Monkey King 6.7.0 API 全量对账，阶段二以此为唯一后续目标。
+- README 记录固定源码、API 全量对账结果和本地验证命令；Android 应用侧改造仍不属于本仓库范围。
 
-## 9. 阶段二入口条件
+## 9. 原阶段二入口条件与结果
 
-阶段二在阶段一验收通过后单独编写设计和实施计划。其输入固定为：
+阶段二输入固定为：
 
 - 已迁移并通过链接验证的分类化 Markdown。
 - MonkeyKing 应用仓库 6.7.0 源码及 `version.properties`。
 - 当前应用内 6.6.4 文档作为差异参考，而不是 Markdown 权威来源。
 - 阶段一生成的内容目录、JSON Schema 和测试工具。
 
-阶段二的最终目标是建立“应用公开 API → 文档页面/章节”的可审计映射，并将站点内容准确更新到 Monkey King 6.7.0。
+阶段二的最终目标“应用公开 API → 文档页面/章节”的可审计映射已完成；当前 manifest 包含 4,499 个公开符号，coverage 映射为 4,499/4,499，缺口为 0。应用侧 WebView 改造不在本仓库的交付范围内。

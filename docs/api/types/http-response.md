@@ -220,7 +220,7 @@ http.getAsync('https://example.com/archive.zip').then(response => {
 `dynamic:http.response.headers` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
-console.log(response.headerFields);
+console.log(response.headers);
 ```
 
 <!-- api-member-contract id="http.response.body" version="6.7.0" -->

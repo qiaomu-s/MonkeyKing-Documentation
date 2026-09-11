@@ -5,9 +5,15 @@ Monkey King 的官方文档仓库。站点使用 VitePress 构建，源码仓库
 正式站点为 [`https://docs.monkeyking.com`](https://docs.monkeyking.com)。
 
 > [!IMPORTANT]
-> 当前阶段只完成文档平台、内容迁移和兼容产物基线，尚未完成 Monkey King 6.7.0
-> 公开 API 的全量对账。阶段二将以 Monkey King 6.7.0 源码为准完成 API 全量对账；在此之前，
-> 不应宣称本站已经完整覆盖该版本。
+> 文档已按 Monkey King 6.7.0 固定源码提交
+> `bafa2986212d27b6b59f1324f89548b72a810966` 完成公开 API 全量对账。
+> `api-surface/manifest.json`、`api-surface/coverage.json` 和 `api-surface/gaps.json` 的门禁
+> 确保每个公开符号都有唯一的页面与锚点映射；重新生成或修改文档后请运行完整验证命令。
+
+## 阶段二：Monkey King 6.7.0 API 全量对账
+
+阶段二已完成：固定源码提交中的公开 API 已建立可审计 manifest，113 个目录页面、125 个兼容 JSON
+和全部 Rhino 2.0 示例均通过本地覆盖检查。
 
 ## 本地开发
 

@@ -59,7 +59,7 @@ sto._storage instanceof com.qiaomu.monkeyking.core.storage.LocalStorage; // true
 - [null](data-types.md#null)
 - [Array](data-types.md#array)
 - [Object](data-types.md#object)
-- ... ...
+- 其他可被 `JSON.stringify` 序列化的复合值；不支持 `undefined`、`bigint`、函数和循环引用
 
 理论上, 除 [undefined](data-types.md#undefined) 和 [bigint](../../reference/glossaries/glossary.md#bigint) 外的任意类型数据均可存入本地存储,<br>
 试图存入不支持类型的数据时, 将抛出异常.

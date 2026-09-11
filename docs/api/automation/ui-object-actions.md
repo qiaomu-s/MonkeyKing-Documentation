@@ -295,7 +295,7 @@ console.log(pickup(w, 'k3', 'click'));
 - [劣] 部分控件执行 `click` 行为后无响应
 - [劣] 无法完全适应控件属性或层级关系改变的情况
 
-鉴于上述优劣项, 控件的 `click` 方法通常与 [ [global.click](automator.md#click-x-y) ([automator.click](automator.md#click-x-y)) / [UiObject#clickBounds](ui-object.md#m-clickbounds) ] 等方法配合使用.
+鉴于上述优劣项, 控件的 `click` 方法通常与 [ [global.click](automator.md#m-automator-click-target-index) ([automator.click](automator.md#m-automator-click-target-index)) / [UiObject#clickBounds](ui-object.md#m-clickbounds) ] 等方法配合使用.
 
 ## [m=] longClick
 

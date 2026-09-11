@@ -4,37 +4,23 @@
     {
       "textRaw": "对话框 (Dialogs)",
       "name": "对话框_(dialogs)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>dialogs 模块提供了简单的对话框支持, 可以通过对话框和用户进行交互. 最简单的例子如下：</p>\n<pre><code>alert(&quot;您好&quot;);\n</code></pre><p>这段代码会弹出一个消息提示框显示&quot;您好&quot;, 并在用户点击&quot;确定&quot;后继续运行. 稍微复杂一点的例子如下：</p>\n<pre><code>var clear = confirm(&quot;要清除所有缓存吗?&quot;);\nif(clear){\n    alert(&quot;清除成功!&quot;);\n}\n</code></pre><p><code>confirm()</code>会弹出一个对话框并让用户选择&quot;是&quot;或&quot;否&quot;, 如果选择&quot;是&quot;则返回true.</p>\n<p>需要特别注意的是, 对话框在ui模式下不能像通常那样使用, 应该使用回调函数或者<a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/\">Promise</a>的形式. 理解这一点可能稍有困难. 举个例子:</p>\n<pre><code>&quot;ui&quot;;\n//回调形式\n confirm(&quot;要清除所有缓存吗?&quot;, function(clear){\n     if(clear){\n          alert(&quot;清除成功!&quot;);\n     }\n });\n//Promise形式\nconfirm(&quot;要清除所有缓存吗?&quot;)\n    .then(clear =&gt; {\n        if(clear){\n          alert(&quot;清除成功!&quot;);\n        }\n    });\n</code></pre>",
+      "desc": "<p><code>dialogs</code> 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmRpYWxvZ3M\"></a></p>\n",
+      "modules": [
+        {
+          "textRaw": "[@] dialogs",
+          "name": "[@]_dialogs",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs</code>、<code>$dialogs</code>；<code>rawInput</code>、<code>prompt</code>、<code>alert</code>、<code>confirm</code> 还会安装同名全局入口</li>\n<li><strong>参数</strong>：模块对象不可调用</li>\n<li><ins><strong>returns</strong></ins> { <code>Dialogs</code> }</li>\n<li><strong>异常</strong>：读取模块本身不抛出异常</li>\n<li><strong>权限</strong>：无额外 Android 权限</li>\n<li><strong>线程 / 生命周期</strong>：对话框 UI 在主线程创建；无回调时，UI 脚本返回 Promise，普通脚本走同步等待</li>\n<li><strong>副作用</strong>：成员调用会创建窗口并等待或异步接收用户输入</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(dialogs === $dialogs); // true\nconsole.log(typeof dialogs.build); // &quot;function&quot;\n</code></pre>\n<p>最简单的例子如下：</p>\n<pre><code>alert(&quot;您好&quot;);\n</code></pre><p>这段代码会弹出一个消息提示框显示&quot;您好&quot;, 并在用户点击&quot;确定&quot;后继续运行. 稍微复杂一点的例子如下：</p>\n<pre><code>var clear = confirm(&quot;要清除所有缓存吗?&quot;);\nif(clear){\n    alert(&quot;清除成功!&quot;);\n}\n</code></pre><p><code>confirm()</code>会弹出一个对话框并让用户选择&quot;是&quot;或&quot;否&quot;, 如果选择&quot;是&quot;则返回true.</p>\n<p>需要特别注意的是, 对话框在ui模式下不能像通常那样使用, 应该使用回调函数或者<a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/\">Promise</a>的形式. 理解这一点可能稍有困难. 举个例子:</p>\n<pre><code>&quot;ui&quot;;\n//回调形式\n confirm(&quot;要清除所有缓存吗?&quot;, function(clear){\n     if(clear){\n          alert(&quot;清除成功!&quot;);\n     }\n });\n//Promise形式\nconfirm(&quot;要清除所有缓存吗?&quot;)\n    .then(clear =&gt; {\n        if(clear){\n          alert(&quot;清除成功!&quot;);\n        }\n    });\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5hbGVydA\"></a></p>\n",
+          "type": "module",
+          "displayName": "[@] dialogs"
+        }
+      ],
       "methods": [
         {
           "textRaw": "dialogs.alert(title[, content, callback])",
           "type": "method",
           "name": "alert",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.alert(...)</code>、全局 <code>alert(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 必填并转换为字符串</li>\n<li><strong>[ content = <code>&#39;&#39;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> } - 可作为第 2 或第 3 个参数</li>\n<li><ins><strong>returns</strong></ins> { <code>void | Promise&lt;any&gt; | JsDialog</code> } - UI 线程且未给回调时返回 Promise；普通线程无回调时同步等待</li>\n<li><strong>异常</strong>：参数数量不在 1..3、callback 不是函数时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；在 UI 线程显示一个确定按钮对话框，关闭后对应等待或回调完成</li>\n</ul>\n<pre><code class=\"lang-js\">dialogs.alert(&#39;同步完成&#39;, &#39;所有文件已经写入&#39;);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>content</code> {string} 可选, 对话框的内容. 默认为空.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个只包含“确定”按钮的提示对话框. 直至用户点击确定脚本才继续运行.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>alert(&quot;出现错误~&quot;, &quot;出现未知错误, 请联系脚本作者”);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nalert(&quot;嘿嘿嘿&quot;).then(()=&gt;{\n    //当点击确定后会执行这里\n});\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5jb25maXJt\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`content` {string} 可选, 对话框的内容. 默认为空. ",
-                  "name": "content",
-                  "type": "string",
-                  "desc": "可选, 对话框的内容. 默认为空.",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.",
-                  "optional": true
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -50,38 +36,14 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个只包含“确定”按钮的提示对话框. 直至用户点击确定脚本才继续运行.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>alert(&quot;出现错误~&quot;, &quot;出现未知错误, 请联系脚本作者”);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nalert(&quot;嘿嘿嘿&quot;).then(()=&gt;{\n    //当点击确定后会执行这里\n});\n</code></pre>"
+          ]
         },
         {
           "textRaw": "dialogs.confirm(title[, content, callback])",
           "type": "method",
           "name": "confirm",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.confirm(...)</code>、全局 <code>confirm(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 必填</li>\n<li><strong>[ content = <code>&#39;&#39;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> } - 接收布尔选择结果</li>\n<li><ins><strong>returns</strong></ins> { <code>boolean | Promise&lt;boolean&gt; | JsDialog</code> }</li>\n<li><strong>异常</strong>：参数数量不在 1..3、callback 类型错误时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；UI 线程无回调时返回 Promise，普通线程无回调时阻塞到确认或取消</li>\n</ul>\n<pre><code class=\"lang-js\">const accepted = dialogs.confirm(&#39;删除缓存？&#39;);\nconsole.log(accepted);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>content</code> {string} 可选, 对话框的内容. 默认为空.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个包含“确定”和“取消”按钮的提示对话框. 如果用户点击“确定”则返回 <code>true</code> , 否则返回 <code>false</code> .</p>\n<p>该函数也可以作为全局函数使用.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nconfirm(&quot;确定吗&quot;).then(value=&gt;{\n    //当点击确定后会执行这里, value为true或false, 表示点击&quot;确定&quot;或&quot;取消&quot;\n});\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5yYXdJbnB1dA\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`content` {string} 可选, 对话框的内容. 默认为空. ",
-                  "name": "content",
-                  "type": "string",
-                  "desc": "可选, 对话框的内容. 默认为空.",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.",
-                  "optional": true
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -97,38 +59,14 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个包含“确定”和“取消”按钮的提示对话框. 如果用户点击“确定”则返回 <code>true</code> , 否则返回 <code>false</code> .</p>\n<p>该函数也可以作为全局函数使用.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nconfirm(&quot;确定吗&quot;).then(value=&gt;{\n    //当点击确定后会执行这里, value为true或false, 表示点击&quot;确定&quot;或&quot;取消&quot;\n});\n</code></pre>"
+          ]
         },
         {
           "textRaw": "dialogs.rawInput(title[, prefill, callback])",
           "type": "method",
           "name": "rawInput",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.rawInput(...)</code>、全局 <code>rawInput(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 必填</li>\n<li><strong>[ prefill = <code>&#39;&#39;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> } - 可作为第 2 个参数省略 prefill</li>\n<li><ins><strong>returns</strong></ins> { <code>string | null | Promise&lt;string | null&gt; | JsDialog</code> }</li>\n<li><strong>异常</strong>：参数数量不在 1..3 或 callback 不是函数时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；普通线程无回调时同步等待，UI 线程无回调时返回 Promise</li>\n</ul>\n<pre><code class=\"lang-js\">const name = dialogs.rawInput(&#39;姓名&#39;, &#39;Monkey&#39;);\nconsole.log(name);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>prefill</code> {string} 输入框的初始内容, 可选, 默认为空.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个包含输入框的对话框, 等待用户输入内容, 并在用户点击确定时将输入的字符串返回. 如果用户取消了输入, 返回null.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>var name = rawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;);\nalert(&quot;您的名字是&quot; + name);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nrawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;).then(name =&gt; {\n    alert(&quot;您的名字是&quot; + name);\n});\n</code></pre><p>当然也可以使用回调函数, 例如:</p>\n<pre><code>rawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;, name =&gt; {\n     alert(&quot;您的名字是&quot; + name);\n});\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5pbnB1dA\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`prefill` {string} 输入框的初始内容, 可选, 默认为空. ",
-                  "name": "prefill",
-                  "type": "string",
-                  "desc": "输入框的初始内容, 可选, 默认为空.",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.",
-                  "optional": true
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -144,14 +82,13 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个包含输入框的对话框, 等待用户输入内容, 并在用户点击确定时将输入的字符串返回. 如果用户取消了输入, 返回null.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>var name = rawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;);\nalert(&quot;您的名字是&quot; + name);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\nrawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;).then(name =&gt; {\n    alert(&quot;您的名字是&quot; + name);\n});\n</code></pre><p>当然也可以使用回调函数, 例如:</p>\n<pre><code>rawInput(&quot;请输入您的名字&quot;, &quot;小明&quot;, name =&gt; {\n     alert(&quot;您的名字是&quot; + name);\n});\n</code></pre>"
+          ]
         },
         {
           "textRaw": "dialogs.input(title[, prefill, callback])",
           "type": "method",
           "name": "input",
-          "desc": "<p>等效于 <code>eval(dialogs.rawInput(title, prefill, callback))</code>, 该函数和rawInput的区别在于, 会把输入的字符串用eval计算一遍再返回, 返回的可能不是字符串.</p>\n<p>可以用该函数输入数字、数组等. 例如：</p>\n<pre><code>var age = dialogs.input(&quot;请输入您的年龄&quot;, &quot;18&quot;);\n// new Date().getYear() + 1900 可获取当前年份\nvar year = new Date().getYear() + 1900 - age;\nalert(&quot;您的出生年份是&quot; + year);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\ndialogs.input(&quot;请输入您的年龄&quot;, &quot;18&quot;).then(age =&gt; {\n    var year = new Date().getYear() + 1900 - age;\n    alert(&quot;您的出生年份是&quot; + year);\n});\n</code></pre>",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.input(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 必填</li>\n<li><strong>[ prefill = <code>&#39;&#39;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> } - 接收求值后的结果</li>\n<li><ins><strong>returns</strong></ins> { <code>any | Promise&lt;any&gt; | JsDialog</code> } - 对输入字符串执行 Rhino <code>eval</code></li>\n<li><strong>异常</strong>：参数数量不在 1..3、callback 类型错误或输入表达式求值失败时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；线程路径与 <code>rawInput</code> 相同，并会在顶级作用域执行输入文本</li>\n</ul>\n<pre><code class=\"lang-js\">const count = dialogs.input(&#39;数量&#39;, &#39;1 + 2&#39;);\nconsole.log(count); // 3\n</code></pre>\n<p>等效于 <code>eval(dialogs.rawInput(title, prefill, callback))</code>, 该函数和rawInput的区别在于, 会把输入的字符串用eval计算一遍再返回, 返回的可能不是字符串.</p>\n<p>可以用该函数输入数字、数组等. 例如：</p>\n<pre><code>var age = dialogs.input(&quot;请输入您的年龄&quot;, &quot;18&quot;);\n// new Date().getYear() + 1900 可获取当前年份\nvar year = new Date().getYear() + 1900 - age;\nalert(&quot;您的出生年份是&quot; + year);\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\ndialogs.input(&quot;请输入您的年龄&quot;, &quot;18&quot;).then(age =&gt; {\n    var year = new Date().getYear() + 1900 - age;\n    alert(&quot;您的出生年份是&quot; + year);\n});\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5wcm9tcHQ\"></a></p>\n",
           "signatures": [
             {
               "params": [
@@ -174,7 +111,7 @@
           "textRaw": "dialogs.prompt(title[, prefill, callback])",
           "type": "method",
           "name": "prompt",
-          "desc": "<p>相当于 <code>dialogs.rawInput()</code>;</p>\n",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.prompt(...)</code>、全局 <code>prompt(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ prefill = <code>&#39;&#39;</code> ]</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>string | null | Promise&lt;string | null&gt; | JsDialog</code> }</li>\n<li><strong>异常</strong>：与 <code>dialogs.rawInput</code> 相同</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；完整委托给 <code>rawInput</code>，不是会执行 <code>eval</code> 的 <code>input</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(dialogs.prompt(&#39;备注&#39;, &#39;无&#39;));\n</code></pre>\n<p>相当于 <code>dialogs.rawInput()</code>;</p>\n<p><a id=\"api-symbol-ZGlhbG9ncy5zZWxlY3Q\"></a></p>\n",
           "signatures": [
             {
               "params": [
@@ -194,32 +131,11 @@
           ]
         },
         {
-          "textRaw": "dialogs.select(title, items, callback)",
+          "textRaw": "dialogs.select(title, items[, callback])",
           "type": "method",
           "name": "select",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.select(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 至少需要此参数</li>\n<li><strong>items</strong> { <a href=\"../types/data-types.md#string\">string</a>[] | <code>...string</code> } - 数组形式支持可选 callback；非数组形式把 title 后所有参数都转换为选项</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> } - 数组形式的第 3 个参数</li>\n<li><ins><strong>returns</strong></ins> { <code>number | Promise&lt;number&gt; | JsDialog</code> } - 选择索引；取消通常为 <code>-1</code></li>\n<li><strong>异常</strong>：没有 title、callback 类型错误或底层对话框失败时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；UI 线程数组形式且无回调时返回 Promise，否则按同步/回调路径显示列表</li>\n</ul>\n<pre><code class=\"lang-js\">const index = dialogs.select(&#39;颜色&#39;, [&#39;红&#39;, &#39;绿&#39;, &#39;蓝&#39;]);\nconsole.log(index);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>items</code> {Array} 对话框的选项列表, 是一个字符串数组.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个带有选项列表的对话框, 等待用户选择, 返回用户选择的选项索引(0 ~ item.length - 1). 如果用户取消了选择, 返回-1.</p>\n<pre><code>var options = [&quot;选项A&quot;, &quot;选项B&quot;, &quot;选项C&quot;, &quot;选项D&quot;]\nvar i = dialogs.select(&quot;请选择一个选项&quot;, options);\nif(i &gt;= 0){\n    toast(&quot;您选择的是&quot; + options[i]);\n}else{\n    toast(&quot;您取消了选择&quot;);\n}\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\ndialogs.select(&quot;请选择一个选项&quot;, [&quot;选项A&quot;, &quot;选项B&quot;, &quot;选项C&quot;, &quot;选项D&quot;])\n    .then(i =&gt; {\n        toast(i);\n    });\n</code></pre><p><a id=\"api-symbol-ZGlhbG9ncy5zaW5nbGVDaG9pY2U\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`items` {Array} 对话框的选项列表, 是一个字符串数组. ",
-                  "name": "items",
-                  "type": "Array",
-                  "desc": "对话框的选项列表, 是一个字符串数组."
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式."
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -229,48 +145,19 @@
                   "name": "items"
                 },
                 {
-                  "name": "callback"
+                  "name": "callback",
+                  "optional": true
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个带有选项列表的对话框, 等待用户选择, 返回用户选择的选项索引(0 ~ item.length - 1). 如果用户取消了选择, 返回-1.</p>\n<pre><code>var options = [&quot;选项A&quot;, &quot;选项B&quot;, &quot;选项C&quot;, &quot;选项D&quot;]\nvar i = dialogs.select(&quot;请选择一个选项&quot;, options);\nif(i &gt;= 0){\n    toast(&quot;您选择的是&quot; + options[i]);\n}else{\n    toast(&quot;您取消了选择&quot;);\n}\n</code></pre><p>在ui模式下该函数返回一个<code>Promise</code>. 例如:</p>\n<pre><code>&quot;ui&quot;;\ndialogs.select(&quot;请选择一个选项&quot;, [&quot;选项A&quot;, &quot;选项B&quot;, &quot;选项C&quot;, &quot;选项D&quot;])\n    .then(i =&gt; {\n        toast(i);\n    });\n</code></pre>"
+          ]
         },
         {
           "textRaw": "dialogs.singleChoice(title, items[, index, callback])",
           "type": "method",
           "name": "singleChoice",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.singleChoice(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>items</strong> { <a href=\"../types/data-types.md#string\">string</a>[] } - 必须为 JavaScript 数组</li>\n<li><strong>[ index = <code>0</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 初始选中索引</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>number | Promise&lt;number&gt; | JsDialog</code> }</li>\n<li><strong>异常</strong>：参数数量不在 2..4、items 不是数组或 callback 类型错误时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；显示单选列表并在结束时返回或回调索引</li>\n</ul>\n<pre><code class=\"lang-js\">const index = dialogs.singleChoice(&#39;环境&#39;, [&#39;测试&#39;, &#39;生产&#39;], 0);\nconsole.log(index);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>items</code> {Array} 对话框的选项列表, 是一个字符串数组.</li>\n<li><code>index</code> {number} 对话框的初始选项的位置, 默认为0.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个单选列表对话框, 等待用户选择, 返回用户选择的选项索引(0 ~ item.length - 1). 如果用户取消了选择, 返回-1.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>.</p>\n<p><a id=\"api-symbol-ZGlhbG9ncy5tdWx0aUNob2ljZQ\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`items` {Array} 对话框的选项列表, 是一个字符串数组. ",
-                  "name": "items",
-                  "type": "Array",
-                  "desc": "对话框的选项列表, 是一个字符串数组."
-                },
-                {
-                  "textRaw": "`index` {number} 对话框的初始选项的位置, 默认为0. ",
-                  "name": "index",
-                  "type": "number",
-                  "desc": "对话框的初始选项的位置, 默认为0.",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.",
-                  "optional": true
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -289,44 +176,14 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个单选列表对话框, 等待用户选择, 返回用户选择的选项索引(0 ~ item.length - 1). 如果用户取消了选择, 返回-1.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>.</p>\n"
+          ]
         },
         {
           "textRaw": "dialogs.multiChoice(title, items[, indices, callback])",
           "type": "method",
           "name": "multiChoice",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.multiChoice(...)</code></li>\n<li><strong>title</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>items</strong> { <a href=\"../types/data-types.md#string\">string</a>[] } - 必须为 JavaScript 数组</li>\n<li><strong>[ indices = <code>[]</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a>[] } - 初始选中索引数组</li>\n<li><strong>[ callback ]</strong> { <a href=\"../types/data-types.md#function\">function</a> }</li>\n<li><ins><strong>returns</strong></ins> { <code>number[] | null | Promise&lt;number[] | null&gt; | JsDialog</code> }</li>\n<li><strong>异常</strong>：参数数量不在 2..4、items/indices/callback 类型非法时抛出异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：无额外权限；Java 结果会转换为 Rhino 数组，取消可能返回 <code>null</code></li>\n</ul>\n<pre><code class=\"lang-js\">const selected = dialogs.multiChoice(&#39;同步内容&#39;, [&#39;图片&#39;, &#39;视频&#39;], [0]);\nconsole.log(selected);\n</code></pre>\n<ul>\n<li><code>title</code> {string} 对话框的标题.</li>\n<li><code>items</code> {Array} 对话框的选项列表, 是一个字符串数组.</li>\n<li><code>indices</code> {Array} 选项列表中初始选中的项目索引的数组, 默认为空数组.</li>\n<li><code>callback</code> {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.</li>\n</ul>\n<p>显示一个多选列表对话框, 等待用户选择, 返回用户选择的选项索引的数组. 如果用户取消了选择, 返回<code>[]</code>.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>.</p>\n<p><a id=\"api-symbol-ZGlhbG9ncy5idWlsZA\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`title` {string} 对话框的标题. ",
-                  "name": "title",
-                  "type": "string",
-                  "desc": "对话框的标题."
-                },
-                {
-                  "textRaw": "`items` {Array} 对话框的选项列表, 是一个字符串数组. ",
-                  "name": "items",
-                  "type": "Array",
-                  "desc": "对话框的选项列表, 是一个字符串数组."
-                },
-                {
-                  "textRaw": "`indices` {Array} 选项列表中初始选中的项目索引的数组, 默认为空数组. ",
-                  "name": "indices",
-                  "type": "Array",
-                  "desc": "选项列表中初始选中的项目索引的数组, 默认为空数组.",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`callback` {Function} 回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式. ",
-                  "name": "callback",
-                  "type": "Function",
-                  "desc": "回调函数, 可选. 当用户点击确定时被调用,一般用于ui模式.",
-                  "optional": true
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -345,38 +202,22 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>显示一个多选列表对话框, 等待用户选择, 返回用户选择的选项索引的数组. 如果用户取消了选择, 返回<code>[]</code>.</p>\n<p>在ui模式下该函数返回一个<code>Promise</code>.</p>\n"
+          ]
         },
         {
-          "textRaw": "dialogs.build(properties)",
+          "textRaw": "dialogs.build(properties?)",
           "type": "method",
           "name": "build",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>dialogs.build(properties?)</code></li>\n<li><strong>[ properties ]</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 最多 1 个对象；省略或 nullish 时启用内置 preset 标题、内容及三个按钮</li>\n<li><ins><strong>returns</strong></ins> { <code>JsDialog</code> } - 已构建但仍需按对象 API 调用 <code>show()</code> 的对话框</li>\n<li><strong>异常</strong>：参数超过 1 个、properties 非对象、属性名无法映射到 builder 或属性值非法时抛出异常</li>\n<li><strong>权限</strong>：无额外 Android 权限</li>\n<li><strong>线程 / 生命周期</strong>：记录当前脚本线程，并通过 <code>ui.run</code> 在 UI 线程构建；事件监听器随对话框存活</li>\n<li><strong>副作用</strong>：创建对话框对象并安装颜色、按钮、选择、输入、返回键及窗口属性；调用 <code>show()</code> 后显示</li>\n</ul>\n<pre><code class=\"lang-js\">dialogs.build({\n    title: &#39;确认&#39;,\n    content: &#39;继续执行？&#39;,\n    positive: &#39;继续&#39;,\n    negative: &#39;取消&#39;,\n}).show();\n</code></pre>\n<ul>\n<li><code>properties</code> {Object} 对话框属性, 用于配置对话框.</li>\n<li>返回 {Dialog}</li>\n</ul>\n<p>创建一个可自定义的对话框, 例如：</p>\n<pre><code>dialogs.build({\n    //对话框标题\n    title: &quot;发现新版本&quot;,\n    //对话框内容\n    content: &quot;更新日志: 新增了若干了BUG&quot;,\n    //确定键内容\n    positive: &quot;下载&quot;,\n    //取消键内容\n    negative: &quot;取消&quot;,\n    //中性键内容\n    neutral: &quot;到浏览器下载&quot;,\n    //勾选框内容\n    checkBoxPrompt: &quot;不再提示&quot;\n}).on(&quot;positive&quot;, ()=&gt;{\n    //监听确定键\n    toast(&quot;开始下载....&quot;);\n}).on(&quot;neutral&quot;, ()=&gt;{\n    //监听中性键\n    app.openUrl(&quot;https://www.autojs.org&quot;);\n}).on(&quot;check&quot;, (checked)=&gt;{\n    //监听勾选框\n    log(checked);\n}).show();\n</code></pre><p>选项properties可供配置的项目为:</p>\n<ul>\n<li><code>title</code> {string} 对话框标题</li>\n<li><code>titleColor</code> {string} | {number} 对话框标题的颜色</li>\n<li><code>buttonRippleColor</code> {string} | {number} 对话框按钮的波纹效果颜色</li>\n<li><code>icon</code> {string} | {Image} 对话框的图标, 是一个URL或者图片对象</li>\n<li><code>content</code> {string} 对话框文字内容</li>\n<li><code>contentColor</code>{string} | {number} 对话框文字内容的颜色</li>\n<li><code>contentLineSpacing</code>{number} 对话框文字内容的行高倍数, 1.0为一倍行高</li>\n<li><code>items</code> {Array} 对话框列表的选项</li>\n<li><code>itemsColor</code> {string} | {number} 对话框列表的选项的文字颜色</li>\n<li><code>itemsSelectMode</code> {string} 对话框列表的选项选择模式, 可以为:<ul>\n<li><code>select</code> 普通选择模式</li>\n<li><code>single</code> 单选模式</li>\n<li><code>multi</code> 多选模式</li>\n</ul>\n</li>\n<li><code>itemsSelectedIndex</code> {number} | {Array} 对话框列表中预先选中的项目索引, 如果是单选模式为一个索引；多选模式则为数组</li>\n<li><code>positive</code> {string} 对话框确定按钮的文字内容(最右边按钮)</li>\n<li><code>positiveColor</code> {string} | {number} 对话框确定按钮的文字颜色(最右边按钮)</li>\n<li><code>neutral</code> {string} 对话框中立按钮的文字内容(最左边按钮)</li>\n<li><code>neutralColor</code> {string} | {number} 对话框中立按钮的文字颜色(最左边按钮)</li>\n<li><code>negative</code> {string} 对话框取消按钮的文字内容(确定按钮左边的按钮)</li>\n<li><code>negativeColor</code> {string} | {number} 对话框取消按钮的文字颜色(确定按钮左边的按钮)</li>\n<li><code>checkBoxPrompt</code> {string} 勾选框文字内容</li>\n<li><code>checkBoxChecked</code> {boolean} 勾选框是否勾选</li>\n<li><code>progress</code> {Object} 配置对话框进度条的对象：<ul>\n<li><code>max</code> {number} 进度条的最大值, 如果为-1则为无限循环的进度条</li>\n<li><code>horizontal</code> {boolean} 如果为true, 则对话框无限循环的进度条为水平进度条</li>\n<li><code>showMinMax</code> {boolean} 是否显示进度条的最大值和最小值</li>\n</ul>\n</li>\n<li><code>cancelable</code> {boolean} 对话框是否可取消, 如果为false, 则对话框只能用代码手动取消</li>\n<li><code>canceledOnTouchOutside</code> {boolean} 对话框是否在点击对话框以外区域时自动取消, 默认为true</li>\n<li><code>inputHint</code> {string} 对话框的输入框的输入提示</li>\n<li><code>inputPrefill</code> {string} 对话框输入框的默认输入内容</li>\n</ul>\n<p>通过这些选项可以自定义一个对话框, 并通过监听返回的Dialog对象的按键、输入事件来实现交互. 下面是一些例子.</p>\n<p>模拟alert对话框：</p>\n<pre><code>dialogs.build({\n    title: &quot;你好&quot;,\n    content: &quot;今天也要元气满满哦&quot;,\n    positive: &quot;好的&quot;\n}).show();\n</code></pre><p>模拟confirm对话框:</p>\n<pre><code>dialogs.build({\n    title: &quot;你好&quot;,\n    content: &quot;请问你是笨蛋吗?&quot;,\n    positive: &quot;是的&quot;,\n    negative: &quot;我是大笨蛋&quot;\n}).on(&quot;positive&quot;, ()=&gt;{\n    alert(&quot;哈哈哈笨蛋&quot;);\n}).on(&quot;negative&quot;, ()=&gt;{\n    alert(&quot;哈哈哈大笨蛋&quot;);\n}).show();\n</code></pre><p>模拟单选框:</p>\n<pre><code>dialogs.build({\n    title: &quot;单选&quot;,\n    items: [&quot;选项1&quot;, &quot;选项2&quot;, &quot;选项3&quot;, &quot;选项4&quot;],\n    itemsSelectMode: &quot;single&quot;,\n    itemsSelectedIndex: 3\n}).on(&quot;single_choice&quot;, (index, item)=&gt;{\n    toast(&quot;您选择的是&quot; + item);\n}).show();\n</code></pre><p>&quot;处理中&quot;对话框:</p>\n<pre><code>var d = dialogs.build({\n    title: &quot;下载中...&quot;,\n    progress: {\n        max: -1\n    },\n    cancelable: false\n}).show();\n\nsetTimeout(()=&gt;{\n    d.dismiss();\n}, 3000);\n</code></pre><p>输入对话框:</p>\n<pre><code>dialogs.build({\n    title: &quot;请输入您的年龄&quot;,\n    inputPrefill: &quot;18&quot;\n}).on(&quot;input&quot;, (input)=&gt;{\n    var age = parseInt(input);\n    toastLog(age);\n}).show();\n</code></pre><p>使用这个函数来构造对话框, 一个明显的不同是需要使用回调函数而不能像dialogs其他函数一样同步地返回结果；但也可以通过threads模块的方法来实现. 例如显示一个输入框并获取输入结果为：</p>\n<pre><code>var input = threads.disposable();\ndialogas.build({\n    title: &quot;请输入您的年龄&quot;,\n    inputPrefill: &quot;18&quot;\n}).on(&quot;input&quot;, text =&gt; {\n    input.setAndNotify(text);\n}).show();\nvar age = parseInt(input.blockedGet());\ntosatLog(age);\n</code></pre>",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`properties` {Object} 对话框属性, 用于配置对话框. ",
-                  "name": "properties",
-                  "type": "Object",
-                  "desc": "对话框属性, 用于配置对话框."
-                },
-                {
-                  "textRaw": "返回 {Dialog} ",
-                  "name": "返回",
-                  "type": "Dialog"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "properties"
+                  "name": "properties?"
                 }
               ]
             }
-          ],
-          "desc": "<p>创建一个可自定义的对话框, 例如：</p>\n<pre><code>dialogs.build({\n    //对话框标题\n    title: &quot;发现新版本&quot;,\n    //对话框内容\n    content: &quot;更新日志: 新增了若干了BUG&quot;,\n    //确定键内容\n    positive: &quot;下载&quot;,\n    //取消键内容\n    negative: &quot;取消&quot;,\n    //中性键内容\n    neutral: &quot;到浏览器下载&quot;,\n    //勾选框内容\n    checkBoxPrompt: &quot;不再提示&quot;\n}).on(&quot;positive&quot;, ()=&gt;{\n    //监听确定键\n    toast(&quot;开始下载....&quot;);\n}).on(&quot;neutral&quot;, ()=&gt;{\n    //监听中性键\n    app.openUrl(&quot;https://www.autojs.org&quot;);\n}).on(&quot;check&quot;, (checked)=&gt;{\n    //监听勾选框\n    log(checked);\n}).show();\n</code></pre><p>选项properties可供配置的项目为:</p>\n<ul>\n<li><code>title</code> {string} 对话框标题</li>\n<li><code>titleColor</code> {string} | {number} 对话框标题的颜色</li>\n<li><code>buttonRippleColor</code> {string} | {number} 对话框按钮的波纹效果颜色</li>\n<li><code>icon</code> {string} | {Image} 对话框的图标, 是一个URL或者图片对象</li>\n<li><code>content</code> {string} 对话框文字内容</li>\n<li><code>contentColor</code>{string} | {number} 对话框文字内容的颜色</li>\n<li><code>contentLineSpacing</code>{number} 对话框文字内容的行高倍数, 1.0为一倍行高</li>\n<li><code>items</code> {Array} 对话框列表的选项</li>\n<li><code>itemsColor</code> {string} | {number} 对话框列表的选项的文字颜色</li>\n<li><code>itemsSelectMode</code> {string} 对话框列表的选项选择模式, 可以为:<ul>\n<li><code>select</code> 普通选择模式</li>\n<li><code>single</code> 单选模式</li>\n<li><code>multi</code> 多选模式</li>\n</ul>\n</li>\n<li><code>itemsSelectedIndex</code> {number} | {Array} 对话框列表中预先选中的项目索引, 如果是单选模式为一个索引；多选模式则为数组</li>\n<li><code>positive</code> {string} 对话框确定按钮的文字内容(最右边按钮)</li>\n<li><code>positiveColor</code> {string} | {number} 对话框确定按钮的文字颜色(最右边按钮)</li>\n<li><code>neutral</code> {string} 对话框中立按钮的文字内容(最左边按钮)</li>\n<li><code>neutralColor</code> {string} | {number} 对话框中立按钮的文字颜色(最左边按钮)</li>\n<li><code>negative</code> {string} 对话框取消按钮的文字内容(确定按钮左边的按钮)</li>\n<li><code>negativeColor</code> {string} | {number} 对话框取消按钮的文字颜色(确定按钮左边的按钮)</li>\n<li><code>checkBoxPrompt</code> {string} 勾选框文字内容</li>\n<li><code>checkBoxChecked</code> {boolean} 勾选框是否勾选</li>\n<li><code>progress</code> {Object} 配置对话框进度条的对象：<ul>\n<li><code>max</code> {number} 进度条的最大值, 如果为-1则为无限循环的进度条</li>\n<li><code>horizontal</code> {boolean} 如果为true, 则对话框无限循环的进度条为水平进度条</li>\n<li><code>showMinMax</code> {boolean} 是否显示进度条的最大值和最小值</li>\n</ul>\n</li>\n<li><code>cancelable</code> {boolean} 对话框是否可取消, 如果为false, 则对话框只能用代码手动取消</li>\n<li><code>canceledOnTouchOutside</code> {boolean} 对话框是否在点击对话框以外区域时自动取消, 默认为true</li>\n<li><code>inputHint</code> {string} 对话框的输入框的输入提示</li>\n<li><code>inputPrefill</code> {string} 对话框输入框的默认输入内容</li>\n</ul>\n<p>通过这些选项可以自定义一个对话框, 并通过监听返回的Dialog对象的按键、输入事件来实现交互. 下面是一些例子.</p>\n<p>模拟alert对话框：</p>\n<pre><code>dialogs.build({\n    title: &quot;你好&quot;,\n    content: &quot;今天也要元气满满哦&quot;,\n    positive: &quot;好的&quot;\n}).show();\n</code></pre><p>模拟confirm对话框:</p>\n<pre><code>dialogs.build({\n    title: &quot;你好&quot;,\n    content: &quot;请问你是笨蛋吗?&quot;,\n    positive: &quot;是的&quot;,\n    negative: &quot;我是大笨蛋&quot;\n}).on(&quot;positive&quot;, ()=&gt;{\n    alert(&quot;哈哈哈笨蛋&quot;);\n}).on(&quot;negative&quot;, ()=&gt;{\n    alert(&quot;哈哈哈大笨蛋&quot;);\n}).show();\n</code></pre><p>模拟单选框:</p>\n<pre><code>dialogs.build({\n    title: &quot;单选&quot;,\n    items: [&quot;选项1&quot;, &quot;选项2&quot;, &quot;选项3&quot;, &quot;选项4&quot;],\n    itemsSelectMode: &quot;single&quot;,\n    itemsSelectedIndex: 3\n}).on(&quot;single_choice&quot;, (index, item)=&gt;{\n    toast(&quot;您选择的是&quot; + item);\n}).show();\n</code></pre><p>&quot;处理中&quot;对话框:</p>\n<pre><code>var d = dialogs.build({\n    title: &quot;下载中...&quot;,\n    progress: {\n        max: -1\n    },\n    cancelable: false\n}).show();\n\nsetTimeout(()=&gt;{\n    d.dismiss();\n}, 3000);\n</code></pre><p>输入对话框:</p>\n<pre><code>dialogs.build({\n    title: &quot;请输入您的年龄&quot;,\n    inputPrefill: &quot;18&quot;\n}).on(&quot;input&quot;, (input)=&gt;{\n    var age = parseInt(input);\n    toastLog(age);\n}).show();\n</code></pre><p>使用这个函数来构造对话框, 一个明显的不同是需要使用回调函数而不能像dialogs其他函数一样同步地返回结果；但也可以通过threads模块的方法来实现. 例如显示一个输入框并获取输入结果为：</p>\n<pre><code>var input = threads.disposable();\ndialogas.build({\n    title: &quot;请输入您的年龄&quot;,\n    inputPrefill: &quot;18&quot;\n}).on(&quot;input&quot;, text =&gt; {\n    input.setAndNotify(text);\n}).show();\nvar age = parseInt(input.blockedGet());\ntosatLog(age);\n</code></pre>"
+          ]
         }
       ],
       "type": "module",

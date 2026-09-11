@@ -4,7 +4,72 @@
     {
       "textRaw": "条码 (Barcode)",
       "name": "条码_(barcode)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 30, 2023.</p>\n\n<hr>\n<p>barcode 模块用于识别图像中的条码.</p>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">barcode</p>\n\n<hr>\n<pre><code class=\"lang-ts\">interface Barcode {\n\n    (options?: DetectOptions): string | string[] | null;\n    (isAll: boolean): string | string[] | null;\n    (img: ImageWrapper | string, options?: DetectOptions): string | string[] | null;\n    (img: ImageWrapper | string, isAll: boolean): string | string[] | null;\n\n    detect(options?: DetectOptions): Barcode.Result | Barcode.Result[] | null;\n    detect(isAll: boolean): Barcode.Result | Barcode.Result[] | null;\n    detect(img: ImageWrapper | string, options?: DetectOptions): Barcode.Result | Barcode.Result[] | null;\n    detect(img: ImageWrapper | string, isAll: boolean): Barcode.Result | Barcode.Result[] | null;\n\n    detectAll(options?: DetectOptionsWithoutIsAll): Barcode.Result[];\n    detectAll(img: ImageWrapper | string, options?: DetectOptionsWithoutIsAll): Barcode.Result[];\n\n    recognizeText(options?: DetectOptions): string | string[] | null;\n    recognizeText(isAll: boolean): string | string[] | null;\n    recognizeText(img: ImageWrapper | string, options?: DetectOptions): string | string[] | null;\n    recognizeText(img: ImageWrapper | string, isAll: boolean): string | string[] | null;\n\n    recognizeTexts(options?: DetectOptionsWithoutIsAll): string[];\n    recognizeTexts(img: ImageWrapper | string, options?: DetectOptionsWithoutIsAll): string[];\n\n}\n</code></pre>\n",
+      "desc": "<p><code>barcode</code> 是全局可调用模块，使用设备内置的 ML Kit 条码扫描器识别一维码和二维码。传入图像时直接分析该图像；省略图像时会同步截取当前屏幕，因此必须先取得屏幕捕获权限。</p>\n<p>检测会等待扫描器完成后再把结果返回给脚本。由路径读取的临时图像和标记为一次性使用的图像会在扫描后进入回收流程；调用方自己长期持有的 <code>ImageWrapper</code> 应继续按 <a href=\"image.md\">图像资源规则</a> 管理。</p>\n",
+      "modules": [
+        {
+          "textRaw": "公共选项",
+          "name": "公共选项",
+          "desc": "<pre><code class=\"lang-ts\">interface BarcodeDetectOptions {\n  /** true 时返回全部结果；仅用于 barcode()/detect()/recognizeText()。默认 false。 */\n  isAll?: boolean\n  /** 格式常量、格式名或两者组成的数组；省略时扫描全部格式。当前版本仅校验并传递这些值，不保证缩小扫描范围。 */\n  format?: number | string | Array&lt;number | string&gt;\n  /** 要求扫描器同时报告尚不能完整解码的候选条码。默认 false。 */\n  enableAllPotentialBarcodes?: boolean\n}\n</code></pre>\n<p>格式字符串不区分大小写，非单词字符会转换为下划线，并可省略 <code>FORMAT_</code> 前缀；例如 <code>&quot;qr-code&quot;</code>、<code>&quot;FORMAT_QRCODE&quot;</code> 和 <code>&quot;FORMAT_QR_CODE&quot;</code> 都会归一为 QR Code 格式。未知格式会抛出参数异常。</p>\n<p>实现限制：MonkeyKing 6.7.0 会把 <code>FORMAT_ALL_FORMATS</code> 与用户提供的格式一起传给 ML Kit，因此 <code>format</code> 不能用于缩小扫描范围；如果业务只接受特定格式，请在返回结果层按 <code>result.format</code> 自行过滤。<code>qrcode</code> 模块不受此限制，它在源码中固定使用 <code>FORMAT_QR_CODE</code>。</p>\n<p><code>detect</code> 系列返回 <code>Barcode.Result</code>。常用字段包括 <code>rawValue</code>、<code>displayValue</code>、<code>rawBytes</code>、<code>format</code>、<code>formatName</code>、<code>valueType</code>、<code>valueTypeName</code>、<code>boundingBox</code> 和 <code>cornerPoints</code>；对于联系人、网址、Wi-Fi 等结构化内容，还可读取对应的 <code>contactInfo</code>、<code>url</code>、<code>wifi</code> 等字段。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmJhcmNvZGU\"></a></p>\n",
+          "type": "module",
+          "displayName": "公共选项"
+        },
+        {
+          "textRaw": "`barcode` 模块",
+          "name": "`barcode`_模块",
+          "desc": "<p>脚本运行时自动提供，无需导入。模块本身可调用，也公开下列四个方法。MonkeyKing 6.7.0 的这些入口均为同步入口；扫描器失败或取消时返回空结果，不把 ML Kit 的失败对象直接抛给脚本。</p>\n<p><a id=\"api-symbol-Y2FsbDpiYXJjb2Rl\"></a></p>\n",
+          "type": "module",
+          "displayName": "`barcode` 模块"
+        },
+        {
+          "textRaw": "`barcode(input?, options?)`",
+          "name": "`barcode(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">barcode(options?: BarcodeDetectOptions): string | string[] | null\nbarcode(image: ImageWrapper | string, options?: BarcodeDetectOptions): string | string[] | null\nbarcode(isAll: true): string[]\n</code></pre>\n<p>模块调用是 <code>recognizeText</code> 的快捷形式。默认返回第一条 <code>rawValue</code>，无结果时返回 <code>null</code>；<code>options.isAll === true</code> 或以 <code>true</code> 作为唯一参数时返回所有非空文本。最多接受三个实参，多余实参会触发参数数量异常。</p>\n<pre><code class=\"lang-js\">images.requestScreenCapture(false)\nconst first = barcode({ format: [&#39;EAN_13&#39;, &#39;CODE_128&#39;] })\nconsole.log(first)\n\nconst all = barcode(&#39;/sdcard/Download/labels.png&#39;, { isAll: true })\nconsole.log(all)\n</code></pre>\n<p><a id=\"api-symbol-YmFyY29kZS5kZXRlY3Q\"></a></p>\n",
+          "type": "module",
+          "displayName": "`barcode(input?, options?)`"
+        },
+        {
+          "textRaw": "`barcode.detect(input?, options?)`",
+          "name": "`barcode.detect(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">barcode.detect(options?: BarcodeDetectOptions): Barcode.Result | Barcode.Result[] | null\nbarcode.detect(image: ImageWrapper | string, options?: BarcodeDetectOptions): Barcode.Result | Barcode.Result[] | null\n</code></pre>\n<p>返回完整检测对象。默认只返回第一项；<code>options.isAll</code> 为 <code>true</code> 时返回数组。省略图像会捕获屏幕。路径无法解码为图像时抛出 <code>WrappedIllegalArgumentException</code>；图像已回收或扫描失败时，单项模式返回 <code>null</code>，全部模式返回空数组。</p>\n<pre><code class=\"lang-js\">const result = barcode.detect(&#39;/sdcard/Download/ticket.png&#39;, {\n  format: &#39;QR_CODE&#39;,\n})\nif (result) {\n  console.log(result.formatName, result.rawValue, result.boundingBox)\n}\n</code></pre>\n<p><a id=\"api-symbol-YmFyY29kZS5kZXRlY3RBbGw\"></a></p>\n",
+          "type": "module",
+          "displayName": "`barcode.detect(input?, options?)`"
+        },
+        {
+          "textRaw": "`barcode.detectAll(input?, options?)`",
+          "name": "`barcode.detectall(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">barcode.detectAll(options?: Omit&lt;BarcodeDetectOptions, &#39;isAll&#39;&gt;): Barcode.Result[]\nbarcode.detectAll(image: ImageWrapper | string, options?: Omit&lt;BarcodeDetectOptions, &#39;isAll&#39;&gt;): Barcode.Result[]\n</code></pre>\n<p>始终返回数组并扫描全部结果；无匹配、图像已回收或扫描失败时返回 <code>[]</code>。<code>isAll</code> 在此入口没有意义。省略图像时需要已有屏幕捕获授权。</p>\n<pre><code class=\"lang-js\">const results = barcode.detectAll(&#39;/sdcard/Download/parcel.jpg&#39;, {\n  format: [&#39;CODE_128&#39;, &#39;DATA_MATRIX&#39;],\n})\nresults.forEach(result =&gt; console.log(result.formatName, result.rawValue))\n</code></pre>\n<p><a id=\"api-symbol-YmFyY29kZS5yZWNvZ25pemVUZXh0\"></a></p>\n",
+          "type": "module",
+          "displayName": "`barcode.detectAll(input?, options?)`"
+        },
+        {
+          "textRaw": "`barcode.recognizeText(input?, options?)`",
+          "name": "`barcode.recognizetext(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">barcode.recognizeText(options?: BarcodeDetectOptions): string | string[] | null\nbarcode.recognizeText(image: ImageWrapper | string, options?: BarcodeDetectOptions): string | string[] | null\n</code></pre>\n<p>只返回检测对象的 <code>rawValue</code>。默认返回第一条非空文本或 <code>null</code>；<code>options.isAll</code> 为 <code>true</code> 时返回所有非空文本。输入、权限、异常和同步阻塞行为与 <code>barcode.detect</code> 相同。</p>\n<pre><code class=\"lang-js\">const value = barcode.recognizeText(&#39;/sdcard/Download/code.png&#39;)\ntoastLog(value == null ? &#39;未识别到条码&#39; : value)\n</code></pre>\n<p><a id=\"api-symbol-YmFyY29kZS5yZWNvZ25pemVUZXh0cw\"></a></p>\n",
+          "type": "module",
+          "displayName": "`barcode.recognizeText(input?, options?)`"
+        },
+        {
+          "textRaw": "`barcode.recognizeTexts(input?, options?)`",
+          "name": "`barcode.recognizetexts(input?,_options?)`",
+          "desc": "<pre><code class=\"lang-ts\">barcode.recognizeTexts(options?: Omit&lt;BarcodeDetectOptions, &#39;isAll&#39;&gt;): string[]\nbarcode.recognizeTexts(image: ImageWrapper | string, options?: Omit&lt;BarcodeDetectOptions, &#39;isAll&#39;&gt;): string[]\n</code></pre>\n<p>扫描全部条码并返回其中非空的 <code>rawValue</code>；无结果时返回 <code>[]</code>。如需格式、边界或结构化字段，请改用 <code>barcode.detectAll</code>。</p>\n<pre><code class=\"lang-js\">const values = barcode.recognizeTexts(&#39;/sdcard/Download/codes.png&#39;)\nconsole.log(JSON.stringify(values))\n</code></pre>\n",
+          "type": "module",
+          "displayName": "`barcode.recognizeTexts(input?, options?)`"
+        },
+        {
+          "textRaw": "权限、线程与生命周期",
+          "name": "权限、线程与生命周期",
+          "desc": "<ul>\n<li>文件路径会经 MonkeyKing 文件模块规范化；路径无效时抛出异常。</li>\n<li>省略图像时会调用屏幕捕获。首次使用前应在前台请求授权；不要在 UI 线程高频循环调用同步扫描入口。</li>\n<li>扫描器每次调用都会创建并等待一次检测任务。脚本结束时无需单独关闭 <code>barcode</code> 模块。</li>\n<li>API 在 MonkeyKing 6.7.0 中可用；可用格式和结构化结果字段由应用内置的 ML Kit 版本决定。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>barcode.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode.detect);\n</code></pre>\n<p><code>barcode.detectAll</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode.detectAll);\n</code></pre>\n<p><code>barcode.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode.recognizeText);\n</code></pre>\n<p><code>barcode.recognizeTexts</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode.recognizeTexts);\n</code></pre>\n<p><code>call:barcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode);\n</code></pre>\n<p><code>module:barcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof barcode);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
       "type": "module",
       "displayName": "条码 (Barcode)"
     }

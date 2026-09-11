@@ -4,7 +4,7 @@
     {
       "textRaw": "NoticeBuilder",
       "name": "noticebuilder",
-      "desc": "<p><a href=\"https://developer.android.com/reference/android/app/Notification.Builder\">androidx.core.app.NotificationCompat.Builder</a> 别名.</p>\n<p>NoticeBuilder 表示一个通知构建器.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../system/notice.md#m-getbuilder\">notice.getBuilder</a></li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出部分属性或方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">androidx.core.app.NotificationCompat.Builder</p>\n\n<hr>\n",
+      "desc": "<p><a href=\"https://developer.android.com/reference/android/app/Notification.Builder\">androidx.core.app.NotificationCompat.Builder</a> 别名.</p>\n<p>NoticeBuilder 表示一个通知构建器.</p>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"../system/notice.md#m-getbuilder\">notice.getBuilder</a></li>\n</ul>\n<blockquote>\n<p>注：本页记录 Monkey King 文档直接使用的构造器方法和样式入口；未在本页展开的\n<code>NotificationCompat.Builder</code> 成员仍可通过 Java/Android 互操作调用，完整签名请查阅\n<a href=\"https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder\">AndroidX 官方参考</a>。</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">androidx.core.app.NotificationCompat.Builder</p>\n\n<hr>\n",
       "modules": [
         {
           "textRaw": "[m] setAutoCancel",
@@ -354,7 +354,7 @@
                   ]
                 }
               ],
-              "desc": "<p>设定通知的风格样式.</p>\n<p>部分常用样式模板类:</p>\n<ul>\n<li><a href=\"#bigpicturestyle\">NotificationCompat.BigPictureStyle</a></li>\n<li><a href=\"#bigtextstyle\">NotificationCompat.BigTextStyle</a></li>\n<li><a href=\"#inboxstyle\">NotificationCompat.InboxStyle</a></li>\n<li><a href=\"#messagingstyle\">NotificationCompat.MessagingStyle</a></li>\n<li>... ...</li>\n</ul>\n",
+              "desc": "<p>设定通知的风格样式.</p>\n<p>部分常用样式模板类:</p>\n<ul>\n<li><a href=\"#bigpicturestyle\">NotificationCompat.BigPictureStyle</a></li>\n<li><a href=\"#bigtextstyle\">NotificationCompat.BigTextStyle</a></li>\n<li><a href=\"#inboxstyle\">NotificationCompat.InboxStyle</a></li>\n<li><a href=\"#messagingstyle\">NotificationCompat.MessagingStyle</a></li>\n</ul>\n<p>其他样式类可直接传给 <code>setStyle</code>；其行为和可用方法以 AndroidX 官方参考为准。</p>\n",
               "modules": [
                 {
                   "textRaw": "BigTextStyle",

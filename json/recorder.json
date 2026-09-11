@@ -4,266 +4,91 @@
     {
       "textRaw": "记录器 (Recorder)",
       "name": "记录器_(recorder)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>记录器用于计时.</p>\n<blockquote>\n<p>注: 为避免与 Timers (定时器) 混淆, 本条目不采用 &quot;计时器&quot; 定义.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">recorder</p>\n\n<hr>\n",
+      "desc": "<p><code>recorder</code> 是脚本内存中的轻量计时记录器。它使用 <code>System.currentTimeMillis()</code> 保存墙上时钟毫秒值，可按字符串键保存，也可使用匿名栈；数据只属于当前 <code>ScriptRuntime</code>，不会写入磁盘，脚本结束后即丢失。</p>\n<blockquote>\n<p>本模块用于“记录经过时间”，不要与执行定时任务的 <a href=\"../system/timers.md\">timers</a> 混淆。系统时间被手动或网络校时调整时，计算出的间隔也会随之变化。</p>\n</blockquote>\n<p><a id=\"api-symbol-bW9kdWxlOnJlY29yZGVy\"></a></p>\n",
       "modules": [
         {
-          "textRaw": "[@] recorder",
-          "name": "[@]_recorder",
-          "methods": [
-            {
-              "textRaw": "recorder(func)",
-              "type": "method",
-              "name": "recorder",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "func"
-                    },
-                    {
-                      "name": "thisType"
-                    }
-                  ]
-                },
-                {
-                  "params": [
-                    {
-                      "name": "func"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "recorder(func, thisType)",
-              "type": "method",
-              "name": "recorder",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "func"
-                    },
-                    {
-                      "name": "thisType"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder` 模块",
+          "name": "`recorder`_模块",
+          "desc": "<p>运行时自动提供，无需导入。命名记录保存在键值表中，匿名记录保存在后进先出栈中。实现不做跨线程同步；应在同一脚本线程使用，或由调用方自行串行化访问。</p>\n<p><a id=\"api-symbol-Y2FsbDpyZWNvcmRlcg\"></a></p>\n",
           "type": "module",
-          "displayName": "[@] recorder"
+          "displayName": "`recorder` 模块"
         },
         {
-          "textRaw": "[m] save",
-          "name": "[m]_save",
-          "methods": [
-            {
-              "textRaw": "save(key)",
-              "type": "method",
-              "name": "save",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "timestamp"
-                    }
-                  ]
-                },
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "save(key, timestamp)",
-              "type": "method",
-              "name": "save",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "timestamp"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder(keyOrFunction?, timestampOrThis?)`",
+          "name": "`recorder(keyorfunction?,_timestamporthis?)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder(): number\nrecorder(key: string, timestamp?: number): number\nrecorder(callback: Function, thisObject?: object): number\n</code></pre>\n<p>全局对象可直接调用，行为与 <code>recorder.shortcut</code> 完全相同，最多接受两个实参。</p>\n<pre><code class=\"lang-js\">recorder(&#39;download&#39;)              // 第一次：保存当前毫秒值\nsleep(250)\nconsole.log(recorder(&#39;download&#39;)) // 后续：返回从首次保存到现在的毫秒数\n</code></pre>\n<p><a id=\"api-symbol-cmVjb3JkZXIuc2hvcnRjdXQ\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] save"
+          "displayName": "`recorder(keyOrFunction?, timestampOrThis?)`"
         },
         {
-          "textRaw": "[m] load",
-          "name": "[m]_load",
-          "methods": [
-            {
-              "textRaw": "load(key)",
-              "type": "method",
-              "name": "load",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "timestamp"
-                    }
-                  ]
-                },
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "textRaw": "load(key, timestamp)",
-              "type": "method",
-              "name": "load",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "timestamp"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.shortcut(keyOrFunction?, timestampOrThis?)`",
+          "name": "`recorder.shortcut(keyorfunction?,_timestamporthis?)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.shortcut(): number\nrecorder.shortcut(key: string, timestamp?: number): number\nrecorder.shortcut(callback: Function, thisObject?: object): number\n</code></pre>\n<p>快捷入口按首参数类型分派：</p>\n<ul>\n<li>省略参数：匿名栈为空时压入当前时间并返回该时间戳；栈非空时弹出最后一项并返回经过毫秒数。</li>\n<li>字符串键：键不存在时保存 <code>timestamp</code>（默认当前时间）；键存在时返回从已保存值到 <code>timestamp</code>（默认当前时间）的差。命名记录不会因读取自动删除。</li>\n<li>函数：以临时键记录开始时间，立即调用函数，返回函数执行耗时并删除临时键。第二参数若提供，必须是非函数 JavaScript 对象并作为回调的 <code>this</code>；其他类型会抛出 <code>IllegalArgumentException</code>。回调自身的异常会继续向外传播。</li>\n</ul>\n<pre><code class=\"lang-js\">const elapsed = recorder(function work() {\n  sleep(120)\n})\nconsole.log(elapsed)\n\nconst context = { answer: 42 }\nconst elapsedWithThis = recorder(function () {\n  console.log(this.answer)\n}, context)\n</code></pre>\n<p><a id=\"api-symbol-cmVjb3JkZXIuc2F2ZQ\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] load"
+          "displayName": "`recorder.shortcut(keyOrFunction?, timestampOrThis?)`"
         },
         {
-          "textRaw": "[m] isLessThan",
-          "name": "[m]_islessthan",
-          "methods": [
-            {
-              "textRaw": "isLessThan(key, compare)",
-              "type": "method",
-              "name": "isLessThan",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "compare"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.save(key?, timestamp?)`",
+          "name": "`recorder.save(key?,_timestamp?)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.save(key?: string, timestamp?: number): number\n</code></pre>\n<p>保存并返回时间戳。省略 <code>timestamp</code> 时使用当前毫秒值；省略 <code>key</code> 时压入匿名栈，否则覆盖同名记录。显式时间戳会按长整数数值转换后保存为 JavaScript <code>number</code>。</p>\n<pre><code class=\"lang-js\">const startedAt = recorder.save(&#39;job&#39;)\nrecorder.save(&#39;fixture&#39;, 1_000)\n</code></pre>\n<p><a id=\"api-symbol-cmVjb3JkZXIubG9hZA\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] isLessThan"
+          "displayName": "`recorder.save(key?, timestamp?)`"
         },
         {
-          "textRaw": "[m] isGreaterThan",
-          "name": "[m]_isgreaterthan",
-          "methods": [
-            {
-              "textRaw": "isGreaterThan(key, compare)",
-              "type": "method",
-              "name": "isGreaterThan",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    },
-                    {
-                      "name": "compare"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.load(key?, timestamp?)`",
+          "name": "`recorder.load(key?,_timestamp?)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.load(key?: string, timestamp?: number): number\n</code></pre>\n<p>返回 <code>timestamp - savedTimestamp</code>，省略 <code>timestamp</code> 时使用当前时间。匿名读取会弹出栈顶；命名读取保留记录。键不存在或匿名栈为空时返回 <code>NaN</code>。</p>\n<pre><code class=\"lang-js\">recorder.save(&#39;phase&#39;)\nsleep(80)\nconsole.log(recorder.load(&#39;phase&#39;))\nconsole.log(Number.isNaN(recorder.load(&#39;missing&#39;)))\n</code></pre>\n<p><a id=\"api-symbol-cmVjb3JkZXIuaXNMZXNzVGhhbg\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] isGreaterThan"
+          "displayName": "`recorder.load(key?, timestamp?)`"
         },
         {
-          "textRaw": "[m] has",
-          "name": "[m]_has",
-          "methods": [
-            {
-              "textRaw": "has(key)",
-              "type": "method",
-              "name": "has",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.isLessThan(key, compare)`",
+          "name": "`recorder.islessthan(key,_compare)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.isLessThan(key: string, compare: number): boolean\n</code></pre>\n<p>比较命名记录到当前时间的间隔是否小于 <code>compare</code> 毫秒。缺失键产生 <code>NaN</code>，因此返回 <code>false</code>；无法转换为长整数的比较值会触发数值转换异常。</p>\n<p><a id=\"api-symbol-cmVjb3JkZXIuaXNHcmVhdGVyVGhhbg\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] has"
+          "displayName": "`recorder.isLessThan(key, compare)`"
         },
         {
-          "textRaw": "[m] remove",
-          "name": "[m]_remove",
-          "methods": [
-            {
-              "textRaw": "remove(key)",
-              "type": "method",
-              "name": "remove",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "name": "key"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.isGreaterThan(key, compare)`",
+          "name": "`recorder.isgreaterthan(key,_compare)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.isGreaterThan(key: string, compare: number): boolean\n</code></pre>\n<p>比较命名记录到当前时间的间隔是否大于 <code>compare</code> 毫秒。它不会移除或更新记录。</p>\n<pre><code class=\"lang-js\">recorder.save(&#39;poll&#39;)\nsleep(30)\nif (recorder.isGreaterThan(&#39;poll&#39;, 20)) console.log(&#39;超过 20 ms&#39;)\n</code></pre>\n<p><a id=\"api-symbol-cmVjb3JkZXIuaGFz\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] remove"
+          "displayName": "`recorder.isGreaterThan(key, compare)`"
         },
         {
-          "textRaw": "[m] clear",
-          "name": "[m]_clear",
-          "methods": [
-            {
-              "textRaw": "clear()",
-              "type": "method",
-              "name": "clear",
-              "signatures": [
-                {
-                  "params": []
-                }
-              ]
-            }
-          ],
+          "textRaw": "`recorder.has(key)`",
+          "name": "`recorder.has(key)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.has(key: string): boolean\n</code></pre>\n<p>命名键存在时返回 <code>true</code>。<code>null</code> 或 <code>undefined</code> 返回 <code>false</code>；匿名栈不参与查询。</p>\n<p><a id=\"api-symbol-cmVjb3JkZXIucmVtb3Zl\"></a></p>\n",
           "type": "module",
-          "displayName": "[m] clear"
+          "displayName": "`recorder.has(key)`"
+        },
+        {
+          "textRaw": "`recorder.remove(key)`",
+          "name": "`recorder.remove(key)`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.remove(key: string): boolean\n</code></pre>\n<p>删除命名记录，确实删除时返回 <code>true</code>，键缺失或参数为空时返回 <code>false</code>。不会影响匿名栈。</p>\n<p><a id=\"api-symbol-cmVjb3JkZXIuY2xlYXI\"></a></p>\n",
+          "type": "module",
+          "displayName": "`recorder.remove(key)`"
+        },
+        {
+          "textRaw": "`recorder.clear()`",
+          "name": "`recorder.clear()`",
+          "desc": "<pre><code class=\"lang-ts\">recorder.clear(): void\n</code></pre>\n<p>清空全部命名记录和匿名栈。该操作不可撤销，但只影响当前脚本运行时的内存状态。</p>\n<pre><code class=\"lang-js\">recorder.save(&#39;a&#39;)\nrecorder.save()\nrecorder.clear()\nconsole.log(recorder.has(&#39;a&#39;)) // false\nconsole.log(recorder.load())   // NaN\n</code></pre>\n",
+          "type": "module",
+          "displayName": "`recorder.clear()`"
+        },
+        {
+          "textRaw": "权限、异常与版本",
+          "name": "权限、异常与版本",
+          "desc": "<ul>\n<li>所有入口都只操作内存和系统时钟，不申请 Android 权限，也不执行 I/O。</li>\n<li>参数数量或类型不符合合同会抛出参数/转换异常；计时键缺失本身不抛异常，而以 <code>NaN</code> 表示。</li>\n<li>回调快捷形式同步执行回调，耗时包含整个同步调用过程。</li>\n<li>本页合同对应 MonkeyKing 6.7.0。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:recorder</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder);\n</code></pre>\n<p><code>module:recorder</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder);\n</code></pre>\n<p><code>recorder.clear</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.clear);\n</code></pre>\n<p><code>recorder.has</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.has);\n</code></pre>\n<p><code>recorder.isGreaterThan</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.isGreaterThan);\n</code></pre>\n<p><code>recorder.isLessThan</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.isLessThan);\n</code></pre>\n<p><code>recorder.load</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.load);\n</code></pre>\n<p><code>recorder.remove</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.remove);\n</code></pre>\n<p><code>recorder.save</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.save);\n</code></pre>\n<p><code>recorder.shortcut</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof recorder.shortcut);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
       ],
       "type": "module",

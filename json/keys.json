@@ -2,340 +2,82 @@
   "source": "..\\api\\keys.md",
   "modules": [
     {
-      "textRaw": "按键 (Keys)",
-      "name": "按键_(keys)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>按键模拟部分提供了一些模拟物理按键的全局函数, 包括Home、音量键、照相键等, 有的函数依赖于无障碍服务, 有的函数依赖于root权限.</p>\n<p>一般来说, 以大写字母开头的函数都依赖于root权限. 执行此类函数时, 如果没有root权限, 则函数执行后没有效果, 并会在控制台输出一个警告.</p>\n",
-      "methods": [
+      "textRaw": "按键常量 (Keys)",
+      "name": "按键常量_(keys)",
+      "desc": "<p><code>keys</code> 只提供 Android 按键码常量，不负责模拟按键。需要执行返回、主页、通知栏等全局动作时，使用 <a href=\"automator.md\">automator</a>；需要底层输入事件时，使用 <code>rootAutomator</code>。常量值对应 Android 官方 <a href=\"https://developer.android.com/reference/android/view/KeyEvent\">KeyEvent</a>。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmtleXM\"></a></p>\n",
+      "modules": [
         {
-          "textRaw": "back()",
-          "type": "method",
-          "name": "back",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>模拟按下返回键. 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
-        },
+          "textRaw": "[@] keys",
+          "name": "[@]_keys",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>keys</code>、<code>$keys</code></li>\n<li><strong>参数</strong>：模块对象不可调用</li>\n<li><ins><strong>returns</strong></ins> { <code>Keys</code> }</li>\n<li><strong>异常</strong>：读取模块或常量不抛出异常</li>\n<li><strong>权限</strong>：无</li>\n<li><strong>线程 / 生命周期</strong>：常量在脚本运行时初始化后保持不变</li>\n<li><strong>副作用</strong>：无；读取常量不会发送按键事件</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys === $keys); // true\nconsole.log(keys.home); // 3\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5ob21l\"></a></p>\n",
+          "type": "module",
+          "displayName": "[@] keys"
+        }
+      ],
+      "properties": [
         {
-          "textRaw": "home()",
-          "type": "method",
+          "textRaw": "[p] keys.home",
           "name": "home",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>模拟按下Home键. 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：小写主页键常量；同值入口为 <code>keys.HOME</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_HOME</code>，值为 <code>3</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.home === 3); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5IT01F\"></a></p>\n"
         },
         {
-          "textRaw": "powerDialog()",
-          "type": "method",
-          "name": "powerDialog",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>弹出电源键菜单. 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
+          "textRaw": "[p] keys.HOME",
+          "name": "HOME",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：大写主页键常量；同值入口为 <code>keys.home</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_HOME</code>，值为 <code>3</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.HOME === keys.home); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5tZW51\"></a></p>\n"
         },
         {
-          "textRaw": "notifications()",
-          "type": "method",
-          "name": "notifications",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>拉出通知栏. 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
+          "textRaw": "[p] keys.menu",
+          "name": "menu",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：小写菜单键常量；同值入口为 <code>keys.MENU</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_MENU</code>，值为 <code>82</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.menu); // 82\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5NRU5V\"></a></p>\n"
         },
         {
-          "textRaw": "quickSettings()",
-          "type": "method",
-          "name": "quickSettings",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>显示快速设置(下拉通知栏到底). 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
+          "textRaw": "[p] keys.MENU",
+          "name": "MENU",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：大写菜单键常量；同值入口为 <code>keys.menu</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_MENU</code>，值为 <code>82</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.MENU === keys.menu); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5iYWNr\"></a></p>\n"
         },
         {
-          "textRaw": "recents()",
-          "type": "method",
-          "name": "recents",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>显示最近任务. 返回是否执行成功.\n此函数依赖于无障碍服务.</p>\n"
+          "textRaw": "[p] keys.back",
+          "name": "back",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：小写返回键常量；同值入口为 <code>keys.BACK</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_BACK</code>，值为 <code>4</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.back); // 4\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5CQUNL\"></a></p>\n"
         },
         {
-          "textRaw": "splitScreen()",
-          "type": "method",
-          "name": "splitScreen",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "返回 {boolean} ",
-                  "name": "返回",
-                  "type": "boolean"
-                }
-              ]
-            },
-            {
-              "params": []
-            }
-          ],
-          "desc": "<p>分屏. 返回是否执行成功.\n此函数依赖于无障碍服务, 并且需要系统自身功能的支持.</p>\n"
+          "textRaw": "[p] keys.BACK",
+          "name": "BACK",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：大写返回键常量；同值入口为 <code>keys.back</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_BACK</code>，值为 <code>4</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.BACK === keys.back); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy52b2x1bWVVcA\"></a></p>\n"
         },
         {
-          "textRaw": "Home()",
-          "type": "method",
-          "name": "Home",
-          "desc": "<p>模拟按下Home键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "[p] keys.volumeUp",
+          "name": "volumeUp",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：驼峰音量增大常量；同值入口为 <code>keys.volume_up</code>、<code>keys.VOLUME_UP</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_UP</code>，值为 <code>24</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.volumeUp); // 24\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy52b2x1bWVfdXA\"></a></p>\n"
         },
         {
-          "textRaw": "Back()",
-          "type": "method",
-          "name": "Back",
-          "desc": "<p>模拟按下返回键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "[p] keys.volume_up",
+          "name": "volume_up",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：下划线音量增大常量；同值入口为 <code>keys.volumeUp</code>、<code>keys.VOLUME_UP</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_UP</code>，值为 <code>24</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.volume_up === keys.volumeUp); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5WT0xVTUVfVVA\"></a></p>\n"
         },
         {
-          "textRaw": "Power()",
-          "type": "method",
-          "name": "Power",
-          "desc": "<p>模拟按下电源键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "[p] keys.VOLUME_UP",
+          "name": "VOLUME_UP",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：大写音量增大常量；同值入口为 <code>keys.volumeUp</code>、<code>keys.volume_up</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_UP</code>，值为 <code>24</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.VOLUME_UP === 24); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy52b2x1bWVEb3du\"></a></p>\n"
         },
         {
-          "textRaw": "Menu()",
-          "type": "method",
-          "name": "Menu",
-          "desc": "<p>模拟按下菜单键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "[p] keys.volumeDown",
+          "name": "volumeDown",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：驼峰音量减小常量；同值入口为 <code>keys.volume_down</code>、<code>keys.VOLUME_DOWN</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_DOWN</code>，值为 <code>25</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.volumeDown); // 25\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy52b2x1bWVfZG93bg\"></a></p>\n"
         },
         {
-          "textRaw": "VolumeUp()",
-          "type": "method",
-          "name": "VolumeUp",
-          "desc": "<p>按下音量上键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
+          "textRaw": "[p] keys.volume_down",
+          "name": "volume_down",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：下划线音量减小常量；同值入口为 <code>keys.volumeDown</code>、<code>keys.VOLUME_DOWN</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_DOWN</code>，值为 <code>25</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.volume_down === keys.volumeDown); // true\n</code></pre>\n<p><a id=\"api-symbol-a2V5cy5WT0xVTUVfRE9XTg\"></a></p>\n"
         },
         {
-          "textRaw": "VolumeDown()",
-          "type": "method",
-          "name": "VolumeDown",
-          "desc": "<p>按键音量上键.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Camera()",
-          "type": "method",
-          "name": "Camera",
-          "desc": "<p>模拟按下照相键.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Up()",
-          "type": "method",
-          "name": "Up",
-          "desc": "<p>模拟按下物理按键上.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Down()",
-          "type": "method",
-          "name": "Down",
-          "desc": "<p>模拟按下物理按键下.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Left()",
-          "type": "method",
-          "name": "Left",
-          "desc": "<p>模拟按下物理按键左.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Right()",
-          "type": "method",
-          "name": "Right",
-          "desc": "<p>模拟按下物理按键右.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "OK()",
-          "type": "method",
-          "name": "OK",
-          "desc": "<p>模拟按下物理按键确定.\n此函数依赖于root权限.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "Text(text)",
-          "type": "method",
-          "name": "Text",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "text {string} 要输入的文字, 只能为英文或英文符号 输入文字text. 例如`Text(\"aaa\");` ",
-                  "name": "text",
-                  "type": "string",
-                  "desc": "要输入的文字, 只能为英文或英文符号 输入文字text. 例如`Text(\"aaa\");`"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "text"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "textRaw": "KeyCode(code)",
-          "type": "method",
-          "name": "KeyCode",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "code {number} | &lt;String&gt; 要按下的按键的数字代码或名称. 参见下表. 模拟物理按键. 例如`KeyCode(29)`和`KeyCode(\"KEYCODE_A\")`是按下A键. ",
-                  "name": "code",
-                  "type": "number",
-                  "desc": "| &lt;String&gt; 要按下的按键的数字代码或名称. 参见下表. 模拟物理按键. 例如`KeyCode(29)`和`KeyCode(\"KEYCODE_A\")`是按下A键."
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "code"
-                }
-              ]
-            }
-          ]
+          "textRaw": "[p] keys.VOLUME_DOWN",
+          "name": "VOLUME_DOWN",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：大写音量减小常量；同值入口为 <code>keys.volumeDown</code>、<code>keys.volume_down</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - <code>KeyEvent.KEYCODE_VOLUME_DOWN</code>，值为 <code>25</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读常量语义；读取时无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(keys.VOLUME_DOWN === 25); // true\n</code></pre>\n"
         }
       ],
       "type": "module",
-      "displayName": "按键 (Keys)"
-    },
-    {
-      "textRaw": "附录: KeyCode对照表",
-      "name": "附录:_keycode对照表",
-      "desc": "<p>KeyCode KeyEvent Value</p>\n<ul>\n<li>KEYCODE_MENU 1</li>\n<li>KEYCODE_SOFT_RIGHT 2</li>\n<li>KEYCODE_HOME 3</li>\n<li>KEYCODE_BACK 4</li>\n<li>KEYCODE_CALL 5</li>\n<li>KEYCODE_ENDCALL 6</li>\n<li>KEYCODE_0 7</li>\n<li>KEYCODE_1 8</li>\n<li>KEYCODE_2 9</li>\n<li>KEYCODE_3 10</li>\n<li>KEYCODE_4 11</li>\n<li>KEYCODE_5 12</li>\n<li>KEYCODE_6 13</li>\n<li>KEYCODE_7 14</li>\n<li>KEYCODE_8 15</li>\n<li>KEYCODE_9 16</li>\n<li>KEYCODE_STAR 17</li>\n<li>KEYCODE_POUND 18</li>\n<li>KEYCODE_DPAD_UP 19</li>\n<li>KEYCODE_DPAD_DOWN 20</li>\n<li>KEYCODE_DPAD_LEFT 21</li>\n<li>KEYCODE_DPAD_RIGHT 22</li>\n<li>KEYCODE_DPAD_CENTER 23</li>\n<li>KEYCODE_VOLUME_UP 24</li>\n<li>KEYCODE_VOLUME_DOWN 25</li>\n<li>KEYCODE_POWER 26</li>\n<li>KEYCODE_CAMERA 27</li>\n<li>KEYCODE_CLEAR 28</li>\n<li>KEYCODE_A 29</li>\n<li>KEYCODE_B 30</li>\n<li>KEYCODE_C 31</li>\n<li>KEYCODE_D 32</li>\n<li>KEYCODE_E 33</li>\n<li>KEYCODE_F 34</li>\n<li>KEYCODE_G 35</li>\n<li>KEYCODE_H 36</li>\n<li>KEYCODE_I 37</li>\n<li>KEYCODE_J 38</li>\n<li>KEYCODE_K 39</li>\n<li>KEYCODE_L 40</li>\n<li>KEYCODE_M 41</li>\n<li>KEYCODE_N 42</li>\n<li>KEYCODE_O 43</li>\n<li>KEYCODE_P 44</li>\n<li>KEYCODE_Q 45</li>\n<li>KEYCODE_R 46</li>\n<li>KEYCODE_S 47</li>\n<li>KEYCODE_T 48</li>\n<li>KEYCODE_U 49</li>\n<li>KEYCODE_V 50</li>\n<li>KEYCODE_W 51</li>\n<li>KEYCODE_X 52</li>\n<li>KEYCODE_Y 53</li>\n<li>KEYCODE_Z 54</li>\n<li>KEYCODE_COMMA 55</li>\n<li>KEYCODE_PERIOD 56</li>\n<li>KEYCODE_ALT_LEFT 57</li>\n<li>KEYCODE_ALT_RIGHT 58</li>\n<li>KEYCODE_SHIFT_LEFT 59</li>\n<li>KEYCODE_SHIFT_RIGHT 60</li>\n<li>KEYCODE_TAB 61</li>\n<li>KEYCODE_SPACE 62</li>\n<li>KEYCODE_SYM 63</li>\n<li>KEYCODE_EXPLORER 64</li>\n<li>KEYCODE_ENVELOPE 65</li>\n<li>KEYCODE_ENTER 66</li>\n<li>KEYCODE_DEL 67</li>\n<li>KEYCODE_GRAVE 68</li>\n<li>KEYCODE_MINUS 69</li>\n<li>KEYCODE_EQUALS 70</li>\n<li>KEYCODE_LEFT_BRACKET 71</li>\n<li>KEYCODE_RIGHT_BRACKET 72</li>\n<li>KEYCODE_BACKSLASH 73</li>\n<li>KEYCODE_SEMICOLON 74</li>\n<li>KEYCODE_APOSTROPHE 75</li>\n<li>KEYCODE_SLASH 76</li>\n<li>KEYCODE_AT 77</li>\n<li>KEYCODE_NUM 78</li>\n<li>KEYCODE_HEADSETHOOK 79</li>\n<li>KEYCODE_FOCUS 80</li>\n<li>KEYCODE_PLUS 81</li>\n<li>KEYCODE_MENU 82</li>\n<li>KEYCODE_NOTIFICATION 83</li>\n<li>KEYCODE_SEARCH 84</li>\n<li>TAG_LAST_ KEYCODE 85<br></li>\n</ul>\n",
-      "type": "module",
-      "displayName": "附录: KeyCode对照表"
+      "displayName": "按键常量 (Keys)"
     }
   ]
 }

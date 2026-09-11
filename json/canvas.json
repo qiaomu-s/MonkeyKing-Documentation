@@ -4,7 +4,23 @@
     {
       "textRaw": "画布 (Canvas)",
       "name": "画布_(canvas)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>canvas提供了使用画布进行2D画图的支持, 可用于简单的小游戏开发或者图片编辑. 使用canvas可以轻松地在一张图片或一个界面上绘制各种线与图形.</p>\n<p>canvas的坐标系为平面直角坐标系, 以控件左上角为原点, 控件上边沿为x轴正方向, 控件左边沿为y轴正方向. 例如分辨率为1920*1080的屏幕上, canvas控件覆盖全屏, 画一条从屏幕左上角到屏幕右下角的线段为:</p>\n<pre><code>canvas.drawLine(0, 0, 1080, 1920, paint);\n</code></pre><p>canvas的绘制依赖于画笔Paint, 通过设置画笔的粗细、颜色、填充等可以改变绘制出来的图形. 例如绘制一个红色实心正方形为：</p>\n<pre><code>var paint = new Paint();\n//设置画笔为填充, 则绘制出来的图形都是实心的\npaint.setStyle(Paint.STYLE.FILL);\n//设置画笔颜色为红色\npaint.setColor(colors.RED);\n//绘制一个从坐标(0, 0)到坐标(100, 100)的正方形\ncanvas.drawRect(0, 0, 100, 100, paint);\n</code></pre><p>如果要绘制正方形的边框, 则通过设置画笔的Style来实现：</p>\n<pre><code>var paint = new Paint();\n//设置画笔为描边, 则绘制出来的图形都是轮廓\npaint.setStyle(Paint.STYLE.STROKE);\n//设置画笔颜色为红色\npaint.setColor(colors.RED);\n//绘制一个从坐标(0, 0)到坐标(100, 100)的正方形\ncanvas.drawRect(0, 0, 100, 100, paint);\n</code></pre><p>结合画笔, canvas可以绘制基本图形、图片等.</p>\n",
+      "desc": "<p><a id=\"api-symbol-bW9kdWxlOmNhbnZhcw\"></a></p>\n",
+      "modules": [
+        {
+          "textRaw": "`canvas` 模块",
+          "name": "`canvas`_模块",
+          "desc": "<p><code>canvas</code> 是脚本运行时自动提供的全局构造器，创建结果是对 Android <code>Canvas</code> 的脚本封装。它不会自动切换线程；同一画布实例不应由多个脚本线程同时修改。构造和绘制本身不申请系统权限，但读取源图片仍受文件访问规则约束。</p>\n<p>canvas提供了使用画布进行2D画图的支持, 可用于简单的小游戏开发或者图片编辑. 使用canvas可以轻松地在一张图片或一个界面上绘制各种线与图形.</p>\n<p>canvas的坐标系为平面直角坐标系, 以控件左上角为原点, 控件上边沿为x轴正方向, 控件左边沿为y轴正方向. 例如分辨率为1920*1080的屏幕上, canvas控件覆盖全屏, 画一条从屏幕左上角到屏幕右下角的线段为:</p>\n<pre><code>canvas.drawLine(0, 0, 1080, 1920, paint);\n</code></pre><p>canvas的绘制依赖于画笔Paint, 通过设置画笔的粗细、颜色、填充等可以改变绘制出来的图形. 例如绘制一个红色实心正方形为：</p>\n<pre><code>var paint = new Paint();\n//设置画笔为填充, 则绘制出来的图形都是实心的\npaint.setStyle(Paint.STYLE.FILL);\n//设置画笔颜色为红色\npaint.setColor(colors.RED);\n//绘制一个从坐标(0, 0)到坐标(100, 100)的正方形\ncanvas.drawRect(0, 0, 100, 100, paint);\n</code></pre><p>如果要绘制正方形的边框, 则通过设置画笔的Style来实现：</p>\n<pre><code>var paint = new Paint();\n//设置画笔为描边, 则绘制出来的图形都是轮廓\npaint.setStyle(Paint.STYLE.STROKE);\n//设置画笔颜色为红色\npaint.setColor(colors.RED);\n//绘制一个从坐标(0, 0)到坐标(100, 100)的正方形\ncanvas.drawRect(0, 0, 100, 100, paint);\n</code></pre><p>结合画笔, canvas可以绘制基本图形、图片等.</p>\n<p><a id=\"api-symbol-Y29uc3RydWN0OmNhbnZhcw\"></a></p>\n",
+          "type": "module",
+          "displayName": "`canvas` 模块"
+        },
+        {
+          "textRaw": "`new canvas(source?)`",
+          "name": "`new_canvas(source?)`",
+          "desc": "<pre><code class=\"lang-ts\">new canvas(): ScriptCanvas\nnew canvas(bitmap: android.graphics.Bitmap): ScriptCanvas\nnew canvas(image: ImageWrapper): ScriptCanvas\nnew canvas(width: number, height: number): ScriptCanvas\n</code></pre>\n<ul>\n<li>无参数形式创建一个尚未绑定 Android 画布的包装器，供宿主或 UI 之后通过 <code>setCanvas</code> 注入；在绑定前调用依赖画布的方法会失败。</li>\n<li><code>Bitmap</code> 形式直接在给定的可变位图上绘制。</li>\n<li><code>ImageWrapper</code> 形式先复制其位图，再在副本上绘制，因此不会改写原图。</li>\n<li>宽高形式会把数值转为整数，并创建 <code>ARGB_8888</code> 位图；非数字参数会抛出参数异常，Android 也会拒绝无效尺寸。</li>\n</ul>\n<p><code>toImage()</code> 返回当前内部位图的副本，调用方负责按 <code>ImageWrapper</code> 生命周期回收返回值。构造器最多接受两个参数，多余参数或不支持的单参数类型会抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<pre><code class=\"lang-js\">const board = new canvas(320, 180)\nconst paint = new android.graphics.Paint()\npaint.setARGB(255, 255, 64, 64)\nboard.drawRect(20, 20, 300, 160, paint)\n\nconst output = board.toImage()\ntry {\n  images.save(output, &#39;/sdcard/Download/canvas-demo.png&#39;)\n} finally {\n  output.recycle()\n}\n</code></pre>\n<p>该构造入口在 MonkeyKing 6.7.0 中可用；实例方法主要转发到 Android <code>Canvas</code>，参数限制和绘制语义以对应 Android API 为准。</p>\n",
+          "type": "module",
+          "displayName": "`new canvas(source?)`"
+        }
+      ],
       "methods": [
         {
           "textRaw": "canvas.getWidth()",
@@ -633,12 +649,30 @@
     {
       "textRaw": "路径特效",
       "name": "路径特效",
+      "modules": [
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
       "type": "module",
       "displayName": "区域"
     },
     {
       "textRaw": "区域",
       "name": "区域",
+      "modules": [
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
       "type": "module",
       "displayName": "区域"
     }

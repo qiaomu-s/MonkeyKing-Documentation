@@ -42,7 +42,7 @@ ui.layout(<vertical>
 
 /* 创建一个 InjectableWebView 实例. */
 let webView = newInjectableWebView();
-/* 加载指定的 URL, "https://" 也可省略. */
+/* 加载指定的 URL；请显式写出协议. */
 webView.loadUrl('https://www.github.com');
 /* 注入 JavaScript 脚本, 显示 alert 消息框. */
 webView.inject('alert("hello")');
@@ -54,7 +54,7 @@ ui.main.addView(webView);
 
 ```js
 'ui';
-activity.setContentView(web.newInjectableWebView('www.github.com'));
+activity.setContentView(web.newInjectableWebView('https://www.github.com'));
 ```
 
 除上述注入简单的 `alert` 消息框外, 还支持其他更多注入方式:
@@ -128,15 +128,15 @@ ui.emitter.on('back_pressed', function (e) {
 });
 ```
 
-### newInjectableWebView(context, url?)
+### newInjectableWebView([context], url?)
 
 **`6.3.0`** **`Global`** **`Overload 3/3`** **`UI`**
 
-- **context** { [android.content.Context](https://developer.android.com/reference/android/content/Context) } - Android 上下文对象；缺省时使用 UI 模式下全局 `activity` 解包后的 Context
+- **[ context ]** { [android.content.Context](https://developer.android.com/reference/android/content/Context) } - Android 上下文对象；缺省时使用 UI 模式下全局 `activity` 解包后的 Context
 - **[ url ]** { [string](../types/data-types.md#string) } - 可选的初始 URL；为 `null`/`undefined` 时不自动加载
 - <ins>**returns**</ins> { [InjectableWebView](../types/injectable-web-view.md) }
 
-新建并返回一个 [InjectableWebView](../types/data-types.md#injectablewebview)（可[注入](../../reference/glossaries/glossary.md#注入)的 [WebView](https://developer.android.com/reference/android/webkit/WebView)）实例。此重载的第一个参数是 Android `Context`，第二个参数是可选 URL；它不是 Rhino `Context`。传入脚本层 Java 对象时，运行时会尝试解包为 Android `Context`，失败则回退到全局 UI Context。
+新建并返回一个 [InjectableWebView](../types/injectable-web-view.md)（可[注入](../../reference/glossaries/glossary.md#注入)的 [WebView](https://developer.android.com/reference/android/webkit/WebView)）实例。传入两个参数时第一个按 Android `Context` 解包，第二个为可选 URL；传入一个非字符串对象时将其作为 Context，无法解包时回退到全局 UI Context。传入一个字符串时按 URL 处理；不传参数时同样使用全局 UI Context。它不是 Rhino `Context`。
 
 ```js
 'ui';
@@ -193,8 +193,8 @@ socket.exitOnClose();
   为字符串时会在构造期间开始加载。
 - `newInjectableWebClient` 只创建客户端；脚本注入在页面完成加载前会进入队列。
 - `newWebSocket` 立即启动异步连接，失败通过 `WebSocket.EVENT_FAILURE` 交付。
-- 参数数量错误或上下文不能转换成 Android `Context` 时，会由 Rhino/Kotlin 桥接层
-  抛出参数异常；无效 URL 会由底层 WebView 或 OkHttp 拒绝。
+- 参数数量错误会由 Rhino/Kotlin 桥接层抛出参数异常；无法解包的 `context` 会回退到全局
+  UI Context。无效 URL 会由底层 WebView 或 OkHttp 拒绝。
 
 
 ## 逐符号版本与 Rhino 2.0 示例

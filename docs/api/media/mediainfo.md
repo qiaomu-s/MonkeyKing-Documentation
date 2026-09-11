@@ -45,8 +45,8 @@ console.log(String(info));
 
 | 属性 | 类型 | 说明 |
 | --- | --- | --- |
-| [`path`](#api-symbol-bWVkaWFpbmZvLnJlc3VsdC5wYXRo) | `string` | 解析后的绝对路径，只读 |
-| [`inform`](#api-symbol-bWVkaWFpbmZvLnJlc3VsdC5pbmZvcm0) | `string` | MediaInfo 生成的完整文本报告，只读 |
+| [`path`](#info-path) | `string` | 解析后的绝对路径，只读 |
+| [`inform`](#info-inform) | `string` | MediaInfo 生成的完整文本报告，只读 |
 
 <a id="api-symbol-bWVkaWFpbmZvLnJlc3VsdC5wYXRo"></a>
 

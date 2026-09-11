@@ -4,36 +4,36 @@
     {
       "textRaw": "术语 (Glossaries)",
       "name": "术语_(glossaries)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n",
+      "desc": "<p>本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n",
       "modules": [
         {
           "textRaw": "内置模块",
           "name": "内置模块",
-          "desc": "<p>Monkey King 内置模块指脚本可全局使用的 JavaScript 模块.<br>\n这些模块多数已在文档中列出, 如 <code>app</code>, <code>images</code>, <code>device</code> 等.</p>\n",
+          "desc": "<p>Monkey King 内置模块是随 APK 发布、在每个 Rhino runtime 初始化时注册或加载的脚本能力，例如 <code>app</code>、<code>images</code>、<code>device</code>、<code>util</code> 和 <code>sqlite</code>。模块既可能由 Kotlin / Java 增强器实现，也可能来自 APK 的 <code>assets/modules</code> CommonJS 文件。</p>\n<p>多数模块可通过模块名和 <code>$</code> 前缀别名访问；部分方法还会被全局化。准确入口以各 API 页面和 <a href=\"../../api/core/modules.md\">模块系统</a> 为准。</p>\n",
           "modules": [
             {
               "textRaw": "查看内置模块源代码",
               "name": "查看内置模块源代码",
-              "desc": "<p>除 <a href=\"https://github.com/qiaomu-s/MonkeyKing/tree/master/app/src/main/assets/modules\">直接查看开源代码</a> 外, 还可以将内置模块解压到本地存储后查看:<br>\n下载 <a href=\"https://github.com/qiaomu-s/MonkeyKing/releases\">Monkey King APK</a> 并使用压缩软件将 APK 内的 <code>\\assets\\modules</code> 文件夹解压到本地.<br>\n模块通常以 <code>__%name%__.js</code> 格式命名, 其中 <code>%name%</code> 对应模块名.<br>\n可使用文本编辑器等软件查看模块源代码.</p>\n",
+              "desc": "<p>6.7.0 文档使用 Monkey King 私有源码仓的固定提交作为事实来源：</p>\n<ul>\n<li>Kotlin / Java 增强器位于 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/</code>。</li>\n<li>JavaScript 资产模块位于 <code>app/src/main/assets/modules/</code>。</li>\n<li>引擎注册顺序位于 <code>ScriptRuntime.augment()</code>；CommonJS 初始化与 <code>require</code> 安装位于 <code>RhinoJavaScriptEngine</code>。</li>\n</ul>\n<p>APK 是 ZIP 容器，也可以解压后检查 <code>assets/modules</code>。压缩或打包后的资产可能不便阅读，源码提交仍是更可靠的审计入口。</p>\n",
               "type": "module",
               "displayName": "查看内置模块源代码"
             },
             {
               "textRaw": "修改或增加内置模块",
               "name": "修改或增加内置模块",
-              "desc": "<p>注: 此小节内容可能需要用户具备一定的编程基础及开发经验.</p>\n<p>注: 此操作需要重新打包生成 <code>新的 Monkey King APK</code> (下文作 <code>新生 APK</code>).<br>\n因 <code>新生 APK</code> 包名发生变化, 需卸载已安装的 <code>开源 Monkey King APK</code> (下文作 <code>开源 APK</code>) 后再安装 <code>新生 APK</code>.<br>\n当 <code>开源 APK</code> 出现新版本时, 同样需卸载 <code>新生 APK</code> 才能安装新版本的 <code>开源 APK</code>.<br>\n此时, 修改或增加的内置模块将失效.<br>\n如欲将自己的代码整合到 <code>开源 APK</code> 中, 可向开源项目提交 <a href=\"https://github.com/qiaomu-s/MonkeyKing/pull\">Pull Request (PR)</a>.</p>\n<p>克隆 (Clone) <a href=\"https://github.com/qiaomu-s/MonkeyKing\">Monkey King 源码</a>.<br>\n使用 <a href=\"https://developer.android.com/studio/archive\">Android Studio</a> 打开并完成项目构建 (Build).<br>\n定位 <code>\\app\\src\\main\\assets\\modules</code> 目录.</p>\n",
+              "desc": "<p>修改内置模块属于应用源码开发，需要重新构建并签名 APK。自建 APK 能否覆盖安装取决于 applicationId、签名和构建变体；不要假设修改模块一定会改变包名，也不要直接修改已安装 APK 来绕过签名或权限限制。</p>\n<p>在已获授权的源码工作区中使用 Android Studio 或 Gradle 构建，并保留应用许可证和上游署名。普通脚本项目若只需要复用代码，应优先创建本地 CommonJS 模块，再通过 <code>require()</code> 加载，无需修改 APK。</p>\n",
               "modules": [
                 {
                   "textRaw": "修改模块",
                   "name": "修改模块",
-                  "desc": "<p>修改目录中的模块代码后直接打包生成新的 APK.</p>\n",
+                  "desc": "<p>修改 <code>assets/modules</code> 中的 JavaScript 或 <code>runtime/api/augment</code> 中的增强器后，需要重新构建 APK，并运行相关单元测试与设备验证。改变公开名称、别名或行为时，还应同步更新 API manifest、coverage 和文档。</p>\n",
                   "type": "module",
                   "displayName": "修改模块"
                 },
                 {
                   "textRaw": "增加模块",
                   "name": "增加模块",
-                  "desc": "<p>以增加一个 date 模块为例, 该模块有一个 <code>date.toFullTimeString()</code> 方法.</p>\n<p>在 <code>\\app\\src\\main\\assets\\modules</code> 目录新建 <code>__date__.js</code> 文件, 此文件将作为增加的内置模块.</p>\n<p>供参考的文件内容:</p>\n<pre><code class=\"lang-js\">module.exports = function () {\n    return {\n        toFullTimeString() {\n            let now = new Date();\n            let pad = x =&gt; x.toString().padStart(2, &#39;0&#39;);\n            return [ now.getHours(), now.getMinutes(), now.getSeconds() ].map(pad).join(&#39;:&#39;);\n        },\n    };\n};\n</code></pre>\n<p>打开 &quot;初始化脚本&quot;, 即 <code>\\app\\src\\main\\assets\\init.js</code>.<br>\n将 date 模块添加到 &quot;初始化脚本&quot; 中:</p>\n<pre><code class=\"lang-js\">/* ... */\n\nlet $ = {\n    /* ... */\n    bindModules() {\n        _.bind([\n            /* ... */\n\n            [ &#39;date&#39;, &#39;RootAutomator&#39;, &#39;floaty&#39;, /* 其他模块... */ ],\n\n            /* ... */\n        ]);\n    },\n    /* ... */\n};\n\n/* ... */\n</code></pre>\n<p>添加完成后即可打包生成新的 APK.</p>\n",
+                  "desc": "<p>以下 <code>date.js</code> 是项目本地模块示例，不要求修改 Monkey King：</p>\n<pre><code class=\"lang-js\">module.exports = function createDateModule() {\n    return {\n        toFullTimeString() {\n            const now = new Date();\n            const pad = value =&gt; String(value).padStart(2, &#39;0&#39;);\n            return [now.getHours(), now.getMinutes(), now.getSeconds()]\n                .map(pad)\n                .join(&#39;:&#39;);\n        },\n    };\n};\n</code></pre>\n<p>同目录脚本可直接加载：</p>\n<pre><code class=\"lang-js\">const date = require(&#39;./date&#39;);\nconsole.log(date.toFullTimeString());\n</code></pre>\n<p>若要把自定义资产模块编译进 APK，6.7.0 的 <code>assets/init.js</code> 支持返回模块名、模块名数组、用 <code>|</code> 分隔的字符串、名称映射对象，或接收 <code>(scriptRuntime, scope)</code> 的函数。它自 6.6.0 起默认不注册额外模块。</p>\n<pre><code class=\"lang-js\">function installCustomModule(scriptRuntime, scope) {\n    scope.date = require(&#39;date&#39;);\n    console.log(scriptRuntime.ownerId);\n}\n</code></pre>\n",
                   "type": "module",
                   "displayName": "增加模块"
                 }
@@ -244,7 +244,7 @@
             {
               "textRaw": "图像阈值化阈值",
               "name": "图像阈值化阈值",
-              "desc": "<p>取值范围: IntRange[0..255]</p>\n<p>参数类型与此类阈值相关的常用方法:</p>\n<ul>\n<li>images.threshold(a, b, <i><strong>threshold</strong></i>, c)</li>\n<li>images.adaptiveThreshold ... (此处内容待完善)</li>\n</ul>\n",
+              "desc": "<p>取值范围: IntRange[0..255]</p>\n<p>参数类型与此类阈值相关的常用方法:</p>\n<ul>\n<li>images.threshold(a, b, <i><strong>threshold</strong></i>, c)</li>\n<li>images.adaptiveThreshold(image, maxValue, adaptiveMethod, thresholdType, blockSize, C)</li>\n</ul>\n<p><code>adaptiveThreshold</code> 没有单独名为 <code>threshold</code> 的参数；它根据邻域计算阈值，再用常量 <code>C</code> 调整结果。<code>blockSize</code> 必须是大于 1 的奇数，<code>C</code> 可为正数、零或负数。详见 <a href=\"../../api/media/image.md\">Image 模块</a>。</p>\n",
               "type": "module",
               "displayName": "图像阈值化阈值"
             }

@@ -45,3 +45,6 @@ features:
     link: /project/changelog.html
     linkText: 查看更新日志
 ---
+
+当前文档以 Monkey King 6.7.0 固定源码提交
+`bafa2986212d27b6b59f1324f89548b72a810966` 为事实来源，已完成 113 个页面、4,499 个公开符号和 125 个兼容 JSON 文件的对账。每个 API 页面都提供版本信息、参数与返回值说明，以及可在 Rhino 2.0 中运行的示例。

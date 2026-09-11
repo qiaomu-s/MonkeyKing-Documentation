@@ -99,11 +99,27 @@
                   ]
                 }
               ],
-              "desc": "<p>对数据进行 Base64 解码.</p>\n<pre><code class=\"lang-js\">/* 字符串. */\n\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;iso-8859-1&#39;)); // hello\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;us-ascii&#39;)); // hello\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;utf-8&#39;)); // hello\nconsole.log(base64.decode(&#39;/v8AaABlAGwAbABv&#39;, &#39;utf-16&#39;)); // hello\nconsole.log(base64.decode(&#39;AGgAZQBsAGwAbw==&#39;, &#39;utf-16be&#39;)); // hello\nconsole.log(base64.decode(&#39;aABlAGwAbABvAA==&#39;, &#39;utf-16le&#39;)); // hello\n\n/* JavaScript 字节数组. */\n\nconsole.log(base64.decode([ 97, 71, 86, 115, 98, 71, 56, 61 ], &#39;utf-8&#39;)); // hello\n\n/* Java 字节数组. */\n\nconsole.log(base64.decode(new java.lang.String(&#39;aGVsbG8=&#39;).getBytes(), &#39;utf-8&#39;)); // hello\n\nlet jsArr = [ 97, 71, 86, 115, 98, 71, 56, 61 ];\nlet javaArr = util.java.array(&#39;byte&#39;, jsArr.length);\njsArr.forEach((o, i) =&gt; javaArr[i] = o);\nconsole.log(base64.decode(javaArr, &#39;utf-8&#39;)); /* 效果同上. */\n</code></pre>\n"
+              "desc": "<p>对数据进行 Base64 解码.</p>\n<pre><code class=\"lang-js\">/* 字符串. */\n\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;iso-8859-1&#39;)); // hello\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;us-ascii&#39;)); // hello\nconsole.log(base64.decode(&#39;aGVsbG8=&#39;, &#39;utf-8&#39;)); // hello\nconsole.log(base64.decode(&#39;/v8AaABlAGwAbABv&#39;, &#39;utf-16&#39;)); // hello\nconsole.log(base64.decode(&#39;AGgAZQBsAGwAbw==&#39;, &#39;utf-16be&#39;)); // hello\nconsole.log(base64.decode(&#39;aABlAGwAbABvAA==&#39;, &#39;utf-16le&#39;)); // hello\n\n/* JavaScript 字节数组. */\n\nconsole.log(base64.decode([ 97, 71, 86, 115, 98, 71, 56, 61 ], &#39;utf-8&#39;)); // hello\n\n/* Java 字节数组. */\n\nconsole.log(base64.decode(new java.lang.String(&#39;aGVsbG8=&#39;).getBytes(), &#39;utf-8&#39;)); // hello\n\nlet jsArr = [ 97, 71, 86, 115, 98, 71, 56, 61 ];\nlet javaArr = util.java.array(&#39;byte&#39;, jsArr.length);\njsArr.forEach((o, i) =&gt; javaArr[i] = o);\nconsole.log(base64.decode(javaArr, &#39;utf-8&#39;)); /* 效果同上. */\n</code></pre>\n<!-- fixed-source-contracts:start -->\n"
             }
           ],
           "type": "module",
           "displayName": "[m] decode"
+        },
+        {
+          "textRaw": "固定源码合同表",
+          "name": "固定源码合同表",
+          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-YmFzZTY0LmRlY29kZQ\"></a> <code>base64.decode</code></td>\n<td><code>base64.decode(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/base64/Base64.kt:L37</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof base64.decode);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-YmFzZTY0LmVuY29kZQ\"></a> <code>base64.encode</code></td>\n<td><code>base64.encode(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/base64/Base64.kt:L24</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof base64.encode);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmJhc2U2NA\"></a> <code>module:base64</code></td>\n<td><code>base64</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L789</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof base64);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "modules": [
+            {
+              "textRaw": "Rhino 2.0 表格读取示例",
+              "name": "rhino_2.0_表格读取示例",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: base64&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "type": "module",
+              "displayName": "Rhino 2.0 表格读取示例"
+            }
+          ],
+          "type": "module",
+          "displayName": "固定源码合同表"
         }
       ],
       "type": "module",

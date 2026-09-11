@@ -4,63 +4,92 @@
     {
       "textRaw": "Okhttp3Request",
       "name": "okhttp3request",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Mar 2, 2023.</p>\n\n<hr>\n<p><a href=\"https://square.github.io/okhttp/3.x/okhttp/okhttp3/Request.html\">okhttp3.Request</a> 别名.</p>\n<p>Okhttp3Request 表示一个 HTTP 请求.</p>\n<pre><code class=\"lang-js\">let request = new okhttp3.Request.Builder()\n    .url(&#39;https://www.msn.com&#39;)\n    .method(&#39;GET&#39;, null)\n    .build();\n\n// Request{method=GET, url=https://www.msn.com/}\nconsole.log(request);\n</code></pre>\n<p>常见相关方法或属性:</p>\n<ul>\n<li><a href=\"http-response.md#p-request\">httpResponseType#request</a></li>\n<li><a href=\"https://square.github.io/okhttp/3.x/okhttp/okhttp3/Request.Builder.html#build--\">okhttp3.Request.Builder#build</a></li>\n</ul>\n<blockquote>\n<p>注: 本章节仅列出部分属性或方法.</p>\n</blockquote>\n<hr>\n<p style=\"font: bold 2em sans-serif; color: #FF7043\">okhttp3.Request</p>\n\n<hr>\n",
+      "desc": "<p><code>Okhttp3Request</code> 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 <code>okhttp3.Request</code>。<code>http.buildRequest</code> 直接返回该类型，<code>HttpResponse.request</code> 返回产生最终响应的请求。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-request/\"><code>okhttp3.Request</code></a>。</p>\n<pre><code class=\"lang-js\">const request = http.buildRequest(&#39;https://example.com/items&#39;, {\n  method: &#39;GET&#39;,\n  headers: { accept: &#39;application/json&#39; },\n})\n\nconsole.log(request.method())\nconsole.log(request.url())\nconsole.log(request.header(&#39;accept&#39;))\n</code></pre>\n",
       "modules": [
         {
-          "textRaw": "[m] body",
-          "name": "[m]_body",
-          "methods": [
+          "textRaw": "常用方法",
+          "name": "常用方法",
+          "modules": [
             {
-              "textRaw": "body()",
-              "type": "method",
-              "name": "body",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "textRaw": "<ins>**returns**</ins> { [okhttp3.RequestBody](https://square.github.io/okhttp/3.x/okhttp/okhttp3/RequestBody.html) | [null](data-types.md#null) } ",
-                      "name": "<ins>**returns**</ins>",
-                      "type": " [okhttp3.RequestBody](https://square.github.io/okhttp/3.x/okhttp/okhttp3/RequestBody.html) | [null](data-types.md#null) "
-                    }
-                  ]
-                },
-                {
-                  "params": []
-                }
-              ],
-              "desc": "<p>获取 HTTP 请求的 &quot;请求体 (Request Body)&quot;.</p>\n"
+              "textRaw": "`method()`",
+              "name": "`method()`",
+              "desc": "<pre><code class=\"lang-ts\">method(): string\n</code></pre>\n<p>返回大写或调用方指定形式的 HTTP 方法。</p>\n",
+              "type": "module",
+              "displayName": "`method()`"
+            },
+            {
+              "textRaw": "`url()`",
+              "name": "`url()`",
+              "desc": "<pre><code class=\"lang-ts\">url(): okhttp3.HttpUrl\n</code></pre>\n<p>返回已解析、规范化的 URL。类型见 <a href=\"okhttp3-http-url.md\">Okhttp3HttpUrl</a>。</p>\n",
+              "type": "module",
+              "displayName": "`url()`"
+            },
+            {
+              "textRaw": "`headers()`",
+              "name": "`headers()`",
+              "desc": "<pre><code class=\"lang-ts\">headers(): okhttp3.Headers\n</code></pre>\n<p>返回请求的完整不可变 header 集合。使用 <code>header(name)</code> 读取最后一个同名值，使用 <code>headers(name)</code> 读取全部同名值。</p>\n",
+              "type": "module",
+              "displayName": "`headers()`"
+            },
+            {
+              "textRaw": "`header(name)` / `headers(name)`",
+              "name": "`header(name)`_/_`headers(name)`",
+              "desc": "<pre><code class=\"lang-ts\">header(name: string): string | null\nheaders(name: string): java.util.List&lt;string&gt;\n</code></pre>\n<p>名称匹配不区分大小写；不存在时单值入口返回 <code>null</code>，多值入口返回空列表。</p>\n",
+              "type": "module",
+              "displayName": "`header(name)` / `headers(name)`"
+            },
+            {
+              "textRaw": "`body()`",
+              "name": "`body()`",
+              "desc": "<pre><code class=\"lang-ts\">body(): okhttp3.RequestBody | null\n</code></pre>\n<p>返回请求体；GET/HEAD 等无 body 请求通常为 <code>null</code>。请求体可能是一次写入的流式实现，不要假设可以任意重复读取。</p>\n",
+              "type": "module",
+              "displayName": "`body()`"
+            },
+            {
+              "textRaw": "`cacheControl()`",
+              "name": "`cachecontrol()`",
+              "desc": "<pre><code class=\"lang-ts\">cacheControl(): okhttp3.CacheControl\n</code></pre>\n<p>解析请求 <code>Cache-Control</code> header 并返回 OkHttp <code>CacheControl</code>。</p>\n<pre><code class=\"lang-js\">const request = http.buildRequest(&#39;https://example.com&#39;, {\n  method: &#39;GET&#39;,\n  headers: { &#39;cache-control&#39;: &#39;no-store, no-cache&#39; },\n})\nconst policy = request.cacheControl()\nconsole.log(policy.noStore(), policy.noCache())\n</code></pre>\n",
+              "type": "module",
+              "displayName": "`cacheControl()`"
+            },
+            {
+              "textRaw": "`isHttps()`",
+              "name": "`ishttps()`",
+              "desc": "<pre><code class=\"lang-ts\">isHttps(): boolean\n</code></pre>\n<p>请求 URL 使用 HTTPS 时返回 <code>true</code>。</p>\n",
+              "type": "module",
+              "displayName": "`isHttps()`"
+            },
+            {
+              "textRaw": "`tag()` / `tag(type)`",
+              "name": "`tag()`_/_`tag(type)`",
+              "desc": "<pre><code class=\"lang-ts\">tag(): object | null\ntag(type: java.lang.Class): object | null\n</code></pre>\n<p>读取 builder 附加的请求标签；MonkeyKing 默认构建流程不设置 tag。</p>\n",
+              "type": "module",
+              "displayName": "`tag()` / `tag(type)`"
+            },
+            {
+              "textRaw": "`newBuilder()`",
+              "name": "`newbuilder()`",
+              "desc": "<pre><code class=\"lang-ts\">newBuilder(): okhttp3.Request.Builder\n</code></pre>\n<p>返回以当前请求为模板的可变 builder，可修改 URL、方法、headers、body 或 tags 后构建新请求；原请求保持不变。</p>\n",
+              "type": "module",
+              "displayName": "`newBuilder()`"
+            },
+            {
+              "textRaw": "`toString()`",
+              "name": "`tostring()`",
+              "desc": "<pre><code class=\"lang-ts\">toString(): string\n</code></pre>\n<p>返回 OkHttp 调试摘要，通常包含方法、URL 和 tags。不要把格式当作稳定序列化协议。</p>\n",
+              "type": "module",
+              "displayName": "`toString()`"
             }
           ],
           "type": "module",
-          "displayName": "[m] body"
+          "displayName": "常用方法"
         },
         {
-          "textRaw": "[m] cacheControl",
-          "name": "[m]_cachecontrol",
-          "methods": [
-            {
-              "textRaw": "cacheControl()",
-              "type": "method",
-              "name": "cacheControl",
-              "signatures": [
-                {
-                  "params": [
-                    {
-                      "textRaw": "<ins>**returns**</ins> { [okhttp3.CacheControl](https://square.github.io/okhttp/3.x/okhttp/okhttp3/CacheControl.html) } ",
-                      "name": "<ins>**returns**</ins>",
-                      "type": " [okhttp3.CacheControl](https://square.github.io/okhttp/3.x/okhttp/okhttp3/CacheControl.html) "
-                    }
-                  ]
-                },
-                {
-                  "params": []
-                }
-              ],
-              "desc": "<p>获取 HTTP 请求标头字段 <a href=\"http-request-headers.md#p-cache-control\">cache-control</a> 的信息.</p>\n<pre><code class=\"lang-js\">let cacheControl = http.get(&#39;https://www.msn.com&#39;, {\n    headers: {\n        &#39;cache-control&#39;: &#39;no-transform, no-store, no-cache&#39;,\n    },\n    contentType: &#39;text/plain&#39;,\n}).request.cacheControl();\n\nconsole.log(cacheControl); // no-transform, no-store, no-cache\nconsole.log(cacheControl.noTransform()); // true\nconsole.log(cacheControl.noStore()); // true\nconsole.log(cacheControl.mustRevalidate()); // false\n</code></pre>\n"
-            }
-          ],
+          "textRaw": "生命周期、线程与版本",
+          "name": "生命周期、线程与版本",
+          "desc": "<ul>\n<li>Request 对象不可变且不持有打开的 response body，不需要关闭；其中的自定义 <code>RequestBody</code> 可能在发送时访问外部资源，应由其创建者管理。</li>\n<li><code>Request.Builder</code> 可变，不应由多个线程并发修改；已构建 Request 可安全只读共享。</li>\n<li><code>HttpResponse.request</code> 可能是重定向链最终请求，不一定等于最初构建的对象。</li>\n<li>本页合同固定到 OkHttp 4.12.0；其他方法请以官方 4.x API 为准。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "[m] cacheControl"
+          "displayName": "生命周期、线程与版本"
         }
       ],
       "type": "module",

@@ -732,7 +732,7 @@ activity.finish();
 /* 设置状态栏颜色为深红色. */
 activity.getWindow().setStatusBarColor(colors.toInt('dark-red'));
 /* 将视图对象作为内容加载. */
-activity.setContentView(web.newInjectableWebView('www.github.com'));
+activity.setContentView(web.newInjectableWebView('https://www.github.com'));
 /* 获取顶层窗口的高度. */
 activity.getWindow().getDecorView().getRootView().getHeight();
 ```
@@ -1423,7 +1423,7 @@ test('utf-8'); /* 字符串小写形式. */
 
 ## ExtendModulesNames（历史类型）
 
-旧版 Monkey King 文档曾用此类型表示[内置扩展插件](../core/plugins.md#内置扩展插件)名称：`Arrayx`/`Array`、`Numberx`/`Number`、`Mathx`/`Math`。
+旧版 Monkey King 文档曾用此类型表示[内置扩展插件](../core/plugins.md#旧版-内置扩展插件-名称)名称：`Arrayx`/`Array`、`Numberx`/`Number`、`Mathx`/`Math`。
 
 Monkey King 6.7.0 的 `plugins` 公开表面已不包含 `extend`、`extendAll` 或 `extendAllBut`，因此当前 API 不再接受此类型。它只保留为阅读旧脚本和旧文档时的术语说明。
 
@@ -1484,7 +1484,7 @@ app.sendBroadcast('hierarchy'); /* 同上. */
 
 Monkey King 的 OCR 模式名称.
 
-当使用不同的模式名称时, `ocr` 全局方法及其相关方法 (如 [ocr.detect](../media/ocr.md#m-detect)) 将使用不同的引擎, 进而可能获得不同的识别速度和结果.
+当使用不同的模式名称时, `ocr` 全局方法及其相关方法 (如 [ocr.detect](../media/ocr.md#ocr-detect-input-optionsorregion)) 将使用不同的引擎, 进而可能获得不同的识别速度和结果.
 
 - `mlkit` - 代表 MLKit 引擎
 - `paddle` - 代表 Paddle Lite 引擎
@@ -1767,7 +1767,7 @@ let cipherB = Cipher.getInstance("DES/CBC/PKCS5Padding");
 - DES/CBC/PKCS5Padding
 - DES/ECB/PKCS5Padding
 - DES/ECB/NoPadding
-- ... ...
+- 其他有效组合应以运行时 `Cipher.getInstance` 的支持列表为准；不在上表中的组合可能抛出 `NoSuchAlgorithmException`
 
 ## Storage
 

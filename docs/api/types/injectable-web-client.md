@@ -7,7 +7,8 @@
 
 - [web.newInjectableWebClient](../network/web.md#m-newinjectablewebclient)
 
-> 注: 本章节仅列出 InjectableWebClient 独有的而不包含继承的属性及方法.
+> 注：本页展开 `InjectableWebClient` 自有成员；继承自 `WebViewClient` 的成员请参阅
+> [Android 官方参考](https://developer.android.com/reference/android/webkit/WebViewClient)。
 
 ---
 
@@ -33,7 +34,7 @@
 let client = web.newInjectableWebClient();
 client.inject('navigator.userAgent', value => console.log(value));
 
-let webView = web.newInjectableWebView('www.github.com');
+let webView = web.newInjectableWebView('https://www.github.com');
 webView.setWebViewClient(client);
 activity.setContentView(webView);
 ```
@@ -67,3 +68,7 @@ threads.start(function () {
 `injectAndWait` 会阻塞当前线程直到回调到达，不应在 UI 线程调用；线程被中断时抛出
 `ScriptInterruptedException`。客户端还会启用 JavaScript 和 file URL 的跨源访问能力，
 因此只应加载可信页面和脚本。
+
+如果页面尚未触发 `onPageFinished`，注入请求会留在队列中，`injectAndWait` 也会持续等待；
+页面加载失败或永不完成时不要在需要及时返回的线程调用它。客户端没有公开的取消队列方法，
+不再使用时应解除 WebView 引用并在 UI 线程销毁 WebView。

@@ -7,7 +7,7 @@ CryptoKeyPair 是 `com.qiaomu.monkeyking.core.crypto.Crypto.KeyPair` 的子类, 
 - [crypto.generateKeyPair](../utilities/crypto.md#m-generatekeypair)
 - [crypto.KeyPair](../utilities/crypto.md#c-keypair)::new
 
-> 注: 本章节仅列出 CryptoKeyPair 独有的而不包含继承的属性及方法.
+> 注：本页展开 `CryptoKeyPair` 自有成员；继承成员请参阅 Java/Android 官方参考。
 
 ---
 

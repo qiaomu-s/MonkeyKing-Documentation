@@ -4,7 +4,7 @@
     {
       "textRaw": "Shell",
       "name": "shell",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>shell即Unix Shell, 在类Unix系统提供与操作系统交互的一系列命令.</p>\n<p>很多程序可以用来执行shell命令, 例如终端模拟器.</p>\n<p>在Monkey King大致等同于用adb执行命令&quot;adb shell&quot;. 其实现包括两种方式：</p>\n<ul>\n<li>通过<code>java.lang.Runtime.exec</code>执行(shell, Tap, Home等函数)</li>\n<li>通过内嵌终端模拟器执行(RootAutomator, Shell等对象)</li>\n</ul>\n",
+      "desc": "<p>Shell 是在 Android 设备上执行 Unix 命令的接口。Monkey King 通过普通\n<code>sh</code> 或已授权的 <code>su</code> 进程执行命令；命令本身可能修改文件、系统设置或输入状态，\n因此应只执行可信内容。一次性命令使用全局 <code>shell()</code>，需要持续交互时使用 <code>Shell</code>\n对象。</p>\n",
       "type": "module",
       "displayName": "Shell"
     },
@@ -13,23 +13,30 @@
       "name": "shell函数",
       "methods": [
         {
-          "textRaw": "shell(cmd[, root])",
+          "textRaw": "shell(cmd[, options][, withRoot])",
           "type": "method",
           "name": "shell",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "cmd {string} 要执行的命令 ",
+                  "textRaw": "`cmd` {string|string[]} 要执行的命令。数组元素会按换行拼接后在同一 shell 进程中执行。 ",
                   "name": "cmd",
-                  "type": "string",
-                  "desc": "要执行的命令"
+                  "type": "string|string[]",
+                  "desc": "要执行的命令。数组元素会按换行拼接后在同一 shell 进程中执行。"
                 },
                 {
-                  "textRaw": "root {Boolean} 是否以root权限运行, 默认为false. ",
-                  "name": "root",
-                  "type": "Boolean",
-                  "desc": "是否以root权限运行, 默认为false.",
+                  "textRaw": "`options` {string|object|boolean|number} 可选命令参数，或直接用布尔值/数字指定是否使用 root。 ",
+                  "name": "options",
+                  "type": "string|object|boolean|number",
+                  "desc": "可选命令参数，或直接用布尔值/数字指定是否使用 root。",
+                  "optional": true
+                },
+                {
+                  "textRaw": "`withRoot` {boolean|number} 当第二个参数是命令参数字符串/对象时，第三个参数指定是否使用 root，默认为 `false`。 ",
+                  "name": "withRoot",
+                  "type": "boolean|number",
+                  "desc": "当第二个参数是命令参数字符串/对象时，第三个参数指定是否使用 root，默认为 `false`。",
                   "optional": true
                 }
               ]
@@ -40,13 +47,17 @@
                   "name": "cmd"
                 },
                 {
-                  "name": "root",
+                  "name": "options",
+                  "optional": true
+                },
+                {
+                  "name": "withRoot",
                   "optional": true
                 }
               ]
             }
           ],
-          "desc": "<p>一次性执行命令cmd, 并返回命令的执行结果. 返回对象的其属性如下:</p>\n<ul>\n<li>code {number} 返回码. 执行成功时为0, 失败时为非0的数字.</li>\n<li>result {string} 运行结果(stdout输出结果)</li>\n<li>error {string} 运行的错误信息(stderr输出结果). 例如执行需要root权限的命令但没有授予root权限会返回错误信息&quot;Permission denied&quot;.</li>\n</ul>\n<p>示例(强制停止微信) ：</p>\n<pre><code>var result = shell(&quot;am force-stop com.tencent.mm&quot;, true);\nlog(result);\nconsole.show();\nif(result.code == 0){\n  toast(&quot;执行成功&quot;);\n}else{\n  toast(&quot;执行失败！请到控制台查看错误信息&quot;);\n}\n</code></pre>"
+          "desc": "<p><code>shell</code> 接受以下常用形式：</p>\n<pre><code class=\"lang-js\">shell(&#39;id&#39;);\nshell(&#39;id&#39;, true);                 // 使用 root（等同于非零数字）\nshell(&#39;pm list packages&#39;, &#39;-f&#39;);   // 追加命令参数\nshell(&#39;pm list packages&#39;, { user: 0, root: true });\nshell([&#39;echo one&#39;, &#39;echo two&#39;]);   // 在同一 shell 中执行多条命令\n</code></pre>\n<p>参数对象中的 <code>root</code> 和 <code>exit</code> 是 Monkey King 选项，不会被拼成命令行标志：<code>root</code>\n切换到 <code>su</code>，<code>exit</code> 会在命令末尾追加正常退出和 <code>kill $$</code>。其他键会转换为\n<code>--kebab-case</code>（单字符键转换为短选项），布尔值为 <code>true</code> 时只输出选项名，字符串值会在\n包含空格或以 <code>-</code> 开头时自动加引号。字符串选项可用 <code>|</code> 分隔，例如\n<code>shell(&#39;am broadcast&#39;, &#39;user=current|root&#39;)</code>。</p>\n<p>函数返回一个结果对象：</p>\n<ul>\n<li><code>code</code> {number} 进程退出码，通常 <code>0</code> 表示成功，非零表示失败。</li>\n<li><code>result</code> {string} 标准输出。</li>\n<li><code>error</code> {string} 标准错误或执行异常信息。</li>\n</ul>\n<p>参数数量、类型或命令参数格式不合法时会抛出异常；进程启动或执行阶段的错误通常编码在\n结果对象中，请优先检查 <code>code</code> 和 <code>error</code>。</p>\n<pre><code class=\"lang-js\">const result = shell(&#39;am force-stop com.tencent.mm&#39;, { root: true });\nif (result.code === 0) {\n  toast(&#39;执行成功&#39;);\n} else {\n  console.error(result.error || result.result);\n}\n</code></pre>\n"
         }
       ],
       "type": "module",
@@ -55,32 +66,34 @@
     {
       "textRaw": "Shell",
       "name": "shell",
-      "desc": "<p>shell函数通过用来一次性执行单条命令并获取结果. 如果有多条命令需要执行, 用Shell对象的效率更高. 这是因为, 每次运行shell函数都会打开一个单独的shell进程并在运行结束后关闭他, 这个过程需要一定的时间；而Shell对象自始至终使用同一个shell进程.</p>\n",
+      "desc": "<p>一次性 <code>shell()</code> 调用会在命令完成后关闭进程。如果需要连续发送命令或监听实时输出，\n使用 <code>Shell</code> 对象可以复用同一个交互式 shell 进程。</p>\n",
       "ctors": [
         {
-          "textRaw": "new Shell(root)",
+          "textRaw": "new Shell([root])",
           "type": "ctor",
           "name": "Shell",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "root {Boolean} 是否以root权限运行一个shell进程, 默认为false. 这将会影响其后使用该Shell对象执行的命令的权限 ",
+                  "textRaw": "`root` {boolean} 是否以 root 权限启动 shell 进程，默认为 `false`。这会影响该对象后续执行的所有命令。 ",
                   "name": "root",
-                  "type": "Boolean",
-                  "desc": "是否以root权限运行一个shell进程, 默认为false. 这将会影响其后使用该Shell对象执行的命令的权限"
+                  "type": "boolean",
+                  "desc": "是否以 root 权限启动 shell 进程，默认为 `false`。这会影响该对象后续执行的所有命令。",
+                  "optional": true
                 }
               ]
             },
             {
               "params": [
                 {
-                  "name": "root"
+                  "name": "root",
+                  "optional": true
                 }
               ]
             }
           ],
-          "desc": "<p>Shell对象的&quot;构造函数&quot;.</p>\n<pre><code>var sh = new Shell(true);\n//强制停止微信\nsh.exec(&quot;am force-stop com.tencent.mm&quot;);\nsh.exit();\n</code></pre>"
+          "desc": "<p><code>Shell</code> 对象使用内嵌终端模拟器保持一个长期运行的 shell 进程。使用完毕后应调用\n<code>exit()</code> 或 <code>exitAndWaitFor()</code> 释放进程。</p>\n<pre><code>var sh = new Shell(true);\n//强制停止微信\nsh.exec(&quot;am force-stop com.tencent.mm&quot;);\nsh.exit();\n</code></pre>"
         }
       ],
       "methods": [
@@ -107,13 +120,44 @@
               ]
             }
           ],
-          "desc": "<p>执行命令cmd. 该函数不会返回任何值.</p>\n<p>注意, 命令执行是&quot;异步&quot;的、非阻塞的. 也就是不会等待命令完成后才继续向下执行.</p>\n<p>尽管这样的设计使用起来有很多不便之处, 但受限于终端模拟器, 暂时没有解决方式；如果后续能找到解决方案, 则将提供<code>Shell.execAndWaitFor</code>函数.</p>\n"
+          "desc": "<p>执行命令 <code>cmd</code>，立即将命令写入交互式 shell，不返回值。该调用不会等待命令完成；\n输出可通过回调监听。</p>\n"
+        },
+        {
+          "textRaw": "Shell.execAndWaitFor(cmd)",
+          "type": "method",
+          "name": "execAndWaitFor",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "textRaw": "`cmd` {string} 要执行的命令 ",
+                  "name": "cmd",
+                  "type": "string",
+                  "desc": "要执行的命令"
+                },
+                {
+                  "textRaw": "返回 {string} 命令输出（不含交互提示符） ",
+                  "name": "返回",
+                  "type": "string",
+                  "desc": "命令输出（不含交互提示符）"
+                }
+              ]
+            },
+            {
+              "params": [
+                {
+                  "name": "cmd"
+                }
+              ]
+            }
+          ],
+          "desc": "<p>执行命令并等待该命令的输出完成后再返回。长时间运行或不会结束的命令会一直阻塞，\n此时应改用 <code>exec()</code> 和回调。</p>\n"
         },
         {
           "textRaw": "Shell.exit()",
           "type": "method",
           "name": "exit",
-          "desc": "<p>直接退出shell. 正在执行的命令会被强制退出.</p>\n",
+          "desc": "<p>立即销毁 shell 进程和输出流；正在执行的命令会被终止。</p>\n",
           "signatures": [
             {
               "params": []
@@ -124,7 +168,7 @@
           "textRaw": "Shell.exitAndWaitFor()",
           "type": "method",
           "name": "exitAndWaitFor",
-          "desc": "<p>执行&quot;exit&quot;命令并等待执行命令执行完成、退出shell.</p>\n<p>此函数会执行exit命令来正常退出shell.</p>\n",
+          "desc": "<p>向 shell 写入 <code>exit</code> 并等待进程正常退出。root shell 会依次退出 <code>su</code> 和其内部的\n<code>sh</code> 两层进程。若只需要立即终止而不等待，使用 <code>exit()</code>。</p>\n",
           "signatures": [
             {
               "params": []
@@ -139,10 +183,10 @@
             {
               "params": [
                 {
-                  "textRaw": "callback {Object} 回调函数 ",
+                  "textRaw": "`callback` {object} 回调对象；可实现以下方法 ",
                   "name": "callback",
-                  "type": "Object",
-                  "desc": "回调函数"
+                  "type": "object",
+                  "desc": "回调对象；可实现以下方法"
                 }
               ]
             },
@@ -154,7 +198,18 @@
               ]
             }
           ],
-          "desc": "<p>设置该Shell的回调函数, 以便监听Shell的输出. 可以包括以下属性：</p>\n<ul>\n<li>onOutput {Function} 每当shell有新的输出时便会调用该函数. 其参数是一个字符串.</li>\n<li>onNewLine {Function} 每当shell有新的一行输出时便会调用该函数. 其参数是一个字符串(不包括最后的换行符).</li>\n</ul>\n<p>例如:</p>\n<pre><code>var sh = new Shell();\nsh.setCallback({\n    onNewLine: function(line){\n        //有新的一行输出时打印到控制台\n        log(line);\n    }\n})\nwhile(true){\n    //循环输入命令\n    var cmd = dialogs.rawInput(&quot;请输入要执行的命令, 输入exit退出&quot;);\n    if(cmd == &quot;exit&quot;){\n        break;\n    }\n    //执行命令\n    sh.exec(cmd);\n}\nsh.exit();\n</code></pre>"
+          "desc": "<p>设置该 <code>Shell</code> 的回调，以监听初始化、输出和中断事件：</p>\n<ul>\n<li><code>onOutput(str)</code>：每当 shell 有新的原始输出时调用。</li>\n<li><code>onNewLine(line)</code>：每当 shell 有新的一行输出时调用，参数不包含末尾换行符。</li>\n<li><code>onInitialized()</code>：交互式 shell 初始化完成时调用。</li>\n<li><code>onInterrupted(error)</code>：等待初始化或退出被线程中断时调用。</li>\n</ul>\n<p>未提供的方法可以省略；需要兼容所有回调事件时可继承 <code>Shell.SimpleCallback</code>。</p>\n<p>例如:</p>\n<pre><code>var sh = new Shell();\nsh.setCallback({\n    onNewLine: function(line){\n        //有新的一行输出时打印到控制台\n        log(line);\n    }\n})\nwhile(true){\n    //循环输入命令\n    var cmd = dialogs.rawInput(&quot;请输入要执行的命令, 输入exit退出&quot;);\n    if(cmd == &quot;exit&quot;){\n        break;\n    }\n    //执行命令\n    sh.exec(cmd);\n}\nsh.exit();\n</code></pre>"
+        },
+        {
+          "textRaw": "Shell.isInitialized()",
+          "type": "method",
+          "name": "isInitialized",
+          "desc": "<p>返回 {boolean} 当前交互式 shell 是否已完成初始化。调用 <code>exec()</code> 或\n<code>execAndWaitFor()</code> 时，Monkey King 会自动等待初始化完成。</p>\n",
+          "signatures": [
+            {
+              "params": []
+            }
+          ]
         }
       ],
       "type": "module",
@@ -264,7 +319,7 @@
             {
               "textRaw": "intent参数的规范",
               "name": "intent参数的规范",
-              "desc": "<p>对于采用 intent 参数的 am 命令, 您可以使用以下选项指定 intent：</p>\n<ul>\n<li>-a action<br>\n指定 intent 操作, 如“android.intent.action.VIEW”. 此指定只能声明一次.</li>\n<li>-d data_uri<br>\n指定 intent 数据 URI, 如“content://contacts/people/1”. 此指定只能声明一次.</li>\n<li>-t mime_type<br>\n指定 intent MIME 类型, 如“image/png”. 此指定只能声明一次.</li>\n<li>-c category<br>\n指定 intent 类别, 如“android.intent.category.APP_CONTACTS”.</li>\n<li>-n component<br>\n指定带有软件包名称前缀的组件名称以创建显式 intent, 如“com.example.app/.ExampleActivity”.</li>\n<li>-f flags<br>\n将标志添加到 setFlags() 支持的 intent.</li>\n<li>--esn extra_key<br>\n添加一个 null extra. URI intent 不支持此选项.</li>\n<li>-e|--es extra_key extra_string_value<br>\n添加字符串数据作为键值对.</li>\n<li>--ez extra_key extra_boolean_value<br>\n添加布尔型数据作为键值对.</li>\n<li>--ei extra_key extra_int_value<br>\n添加整数型数据作为键值对.</li>\n<li>--el extra_key extra_long_value<br>\n添加长整型数据作为键值对.</li>\n<li>--ef extra_key extra_float_value<br>\n添加浮点型数据作为键值对.</li>\n<li>--eu extra_key extra_uri_value<br>\n添加 URI 数据作为键值对.</li>\n<li>--ecn extra_key extra_component_name_value<br>\n添加组件名称, 将其作为 ComponentName 对象进行转换和传递.</li>\n<li>--eia extra_key extra_int_value[,extra_int_value...]<br>\n添加整数数组.</li>\n<li>--ela extra_key extra_long_value[,extra_long_value...]<br>\n添加长整型数组.</li>\n<li>--efa extra_key extra_float_value[,extra_float_value...]<br>\n添加浮点型数组.</li>\n<li>--grant-read-uri-permission<br>\n包含标志 FLAG_GRANT_READ_URI_PERMISSION.</li>\n<li>--grant-write-uri-permission<br>\n包含标志 FLAG_GRANT_WRITE_URI_PERMISSION.</li>\n<li>--debug-log-resolution<br>\n包含标志 FLAG_DEBUG_LOG_RESOLUTION.</li>\n<li>--exclude-stopped-packages<br>\n包含标志 FLAG_EXCLUDE_STOPPED_PACKAGES.</li>\n<li>--include-stopped-packages<br>\n包含标志 FLAG_INCLUDE_STOPPED_PACKAGES.</li>\n<li>--activity-brought-to-front<br>\n包含标志 FLAG_ACTIVITY_BROUGHT_TO_FRONT.</li>\n<li>--activity-clear-top<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TOP.</li>\n<li>--activity-clear-when-task-reset<br>\n包含标志 FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET.</li>\n<li>--activity-exclude-from-recents<br>\n包含标志 FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS.</li>\n<li>--activity-launched-from-history<br>\n包含标志 FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY.</li>\n<li>--activity-multiple-task<br>\n包含标志 FLAG_ACTIVITY_MULTIPLE_TASK.</li>\n<li>--activity-no-animation<br>\n包含标志 FLAG_ACTIVITY_NO_ANIMATION.</li>\n<li>--activity-no-history<br>\n包含标志 FLAG_ACTIVITY_NO_HISTORY.</li>\n<li>--activity-no-user-action<br>\n包含标志 FLAG_ACTIVITY_NO_USER_ACTION.</li>\n<li>--activity-previous-is-top<br>\n包含标志 FLAG_ACTIVITY_PREVIOUS_IS_TOP.</li>\n<li>--activity-reorder-to-front<br>\n包含标志 FLAG_ACTIVITY_REORDER_TO_FRONT.</li>\n<li>--activity-reset-task-if-needed<br>\n包含标志 FLAG_ACTIVITY_RESET_TASK_IF_NEEDED.</li>\n<li>--activity-single-top<br>\n包含标志 FLAG_ACTIVITY_SINGLE_TOP.</li>\n<li>--activity-clear-task<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TASK.</li>\n<li>--activity-task-on-home<br>\n包含标志 FLAG_ACTIVITY_TASK_ON_HOME.</li>\n<li>--receiver-registered-only<br>\n包含标志 FLAG_RECEIVER_REGISTERED_ONLY.</li>\n<li>--receiver-replace-pending<br>\n包含标志 FLAG_RECEIVER_REPLACE_PENDING.</li>\n<li>--selector<br>\n需要使用 -d 和 -t 选项以设置 intent 数据和类型.</li>\n</ul>\n",
+              "desc": "<p>对于采用 intent 参数的 am 命令, 您可以使用以下选项指定 intent：</p>\n<ul>\n<li>-a action<br>\n指定 intent 操作, 如“android.intent.action.VIEW”. 此指定只能声明一次.</li>\n<li>-d data_uri<br>\n指定 intent 数据 URI, 如“content://contacts/people/1”. 此指定只能声明一次.</li>\n<li>-t mime_type<br>\n指定 intent MIME 类型, 如“image/png”. 此指定只能声明一次.</li>\n<li>-c category<br>\n指定 intent 类别, 如“android.intent.category.APP_CONTACTS”.</li>\n<li>-n component<br>\n指定带有软件包名称前缀的组件名称以创建显式 intent, 如“com.example.app/.ExampleActivity”.</li>\n<li>-f flags<br>\n将标志添加到 setFlags() 支持的 intent.</li>\n<li>--esn extra_key<br>\n添加一个 null extra. URI intent 不支持此选项.</li>\n<li>-e|--es extra_key extra_string_value<br>\n添加字符串数据作为键值对.</li>\n<li>--ez extra_key extra_boolean_value<br>\n添加布尔型数据作为键值对.</li>\n<li>--ei extra_key extra_int_value<br>\n添加整数型数据作为键值对.</li>\n<li>--el extra_key extra_long_value<br>\n添加长整型数据作为键值对.</li>\n<li>--ef extra_key extra_float_value<br>\n添加浮点型数据作为键值对.</li>\n<li>--eu extra_key extra_uri_value<br>\n添加 URI 数据作为键值对.</li>\n<li>--ecn extra_key extra_component_name_value<br>\n添加组件名称, 将其作为 ComponentName 对象进行转换和传递.</li>\n<li>--eia extra_key extra_int_value[,extra_int_value...]<br>\n添加整数数组.</li>\n<li>--ela extra_key extra_long_value[,extra_long_value...]<br>\n添加长整型数组.</li>\n<li>--efa extra_key extra_float_value[,extra_float_value...]<br>\n添加浮点型数组.</li>\n<li>--grant-read-uri-permission<br>\n包含标志 FLAG_GRANT_READ_URI_PERMISSION.</li>\n<li>--grant-write-uri-permission<br>\n包含标志 FLAG_GRANT_WRITE_URI_PERMISSION.</li>\n<li>--debug-log-resolution<br>\n包含标志 FLAG_DEBUG_LOG_RESOLUTION.</li>\n<li>--exclude-stopped-packages<br>\n包含标志 FLAG_EXCLUDE_STOPPED_PACKAGES.</li>\n<li>--include-stopped-packages<br>\n包含标志 FLAG_INCLUDE_STOPPED_PACKAGES.</li>\n<li>--activity-brought-to-front<br>\n包含标志 FLAG_ACTIVITY_BROUGHT_TO_FRONT.</li>\n<li>--activity-clear-top<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TOP.</li>\n<li>--activity-clear-when-task-reset<br>\n包含标志 FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET.</li>\n<li>--activity-exclude-from-recents<br>\n包含标志 FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS.</li>\n<li>--activity-launched-from-history<br>\n包含标志 FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY.</li>\n<li>--activity-multiple-task<br>\n包含标志 FLAG_ACTIVITY_MULTIPLE_TASK.</li>\n<li>--activity-no-animation<br>\n包含标志 FLAG_ACTIVITY_NO_ANIMATION.</li>\n<li>--activity-no-history<br>\n包含标志 FLAG_ACTIVITY_NO_HISTORY.</li>\n<li>--activity-no-user-action<br>\n包含标志 FLAG_ACTIVITY_NO_USER_ACTION.</li>\n<li>--activity-previous-is-top<br>\n包含标志 FLAG_ACTIVITY_PREVIOUS_IS_TOP.</li>\n<li>--activity-reorder-to-front<br>\n包含标志 FLAG_ACTIVITY_REORDER_TO_FRONT.</li>\n<li>--activity-reset-task-if-needed<br>\n包含标志 FLAG_ACTIVITY_RESET_TASK_IF_NEEDED.</li>\n<li>--activity-single-top<br>\n包含标志 FLAG_ACTIVITY_SINGLE_TOP.</li>\n<li>--activity-clear-task<br>\n包含标志 FLAG_ACTIVITY_CLEAR_TASK.</li>\n<li>--activity-task-on-home<br>\n包含标志 FLAG_ACTIVITY_TASK_ON_HOME.</li>\n<li>--receiver-registered-only<br>\n包含标志 FLAG_RECEIVER_REGISTERED_ONLY.</li>\n<li><code>--receiver-replace-pending</code><br>\n包含标志 FLAG_RECEIVER_REPLACE_PENDING.</li>\n<li>--selector<br>\n需要使用 -d 和 -t 选项以设置 intent 数据和类型.</li>\n</ul>\n",
               "modules": [
                 {
                   "textRaw": "URI component package",
@@ -470,20 +525,36 @@
             {
               "textRaw": "进行屏幕截图",
               "name": "进行屏幕截图",
-              "desc": "<p>screencap 命令是一个用于对设备显示屏进行屏幕截图的 shell 实用程序. 在 shell 中, 此语法为：</p>\n<pre><code>screencap filename\n</code></pre><p>例如：</p>\n<pre><code>$ shell(&quot;screencap /sdcard/screen.png&quot;);\n</code></pre>",
+              "desc": "<p>screencap 命令是一个用于对设备显示屏进行屏幕截图的 shell 实用程序。Monkey King 的全局\n<code>Screencap(path)</code> 包装器固定调用 <code>screencap -p &lt;path&gt;</code>，其中 <code>-p</code> 要求 Android 以 PNG\n格式写出截图。</p>\n<pre><code>screencap -p &lt;path&gt;\n</code></pre><p><code>Screencap</code> 只接受一个路径参数，参数会按字符串转换后直接拼接到命令末尾；路径应指向可写位置，\n包含空格的路径需要调用方自行按 shell 规则转义。函数返回 <code>undefined</code>，不会返回截图文件内容或\n<code>shell()</code> 的结果对象；命令执行失败应通过 shell 输出或回调排查。</p>\n<p>例如：</p>\n<pre><code class=\"lang-js\">Screencap(&#39;/sdcard/screen.png&#39;);\n</code></pre>\n",
               "type": "module",
               "displayName": "进行屏幕截图"
             },
             {
               "textRaw": "列表文件",
               "name": "列表文件",
-              "desc": "<pre><code>ls filepath\n</code></pre><p>例如:</p>\n<pre><code>log(shell(&quot;ls /system/bin&quot;).result);\n</code></pre>",
+              "desc": "<pre><code>ls filepath\n</code></pre><p>例如:</p>\n<pre><code>log(shell(&quot;ls /system/bin&quot;).result);\n</code></pre><!-- fixed-source-contracts:start -->\n",
               "type": "module",
               "displayName": "列表文件"
             }
           ],
           "type": "module",
           "displayName": "其他命令"
+        },
+        {
+          "textRaw": "固定源码合同表",
+          "name": "固定源码合同表",
+          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-Y2FsbDpzaGVsbA\"></a> <code>call:shell</code></td>\n<td><code>shell(cmd[, options][, withRoot])</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L64</code></td>\n<td><code>cmd</code> 为字符串或 JavaScript 数组；可选 <code>options</code> 为字符串/对象，或直接传布尔值/数字作为 root；第三参数为布尔值/数字；总参数数 1 至 3</td>\n<td>返回 <code>AbstractShell.Result</code>（<code>code</code>、<code>result</code>、<code>error</code>）；参数校验失败抛出异常，进程错误写入结果</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：同步等待命令进程结束</td>\n<td>生命周期：一次性调用完成后关闭进程；副作用：命令可修改系统、文件和输入状态；<code>exit</code> 选项会追加退出命令</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(shell(&#39;id&#39;).code);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOkJhY2s\"></a> <code>global:Back</code></td>\n<td><code>Back()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L172</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Back);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOkNhbWVyYQ\"></a> <code>global:Camera</code></td>\n<td><code>Camera()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L226</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Camera);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOkRvd24\"></a> <code>global:Down</code></td>\n<td><code>Down()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L184</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Down);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOkhvbWU\"></a> <code>global:Home</code></td>\n<td><code>Home()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L166</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Home);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOklucHV0\"></a> <code>global:Input</code></td>\n<td><code>Input(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L238</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Input);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOktleUNvZGU\"></a> <code>global:KeyCode</code></td>\n<td><code>KeyCode(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L257</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof KeyCode);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOkxlZnQ\"></a> <code>global:Left</code></td>\n<td><code>Left()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L190</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Left);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOk1lbnU\"></a> <code>global:Menu</code></td>\n<td><code>Menu()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L160</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Menu);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOk9L\"></a> <code>global:OK</code></td>\n<td><code>OK()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L202</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof OK);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlBvd2Vy\"></a> <code>global:Power</code></td>\n<td><code>Power()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L220</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Power);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlJpZ2h0\"></a> <code>global:Right</code></td>\n<td><code>Right()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L196</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Right);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlNjcmVlbmNhcA\"></a> <code>global:Screencap</code></td>\n<td><code>Screencap(path)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L251</code></td>\n<td>参数：恰好 1 个路径参数；按字符串转换后传给 root shell；包装器固定追加 <code>-p</code></td>\n<td>返回：<code>undefined</code>；参数校验失败抛出异常，截图命令错误不通过返回值报告</td>\n<td>权限：需要 root shell 或等效截图授权；线程：向 <code>rootShell</code> 写入 <code>screencap -p &lt;path&gt;</code></td>\n<td>生命周期：命令写入后由 shell 执行；副作用：在目标路径创建或覆盖 PNG 截图文件</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>Screencap(&#39;/sdcard/screen.png&#39;); console.log(&#39;requested&#39;);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlNldFNjcmVlbk1ldHJpY3M\"></a> <code>global:SetScreenMetrics</code></td>\n<td><code>SetScreenMetrics(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L263</code></td>\n<td>参数：恰好 2 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof SetScreenMetrics);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlN3aXBl\"></a> <code>global:Swipe</code></td>\n<td><code>Swipe(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L270</code></td>\n<td>参数：4 至 5 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Swipe);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlRhcA\"></a> <code>global:Tap</code></td>\n<td><code>Tap(x, y)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L244</code></td>\n<td>参数：恰好 2 个数值坐标参数 <code>x</code>、<code>y</code>；不接受额外参数</td>\n<td>返回：Undefined；坐标转换或 shell 执行异常原样传播</td>\n<td>权限：需要 root shell 或等效输入注入授权；线程：同步写入命令</td>\n<td>生命周期：调用完成后无持久状态；副作用：向设备注入点击事件</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>Tap(100, 200); console.log(&#39;tap sent&#39;);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlRleHQ\"></a> <code>global:Text</code></td>\n<td><code>Text(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L232</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Text);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlVw\"></a> <code>global:Up</code></td>\n<td><code>Up()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L178</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof Up);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlZvbHVtZURvd24\"></a> <code>global:VolumeDown</code></td>\n<td><code>VolumeDown()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L214</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof VolumeDown);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Z2xvYmFsOlZvbHVtZVVw\"></a> <code>global:VolumeUp</code></td>\n<td><code>VolumeUp()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L208</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Undefined；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof VolumeUp);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOnNoZWxs\"></a> <code>module:shell</code></td>\n<td><code>shell</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L739</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuY3VycmVudEFjdGl2aXR5\"></a> <code>shell.currentActivity</code></td>\n<td><code>shell.currentActivity()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L112</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：String；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell.currentActivity);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuY3VycmVudENvbXBvbmVudA\"></a> <code>shell.currentComponent</code></td>\n<td><code>shell.currentComponent()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L128</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：String；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell.currentComponent);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuY3VycmVudFBhY2thZ2U\"></a> <code>shell.currentPackage</code></td>\n<td><code>shell.currentPackage()</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L103</code></td>\n<td>参数：无参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：String；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell.currentPackage);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuZXhlY0NvbW1hbmQ\"></a> <code>shell.execCommand</code></td>\n<td><code>shell.execCommand(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L72</code></td>\n<td>参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：AbstractShell.Result；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell.execCommand);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuZnJvbUludGVudA\"></a> <code>shell.fromIntent</code></td>\n<td><code>shell.fromIntent(arg)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L87</code></td>\n<td>参数：恰好 1 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：String；参数校验、状态或底层异常原样传播</td>\n<td>权限：普通 shell 使用应用权限，root 与 Shizuku 路径需对应授权；线程：命令通常同步等待</td>\n<td>生命周期：一次性调用等待进程结束，交互对象必须退出；副作用：命令可修改系统、文件和输入状态</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof shell.fromIntent);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwuZ2V0Q29tbWFuZA\"></a> <code>shell.getCommand</code></td>\n<td><code>shell.getCommand(cmd[, options][, withRoot])</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L79</code></td>\n<td>参数：1 至 3 个；<code>cmd</code> 为字符串或数组，<code>options</code> 为字符串/对象或 root 布尔值/数字，第三参数为 root 布尔值/数字</td>\n<td>返回：String；仅生成规范化命令，不执行它；参数校验失败抛出异常</td>\n<td>权限：不执行命令，不额外申请权限；线程：同步字符串转换</td>\n<td>生命周期：纯计算，无持久状态；副作用：不启动进程</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(shell.getCommand(&#39;am&#39;, { user: 0 }));</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-c2hlbGwua2lsbA\"></a> <code>shell.kill</code></td>\n<td><code>shell.kill(app)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/shell/Shell.kt:L93</code></td>\n<td>参数：恰好 1 个应用标识，可由 <code>App.getPackageName</code> 解析</td>\n<td>返回 <code>boolean</code>；无 root、无法解析包名或 force-stop 失败时返回 <code>false</code></td>\n<td>权限：需要可用 root；线程：同步执行 force-stop</td>\n<td>生命周期：调用完成后无持久状态；副作用：强制停止目标应用</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(shell.kill(&#39;com.tencent.mm&#39;));</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "modules": [
+            {
+              "textRaw": "Rhino 2.0 表格读取示例",
+              "name": "rhino_2.0_表格读取示例",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: shell&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "type": "module",
+              "displayName": "Rhino 2.0 表格读取示例"
+            }
+          ],
+          "type": "module",
+          "displayName": "固定源码合同表"
         }
       ],
       "type": "module",

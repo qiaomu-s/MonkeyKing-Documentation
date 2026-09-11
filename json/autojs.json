@@ -313,7 +313,7 @@
             {
               "textRaw": "[p] name",
               "name": "[p]_name",
-              "desc": "<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<p>该快照属性不可删除但可在当前 <code>version</code> 对象上重新赋值；不会改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // 6.7.0\nconsole.log(monkeyking.versionName); /* 同上. */\n</code></pre>\n",
+              "desc": "<p><a id=\"api-symbol-bW9ua2V5a2luZy52ZXJzaW9uLm5hbWU\"></a></p>\n<p><strong><code>6.2.0</code></strong> <strong><code>PERMANENT</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#string\">string</a> }</li>\n</ul>\n<p>获取版本名称.</p>\n<p>该快照属性不可删除但可在当前 <code>version</code> 对象上重新赋值；不会改变实际构建版本。</p>\n<pre><code class=\"lang-js\">console.log(monkeyking.version.name); // 6.7.0\nconsole.log(monkeyking.versionName); /* 同上. */\n</code></pre>\n",
               "type": "module",
               "displayName": "[p] name"
             },

@@ -347,4 +347,40 @@ describe('Monkey King 6.7.0 system and utilities source contracts', () => {
       expect(storage).toContain(member)
     }
   })
+
+  test('documents getMacAddress fallback semantics instead of requiring WLAN connectivity', () => {
+    const source = markdown('docs/api/system/device.md')
+
+    expect(source).toContain('回退到 `wlan0` 网络接口和 `/sys/class/net/wlan0/address`')
+    expect(source).toContain('权限、接口或系统策略不允许读取时返回 `null`')
+    expect(source).toContain('不要用此方法判断当前是否已连接 WLAN')
+    expect(source).not.toContain('需要在有WLAN连接的情况下才能获取')
+    expect(source).not.toContain('未来可能增加有root权限')
+  })
+
+  test('documents nullable device identifiers from the fixed source', () => {
+    const source = markdown('docs/api/system/device.md')
+
+    expect(source).toContain('## device.getIMEI()')
+    expect(source).toContain('## device.getSerial()')
+    expect(source).toContain('## device.imei')
+    expect(source).toContain('## device.serial')
+    expect(source).toContain('返回设备的 IMEI。Android 系统限制、缺少电话状态权限或设备不提供 IMEI 时返回 `null`')
+    expect(source).toContain('返回设备的硬件序列号。Android 版本、系统权限或厂商策略不允许读取时返回 `null`')
+    expect(source).toContain('该字段在模块初始化时读取')
+    expect(source).toContain('* {string|null}')
+  })
+
+  test('documents current shell overloads and interactive wait support', () => {
+    const source = markdown('docs/api/system/shell.md')
+
+    expect(source).toContain('## shell(cmd[, options][, withRoot])')
+    expect(source).toContain('数组元素会按换行拼接后在同一 shell 进程中执行')
+    expect(source).toContain('参数对象中的 `root` 和 `exit` 是 Monkey King 选项')
+    expect(source).toContain('## Shell.execAndWaitFor(cmd)')
+    expect(source).toContain('## Shell.isInitialized()')
+    expect(source).toContain('onInitialized()')
+    expect(source).toContain('onInterrupted(error)')
+    expect(source).not.toContain('如果后续能找到解决方案')
+  })
 })

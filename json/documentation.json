@@ -50,7 +50,7 @@
             {
               "textRaw": "临时作用域对象",
               "name": "临时作用域对象",
-              "desc": "<p>通常每个章节都以某个对象作为主题.</p>\n<p>例如上述 <code>colors.rgb(red, green, blue)</code> 位于 <a href=\"../api/media/color.md\">Color - 颜色</a> 这个章节.<br>\n其中 colors 称为此章节的 &quot;临时作用域对象&quot;,<br>\n它可能是一个对象, 函数, 甚至 &quot;类&quot;, 在文档中使用 <strong><code>橙色粗体</code></strong> 表示.</p>\n<p>列举其后续的相关方法及属性时, 将不再重复书写对象本身:</p>\n<p style=\"font: bold 1em sans-serif; color: #FF7043\">colors</p>\n\n<p>[m] rgb</p>\n<p>rgb(red, green, blue)</p>\n<p>... ...</p>\n<p>上述 <code>rgb</code> 表示 <code>colors.rgb</code>.</p>\n",
+              "desc": "<p>通常每个章节都以某个对象作为主题.</p>\n<p>例如上述 <code>colors.rgb(red, green, blue)</code> 位于 <a href=\"../api/media/color.md\">Color - 颜色</a> 这个章节.<br>\n其中 colors 称为此章节的 &quot;临时作用域对象&quot;,<br>\n它可能是一个对象, 函数, 甚至 &quot;类&quot;, 在文档中使用 <strong><code>橙色粗体</code></strong> 表示.</p>\n<p>列举其后续的相关方法及属性时, 将不再重复书写对象本身:</p>\n<p style=\"font: bold 1em sans-serif; color: #FF7043\">colors</p>\n\n<p>[m] rgb</p>\n<p>rgb(red, green, blue)</p>\n<p>后续成员会沿用相同的“标签、签名、参数、返回值、约束与示例”结构。</p>\n<p>上述 <code>rgb</code> 表示 <code>colors.rgb</code>.</p>\n",
               "type": "module",
               "displayName": "临时作用域对象"
             },
@@ -375,7 +375,7 @@
                   "textRaw": "pickup(selector, resultType)",
                   "type": "method",
                   "name": "pickup",
-                  "desc": "<p>... ...</p>\n<p><strong><code>Overload 16/17</code></strong></p>\n",
+                  "desc": "<p>其余重载可合并展示，也可按序号分别列出。</p>\n<p><strong><code>Overload 16/17</code></strong></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -524,7 +524,7 @@
         {
           "textRaw": "声明",
           "name": "声明",
-          "desc": "<p>当前项目 (文档) 及 <a href=\"https://github.com/qiaomu-s/MonkeyKing\">Monkey King</a> (App) 均为二次开发.<br>\n相对于 <a href=\"https://github.com/hyb1996/Auto.js/\">原始 App</a>, 二次开发的 App 中会增加或修改部分模块功能.<br>\n相对于 <a href=\"https://github.com/hyb1996/AutoJs-Docs/\">原始文档</a>, 二次开发的文档将进行部分增删或重新编写.<br>\n开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>\n如有任何不当之处, 欢迎提交 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation\">Issue</a> 或 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation\">PR</a>.<br></p>\n",
+          "desc": "<p>当前项目 (文档) 及 <a href=\"https://github.com/qiaomu-s/AutoJs6\">Monkey King 源码</a> (App) 均为二次开发.<br>\n相对于 <a href=\"https://github.com/hyb1996/Auto.js/\">原始 App</a>, 二次开发的 App 中会增加或修改部分模块功能.<br>\n相对于 <a href=\"https://github.com/hyb1996/AutoJs-Docs/\">原始文档</a>, 二次开发的文档将进行部分增删或重新编写.<br>\n开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>\n如有任何不当之处, 欢迎提交 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues\">Issue</a> 或 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/pulls\">PR</a>.<br></p>\n",
           "type": "misc",
           "displayName": "声明"
         }

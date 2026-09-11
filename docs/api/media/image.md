@@ -28,17 +28,19 @@ try {
 
 ## 图片处理
 
-## images.read(path)
+<a id="api-symbol-aW1hZ2VzLnJlYWQ"></a>
+## images.read(path[, isStrict])
 
 * `path` {string} 图片路径
+* `isStrict` {boolean} 是否在读取失败时抛出异常，默认为 `false`
 
-读取在路径path的图片文件并返回一个Image对象. 如果文件不存在或者文件无法解码则返回null.
+读取路径 `path` 的图片文件并返回一个 `ImageWrapper`。默认 `isStrict = false` 时，文件不存在或无法解码返回 `null`；传入 `true` 时会抛出异常。
 
 ## images.load(url)
 
 * `url` {string} 图片URL地址
 
-加载在地址URL的网络图片并返回一个Image对象. 如果地址不存在或者图片无法解码则返回null.
+加载 URL 指向的网络图片并返回一个 `ImageWrapper`。URL 无效、连接/读取失败或响应无法解码时可能抛出异常；该入口不保证以 `null` 表示失败。
 
 ## images.copy(img)
 
@@ -55,9 +57,11 @@ try {
     * `png`
     * `jpeg`/`jpg`
     * `webp`
+    * `webp_lossless`/`webp-lossless`
+    * `webp_lossy`/`webp-lossy`
 * `quality` {number} 图片质量, 为0~100的整数值
 
-把图片image以PNG格式保存到path中. 如果文件不存在会被创建；文件存在会被覆盖.
+把图片 `image` 按指定格式和质量保存到 `path` 中；省略 `format` 时默认为 PNG，省略 `quality` 时默认为 100。父目录不存在时会尝试创建，目标文件存在会被覆盖。
 
 ```
 //把图片压缩为原来的一半质量并保存
@@ -344,9 +348,22 @@ images.save(clip, "/sdcard/clip.png");
 
 ## 找图找色
 
-## images.requestScreenCapture([landscape])
+<a id="api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJl"></a>
+## images.requestScreenCapture(options?)
 
-* `landscape` {boolean} 布尔值,  表示将要执行的截屏是否为横屏. 如果landscape为false, 则表示竖屏截图; true为横屏截图.
+```ts
+images.requestScreenCapture(landscape?: boolean): boolean
+images.requestScreenCapture(options?: {
+  orientation?: 'none' | 'auto' | 'portrait' | 'landscape' | number
+  width?: number
+  height?: number
+  isAsync?: boolean
+  async?: boolean
+}): boolean
+images.requestScreenCapture(width: number, height: number): boolean
+```
+
+布尔参数表示截图方向：`false` 为竖屏，`true` 为横屏；省略时使用自动方向。对象形式还可指定 `orientation`、固定 `width`/`height`，以及连续异步帧的 `isAsync`（兼容名 `async`）。传入两个数字时使用固定宽高并采用 `orientation = none`。
 
 向系统申请屏幕截图权限, 返回是否请求成功.
 
@@ -356,7 +373,7 @@ images.save(clip, "/sdcard/clip.png");
 
 该函数在截图脚本中只需执行一次, 而无需每次调用`captureScreen()`都调用一次.
 
-**如果不指定landscape值, 则截图方向由当前设备屏幕方向决定**, 因此务必注意执行该函数时的屏幕方向.
+同步入口不能在 UI 线程调用；UI 场景应使用 `requestScreenCaptureAsync`。如果不指定方向，截图方向由当前设备屏幕方向决定。
 
 建议在本软件界面运行该函数, 在其他软件界面运行时容易出现一闪而过的黑屏现象.
 
@@ -380,11 +397,11 @@ for(var i = 0; i < 10; i++){
 
 ## images.captureScreen()
 
-截取当前屏幕并返回一个Image对象.
+截取当前屏幕并返回一个 `ImageWrapper`；传入保存路径时返回是否保存成功。
 
 没有截图权限时执行该函数会抛出SecurityException.
 
-该函数不会返回null, 两次调用可能返回相同的Image对象. 这是因为设备截图的更新需要一定的时间, 短时间内（一般来说是16ms）连续调用则会返回同一张截图.
+没有截图权限，或多次重试后仍没有有效帧时会抛出异常。两次调用可能返回相同的 `ImageWrapper`，这是因为设备截图更新需要一定时间，短时间内（一般约 16ms）连续调用可能复用同一帧。
 
 截图需要转换为Bitmap格式, 从而该函数执行需要一定的时间(0~20ms).
 
@@ -409,9 +426,9 @@ toast(colors.toString(color));
 
 * `path` {string} 截图保存路径
 
-截取当前屏幕并以PNG格式保存到path中. 如果文件不存在会被创建；文件存在会被覆盖.
+截取当前屏幕并以 PNG 格式保存到 `path` 中。父目录不存在时会尝试创建，文件存在会被覆盖；返回 `boolean` 表示保存是否成功。
 
-该函数不会返回任何值. 该函数也可以作为全局函数使用.
+该函数也可以作为全局函数使用。
 
 ## images.pixel(image, x, y)
 

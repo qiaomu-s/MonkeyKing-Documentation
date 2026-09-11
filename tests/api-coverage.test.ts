@@ -1,12 +1,13 @@
 import {
   cpSync,
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
 const generatorModulePath = '../scripts/api/' + 'coverage-generator'
 const checkerModulePath = '../scripts/api/' + 'checker'
@@ -179,6 +180,48 @@ describe('API coverage generator', () => {
       expect.objectContaining({
         patterns: ['module:alpha'],
         target: 'docs/alpha.md#api-symbol-bW9kdWxlOmFscGhh',
+      }),
+    ])
+  })
+
+  test('routes global thread helpers to the thread reference page', async () => {
+    const generator = await loadModule(generatorModulePath)
+    expect(generator, 'scripts/api/coverage-generator.ts must exist').not.toBeNull()
+    if (!generator) return
+
+    const projectRoot = fixtureProjectRoot()
+    const threadPage = resolve(projectRoot, 'docs/api/system/threads.md')
+    mkdirSync(dirname(threadPage), { recursive: true })
+    writeFileSync(threadPage, ['# Threads', '', '## sync(func)'].join('\n'))
+
+    const manifest = fixtureManifest()
+    manifest.modules = []
+    manifest.symbols = [
+      {
+        id: 'global:sync',
+        owner: 'global',
+        name: 'sync',
+        kind: 'function',
+        public: true,
+        source: {
+          path: 'app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/threads/Threads.kt',
+          line: 1,
+        },
+        annotations: [],
+        signatures: [],
+        overloads: [],
+      },
+    ] as typeof manifest.symbols
+
+    const artifacts = await generator.generateApiCoverageArtifacts({
+      manifest,
+      projectRoot,
+    })
+    expect(artifacts.gaps).toEqual([])
+    expect(artifacts.coverage.rules).toEqual([
+      expect.objectContaining({
+        patterns: ['global:sync'],
+        target: 'docs/api/system/threads.md#sync-func',
       }),
     ])
   })

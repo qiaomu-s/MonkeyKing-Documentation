@@ -4,7 +4,79 @@
     {
       "textRaw": "HttpResponseBody",
       "name": "httpresponsebody",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Mar 2, 2023.</p>\n\n<hr>\n",
+      "desc": "<p><code>HttpResponseBody</code> 包装 OkHttp <code>ResponseBody</code>，同时提供适合 Rhino 的完整读取、JSON、流式保存和关闭方法。底层响应体通常只能消费一次：完整读取方法会自动关闭，<code>stream()</code> 则把关闭责任交给调用方。</p>\n<pre><code class=\"lang-ts\">interface HttpResponseBody {\n  readonly contentType: okhttp3.MediaType | null\n  string(): string\n  bytes(): byte[]\n  json(): unknown\n  stream(): java.io.InputStream\n  saveToFile(path: string, bufferSize?: number): HttpSaveResult\n  close(): void\n}\n</code></pre>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LmNvbnRlbnRUeXBl\"></a></p>\n",
+      "properties": [
+        {
+          "textRaw": "`body.contentType`",
+          "name": "contentType`",
+          "desc": "<pre><code class=\"lang-ts\">readonly contentType: okhttp3.MediaType | null\n</code></pre>\n<p>调用底层 <code>ResponseBody.contentType()</code>。服务器未提供或 OkHttp 无法解析媒体类型时为 <code>null</code>。该 getter 不读取正文。</p>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LnN0cmluZw\"></a></p>\n"
+        }
+      ],
+      "modules": [
+        {
+          "textRaw": "`body.string()`",
+          "name": "`body.string()`",
+          "desc": "<pre><code class=\"lang-ts\">body.string(): string\n</code></pre>\n<p>不接受参数，完整读取正文为字符串，然后立即关闭底层 body。<code>cacheBody: true</code> 且已知长度不超过阈值（或长度未知）时缓存字符串；之后再次调用 <code>string()</code> 直接返回缓存。未缓存且 body 已关闭时抛出 <code>IllegalStateException</code>。</p>\n<pre><code class=\"lang-js\">const response = http.get(&#39;https://example.com&#39;)\nconst text = response.body.string() // 完整消费并自动关闭\nconsole.log(text)\n</code></pre>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LmJ5dGVz\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.string()`"
+        },
+        {
+          "textRaw": "`body.bytes()`",
+          "name": "`body.bytes()`",
+          "desc": "<pre><code class=\"lang-ts\">body.bytes(): byte[]\n</code></pre>\n<p>完整读取为 Java 字节数组并自动关闭。缓存条件与 <code>string()</code> 相同，但字节缓存和字符串缓存相互独立；先以一种表示关闭 body 后，不能依赖另一种表示还能首次读取。</p>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5Lmpzb24\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.bytes()`"
+        },
+        {
+          "textRaw": "`body.json()`",
+          "name": "`body.json()`",
+          "desc": "<pre><code class=\"lang-ts\">body.json(): unknown\n</code></pre>\n<p>先调用 <code>string()</code>，再用 Rhino <code>JSON.parse</code> 解析。无效 JSON 抛出 <code>IllegalStateException</code>，消息说明正文不是有效 JSON；无论解析成功与否，字符串读取已经消费并关闭响应体。</p>\n<pre><code class=\"lang-js\">http.getAsync(&#39;https://example.com/data.json&#39;).then(response =&gt; {\n  const value = response.body.json()\n  console.log(JSON.stringify(value))\n})\n</code></pre>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LnN0cmVhbQ\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.json()`"
+        },
+        {
+          "textRaw": "`body.stream()`",
+          "name": "`body.stream()`",
+          "desc": "<pre><code class=\"lang-ts\">body.stream(): java.io.InputStream\n</code></pre>\n<p>返回 OkHttp byte stream，不自动关闭，也不启用 body cache。适合逐块处理大响应；调用方必须关闭返回流，并在异常路径中同时确保 body 被关闭。body 已显式关闭时抛出 <code>IllegalStateException</code>。</p>\n<pre><code class=\"lang-js\">const response = http.get(&#39;https://example.com/large.bin&#39;)\nconst input = response.body.stream()\ntry {\n  console.log(input.read())\n} finally {\n  input.close()\n  response.body.close()\n}\n</code></pre>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LnNhdmVUb0ZpbGU\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.stream()`"
+        },
+        {
+          "textRaw": "`body.saveToFile(path, bufferSize?)`",
+          "name": "`body.savetofile(path,_buffersize?)`",
+          "desc": "<pre><code class=\"lang-ts\">body.saveToFile(path: string, bufferSize?: number): HttpSaveResult\n</code></pre>\n<p>直接把 byte stream 复制到运行时路径，避免把完整响应装入内存。<code>bufferSize</code> 转为整数；省略、为零或负数时使用 <code>8192</code>。目标是现有目录或路径以 <code>/</code> 结尾时抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<p>复制、打开、写入或 flush 阶段的异常被捕获到 <code>HttpSaveResult</code>，不会再次抛出；结果包含 <code>success</code>、<code>code</code>、<code>path</code>、<code>bytesCopied</code> 和 <code>error</code>。无论成功失败，输入流、输出流和 body 都会关闭。失败可能留下部分文件，调用方决定是否删除。</p>\n<pre><code class=\"lang-js\">http.getAsync(&#39;https://example.com/package.zip&#39;).then(response =&gt; {\n  const result = response.body.saveToFile(\n    &#39;/sdcard/Download/package.zip&#39;,\n    64 * 1024,\n  )\n  if (!result.success) console.error(result.error)\n})\n</code></pre>\n<p><a id=\"api-symbol-aHR0cC5yZXNwb25zZS5ib2R5LmNsb3Nl\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.saveToFile(path, bufferSize?)`"
+        },
+        {
+          "textRaw": "`body.close()`",
+          "name": "`body.close()`",
+          "desc": "<pre><code class=\"lang-ts\">body.close(): void\n</code></pre>\n<p>显式关闭底层 response body，并把包装器标记为关闭。方法幂等且不接受参数；底层 close 异常会被吞掉。未读取正文、HEAD 响应、提前终止流式读取和异常路径都应调用。</p>\n<p><a id=\"api-symbol-ZHluYW1pYzpodHRwLnJlc3BvbnNlLmJvZHkuZm9yd2FyZGVkLW1lbWJlcnM\"></a></p>\n",
+          "type": "module",
+          "displayName": "`body.close()`"
+        },
+        {
+          "textRaw": "动态转发的 OkHttp 方法",
+          "name": "动态转发的_okhttp_方法",
+          "desc": "<p>包装器在属性查询时检查底层 <code>okhttp3.ResponseBody</code>。未被上述 MonkeyKing 方法覆盖的底层函数会绑定到原始 ResponseBody 后转发，因此可访问内置 OkHttp 版本公开的方法，例如 <code>contentLength()</code>、<code>source()</code> 或 <code>charStream()</code>。</p>\n<p>这些转发入口共享同一条一次性流和关闭状态；调用底层消费方法可能绕过 MonkeyKing 的 <code>closed</code> 标记与 cache 逻辑。需要稳定生命周期时优先使用本页六个显式方法，并只把动态转发用于高级互操作。</p>\n",
+          "type": "module",
+          "displayName": "动态转发的 OkHttp 方法"
+        },
+        {
+          "textRaw": "缓存、线程与版本",
+          "name": "缓存、线程与版本",
+          "desc": "<ul>\n<li>默认 <code>cacheBody = false</code>，完整读取后不能重复读取。开启缓存只缓存 <code>string</code> 或 <code>bytes</code> 的同类型结果，不缓存 stream。</li>\n<li>响应包装和完整读取同步运行在调用它们的线程；大 body 使用 <code>stream()</code>/<code>saveToFile()</code> 或把处理放在工作线程。</li>\n<li>body 不会被 JavaScript 垃圾回收及时、确定地关闭；必须显式消费或关闭。</li>\n<li>本页合同对应 MonkeyKing 6.7.0 与其内置 OkHttp 版本。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        },
+        {
+          "textRaw": "逐符号版本与 Rhino 2.0 示例",
+          "name": "逐符号版本与_rhino_2.0_示例",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>dynamic:http.response.body.forwarded-members</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.forwardedMembers);\n</code></pre>\n<p><code>http.response.body.bytes</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.bytes);\n</code></pre>\n<p><code>http.response.body.close</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.close);\n</code></pre>\n<p><code>http.response.body.contentType</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.contentType);\n</code></pre>\n<p><code>http.response.body.json</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.json);\n</code></pre>\n<p><code>http.response.body.saveToFile</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.saveToFile);\n</code></pre>\n<p><code>http.response.body.stream</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.stream);\n</code></pre>\n<p><code>http.response.body.string</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var body = http.get(&#39;https://example.com&#39;).body;\nconsole.log(body.string);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "逐符号版本与 Rhino 2.0 示例"
+        }
+      ],
       "type": "module",
       "displayName": "HttpResponseBody"
     }

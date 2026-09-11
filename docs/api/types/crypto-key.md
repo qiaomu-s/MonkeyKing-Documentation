@@ -8,7 +8,7 @@ CryptoKey 是 `com.qiaomu.monkeyking.core.crypto.Crypto.Key` 的子类, 其实�
 - [CryptoKeyPair#privateKey](crypto-key-pair.md#p-privatekey)
 - [crypto.Key](../utilities/crypto.md#c-key)::new
 
-> 注: 本章节仅列出 CryptoKey 独有的而不包含继承的属性及方法.
+> 注：本页展开 `CryptoKey` 自有成员；继承自 Java/Android 类型的成员请参阅对应官方参考。
 
 ---
 

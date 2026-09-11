@@ -4,128 +4,90 @@
     {
       "textRaw": "通用应用 (App)",
       "name": "通用应用_(app)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n<p>app模块提供一系列函数, 用于使用其他应用、与其他应用交互. 例如发送意图、打开文件、发送邮件等.</p>\n<p>同时提供了方便的进阶函数startActivity和sendBroadcast, 用他们可完成app模块没有内置的和其他应用的交互.</p>\n",
-      "properties": [
-        {
-          "textRaw": "`versionCode` {number} ",
-          "type": "number",
-          "name": "versionCode",
-          "desc": "<p>当前软件版本号, 整数值. 例如160, 256等.</p>\n<p>如果在Monkey King中运行则为Monkey King的版本号；在打包的软件中则为打包软件的版本号.</p>\n<pre><code>toastLog(app.versionCode);\n</code></pre>"
-        },
-        {
-          "textRaw": "`versionName` {string} ",
-          "type": "string",
-          "name": "versionName",
-          "desc": "<p>当前软件的版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n<p>如果在Monkey King中运行则为Monkey King的版本名称；在打包的软件中则为打包软件的版本名称.</p>\n<pre><code>toastLog(app.verionName);\n</code></pre>"
-        }
-      ],
+      "desc": "<p><code>app</code> 用于解析和启动 Android <code>Intent</code>、查询安装应用、打开系统页面，以及通过 Shizuku、root 或普通 shell 操作双开用户。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmFwcA\"></a></p>\n",
       "modules": [
         {
-          "textRaw": "app.monkeyking.versionCode",
-          "name": "app.monkeyking.versioncode",
-          "desc": "<ul>\n<li>{number}</li>\n</ul>\n<p>Monkey King版本号, 整数值. 例如160, 256等.</p>\n",
+          "textRaw": "[@] app",
+          "name": "[@]_app",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app</code>、<code>$app</code></li>\n<li><strong>参数</strong>：模块对象不可调用</li>\n<li><ins><strong>returns</strong></ins> { <code>App</code> }</li>\n<li><strong>异常</strong>：读取模块本身不抛出异常</li>\n<li><strong>权限</strong>：普通 Intent 操作不额外申请权限；强停、root 启动和双开操作依赖 Shizuku、root 或系统 shell 能力</li>\n<li><strong>线程 / 生命周期</strong>：与当前脚本运行时绑定；部分 UI 启动在 Android 主线程完成</li>\n<li><strong>副作用</strong>：成员可启动 Activity/Service、发送广播、打开设置、卸载应用或执行 shell 命令</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app === $app); // true\nconsole.log(app.versionName);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnZlcnNpb25Db2Rl\"></a></p>\n",
           "type": "module",
-          "displayName": "app.monkeyking.versionCode"
+          "displayName": "[@] app"
+        }
+      ],
+      "properties": [
+        {
+          "textRaw": "[p] app.versionCode",
+          "name": "versionCode",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.versionCode</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#number\">number</a> } - 当前 Monkey King 构建的 <code>BuildConfig.VERSION_CODE</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：运行时初始化时赋值；读取无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(Number.isFinite(app.versionCode)); // true\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnZlcnNpb25OYW1l\"></a></p>\n"
         },
         {
-          "textRaw": "app.monkeyking.versionName",
-          "name": "app.monkeyking.versionname",
-          "desc": "<ul>\n<li>{string}</li>\n</ul>\n<p>Monkey King版本名称, 例如&quot;3.0.0 Beta&quot;.</p>\n",
-          "type": "module",
-          "displayName": "app.monkeyking.versionName"
+          "textRaw": "[p] app.versionName",
+          "name": "versionName",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.versionName</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 当前 Monkey King 构建的 <code>BuildConfig.VERSION_NAME</code></li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：运行时初始化时赋值；读取无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.versionName); // 例如 &quot;6.7.0&quot;\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmZpbGVQcm92aWRlckF1dGhvcml0eQ\"></a></p>\n"
+        },
+        {
+          "textRaw": "[p] app.fileProviderAuthority",
+          "name": "fileProviderAuthority",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.fileProviderAuthority</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 查看或编辑文件时使用的 FileProvider authority</li>\n<li><strong>异常 / 权限</strong>：读取无异常；实际共享文件时受 Android URI 授权约束</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：构造 <code>AppUtils</code> 时确定；读取无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.fileProviderAuthority);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmN1cnJlbnRBY3Rpdml0eQ\"></a></p>\n"
+        },
+        {
+          "textRaw": "[p] app.currentActivity",
+          "name": "currentActivity",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.currentActivity</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/app/Activity\">android.app.Activity</a> | <a href=\"../types/data-types.md#null\">null</a> } - 弱引用保存的当前 Activity</li>\n<li><strong>异常 / 权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：Activity 销毁或未登记时为 null；读取会写一条 Android debug 日志</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.currentActivity === null || app.currentActivity.getClass());\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnNldEN1cnJlbnRBY3Rpdml0eQ\"></a></p>\n"
         }
       ],
       "methods": [
         {
-          "textRaw": "app.launchApp(appName)",
+          "textRaw": "[m] app.setCurrentActivity(activity)",
           "type": "method",
-          "name": "launchApp",
+          "name": "setCurrentActivity",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.setCurrentActivity(activity)</code>；主要供运行时生命周期桥接使用</li>\n<li><strong>activity</strong> { <a href=\"https://developer.android.com/reference/android/app/Activity\">android.app.Activity</a> | <a href=\"../types/data-types.md#null\">null</a> } - 新的当前 Activity</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常 / 权限</strong>：类型不兼容时由 Rhino/Java 桥接抛出；无额外权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：替换内部弱引用并写 Android debug 日志，不会结束旧 Activity</li>\n</ul>\n<pre><code class=\"lang-js\">const previous = app.currentActivity;\napp.setCurrentActivity(previous);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaA\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`appName` {string} 应用名称 ",
-                  "name": "appName",
-                  "type": "string",
-                  "desc": "应用名称"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "appName"
+                  "name": "activity"
                 }
               ]
             }
-          ],
-          "desc": "<p>通过应用名称启动应用. 如果该名称对应的应用不存在, 则返回false; 否则返回true. 如果该名称对应多个应用, 则只启动其中某一个.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>launchApp(&quot;Monkey King&quot;);\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.launch(packageName)",
+          "textRaw": "[m] app.launch(appOrPackage)",
           "type": "method",
           "name": "launch",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launch(...)</code>、全局 <code>launch(...)</code>；委托给 <code>launchPackage</code></li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设应用、预设别名或包名；必须恰好 1 个参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 找到启动 Intent 且调用未抛出时为 true</li>\n<li><strong>异常</strong>：参数数量错误时抛出；nullish 返回 false；其他异常通常被 <code>launchPackage</code> 转为 false</li>\n<li><strong>权限</strong>：目标 Activity 必须可从当前应用启动</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步解析后启动目标应用 Activity</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launch(&#39;com.android.settings&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaFBhY2thZ2U\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`packageName` {string} 应用包名 ",
-                  "name": "packageName",
-                  "type": "string",
-                  "desc": "应用包名"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "packageName"
+                  "name": "appOrPackage"
                 }
               ]
             }
-          ],
-          "desc": "<p>通过应用包名启动应用. 如果该包名对应的应用不存在, 则返回false；否则返回true.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>//启动微信\nlaunch(&quot;com.tencent.mm&quot;);\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.launchPackage(packageName)",
+          "textRaw": "[m] app.launchPackage(appOrPackage)",
           "type": "method",
           "name": "launchPackage",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchPackage(...)</code>、全局 <code>launchPackage(...)</code></li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名会先转换为包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - nullish、无启动 Activity 或启动失败时为 false</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；内部启动异常被捕获并转为 false</li>\n<li><strong>权限</strong>：受 Android 包可见性与 Activity 导出规则限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：调用 PackageManager 获取 launch Intent 并启动 Activity</li>\n</ul>\n<pre><code class=\"lang-js\">if (!app.launchPackage(&#39;com.example.missing&#39;)) {\n    console.warn(&#39;应用不可启动&#39;);\n}\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaEFwcA\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`packageName` {string} 应用包名 ",
-                  "name": "packageName",
-                  "type": "string",
-                  "desc": "应用包名"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "packageName"
+                  "name": "appOrPackage"
                 }
               ]
             }
-          ],
-          "desc": "<p>相当于<code>app.launch(packageName)</code>.</p>\n"
+          ]
         },
         {
-          "textRaw": "app.getPackageName(appName)",
+          "textRaw": "[m] app.launchApp(appName)",
           "type": "method",
-          "name": "getPackageName",
+          "name": "launchApp",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchApp(appName)</code>、全局 <code>launchApp(appName)</code></li>\n<li><strong>appName</strong> { <code>PresetApp | string | null</code> } - 应用显示名称；预设别名直接走其包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；nullish 或找不到名称时返回 false</li>\n<li><strong>权限</strong>：受包可见性和目标 Activity 导出规则限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：枚举已安装应用名称后启动第一个匹配包</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchApp(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmdldFBhY2thZ2VOYW1l\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`appName` {string} 应用名称 ",
-                  "name": "appName",
-                  "type": "string",
-                  "desc": "应用名称"
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -133,24 +95,74 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>获取应用名称对应的已安装的应用的包名. 如果该找不到该应用, 返回null；如果该名称对应多个应用, 则只返回其中某一个的包名.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>var name = getPackageName(&quot;QQ&quot;); //返回&quot;com.tencent.mobileqq&quot;\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.getAppName(packageName)",
+          "textRaw": "[m] app.getPackageName(appName)",
+          "type": "method",
+          "name": "getPackageName",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.getPackageName(appName)</code>、全局 <code>getPackageName(appName)</code></li>\n<li><strong>appName</strong> { <code>PresetApp | string | null</code> } - 预设别名或应用显示名称</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#null\">null</a> } - 第一个匹配应用的包名</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；nullish 返回 null</li>\n<li><strong>权限</strong>：查询结果受 Android 包可见性限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步枚举安装应用；不修改系统状态</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.getPackageName(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmdldEFwcE5hbWU\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appName"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.getAppName(packageOrAlias)",
           "type": "method",
           "name": "getAppName",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.getAppName(...)</code>、全局 <code>getAppName(...)</code></li>\n<li><strong>packageOrAlias</strong> { <code>PresetApp | string | null</code> } - 包名或预设应用别名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#null\">null</a> } - 应用标签</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；不存在或 nullish 返回 null</li>\n<li><strong>权限</strong>：查询受包可见性限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步读取 PackageManager；无系统状态副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.getAppName(&#39;com.android.settings&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmdldEFwcEJ5QWxpYXM\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`packageName` {string} 应用包名 ",
-                  "name": "packageName",
-                  "type": "string",
-                  "desc": "应用包名"
+                  "name": "packageOrAlias"
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.getAppByAlias(alias)",
+          "type": "method",
+          "name": "getAppByAlias",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.getAppByAlias(alias)</code></li>\n<li><strong>alias</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 恰好一个值，按字符串转换</li>\n<li><ins><strong>returns</strong></ins> { <code>PresetApp | null</code> } - 内置预设应用枚举项</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出</li>\n<li><strong>权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只查内置别名表，不访问 PackageManager</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.getAppByAlias(&#39;settings&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmlzSW5zdGFsbGVk\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "alias"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.isInstalled(appNameOrAlias)",
+          "type": "method",
+          "name": "isInstalled",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.isInstalled(...)</code>、全局 <code>isInstalled(...)</code></li>\n<li><strong>appNameOrAlias</strong> { <code>PresetApp | string | null</code> } - 固定提交的增强入口先经 <code>getPackageName</code> 解析，因此普通字符串按应用显示名称而不是直接按包名查询</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；解析或查询失败返回 false</li>\n<li><strong>权限</strong>：受包可见性限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步查询；无系统状态副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.isInstalled(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmlzSW5zdGFsbGVkQW5kRW5hYmxlZA\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appNameOrAlias"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.isInstalledAndEnabled(packageName)",
+          "type": "method",
+          "name": "isInstalledAndEnabled",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.isInstalledAndEnabled(packageName)</code></li>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#null\">null</a> } - 实际包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 已安装且 ApplicationInfo.enabled 为 true</li>\n<li><strong>异常</strong>：不存在、nullish 或查询异常时返回 false</li>\n<li><strong>权限</strong>：受包可见性限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步只读查询</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.isInstalledAndEnabled(&#39;com.android.settings&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmVuc3VyZUluc3RhbGxlZA\"></a></p>\n",
+          "signatures": [
             {
               "params": [
                 {
@@ -158,24 +170,44 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>获取应用包名对应的已安装的应用的名称. 如果该找不到该应用, 返回null.</p>\n<p>该函数也可以作为全局函数使用.</p>\n<pre><code>var name = getAppName(&quot;com.tencent.mobileqq&quot;); //返回&quot;QQ&quot;\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.openAppSetting(packageName)",
+          "textRaw": "[m] app.ensureInstalled(packageOrApp)",
           "type": "method",
-          "name": "openAppSetting",
+          "name": "ensureInstalled",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.ensureInstalled(packageName)</code>、<code>app.ensureInstalled(presetApp)</code></li>\n<li><strong>packageOrApp</strong> { <code>string | PresetApp</code> } - 包名或预设应用对象</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：包不存在、nullish 或查询失败时抛出带应用名称的 <code>Exception</code></li>\n<li><strong>权限</strong>：查询受包可见性限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步只读校验</li>\n</ul>\n<pre><code class=\"lang-js\">app.ensureInstalled(&#39;com.android.settings&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmlzRHVhbEluc3RhbGxlZA\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`packageName` {string} 应用包名 ",
-                  "name": "packageName",
-                  "type": "string",
-                  "desc": "应用包名"
+                  "name": "packageOrApp"
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.isDualInstalled(appNameOrAlias)",
+          "type": "method",
+          "name": "isDualInstalled",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.isDualInstalled(...)</code>、全局 <code>isDualInstalled(...)</code></li>\n<li><strong>appNameOrAlias</strong> { <code>PresetApp | string | null</code> } - 先按 <code>getPackageName</code> 解析</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 任一非当前 Android 用户的 package 查询成功且包含目标包时为 true</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；反射、shell 或查询失败被转为 false</li>\n<li><strong>权限</strong>：需要可工作的 Shizuku、root 或 shell 后端访问用户包列表</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步枚举用户并执行 <code>cmd package list packages</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.isDualInstalled(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaFNldHRpbmdz\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appNameOrAlias"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.launchSettings(packageName)",
+          "type": "method",
+          "name": "launchSettings",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：底层 <code>AppUtils.launchSettings(packageName)</code>；标准增强环境中的同名脚本属性同时是 <code>launchAppDetailsSettings</code> 的别名</li>\n<li><strong>packageName</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 实际包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 设置页 Intent 是否安全启动</li>\n<li><strong>异常</strong>：Java 桥接类型错误时抛出</li>\n<li><strong>权限</strong>：无需特殊权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：启动系统应用详情设置页</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchSettings(&#39;com.android.settings&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaEFwcERldGFpbHNTZXR0aW5ncw\"></a></p>\n",
+          "signatures": [
             {
               "params": [
                 {
@@ -183,24 +215,104 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>打开应用的详情页(设置页). 如果找不到该应用, 返回false; 否则返回true.</p>\n<p>该函数也可以作为全局函数使用.</p>\n"
+          ]
         },
         {
-          "textRaw": "app.viewFile(path)",
+          "textRaw": "[m] app.launchAppDetailsSettings(appOrPackage)",
           "type": "method",
-          "name": "viewFile",
+          "name": "launchAppDetailsSettings",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchAppDetailsSettings</code>；别名 <code>launchSettings</code>、<code>openAppSetting</code>、<code>openAppSettings</code>，并安装对应全局入口</li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名或包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - nullish 为 false，否则返回设置页启动结果</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出</li>\n<li><strong>权限</strong>：无需特殊权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：启动目标包的系统详情设置页</li>\n</ul>\n<pre><code class=\"lang-js\">app.launchAppDetailsSettings(&#39;com.android.settings&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaER1YWxBcHBEZXRhaWxzU2V0dGluZ3M\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`path` {string} 文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "文件路径"
+                  "name": "appOrPackage"
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.launchDualAppDetailsSettings(appOrPackage)",
+          "type": "method",
+          "name": "launchDualAppDetailsSettings",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：别名 <code>launchDualSettings</code>、<code>openDualAppSetting</code>、<code>openDualAppSettings</code>，并安装同名全局入口</li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名或包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - shell/反射流程未抛出时为 true</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；内部双开错误被捕获并转为 false</li>\n<li><strong>权限</strong>：需要 Shizuku、root 或 shell 能力访问另一 Android 用户</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：为非当前用户执行应用详情设置 Activity</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchDualAppDetailsSettings(&#39;com.example.app&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmlzQWN0aXZpdHlTaG9ydEZvcm0\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appOrPackage"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.isActivityShortForm(name)",
+          "type": "method",
+          "name": "isActivityShortForm",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.isActivityShortForm(name)</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - <code>settings/preferences/pref/documentation/docs/doc/console/log/homepage/home/about/build</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：Java 桥接类型不匹配时抛出</li>\n<li><strong>权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只查询固定枚举</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.isActivityShortForm(&#39;docs&#39;)); // true\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmlzQnJvYWRjYXN0U2hvcnRGb3Jt\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "name"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.isBroadcastShortForm(name)",
+          "type": "method",
+          "name": "isBroadcastShortForm",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.isBroadcastShortForm(name)</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - <code>inspect_layout_bounds/layout_bounds/bounds/inspect_layout_hierarchy/layout_hierarchy/hierarchy</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：Java 桥接类型不匹配时抛出</li>\n<li><strong>权限</strong>：无障碍布局检查本身可能需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只查询固定枚举</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.isBroadcastShortForm(&#39;bounds&#39;)); // true\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmludGVudA\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "name"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.intent(intentOrOptions)",
+          "type": "method",
+          "name": "intent",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.intent(value)</code></li>\n<li><strong>intentOrOptions</strong> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> | <a href=\"../types/data-types.md#object\">Object</a> } - Intent 原样返回；对象可含 <code>url/package/packageName/className/extras/category/action/flags/type/data</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 或类型不是 Intent/JavaScript 对象时抛出；未知 flags、无效 className 模板等会抛出</li>\n<li><strong>权限</strong>：构造 Intent 不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步创建或配置对象，不自动启动；<code>action</code> 无点号时补 <code>android.intent.action.</code></li>\n</ul>\n<pre><code class=\"lang-js\">const intent = app.intent({\n    action: &#39;VIEW&#39;,\n    data: &#39;https://example.com&#39;,\n});\nconsole.log(intent.getAction());\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnBhcnNlVXJp\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "intentOrOptions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.parseUri(value)",
+          "type": "method",
+          "name": "parseUri",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.parseUri(value)</code></li>\n<li><strong>value</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"https://developer.android.com/reference/android/net/Uri\">android.net.Uri</a> | <a href=\"../types/data-types.md#any\">any</a> } - 字符串或 Uri</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/net/Uri\">android.net.Uri</a> | <a href=\"../types/data-types.md#null\">null</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；其他类型返回 null</li>\n<li><strong>权限</strong>：无</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步解析；<code>file://</code> 字符串经脚本文件路径解析并返回 <code>Uri.fromFile</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(String(app.parseUri(&#39;https://example.com/path&#39;)));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmdldFVyaUZvckZpbGU\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.getUriForFile(path)",
+          "type": "method",
+          "name": "getUriForFile",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.getUriForFile(path)</code></li>\n<li><strong>path</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 可含 <code>file://</code> 前缀；非 nullish 值按字符串转换</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/net/Uri\">android.net.Uri</a> | <a href=\"../types/data-types.md#null\">null</a> } - 固定提交返回 <code>Uri.fromFile</code>，不是 FileProvider content URI</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；nullish 或路径解析失败返回 null</li>\n<li><strong>权限</strong>：只构造 Uri；后续跨应用共享仍受 Android 文件 URI 限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步解析当前脚本路径；不检查文件是否存在</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(String(app.getUriForFile(&#39;./data.txt&#39;)));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmludGVudFRvU2hlbGw\"></a></p>\n",
+          "signatures": [
             {
               "params": [
                 {
@@ -208,74 +320,127 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>用其他应用查看文件. 文件不存在的情况由查看文件的应用处理.</p>\n<p>如果找不出可以查看该文件的应用, 则抛出<code>ActivityNotException</code>.</p>\n<pre><code>//查看文本文件\napp.viewFile(&quot;/sdcard/1.txt&quot;);\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.editFile(path)",
+          "textRaw": "[m] app.intentToShell(intentOrOptions)",
           "type": "method",
-          "name": "editFile",
+          "name": "intentToShell",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.intentToShell(value)</code></li>\n<li><strong>intentOrOptions</strong> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> | <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 可拼接到 Android <code>am start/service/broadcast</code> 的参数</li>\n<li><strong>异常</strong>：参数数量错误、类型非法、extras 为空数组、nullish/Infinity/NaN 数字或未知 extra 类型时抛出</li>\n<li><strong>权限</strong>：仅生成命令字符串</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步序列化 component、extras、category、action、flags、type 与 data；不执行命令</li>\n</ul>\n<pre><code class=\"lang-js\">const args = app.intentToShell({ action: &#39;VIEW&#39;, data: &#39;https://example.com&#39; });\nconsole.log(args);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnN0YXJ0QWN0aXZpdHk\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`path` {string} 文件路径 ",
-                  "name": "path",
-                  "type": "string",
-                  "desc": "文件路径"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "path"
+                  "name": "intentOrOptions"
                 }
               ]
             }
-          ],
-          "desc": "<p>用其他应用编辑文件. 文件不存在的情况由编辑文件的应用处理.</p>\n<p>如果找不出可以编辑该文件的应用, 则抛出<code>ActivityNotException</code>.</p>\n<pre><code>//编辑文本文件\napp.editFile(&quot;/sdcard/1.txt/);\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.uninstall(packageName)",
+          "textRaw": "[m] app.startActivity(target[, options])",
           "type": "method",
-          "name": "uninstall",
+          "name": "startActivity",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.startActivity(...)</code>、全局 <code>startActivity(...)</code></li>\n<li><strong>target</strong> { <code>string | java.net.URI | Intent | Object</code> } - URL、Activity 短名、Intent 或配置对象</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 仅 Intent/对象 target 可用；与对象 target 浅合并</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1..2、组合非法、短名未知或 Intent/shell 启动失败时抛出</li>\n<li><strong>权限</strong>：普通启动受导出规则限制；对象的 <code>shizuku/root/dual</code> 仅在对应能力可用时采用</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：字符串 URL 自动补 <code>http://</code>；启动 Activity 或按选项执行 shell</li>\n</ul>\n<pre><code class=\"lang-js\">app.startActivity(&#39;docs&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnN0YXJ0RHVhbEFjdGl2aXR5\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`packageName` {string} 应用包名 ",
-                  "name": "packageName",
-                  "type": "string",
-                  "desc": "应用包名"
-                }
-              ]
-            },
-            {
-              "params": [
+                  "name": "target"
+                },
                 {
-                  "name": "packageName"
+                  "name": "options",
+                  "optional": true
                 }
               ]
             }
-          ],
-          "desc": "<p>卸载应用. 执行后会会弹出卸载应用的提示框. 如果该包名的应用未安装, 由应用卸载程序处理, 可能弹出&quot;未找到应用&quot;的提示.</p>\n<pre><code>//卸载QQ\napp.uninstall(&quot;com.tencent.mobileqq&quot;);\n</code></pre>"
+          ]
         },
         {
-          "textRaw": "app.openUrl(url)",
+          "textRaw": "[m] app.startDualActivity(target[, options])",
+          "type": "method",
+          "name": "startDualActivity",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.startDualActivity(...)</code>、全局 <code>startDualActivity(...)</code></li>\n<li><strong>target</strong> { <code>string | java.net.URI | Intent | Object</code> } - 与 <code>startActivity</code> 相同的主要输入形态</li>\n<li><strong>[ options ]</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 仅 Intent/对象 target 可用</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量、类型、短名或双开 shell 失败时抛出</li>\n<li><strong>权限</strong>：需要 Shizuku、root 或 shell 能力访问另一 Android 用户</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：为每个非当前用户执行带 <code>--user</code> 的 <code>am start</code>；固定提交的 <code>java.net.URI</code> 分支仍调用普通 <code>openUrl</code></li>\n</ul>\n<pre><code class=\"lang-js\">app.startDualActivity({ packageName: &#39;com.example.app&#39; });\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnN0YXJ0U2VydmljZQ\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "options",
+                  "optional": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.startService(intentOrOptions)",
+          "type": "method",
+          "name": "startService",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.startService(value)</code>、全局 <code>startService(value)</code></li>\n<li><strong>intentOrOptions</strong> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> | <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1、类型非法或 Android 拒绝启动服务时抛出</li>\n<li><strong>权限</strong>：目标 Service 必须可访问；对象 <code>root: true</code> 且 root 可用时执行 <code>am startservice</code></li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步发起服务启动，不等待服务完成</li>\n</ul>\n<pre><code class=\"lang-js\">app.startService({\n    packageName: &#39;com.example.app&#39;,\n    className: &#39;com.example.app.SyncService&#39;,\n});\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnNlbmRCcm9hZGNhc3Q\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "intentOrOptions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.sendBroadcast(nameOrIntent)",
+          "type": "method",
+          "name": "sendBroadcast",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.sendBroadcast(...)</code>、全局 <code>sendBroadcast(...)</code></li>\n<li><strong>nameOrIntent</strong> { <code>string | Intent | Object</code> } - 字符串仅接受布局检查短名；其他输入构造广播 Intent</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1、未知短名、Intent 配置或 shell 失败时抛出</li>\n<li><strong>权限</strong>：广播受 Android 导出与权限约束；对象 <code>root: true</code> 可选 root shell</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：短名在主协程触发布局边界/层级浮窗；其他路径发送系统广播</li>\n</ul>\n<pre><code class=\"lang-js\">app.sendBroadcast(&#39;inspect_layout_bounds&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnNlbmRMb2NhbEJyb2FkY2FzdFN5bmM\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "nameOrIntent"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.sendLocalBroadcastSync(intent)",
+          "type": "method",
+          "name": "sendLocalBroadcastSync",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.sendLocalBroadcastSync(intent)</code>、全局同名入口</li>\n<li><strong>intent</strong> { <a href=\"https://developer.android.com/reference/android/content/Intent\">android.content.Intent</a> | <a href=\"../types/data-types.md#null\">null</a> } - 恰好一个参数</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：非 Intent 且非 null 时抛出；后台任务异常只打印堆栈</li>\n<li><strong>权限</strong>：无额外权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：名称保留“Sync”，但固定提交会在 IO 调度器查询定时 Intent 任务，再投递到主线程执行，调用本身不会等任务完成</li>\n</ul>\n<pre><code class=\"lang-js\">const intent = app.intent({ action: &#39;com.example.LOCAL_TASK&#39; });\napp.sendLocalBroadcastSync(intent);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnNlbmRFbWFpbA\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "intent"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.sendEmail(options)",
+          "type": "method",
+          "name": "sendEmail",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.sendEmail(options)</code>、全局 <code>sendEmail(options)</code></li>\n<li><strong>options</strong> { <a href=\"../types/data-types.md#object\">Object</a> } - 可含 <code>email/cc/bcc/subject/text/attachment</code>；非对象按空对象处理</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 或附件 URI/Activity 启动失败时抛出</li>\n<li><strong>权限</strong>：附件共享受文件和 URI 权限限制</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：构造 <code>ACTION_SEND</code>、MIME <code>message/rfc822</code> 的 chooser 并启动邮件应用</li>\n</ul>\n<pre><code class=\"lang-js\">app.sendEmail({\n    email: [&#39;hello@example.com&#39;],\n    subject: &#39;Monkey King&#39;,\n    text: &#39;Hello&#39;,\n});\n</code></pre>\n<p><a id=\"api-symbol-YXBwLm9wZW5Vcmw\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "options"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.openUrl(url)",
           "type": "method",
           "name": "openUrl",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.openUrl(url)</code></li>\n<li><strong>url</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 恰好一个值并转为字符串；不含 <code>://</code> 时补 <code>http://</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；安全启动无法处理时通常静默失败</li>\n<li><strong>权限</strong>：目标 URL 需有可处理的 Activity</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：发送 <code>ACTION_VIEW</code> Intent</li>\n</ul>\n<pre><code class=\"lang-js\">app.openUrl(&#39;example.com&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLm9wZW5EdWFsVXJs\"></a></p>\n",
           "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`url` {string} 网站的Url, 如果不以\"http://\"或\"https://\"开头则默认是\"http://\". ",
-                  "name": "url",
-                  "type": "string",
-                  "desc": "网站的Url, 如果不以\"http://\"或\"https://\"开头则默认是\"http://\"."
-                }
-              ]
-            },
             {
               "params": [
                 {
@@ -283,313 +448,103 @@
                 }
               ]
             }
-          ],
-          "desc": "<p>用浏览器打开网站url.</p>\n<p>如果没有安装浏览器应用, 则抛出<code>ActivityNotException</code>.</p>\n"
+          ]
         },
         {
-          "textRaw": "app.sendEmail(options)",
+          "textRaw": "[m] app.openDualUrl(url)",
           "type": "method",
-          "name": "sendEmail",
+          "name": "openDualUrl",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.openDualUrl(url)</code></li>\n<li><strong>url</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 不含协议时补 <code>http://</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 或双开 shell 失败时抛出</li>\n<li><strong>权限</strong>：需要 Shizuku、root 或 shell 能力访问另一用户</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：为非当前用户执行 <code>ACTION_VIEW</code> Activity</li>\n</ul>\n<pre><code class=\"lang-js\">app.openDualUrl(&#39;https://example.com&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaER1YWw\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "textRaw": "`options` {Object} 发送邮件的参数. 包括: ",
-                  "name": "options",
-                  "type": "Object",
-                  "desc": "发送邮件的参数. 包括:"
-                },
-                {
-                  "textRaw": "`email` {string} | {Array} 收件人的邮件地址. 如果有多个收件人, 则用字符串数组表示 ",
-                  "name": "email",
-                  "type": "string",
-                  "desc": "| {Array} 收件人的邮件地址. 如果有多个收件人, 则用字符串数组表示"
-                },
-                {
-                  "textRaw": "`cc` {string} | {Array} 抄送收件人的邮件地址. 如果有多个抄送收件人, 则用字符串数组表示 ",
-                  "name": "cc",
-                  "type": "string",
-                  "desc": "| {Array} 抄送收件人的邮件地址. 如果有多个抄送收件人, 则用字符串数组表示"
-                },
-                {
-                  "textRaw": "`bcc` {string} | {Array} 密送收件人的邮件地址. 如果有多个密送收件人, 则用字符串数组表示 ",
-                  "name": "bcc",
-                  "type": "string",
-                  "desc": "| {Array} 密送收件人的邮件地址. 如果有多个密送收件人, 则用字符串数组表示"
-                },
-                {
-                  "textRaw": "`subject` {string} 邮件主题(标题) ",
-                  "name": "subject",
-                  "type": "string",
-                  "desc": "邮件主题(标题)"
-                },
-                {
-                  "textRaw": "`text` {string} 邮件正文 ",
-                  "name": "text",
-                  "type": "string",
-                  "desc": "邮件正文"
-                },
-                {
-                  "textRaw": "`attachment` {string} 附件的路径. ",
-                  "name": "attachment",
-                  "type": "string",
-                  "desc": "附件的路径."
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "options"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>根据选项options调用邮箱应用发送邮件. 这些选项均是可选的.</p>\n<p>如果没有安装邮箱应用, 则抛出<code>ActivityNotException</code>.</p>\n<pre><code>//发送邮件给10086@qq.com和10001@qq.com.\napp.sendEmail({\n    email: [&quot;10086@qq.com&quot;, &quot;10001@qq.com&quot;],\n    subject: &quot;这是一个邮件标题&quot;,\n    text: &quot;这是邮件正文&quot;\n});\n</code></pre>"
-        },
-        {
-          "textRaw": "app.startActivity(name)",
-          "type": "method",
-          "name": "startActivity",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`name` {string} 活动名称, 可选的值为: ",
-                  "options": [
-                    {
-                      "textRaw": "`console` 日志界面 ",
-                      "name": "console",
-                      "desc": "日志界面"
-                    },
-                    {
-                      "textRaw": "`settings` 设置界面 ",
-                      "name": "settings",
-                      "desc": "设置界面"
-                    }
-                  ],
-                  "name": "name",
-                  "type": "string",
-                  "desc": "活动名称, 可选的值为:"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "name"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>启动Monkey King的特定界面. 该函数在Monkey King内运行则会打开Monkey King内的界面, 在打包应用中运行则会打开打包应用的相应界面.</p>\n<pre><code>app.startActivity(&quot;console&quot;);\n</code></pre>"
-        },
-        {
-          "textRaw": "app.intent(options)",
-          "type": "method",
-          "name": "intent",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`options` {Object} 选项, 包括： ",
-                  "options": [
-                    {
-                      "textRaw": "`action` {string} 意图的Action, 指意图要完成的动作, 是一个字符串常量, 比如\"android.intent.action.SEND\". 当action以\"android.intent.action\"开头时, 可以省略前缀, 直接用\"SEND\"代替. 参见[Actions](https://developer.android.com/reference/android/content/Intent.html#standard-activity-actions/). ",
-                      "name": "action",
-                      "type": "string",
-                      "desc": "意图的Action, 指意图要完成的动作, 是一个字符串常量, 比如\"android.intent.action.SEND\". 当action以\"android.intent.action\"开头时, 可以省略前缀, 直接用\"SEND\"代替. 参见[Actions](https://developer.android.com/reference/android/content/Intent.html#standard-activity-actions/)."
-                    },
-                    {
-                      "textRaw": "`type` {string} 意图的MimeType, 表示和该意图直接相关的数据的类型, 表示比如\"text/plain\"为纯文本类型. ",
-                      "name": "type",
-                      "type": "string",
-                      "desc": "意图的MimeType, 表示和该意图直接相关的数据的类型, 表示比如\"text/plain\"为纯文本类型."
-                    },
-                    {
-                      "textRaw": "`data` {string} 意图的Data, 表示和该意图直接相关的数据, 是一个Uri, 可以是文件路径或者Url等. 例如要打开一个文件, action为\"android.intent.action.VIEW\", data为\"file:///sdcard/1.txt\". ",
-                      "name": "data",
-                      "type": "string",
-                      "desc": "意图的Data, 表示和该意图直接相关的数据, 是一个Uri, 可以是文件路径或者Url等. 例如要打开一个文件, action为\"android.intent.action.VIEW\", data为\"file:///sdcard/1.txt\"."
-                    },
-                    {
-                      "textRaw": "`category` {Array} 意图的类别. 比较少用. 参见[Categories](https://developer.android.com/reference/android/content/Intent.html#standard-categories/). ",
-                      "name": "category",
-                      "type": "Array",
-                      "desc": "意图的类别. 比较少用. 参见[Categories](https://developer.android.com/reference/android/content/Intent.html#standard-categories/)."
-                    },
-                    {
-                      "textRaw": "`packageName` {string} 目标包名 ",
-                      "name": "packageName",
-                      "type": "string",
-                      "desc": "目标包名"
-                    },
-                    {
-                      "textRaw": "`className` {string} 目标Activity或Service等组件的名称 ",
-                      "name": "className",
-                      "type": "string",
-                      "desc": "目标Activity或Service等组件的名称"
-                    },
-                    {
-                      "textRaw": "`extras` {Object} 以键值对构成的这个Intent的Extras(额外信息). 提供该意图的其他信息, 例如发送邮件时的邮件标题、邮件正文. 参见[Extras](https://developer.android.com/reference/android/content/Intent.html#standard-extra-data/). ",
-                      "name": "extras",
-                      "type": "Object",
-                      "desc": "以键值对构成的这个Intent的Extras(额外信息). 提供该意图的其他信息, 例如发送邮件时的邮件标题、邮件正文. 参见[Extras](https://developer.android.com/reference/android/content/Intent.html#standard-extra-data/)."
-                    },
-                    {
-                      "textRaw": "`flags` {Array} intent的标识, 字符串数组, 例如`[\"activity_new_task\", \"grant_read_uri_permission\"]`. 参见[Flags](https://developer.android.com/reference/android/content/Intent.html#setFlags%28int%29/). **[v4.1.0新增]** ",
-                      "name": "flags",
-                      "type": "Array",
-                      "desc": "intent的标识, 字符串数组, 例如`[\"activity_new_task\", \"grant_read_uri_permission\"]`. 参见[Flags](https://developer.android.com/reference/android/content/Intent.html#setFlags%28int%29/). **[v4.1.0新增]**"
-                    },
-                    {
-                      "textRaw": "`root` {Boolea} 是否以root权限启动、发送该intent. 使用该参数后, 不能使用`context.startActivity()`等方法, 而应该直接使用诸如`app.startActivity({...})`的方法. **[v4.1.0新增]** ",
-                      "name": "root",
-                      "type": "Boolea",
-                      "desc": "是否以root权限启动、发送该intent. 使用该参数后, 不能使用`context.startActivity()`等方法, 而应该直接使用诸如`app.startActivity({...})`的方法. **[v4.1.0新增]**"
-                    }
-                  ],
-                  "name": "options",
-                  "type": "Object",
-                  "desc": "选项, 包括："
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "options"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>根据选项, 构造一个意图Intent对象.</p>\n<p>例如：</p>\n<pre><code>//打开应用来查看图片文件\nvar i = app.intent({\n    action: &quot;VIEW&quot;,\n    type: &quot;image/png&quot;,\n    data: &quot;file:///sdcard/1.png&quot;\n});\ncontext.startActivity(i);\n</code></pre><p>需要注意的是, 除非应用专门暴露Activity出来, 否则在没有root权限的情况下使用intent是无法跳转到特定Activity、应用的特定界面的. 例如我们能通过Intent跳转到QQ的分享界面, 是因为QQ对外暴露了分享的Activity；而在没有root权限的情况下, 我们无法通过intent跳转到QQ的设置界面, 因为QQ并没有暴露这个Activity.</p>\n<p>但如果有root权限, 则在intent的参数加上<code>&quot;root&quot;: true</code>即可. 例如使用root权限跳转到Auto.js的设置界面为：</p>\n<pre><code>app.startActivity({\n    packageName: &quot;org.autojs.autojs&quot;,\n    className: &quot;org.autojs.autojs.ui.settings.SettingsActivity_&quot;,\n    root: true\n});\n</code></pre><p>另外, 关于intent的参数如何获取的问题, 一些intent是意外发现并且在网络中传播的（例如跳转QQ聊天窗口是因为QQ给网页提供了跳转到客服QQ的方法）, 如果要自己获取活动的intent的参数, 可以通过例如&quot;intent记录&quot;, &quot;隐式启动&quot;等应用拦截内部intent或者查询暴露的intent. 其中拦截内部intent需要XPosed框架, 或者可以通过反编译等手段获取参数. 总之, 没有简单直接的方法.</p>\n<p>更多信息, 请百度<a href=\"https://www.baidu.com/s?wd=android%20Intent\">安卓Intent</a>或参考<a href=\"https://developer.android.com/guide/components/intents-filters.html#Types\">Android指南: Intent</a>.</p>\n"
-        },
-        {
-          "textRaw": "app.startActivity(options)",
-          "type": "method",
-          "name": "startActivity",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`options` {Object} 选项 ",
-                  "name": "options",
-                  "type": "Object",
-                  "desc": "选项"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "options"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>根据选项构造一个Intent, 并启动该Activity.</p>\n<pre><code>app.startActivity({\n    action: &quot;SEND&quot;,\n    type: &quot;text/plain&quot;,\n    data: &quot;file:///sdcard/1.txt&quot;\n});\n</code></pre>"
-        },
-        {
-          "textRaw": "app.sendBroadcast(options)",
-          "type": "method",
-          "name": "sendBroadcast",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`options` {Object} 选项 ",
-                  "name": "options",
-                  "type": "Object",
-                  "desc": "选项"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "options"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>根据选项构造一个Intent, 并发送该广播.</p>\n"
-        },
-        {
-          "textRaw": "app.startService(options)",
-          "type": "method",
-          "name": "startService",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`options` {Object} 选项 ",
-                  "name": "options",
-                  "type": "Object",
-                  "desc": "选项"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "options"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>根据选项构造一个Intent, 并启动该服务.</p>\n"
-        },
-        {
-          "textRaw": "app.sendBroadcast(name)",
-          "type": "method",
-          "name": "sendBroadcast",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>name</code> {string} 特定的广播名称, 包括：<ul>\n<li><code>inspect_layout_hierarchy</code> 布局层次分析</li>\n<li><code>inspect_layout_bounds</code> 布局范围</li>\n</ul>\n</li>\n</ul>\n<p>发送以上特定名称的广播可以触发Monkey King的布局分析, 方便脚本调试. 这些广播在Monkey King发送才有效, 在打包的脚本上运行将没有任何效果.</p>\n<pre><code>app.sendBroadcast(&quot;inspect_layout_bounds&quot;);\n</code></pre>",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "name": "name"
+                  "name": "url"
                 }
               ]
             }
           ]
         },
         {
-          "textRaw": "app.intentToShell(options)",
+          "textRaw": "[m] app.launchDual(appOrPackage)",
           "type": "method",
-          "name": "intentToShell",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>options</code> {Object} 选项</li>\n</ul>\n<p>根据选项构造一个Intent, 转换为对应的shell的intent命令的参数.</p>\n<p>例如:</p>\n<pre><code>shell(&quot;am start &quot; + app.intentToShell({\n    packageName: &quot;org.autojs.autojs&quot;,\n    className: &quot;org.autojs.autojs.ui.settings.SettingsActivity_&quot;\n}), true);\n</code></pre><p>参见<a href=\"https://developer.android.com/studio/command-line/adb#IntentSpec/\">intent参数的规范</a>.</p>\n",
+          "name": "launchDual",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchDual(...)</code>、全局 <code>launchDual(...)</code>；委托给 <code>launchDualPackage</code></li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；内部失败由 <code>launchDualPackage</code> 转为 false</li>\n<li><strong>权限</strong>：需要另一用户的 shell 启动能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：启动双开用户中的目标包</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchDual(&#39;com.example.app&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaER1YWxQYWNrYWdl\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "name": "options"
+                  "name": "appOrPackage"
                 }
               ]
             }
           ]
         },
         {
-          "textRaw": "app.parseUri(uri)",
+          "textRaw": "[m] app.launchDualPackage(appOrPackage)",
           "type": "method",
-          "name": "parseUri",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>uri</code> {string} 一个代表Uri的字符串, 例如&quot;file:///sdcard/1.txt&quot;, &quot;<a href=\"https://www.autojs.org&quot;\">https://www.autojs.org&quot;</a></li>\n<li>返回 {Uri} 一个代表Uri的对象, 参见<a href=\"https://developer.android.com/reference/android/net/Uri/\">android.net.Uri</a>.</li>\n</ul>\n<p>解析uri字符串并返回相应的Uri对象. 即使Uri格式错误, 该函数也会返回一个Uri对象, 但之后如果访问该对象的scheme, path等值可能因解析失败而返回<code>null</code>.</p>\n<p>需要注意的是, 在高版本Android上, 由于系统限制直接在Uri暴露文件的绝对路径, 因此如果uri字符串是文件<code>file://...</code>, 返回的Uri会是诸如<code>content://...</code>的形式.</p>\n",
+          "name": "launchDualPackage",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchDualPackage(...)</code>、全局同名入口</li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名或包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 无启动 Intent 或任何内部失败时为 false</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出</li>\n<li><strong>权限</strong>：需要 Shizuku、root 或 shell 能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：获取当前用户包的 launch Intent，再为非当前用户执行</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchDualPackage(&#39;com.example.app&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmxhdW5jaER1YWxBcHA\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "name": "uri"
+                  "name": "appOrPackage"
                 }
               ]
             }
           ]
         },
         {
-          "textRaw": "app.getUriForFile(path)",
+          "textRaw": "[m] app.launchDualApp(appName)",
           "type": "method",
-          "name": "getUriForFile",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>path</code> {string} 文件路径, 例如&quot;/sdcard/1.txt&quot;</li>\n<li>返回 {Uri} 一个指向该文件的Uri的对象, 参见<a href=\"https://developer.android.com/reference/android/net/Uri/\">android.net.Uri</a>.</li>\n</ul>\n<p>从一个文件路径创建一个uri对象. 需要注意的是, 在高版本Android上, 由于系统限制直接在Uri暴露文件的绝对路径, 因此返回的Uri会是诸如<code>content://...</code>的形式.</p>\n",
+          "name": "launchDualApp",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.launchDualApp(appName)</code>、全局同名入口</li>\n<li><strong>appName</strong> { <code>PresetApp | string | null</code> } - 应用显示名称或预设别名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；解析和双开失败转为 false</li>\n<li><strong>权限</strong>：需要包查询和另一用户 shell 能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：解析显示名称后启动双开应用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.launchDualApp(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnVuaW5zdGFsbA\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appName"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.uninstall(appOrPackage)",
+          "type": "method",
+          "name": "uninstall",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.uninstall(...)</code>、全局 <code>uninstall(...)</code></li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名或包名；nullish 不执行</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；安全启动卸载页失败通常静默</li>\n<li><strong>权限</strong>：最终卸载需用户在系统界面确认</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：打开 <code>ACTION_DELETE package:</code> 系统卸载界面</li>\n</ul>\n<pre><code class=\"lang-js\">app.uninstall(&#39;com.example.app&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnVuaW5zdGFsbER1YWw\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appOrPackage"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.uninstallDual(appOrPackage)",
+          "type": "method",
+          "name": "uninstallDual",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.uninstallDual(...)</code>、全局同名入口</li>\n<li><strong>appOrPackage</strong> { <code>PresetApp | string | null</code> } - 预设别名或包名</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：参数数量不是 1 或双开 shell 失败时抛出；nullish 不执行</li>\n<li><strong>权限</strong>：需要另一 Android 用户的 Activity 启动能力；仍需系统卸载确认</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：为非当前用户启动 <code>ACTION_DELETE</code></li>\n</ul>\n<pre><code class=\"lang-js\">app.uninstallDual(&#39;com.example.app&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXBwLnZpZXdGaWxl\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appOrPackage"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.viewFile(path)",
+          "type": "method",
+          "name": "viewFile",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.viewFile(path)</code></li>\n<li><strong>path</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 当前脚本可解析的文件路径</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - nullish 为 false，否则返回底层安全启动结果</li>\n<li><strong>异常</strong>：参数数量不是 1、非字符串、文件不存在或不是普通文件时抛出</li>\n<li><strong>权限</strong>：跨应用读取由 FileProvider URI 授权处理</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：解析真实路径并启动可查看该文件的 Activity；该入口已在源码注释中标记待迁移到 files</li>\n</ul>\n<pre><code class=\"lang-js\">app.viewFile(files.path(&#39;./report.txt&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmVkaXRGaWxl\"></a></p>\n",
           "signatures": [
             {
               "params": [
@@ -601,16 +556,45 @@
           ]
         },
         {
-          "textRaw": "app.getInstalledApps([options])",
+          "textRaw": "[m] app.editFile(path)",
           "type": "method",
-          "name": "getInstalledApps",
-          "desc": "<p><strong> [<a href=\"https://pro.autojs.org//\">Pro 8.0.0新增</a>] </strong></p>\n<ul>\n<li><code>options</code> {Object} 选项, 包括：<ul>\n<li><code>get</code>: 指定返回的应用信息中包含的信息<ul>\n<li><code>&quot;activities&quot;</code> 应用的Activity组件信息</li>\n<li><code>&quot;configurations&quot;</code> 应用的硬件配置</li>\n<li><code>&quot;gids&quot;</code> 应用的group id</li>\n<li><code>&quot;instrumentation&quot;</code> 应用的Instrumentation信息</li>\n<li><code>&quot;intent_filters&quot;</code> 应用的意图过滤</li>\n<li><code>&quot;meta_data&quot;</code> 应用的元信息（默认）</li>\n<li><code>&quot;permissions&quot;</code> 应用的权限信息</li>\n<li><code>&quot;providers&quot;</code> 应用的ContentProvider组件信息</li>\n<li><code>&quot;receivers&quot;</code> 应用的BroadcastReceiver组件信息</li>\n<li><code>&quot;services&quot;</code> 应用的Service组件信息</li>\n<li><code>&quot;shared_library_files&quot;</code> 应用的动态链接库文件信息</li>\n<li><code>&quot;signatures&quot;</code> 应用的签名信息（已弃用</li>\n<li><code>&quot;signing_certificates&quot;</code> 应用的签名信息</li>\n<li><code>&quot;uri_permission_patterns&quot;</code></li>\n<li><code>&quot;disabled_components&quot;</code> 被卸载的但保留了数据的应用</li>\n<li><code>&quot;disabled_until_used_components&quot;</code> 禁用直到被使用的组件</li>\n<li><code>&quot;uninstalled_packages&quot;</code> 被卸载的但保留了数据的应用</li>\n</ul>\n</li>\n<li><code>match</code>: 指定要匹配的应用列表<ul>\n<li><code>&quot;uninstalled_packages&quot;</code> 被卸载的但保留了数据的应用</li>\n<li><code>&quot;disabled_components&quot;</code> 被禁用的组件</li>\n<li><code>&quot;disabled_until_used_components&quot;</code> 禁用直到被使用的组件</li>\n<li><code>&quot;system_only&quot;</code> 只匹配系统应用</li>\n<li><code>&quot;factory_only&quot;</code> 只匹配预装应用</li>\n<li><code>&quot;apex&quot;</code> APEX应用</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>返回 {Array\\&lt;ApplicationInfo>}</li>\n</ul>\n<p>返回为当前用户安装的所有应用程序包的列表. 如果设置了match选项 <code>uninstalled_packages</code>, 则包括被删除但保留了数据的应用程序.\n获取安装的应用列表.</p>\n<p>返回值是ApplicationInfo对象的数组.  如果没有安装任何应用, 则返回一个空数组.</p>\n<p>选项options的match选项用于指定要返回哪些应用程序, get选项用于指定返回的应用程序携带哪些信息.</p>\n<pre><code>let apps = $app.getInstalledApps({\n    matcg\n})\n</code></pre>",
+          "name": "editFile",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.editFile(path)</code></li>\n<li><strong>path</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 当前脚本可解析的文件路径</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - nullish 为 false，否则返回底层安全启动结果</li>\n<li><strong>异常</strong>：参数数量不是 1、非字符串、文件不存在或不是普通文件时抛出</li>\n<li><strong>权限</strong>：跨应用写入由 FileProvider URI 授权和目标编辑器决定</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：启动可编辑该文件的 Activity；该入口已在源码注释中标记待迁移到 files</li>\n</ul>\n<pre><code class=\"lang-js\">app.editFile(files.path(&#39;./draft.txt&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmtpbGw\"></a></p>\n",
           "signatures": [
             {
               "params": [
                 {
-                  "name": "options",
-                  "optional": true
+                  "name": "path"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.kill(appNameOrAlias)",
+          "type": "method",
+          "name": "kill",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.kill(...)</code>、全局 <code>kill(...)</code></li>\n<li><strong>appNameOrAlias</strong> { <code>PresetApp | string | null</code> } - 先经 <code>getPackageName</code> 解析，因此普通字符串按显示名称处理</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - shell 结果 code 为 0 时为 true</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；无法解析包名返回 false</li>\n<li><strong>权限</strong>：依次选用可用的 Shizuku、root、普通 shell；普通 shell 通常无权强停其他应用</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步执行 <code>am force-stop package</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.kill(&#39;Monkey King&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXBwLmtpbGxEdWFs\"></a></p>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appNameOrAlias"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "textRaw": "[m] app.killDual(appNameOrAlias)",
+          "type": "method",
+          "name": "killDual",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>app.killDual(...)</code>、全局同名入口</li>\n<li><strong>appNameOrAlias</strong> { <code>PresetApp | string | null</code> } - 先经 <code>getPackageName</code> 解析</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 双开执行流程未抛出时为 true</li>\n<li><strong>异常</strong>：参数数量不是 1 时抛出；内部反射或 shell 错误被转为 false</li>\n<li><strong>权限</strong>：需要 Shizuku、root 或 shell 能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：对非当前用户执行 <code>am force-stop</code>；源码说明同包名应用可能一起被强停，不能区分主开与双开</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(app.killDual(&#39;Monkey King&#39;));\n</code></pre>\n",
+          "signatures": [
+            {
+              "params": [
+                {
+                  "name": "appNameOrAlias"
                 }
               ]
             }

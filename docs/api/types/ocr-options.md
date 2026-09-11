@@ -24,13 +24,13 @@ interface OcrOptions {
 
 <a id="p-region"></a>
 
-## `region`
+## [p?] region
 
 ```ts
 region?: OmniRegion | null
 ```
 
-限制识别区域。属性省略、为 `null` 或为 `undefined` 时均识别整张图，不启动裁剪；提供矩形值时只识别该区域。
+限制识别区域。属性省略或为 `undefined` 时识别整张图；显式为 `null` 时返回空数组，不启动引擎；提供矩形值时只识别该区域。
 
 支持三种矩形表示：
 

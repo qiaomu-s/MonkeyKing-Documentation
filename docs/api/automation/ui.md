@@ -502,6 +502,10 @@ ui.myText.setText("第一行\n第二行\n第三行\n第四行");
 * `none`    不显示省略号
 * `start`    在文本开头显示省略号
 
+`none` 在映射层对应 Android 的 `null`。当前属性应用逻辑只会在映射结果非空时调用
+`TextView.setEllipsize`，因此对已经设置过省略方式的可复用 `TextView`，再次设置
+`ellipsize="none"` 不会主动清除旧值；新创建且尚未设置省略方式的控件没有这个区别。
+
 ## ems
 
 当设置该属性后,TextView显示的字符长度（单位是em）,超出的部分将不显示, 或者根据ellipsize属性的设置显示省略号.
@@ -764,7 +768,7 @@ ui.layout(
 
 | 控件3 |
 
-| ............ |
+| 其他控件 |
 
 ——————
 

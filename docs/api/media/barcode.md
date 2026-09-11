@@ -10,7 +10,7 @@
 interface BarcodeDetectOptions {
   /** true 时返回全部结果；仅用于 barcode()/detect()/recognizeText()。默认 false。 */
   isAll?: boolean
-  /** 格式常量、格式名或两者组成的数组；省略时扫描全部格式。 */
+  /** 格式常量、格式名或两者组成的数组；省略时扫描全部格式。当前版本仅校验并传递这些值，不保证缩小扫描范围。 */
   format?: number | string | Array<number | string>
   /** 要求扫描器同时报告尚不能完整解码的候选条码。默认 false。 */
   enableAllPotentialBarcodes?: boolean
@@ -18,6 +18,8 @@ interface BarcodeDetectOptions {
 ```
 
 格式字符串不区分大小写，非单词字符会转换为下划线，并可省略 `FORMAT_` 前缀；例如 `"qr-code"`、`"FORMAT_QRCODE"` 和 `"FORMAT_QR_CODE"` 都会归一为 QR Code 格式。未知格式会抛出参数异常。
+
+实现限制：MonkeyKing 6.7.0 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围；如果业务只接受特定格式，请在返回结果层按 `result.format` 自行过滤。`qrcode` 模块不受此限制，它在源码中固定使用 `FORMAT_QR_CODE`。
 
 `detect` 系列返回 `Barcode.Result`。常用字段包括 `rawValue`、`displayValue`、`rawBytes`、`format`、`formatName`、`valueType`、`valueTypeName`、`boundingBox` 和 `cornerPoints`；对于联系人、网址、Wi-Fi 等结构化内容，还可读取对应的 `contactInfo`、`url`、`wifi` 等字段。
 

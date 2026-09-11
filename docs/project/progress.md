@@ -1,83 +1,57 @@
-# 文档部署进度 (Progress)
+# 文档进度 (Progress)
 
-本章节展示了 Monkey King 文档各个章节的部署进度.<br>
-文档以 Auto.js 4.1.1 Alpha2 的原始文档为基础, 逐步完成部署及更新.
+截至 **2026-09-10**，文档仓库已按 Monkey King 6.7.0 固定源码提交
+`bafa2986212d27b6b59f1324f89548b72a810966` 完成全量 API 对账。
 
----
+## 总体状态
 
-标记含义:
+| 指标 | 当前值 | 验证方式 |
+| --- | ---: | --- |
+| Canonical Markdown 页面 | 113 | `npm run check:content` |
+| 兼容 JSON 文件 | 125 | `npm run json:build` 与 JSON 契约测试 |
+| 固定源码公开符号 | 4,499 | `npm run api:extract` |
+| 已映射公开符号 | 4,499 / 4,499 | `npm run api:check` |
+| 未映射符号 | 0 | `api-surface/gaps.json` |
+| JavaScript 示例 | 2,180 | `npm run examples:check` |
+| 构建页面 | 115 HTML | `npm run build:web` 与链接检查 |
 
-- `√` - 全部完成 (或具备基础完整度)
-- `[ 空白 ]` - 暂未开始部署 (或暂时保留原始文档内容)
-- `< 10%` - 预估部署进度, 小于指定百分比
-- `> 20%` - 预估部署进度, 大于指定百分比
+“完成”表示页面已存在、正文包含版本信息和 Rhino 2.0 示例，并且每个固定源码公开符号都映射到唯一有效页面锚点。Android、Java、OkHttp、OpenCV 和 MediaInfo 等外部类型只在本仓库说明 Monkey King 的入口与差异，完整 API 以其官方资料为准。
 
----
+## 分领域页面
 
-|                         章节                          |   部署进度   |
-|:---------------------------------------------------:|:--------:|
-|               [Global - 全局对象](../api/core/global.md)               | &gt; 90% |
-|            [Automator - 自动化](../api/automation/automator.md)             | &gt; 60% |
-|              [Monkey King - 本体应用](../api/core/monkeyking.md)               |    √     |
-|                  [App - 通用应用](../api/core/app.md)                  |          |
-|                 [Color - 颜色](../api/media/color.md)                 |    √     |
-|                 [Image - 图像](../api/media/image.md)                 |          |
-|                 [OCR - 光学字符识别](../api/media/ocr.md)                 |    √     |
-|               [Barcode - 条码](../api/media/barcode.md)               | &lt; 1%  |
-|               [QR Code - 二维码](../api/media/qr-code.md)               | &lt; 1%  |
-|                  [Keys - 按键](../api/automation/keys.md)                  |          |
-|                [Device - 设备](../api/system/device.md)                |          |
-|              [Storage - 储存](../api/system/storages.md)               |    √     |
-|                 [File - 文件](../api/system/files.md)                  |          |
-|               [Engine - 引擎](../api/system/engines.md)                |          |
-|                 [Task - 任务](../api/system/tasks.md)                  |          |
-|               [Module - 模块](../api/core/modules.md)                |          |
-|               [Plugins - 插件](../api/core/plugins.md)               |    √     |
-|               [Toast - 消息浮动框](../api/system/toast.md)                |    √     |
-|               [Notice - 消息通知](../api/system/notice.md)               |    √     |
-|              [Console - 控制台](../api/system/console.md)               |    √     |
-|                   [Shell](../api/system/shell.md)                    |          |
-|                 [Shizuku](../api/system/shizuku.md)                  | &lt; 5%  |
-|                [Media - 多媒体](../api/media/media.md)                 |          |
-|               [Sensor - 传感器](../api/system/sensors.md)               |          |
-|             [Recorder - 记录器](../api/media/recorder.md)              |          |
-|                [Timer - 定时器](../api/system/timers.md)                |          |
-|               [Thread - 线程](../api/system/threads.md)                |          |
-|          [Continuation - 协程](../api/system/continuation.md)          |          |
-|               [Event - 事件监听](../api/system/events.md)                |          |
-|               [Dialog - 对话框](../api/automation/dialogs.md)               |          |
-|               [Floaty - 悬浮窗](../api/automation/floaty.md)                |          |
-|                [Canvas - 画布](../api/media/canvas.md)                |          |
-|                   [UI - 用户界面](../api/automation/ui.md)                   |          |
-|                  [Web - 万维网](../api/network/web.md)                   | &gt; 80% |
-|                    [HTTP](../api/network/http.md)                     | &lt; 5%  |
-|                  [Base64](../api/utilities/base64.md)                   |    √     |
-|                [Crypto - 密文](../api/utilities/crypto.md)                |    √     |
-|               [OpenCC - 中文转换](../api/utilities/opencc.md)               |    √     |
-|         [Internationalization - 国际化](../api/utilities/i18n.md)          |          |
-|            [Standardization - 标准化](../api/utilities/s13n.md)            |          |
-|                     [E4X](../api/utilities/e4x.md)                      |    √     |
-|            [Glossaries - 术语](../reference/glossaries/glossary.md)            |    √     |
-|            [Exceptions - 异常](../reference/runtime/exceptions.md)            |    √     |
-|              [Intent - 意图](../reference/runtime/intent.md)              | &lt; 10% |
-|              [Runtime - 运行时](../reference/runtime/runtime.md)               |          |
-|              [Context - 上下文](../reference/android/context.md)               |          |
-|              [Activity - 活动](../reference/android/activity.md)              |    √     |
-|           [Data Types - 数据类型](../api/types/data-types.md)            | &gt; 80% |
-|         [UiSelector - 选择器](../api/automation/ui-selector.md)          |    √     |
-|           [UiObject - 控件节点](../api/automation/ui-object.md)           |    √     |
-| [UiObjectCollection - 控件集合](../api/automation/ui-object-collection.md) |    √     |
-|   [UiObjectActions - 控件节点行为](../api/automation/ui-object-actions.md)   |    √     |
-|             [WebSocket](../api/network/web-socket.md)              | &gt; 70% |
-|      [EventEmitter - 事件发射器](../api/types/event-emitter.md)       |          |
-|      [ImageWrapper - 包装图像类](../api/types/image-wrapper.md)       | &lt; 5%  |
-|               [App - 应用枚举类](../api/types/app.md)                |    √     |
-|              [Color - 颜色类](../api/types/color.md)               |    √     |
-|           [Version - 版本工具类](../api/utilities/version.md)            |    √     |
-|             [Polyfill - 代码填泥](../api/utilities/polyfill.md)             |    √     |
-|             [Arrayx - Array 扩展](../api/utilities/arrayx.md)             |    √     |
-|           [Numberx - Number 扩展](../api/utilities/numberx.md)            |    √     |
-|              [Mathx - Math 扩展](../api/utilities/mathx.md)               |    √     |
-|     [Scripting Java - 脚本化 Java](../reference/android/scripting-java.md)      |    √     |
-|      [Android API Level - 安卓 API 级别](../reference/android/api-level.md)      |    √     |
-|          [Color Table - 颜色列表](../reference/color-table.md)           |    √     |
+| 领域 | 页面数 | 状态 | 入口 |
+| --- | ---: | :---: | --- |
+| 使用指南与项目说明 | 6 | √ | [综述](../guide/overview.md)、[使用手册](../guide/manual.md)、[疑难解答](../guide/troubleshooting.md) |
+| 核心 API | 5 | √ | [全局对象](../api/core/global.md)、[模块](../api/core/modules.md)、[Monkey King](../api/core/monkeyking.md) |
+| 自动化 API | 9 | √ | [自动化](../api/automation/automator.md)、[选择器](../api/automation/ui-selector.md)、[控件](../api/automation/ui-object.md) |
+| 系统 API | 17 | √ | [设备](../api/system/device.md)、[SQLite](../api/system/sqlite.md)、[线程](../api/system/threads.md) |
+| 媒体 API | 9 | √ | [图像](../api/media/image.md)、[OCR](../api/media/ocr.md)、[MediaInfo](../api/media/mediainfo.md) |
+| 网络 API | 3 | √ | [Web](../api/network/web.md)、[HTTP](../api/network/http.md)、[WebSocket](../api/network/web-socket.md) |
+| 工具 API | 20 | √ | [Util](../api/utilities/util.md)、[数据转换](../api/utilities/converter.md)、[MIME](../api/utilities/mime.md)、[Zip](../api/utilities/zip.md) |
+| 类型参考 | 31 | √ | [数据类型](../api/types/data-types.md)、[图像包装类](../api/types/image-wrapper.md)、[通知类型](../api/types/notice-builder.md) |
+| Android / 运行时参考 | 7 | √ | [Activity](../reference/android/activity.md)、[Context](../reference/android/context.md)、[Runtime](../reference/runtime/runtime.md) |
+| 术语与颜色表 | 6 | √ | [术语](../reference/glossaries/glossary.md)、[颜色表](../reference/color-table.md) |
+
+## 新增的 6.7.0 页面
+
+- 工具：[`util`](../api/utilities/util.md)、[`cvt`](../api/utilities/converter.md)、[`fmt`](../api/utilities/formatter.md)、[`jsox`](../api/utilities/jsox.md)、[`mime`](../api/utilities/mime.md)、[`zip`](../api/utilities/zip.md)、[`nanoid`](../api/utilities/nanoid.md)、[`pinyin`](../api/utilities/pinyin.md)、[`pinyin4j`](../api/utilities/pinyin4j.md)。
+- 系统：[`sysprops`](../api/system/sysprops.md)、[`sqlite`](../api/system/sqlite.md)。
+- 媒体：[`mediainfo`](../api/media/mediainfo.md)。
+
+## 本地验收
+
+修改正文、目录或 API 清单后，至少运行以下命令：
+
+```bash
+npx tsc --noEmit
+npm run api:coverage -- --check
+npm run api:check
+npm run examples:check
+npm run check:content
+npm run json:build
+npm test
+npm run build:web
+npm run check:links
+```
+
+完整 CI 顺序、固定源码 checkout 和 Android / 模拟器 smoke 验证见 [仓库 README](https://github.com/qiaomu-s/MonkeyKing-Documentation#本地开发)。

@@ -4,1222 +4,823 @@
     {
       "textRaw": "自动化 (Automator)",
       "name": "自动化_(automator)",
-      "desc": "<hr>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">此章节待补充或完善...</p>\n<p style=\"font: italic 1em sans-serif; color: #78909C\">Marked by SuperMonster003 on Oct 22, 2022.</p>\n\n<hr>\n",
+      "desc": "<p>本页覆盖三组运行时入口：<code>auto</code> 管理 Monkey King 无障碍服务，<code>automator</code> 执行控件、坐标、手势与系统全局动作，<code>RootAutomator</code> 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG8\"></a></p>\n",
       "modules": [
         {
-          "textRaw": "简易自动化 (SimpleActionAutomator)",
-          "name": "简易自动化_(simpleactionautomator)",
-          "desc": "<p>待补充...</p>\n",
+          "textRaw": "[@] auto",
+          "name": "[@]_auto",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto</code>、<code>$auto</code></li>\n<li><strong>参数</strong>：模块同时可调用，详见 <code>auto(...)</code></li>\n<li><ins><strong>returns</strong></ins> { <code>Auto</code> }</li>\n<li><strong>异常</strong>：读取模块本身不抛出异常</li>\n<li><strong>权限</strong>：服务启停可能使用 WRITE_SECURE_SETTINGS 或 root；否则打开系统无障碍设置</li>\n<li><strong>线程 / 生命周期</strong>：与当前脚本运行时和进程内无障碍桥接绑定</li>\n<li><strong>副作用</strong>：成员可启停服务、改变查找模式/标志、注册事件或打开设置</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto === $auto); // true\nconsole.log(auto.state);\n</code></pre>\n<p><a id=\"api-symbol-Y2FsbDphdXRv\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "[f] auto(modeOrRestart?[, isForcibleRestart])",
+              "name": "[f]_auto(modeorrestart?[,_isforciblerestart])",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto(...)</code>、<code>$auto(...)</code></li>\n<li><strong>[ modeOrRestart ]</strong> { <code>string | boolean | null</code> } - 无参数/nullish 等价于 <code>false</code>；布尔值用于确保服务，字符串仅设置 <code>normal</code> 或 <code>fast</code></li>\n<li><strong>[ isForcibleRestart ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 两参数形式先设置 mode，再确保服务</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：超过 2 个参数、未知 mode 或布尔参数类型错误时包装为运行时异常</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：可能重启/等待无障碍服务；单独传字符串不会启动服务</li>\n</ul>\n<pre><code class=\"lang-js\">auto(&#39;normal&#39;, false);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zZXJ2aWNl\"></a></p>\n",
+              "type": "module",
+              "displayName": "[f] auto(modeOrRestart?[, isForcibleRestart])"
+            }
+          ],
+          "properties": [
+            {
+              "textRaw": "[p] auto.service",
+              "name": "service",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.service</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/accessibilityservice/AccessibilityService\">android.accessibilityservice.AccessibilityService</a> | <a href=\"../types/data-types.md#null\">null</a> } - 当前进程的服务实例</li>\n<li><strong>异常 / 权限</strong>：读取无异常；未启动服务时为 null</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：实例随 Android 服务连接变化；读取无副作用</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.service === null ? &#39;stopped&#39; : &#39;connected&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zZXJ2aWNlcw\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.services",
+              "name": "services",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.services</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a>[] } - 系统已启用的无障碍服务组件名</li>\n<li><strong>异常</strong>：底层读取失败通常返回空数组</li>\n<li><strong>权限</strong>：仅在安全设置访问已授权或 root 可用时读取；否则返回空数组</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每次读取当前系统设置，不修改服务</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.services.join(&#39;\\n&#39;));\n</code></pre>\n<p><a id=\"api-symbol-YXV0by53aW5kb3dz\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.windows",
+              "name": "windows",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.windows</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo\">android.view.accessibility.AccessibilityWindowInfo</a>[] } - 当前服务窗口的 Rhino 数组</li>\n<li><strong>异常</strong>：无服务时返回空数组</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：窗口对象是系统快照；读取不改变过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.windows.length);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yb290\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.root",
+              "name": "root",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.root</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"ui-object.md\">UiObject</a> | <a href=\"../types/data-types.md#null\">null</a> } - 当前过滤窗口的根节点</li>\n<li><strong>异常</strong>：服务或根节点不可用时返回 null</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：受 <code>setWindowFilter</code> 影响；节点会随界面变化失效</li>\n</ul>\n<pre><code class=\"lang-js\">const root = auto.root;\nconsole.log(root === null ? &#39;no root&#39; : root.className());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yb290SW5BY3RpdmVXaW5kb3c\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.rootInActiveWindow",
+              "name": "rootInActiveWindow",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.rootInActiveWindow</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"ui-object.md\">UiObject</a> | <a href=\"../types/data-types.md#null\">null</a> } - 系统当前活动窗口根节点</li>\n<li><strong>异常</strong>：服务或根节点不可用时返回 null</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：不采用自定义窗口过滤器；返回节点可能很快失效</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.rootInActiveWindow);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by53aW5kb3dSb290cw\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.windowRoots",
+              "name": "windowRoots",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.windowRoots</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"ui-object.md\">UiObject</a>[] } - 过滤后窗口的根节点数组</li>\n<li><strong>异常</strong>：服务不可用时通常为空数组</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：受 <code>setWindowFilter</code> 影响；读取不保活节点</li>\n</ul>\n<pre><code class=\"lang-js\">auto.windowRoots.forEach(root =&gt; console.log(root.packageName()));\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zdGF0ZQ\"></a></p>\n"
+            },
+            {
+              "textRaw": "[p] auto.state",
+              "name": "state",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.state</code></li>\n<li><strong>参数</strong>：无</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#object\">Object</a> } - 含 <code>hasInstance/hasService/isRunning/isOperational</code> 四个布尔快照</li>\n<li><strong>异常 / 权限</strong>：无额外异常；读取系统启用状态</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每次创建新对象，不是实时监听器</li>\n</ul>\n<pre><code class=\"lang-js\">const state = auto.state;\nconsole.log(state.hasService, state.isOperational);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zdGFydA\"></a></p>\n"
+            }
+          ],
+          "methods": [
+            {
+              "textRaw": "[m] auto.start()",
+              "type": "method",
+              "name": "start",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.start()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 服务已运行或通过 root/安全设置成功启用时为 true</li>\n<li><strong>异常</strong>：传入参数时抛出</li>\n<li><strong>权限</strong>：可使用 root 或 WRITE_SECURE_SETTINGS；均不可用时打开系统无障碍设置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步尝试启用服务；失败会显示引导并返回 false</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.start());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5lbmFibGU\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.enable()",
+              "type": "method",
+              "name": "enable",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.enable()</code>；完整委托给 <code>auto.start()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出</li>\n<li><strong>权限</strong>：与 <code>auto.start()</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：可能修改系统无障碍设置或打开设置页</li>\n</ul>\n<pre><code class=\"lang-js\">auto.enable();\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zdG9w\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.stop()",
+              "type": "method",
+              "name": "stop",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.stop()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - root、安全设置或 <code>disableSelf</code> 成功停用时为 true</li>\n<li><strong>异常</strong>：传入参数时抛出</li>\n<li><strong>权限</strong>：可使用 root/WRITE_SECURE_SETTINGS；失败时打开无障碍设置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：停止服务会使节点、窗口和监听器失效</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.stop());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5kaXNhYmxl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.disable()",
+              "type": "method",
+              "name": "disable",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.disable()</code>；完整委托给 <code>auto.stop()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：传入参数时抛出</li>\n<li><strong>权限</strong>：与 <code>auto.stop()</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：可能停用系统服务或打开设置页</li>\n</ul>\n<pre><code class=\"lang-js\">auto.disable();\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5oYXNJbnN0YW5jZQ\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.hasInstance()",
+              "type": "method",
+              "name": "hasInstance",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.hasInstance()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 当前进程是否持有服务实例</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读当前进程状态</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.hasInstance());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5oYXNTZXJ2aWNl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.hasService()",
+              "type": "method",
+              "name": "hasService",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.hasService()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统设置是否列出 Monkey King 服务</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；只读安全设置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：不保证进程内实例已连接</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.hasService());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5leGlzdHM\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.exists()",
+              "type": "method",
+              "name": "exists",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.exists()</code>；与 <code>auto.hasService()</code> 同义</li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读系统启用状态</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.exists() === auto.hasService());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5pc1J1bm5pbmc\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.isRunning()",
+              "type": "method",
+              "name": "isRunning",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.isRunning()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - <code>hasService &amp;&amp; hasInstance</code></li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读组合状态</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.isRunning());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5pc09wZXJhdGlvbmFs\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.isOperational()",
+              "type": "method",
+              "name": "isOperational",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.isOperational()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 服务已启用、实例已连接且当前进程确认可工作</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：比 <code>isRunning</code> 更严格的只读状态</li>\n</ul>\n<pre><code class=\"lang-js\">if (!auto.isOperational()) console.warn(&#39;无障碍桥接尚未就绪&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zdGF0ZUxpc3RlbmVy\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.stateListener(listener?)",
+              "type": "method",
+              "name": "stateListener",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.stateListener(listener?)</code></li>\n<li><strong>[ listener ]</strong> { <code>AccessibilityServiceCallback | Object | null</code> } - 对象可实现 <code>onConnected()</code>、<code>onDisconnected()</code>；nullish 清除监听器</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：超过 1 个参数或 listener 无法适配接口时抛出</li>\n<li><strong>权限</strong>：监听本身不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：替换桥接层单一状态监听器；回调线程由服务连接过程决定</li>\n</ul>\n<pre><code class=\"lang-js\">auto.stateListener({\n    onConnected() { console.log(&#39;connected&#39;); },\n    onDisconnected() { console.log(&#39;disconnected&#39;); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZWdpc3RlckV2ZW50\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "listener?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.registerEvent(name, listener)",
+              "type": "method",
+              "name": "registerEvent",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.registerEvent(name, listener)</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 非 nullish 的事件键</li>\n<li><strong>listener</strong> { <code>AccessibilityEventCallback | Object | null</code> } - 对象实现 <code>onAccessibilityEvent(event)</code>；nullish 删除同名监听</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：参数不是 2 个、name 为 nullish 或 listener 无法适配时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：会先确保服务；监听按当前脚本 ownerId 隔离并在脚本退出时清理</li>\n</ul>\n<pre><code class=\"lang-js\">auto.registerEvent(&#39;window-change&#39;, {\n    onAccessibilityEvent(event) { console.log(event); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZWdpc3RlckV2ZW50cw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "name"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.registerEvents(name, listener)",
+              "type": "method",
+              "name": "registerEvents",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.registerEvents(name, listener)</code>；固定提交直接委托给单数方法，不接受事件映射表</li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><strong>listener</strong> { <code>AccessibilityEventCallback | Object | null</code> }</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>registerEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只注册一个 name；会确保服务并替换该脚本同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.registerEvents(&#39;content-change&#39;, {\n    onAccessibilityEvent(event) { console.log(event); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZW1vdmVFdmVudA\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "name"
+                    },
+                    {
+                      "name": "listener"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.removeEvent(name)",
+              "type": "method",
+              "name": "removeEvent",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.removeEvent(name)</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 非 nullish 事件键</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：参数数量不是 1 或 name 为 nullish 时抛出</li>\n<li><strong>权限</strong>：不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只删除当前脚本 ownerId 下的同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.removeEvent(&#39;window-change&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5yZW1vdmVFdmVudHM\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.removeEvents(name)",
+              "type": "method",
+              "name": "removeEvents",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.removeEvents(name)</code>；固定提交直接委托给 <code>removeEvent</code></li>\n<li><strong>name</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 仍然只接受一个名称</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常 / 权限</strong>：与 <code>removeEvent</code> 相同</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：不会一次清除全部事件，只删除一个同名监听</li>\n</ul>\n<pre><code class=\"lang-js\">auto.removeEvents(&#39;content-change&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by53YWl0Rm9y\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.waitFor(timeout?)",
+              "type": "method",
+              "name": "waitFor",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.waitFor(timeout?)</code></li>\n<li><strong>[ timeout = <code>-1</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 等待服务启动的毫秒数；nullish 转为 -1</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：超过 1 个参数时抛出；启动/等待失败或线程中断时抛出 <code>ScriptInterruptedException</code></li>\n<li><strong>权限</strong>：优先尝试 root/安全设置，否则打开系统无障碍设置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：阻塞当前脚本线程直到服务启动；不要在 UI 线程无 continuation 地调用</li>\n</ul>\n<pre><code class=\"lang-js\">auto.waitFor(5000);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zZXRNb2Rl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "timeout?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.setMode(mode)",
+              "type": "method",
+              "name": "setMode",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.setMode(mode)</code></li>\n<li><strong>mode</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 合法值为 <code>normal</code>、<code>fast</code>，忽略大小写</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：参数数量不是 1、类型非字符串或未知值时抛出</li>\n<li><strong>权限</strong>：不单独启动服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：修改当前运行时 AccessibilityBridge 的查找模式</li>\n</ul>\n<pre><code class=\"lang-js\">auto.setMode(&#39;fast&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zZXRGbGFncw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "mode"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.setFlags(flags)",
+              "type": "method",
+              "name": "setFlags",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.setFlags(flags)</code></li>\n<li><strong>flags</strong> { <a href=\"../types/data-types.md#string\">string</a> | <a href=\"../types/data-types.md#string\">string</a>[] } - <code>findOnUiThread</code>、<code>useUsageStats</code>、<code>useShell</code></li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：参数数量不是 1、类型非法或含未知标志时抛出</li>\n<li><strong>权限</strong>：<code>useUsageStats</code> 需要使用情况访问权，<code>useShell</code> 通常需要 root</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每次调用从 0 重新组合并覆盖桥接 flags</li>\n</ul>\n<pre><code class=\"lang-js\">auto.setFlags([&#39;findOnUiThread&#39;, &#39;useUsageStats&#39;]);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5zZXRXaW5kb3dGaWx0ZXI\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "flags"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.setWindowFilter(filter?)",
+              "type": "method",
+              "name": "setWindowFilter",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.setWindowFilter(filter?)</code></li>\n<li><strong>[ filter ]</strong> { <code>boolean | WindowFilter | function | null</code> } - nullish/省略表示所有窗口通过；布尔值建立恒定结果</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：超过 1 个参数或类型非法时抛出</li>\n<li><strong>权限</strong>：读取窗口需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：改变 <code>auto.root</code>、<code>auto.windowRoots</code> 和选择器的搜索窗口</li>\n</ul>\n<pre><code class=\"lang-js\">auto.setWindowFilter(window =&gt; String(window.getTitle()) === &#39;QQ&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5sYXVuY2hTZXR0aW5ncw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "filter?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.launchSettings()",
+              "type": "method",
+              "name": "launchSettings",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.launchSettings()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：传入参数时抛出；设置页启动失败被安全启动逻辑处理</li>\n<li><strong>权限</strong>：不直接修改权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：显示选择 Monkey King 的提示并打开系统无障碍设置</li>\n</ul>\n<pre><code class=\"lang-js\">auto.launchSettings();\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5jbGVhckNhY2hl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.clearCache()",
+              "type": "method",
+              "name": "clearCache",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.clearCache()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - Android 13+ 仅在服务实例成功清缓存时为 true</li>\n<li><strong>异常</strong>：传入参数时抛出</li>\n<li><strong>权限</strong>：Android 13+ 需要服务实例；旧版本调用进程级 AccessibilityInteractionClient</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：清除无障碍节点交互缓存，现有 UiObject 可能失效</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.clearCache());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5jdXJyZW50UGFja2FnZQ\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.currentPackage()",
+              "type": "method",
+              "name": "currentPackage",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.currentPackage()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 运行时记录的最近包名，未知时为空字符串</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；准确性取决于无障碍/usage stats/shell 配置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取最近事件快照</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.currentPackage());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5jdXJyZW50QWN0aXZpdHk\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.currentActivity()",
+              "type": "method",
+              "name": "currentActivity",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.currentActivity()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - 最近 Activity 类名，未知时为空字符串</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；数据来源依赖当前自动化配置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读运行时快照</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.currentActivity());\n</code></pre>\n<p><a id=\"api-symbol-YXV0by5jdXJyZW50Q29tcG9uZW50\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] auto.currentComponent()",
+              "type": "method",
+              "name": "currentComponent",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>auto.currentComponent()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#string\">string</a> } - <code>package/activity</code>，任一部分未知时为空字符串</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求新权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：组合最近包名与 Activity 快照</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(auto.currentComponent());\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG9tYXRvcg\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
           "type": "module",
-          "displayName": "简易自动化 (SimpleActionAutomator)"
+          "displayName": "[@] auto"
         },
         {
-          "textRaw": "高权限自动化 (RootAutomator)",
-          "name": "高权限自动化_(rootautomator)",
-          "desc": "<p>待补充...</p>\n",
+          "textRaw": "[@] automator",
+          "name": "[@]_automator",
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator</code>、<code>$automator</code>；若干方法同时安装为全局函数</li>\n<li><strong>参数</strong>：模块对象不可调用</li>\n<li><ins><strong>returns</strong></ins> { <code>Automator</code> }</li>\n<li><strong>异常</strong>：读取模块本身不抛出</li>\n<li><strong>权限</strong>：全部动作依赖 Monkey King 无障碍服务；坐标手势依赖 Android 手势分发能力</li>\n<li><strong>线程 / 生命周期</strong>：同步动作等待完成，异步手势通过回调结束；对象随脚本运行时存活</li>\n<li><strong>副作用</strong>：操纵屏幕控件、系统界面、输入文本或截图</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator === $automator); // true\nconsole.log(automator.isServiceRunning());\n</code></pre>\n<p><a id=\"click-x-y\"></a>\n<a id=\"api-symbol-YXV0b21hdG9yLmNsaWNr\"></a></p>\n",
+          "methods": [
+            {
+              "textRaw": "[m] automator.click(target[, index])",
+              "type": "method",
+              "name": "click",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.click(...)</code>、全局 <code>click(...)</code></li>\n<li><strong>target</strong> { <code>number,number | [x,y] | {x,y} | Point | Rect | UiObject | string</code> } - 坐标、点、矩形、控件或文本；文本可配可选 index；还支持四边界数字</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 手势/控件动作完成且所有目标窗口成功时为 true</li>\n<li><strong>异常</strong>：空参数、坐标对象缺 x/y、重载不匹配、负坐标或服务不可用时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务；坐标点击需要 Android 7.0+ 的手势能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：坐标路径同步等待手势完成；UiObject 不可点击时回退到 bounds 中心</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.click(300, 600));\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmxvbmdDbGljaw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "target"
+                    },
+                    {
+                      "name": "index",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.longClick(target[, index])",
+              "type": "method",
+              "name": "longClick",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.longClick(...)</code>、全局 <code>longClick(...)</code></li>\n<li><strong>target</strong> { <code>number,number | [x,y] | {x,y} | Point | Rect | UiObject | string</code> } - 重载规则与 <code>click</code> 相同</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：空参数、对象/坐标或重载非法、服务不可用时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务；坐标长按需要手势能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步等待；UiObject 不可长按时回退到 bounds 中心手势</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.longClick([300, 600]));\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnByZXNz\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "target"
+                    },
+                    {
+                      "name": "index",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.press(point[, duration])",
+              "type": "method",
+              "name": "press",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.press(...)</code>、全局 <code>press(...)</code></li>\n<li><strong>point / duration</strong> { <code>(x, y[, duration]) | ([x,y][, duration]) | (duration, [x,y])</code> } - 两坐标未给时长时使用 <code>ViewConfiguration.getTapTimeout()</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1..3、形态非法、数值转换或负坐标失败时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务和手势分发能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步派发单点按压并等待完成</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.press([300, 600], 800));\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnN3aXBl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "point"
+                    },
+                    {
+                      "name": "duration",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.swipe(points, duration)",
+              "type": "method",
+              "name": "swipe",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.swipe(...)</code>、全局 <code>swipe(...)</code></li>\n<li><strong>points / duration</strong> { <code>(x1,y1,x2,y2,duration) | ([x1,y1],[x2,y2],duration) | ([[x1,y1],[x2,y2]],duration)</code> } - duration 也可放在数组参数前</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：仅接受 2、3 或 5 个参数；数组形态、数值或负坐标非法时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务和手势分发能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步缩放坐标、派发滑动并等待完成</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.swipe([100, 800], [700, 800], 500));\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmdlc3R1cmU\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "points"
+                    },
+                    {
+                      "name": "duration"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.gesture(duration, ...points)",
+              "type": "method",
+              "name": "gesture",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.gesture(...)</code>、全局 <code>gesture(...)</code></li>\n<li><strong>duration</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 毫秒</li>\n<li><strong>points</strong> { <code>...[x,y] | [[x,y], ...] | number[]</code> } - 至少一个路径点</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：空参数、点数组/数字非法、负坐标或服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要无障碍服务；从 start=0 同步派发并等待，最长内部等待约 128 秒</li>\n</ul>\n<pre><code class=\"lang-js\">automator.gesture(500, [100, 500], [700, 500]);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmdlc3R1cmVBc3luYw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "duration"
+                    },
+                    {
+                      "name": "...points"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.gestureAsync(duration, ...points[, callback])",
+              "type": "method",
+              "name": "gestureAsync",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.gestureAsync(...)</code></li>\n<li><strong>duration</strong> { <a href=\"../types/data-types.md#number\">number</a> }；<strong>points</strong> { <code>[x,y][]</code> }</li>\n<li><strong>[ callback ]</strong> { <code>GestureResultCallbackLike</code> } - 最后一个参数可实现 <code>onCompleted/onCancelled</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：空参数、点/回调适配失败或服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要无障碍服务；提交后立即返回，回调由 Android 手势结果线程触发</li>\n</ul>\n<pre><code class=\"lang-js\">automator.gestureAsync(300, [100, 400], [500, 400], {\n    onCompleted() { console.log(&#39;done&#39;); },\n});\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmdlc3R1cmVz\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "duration"
+                    },
+                    {
+                      "name": "...points"
+                    },
+                    {
+                      "name": "callback",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.gestures(...strokes)",
+              "type": "method",
+              "name": "gestures",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.gestures(...)</code>、全局 <code>gestures(...)</code></li>\n<li><strong>strokes</strong> { <code>StrokeParams[]</code> } - 每项为 <code>[duration, [x,y], ...]</code> 或 <code>[start, duration, [x,y], ...]</code></li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：任一 stroke 不是数组、参数位置/数值/坐标非法时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务和手势分发能力</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：把全部 stroke 构成一个 GestureDescription，同步等待完成</li>\n</ul>\n<pre><code class=\"lang-js\">automator.gestures(\n    [500, [200, 800], [500, 500]],\n    [500, [800, 800], [500, 500]],\n);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmdlc3R1cmVzQXN5bmM\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "...strokes"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.gesturesAsync(...strokes[, callback])",
+              "type": "method",
+              "name": "gesturesAsync",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.gesturesAsync(...)</code></li>\n<li><strong>strokes</strong> { <code>StrokeParams[]</code> }；<strong>[ callback ]</strong> { <code>GestureResultCallbackLike</code> } - 最后一项可为回调</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#void\">void</a> }</li>\n<li><strong>异常</strong>：没有参数、stroke 不是数组或回调无法适配时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：异步调用 <code>dispatchGesture</code> 并立即返回</li>\n</ul>\n<pre><code class=\"lang-js\">automator.gesturesAsync([300, [100, 100], [300, 300]]);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmlzU2VydmljZVJ1bm5pbmc\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "...strokes"
+                    },
+                    {
+                      "name": "callback",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.isServiceRunning()",
+              "type": "method",
+              "name": "isServiceRunning",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.isServiceRunning()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 固定提交只检查当前进程是否有服务实例</li>\n<li><strong>异常 / 权限</strong>：传入参数时抛出；不请求权限</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：只读状态；不等同于 <code>auto.isOperational()</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.isServiceRunning());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmVuc3VyZVNlcnZpY2U\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.ensureService()",
+              "type": "method",
+              "name": "ensureService",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.ensureService()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：传入参数或服务无法启动时抛出</li>\n<li><strong>权限</strong>：可能打开无障碍设置或使用已配置的便捷启用方式</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步确保 AccessibilityBridge 服务已启动</li>\n</ul>\n<pre><code class=\"lang-js\">automator.ensureService();\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLndhaXRGb3JTZXJ2aWNl\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.waitForService(timeout?)",
+              "type": "method",
+              "name": "waitForService",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.waitForService(timeout?)</code></li>\n<li><strong>[ timeout = <code>-1</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 毫秒</li>\n<li><ins><strong>returns</strong></ins> { <code>kotlin.Unit</code> }</li>\n<li><strong>异常</strong>：超过 1 个参数、等待失败或线程中断时抛出 <code>ScriptInterruptedException</code></li>\n<li><strong>权限</strong>：优先便捷启用，否则打开系统无障碍设置</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：阻塞当前脚本线程直到服务启动；避免在无 continuation 的 UI 线程使用</li>\n</ul>\n<pre><code class=\"lang-js\">automator.waitForService(5000);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNjcm9sbERvd24\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "timeout?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.scrollDown(target?)",
+              "type": "method",
+              "name": "scrollDown",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.scrollDown(...)</code>、全局 <code>scrollDown(...)</code></li>\n<li><strong>[ target ]</strong> { <code>number | string[,index] | bounds</code> } - 无参数滚动面积最大的可滚动控件；数字选择第 N 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：目标重载非法或服务不可用时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：执行 ACTION_SCROLL_FORWARD；对所有过滤窗口要求动作成功</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.scrollDown());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNjcm9sbFVw\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "target?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.scrollUp(target?)",
+              "type": "method",
+              "name": "scrollUp",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.scrollUp(...)</code>、全局 <code>scrollUp(...)</code></li>\n<li><strong>[ target ]</strong> { <code>number | string[,index] | bounds</code> } - 无参数滚动面积最大的可滚动控件</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：目标重载非法或服务不可用时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：执行 ACTION_SCROLL_BACKWARD</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.scrollUp(0));\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmlucHV0\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "target?"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.input([index,] text)",
+              "type": "method",
+              "name": "input",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.input(...)</code>、全局 <code>input(...)</code></li>\n<li><strong>[ index = <code>-1</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a> } - 可编辑控件索引；省略时匹配默认目标</li>\n<li><strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> } - 追加文本</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1..2、索引转换或服务失败时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要无障碍服务；执行 UiObject ACTION_APPEND_TEXT</li>\n</ul>\n<pre><code class=\"lang-js\">automator.input(0, &#39;hello&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNldFRleHQ\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "index",
+                      "optional": true
+                    },
+                    {
+                      "name": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.setText([index,] text)",
+              "type": "method",
+              "name": "setText",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.setText(...)</code>、全局 <code>setText(...)</code></li>\n<li><strong>[ index = <code>-1</code> ]</strong> { <a href=\"../types/data-types.md#number\">number</a> }；<strong>text</strong> { <a href=\"../types/data-types.md#string\">string</a> }</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> }</li>\n<li><strong>异常</strong>：参数数量不在 1..2、索引转换或服务失败时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：执行 ACTION_SET_TEXT，替换而不是追加现有内容</li>\n</ul>\n<pre><code class=\"lang-js\">automator.setText(&#39;replacement&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmNhcHR1cmVTY3JlZW4\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": [
+                    {
+                      "name": "index",
+                      "optional": true
+                    },
+                    {
+                      "name": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.captureScreen()",
+              "type": "method",
+              "name": "captureScreen",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.captureScreen()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/image-wrapper.md\">ImageWrapper</a> } - 默认显示器截图</li>\n<li><strong>异常</strong>：传入参数、Android 低于 11、服务不可用、截图失败返回 null 后解包或等待中断时抛出</li>\n<li><strong>权限</strong>：需要无障碍服务；使用 Android 11+ <code>AccessibilityService.takeScreenshot</code></li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：内部通过 ResultAdapter 等待 Promise；硬件 Bitmap 会复制为可读 ARGB_8888，调用方负责按图像 API 回收</li>\n</ul>\n<pre><code class=\"lang-js\">const image = automator.captureScreen();\nconsole.log(image.getWidth(), image.getHeight());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmxvY2tTY3JlZW4\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.lockScreen()",
+              "type": "method",
+              "name": "lockScreen",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.lockScreen()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受锁屏全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_LOCK_SCREEN</code>，成功时立即锁定设备</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.lockScreen());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnRha2VTY3JlZW5zaG90\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.takeScreenshot()",
+              "type": "method",
+              "name": "takeScreenshot",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.takeScreenshot()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受截图全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_TAKE_SCREENSHOT</code>；它触发系统截图界面，不返回图像数据，读取图像请用 <code>captureScreen()</code></li>\n</ul>\n<pre><code class=\"lang-js\">if (!automator.takeScreenshot()) console.warn(&#39;系统未接受截图动作&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhlYWRzZXRob29r\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.headsethook()",
+              "type": "method",
+              "name": "headsethook",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.headsethook()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受耳机键全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_KEYCODE_HEADSETHOOK</code>，可能播放、暂停或接听当前媒体/通话</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.headsethook());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b24\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.accessibilityButton()",
+              "type": "method",
+              "name": "accessibilityButton",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityButton()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍按钮动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_BUTTON</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityButton());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b25DaG9vc2Vy\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.accessibilityButtonChooser()",
+              "type": "method",
+              "name": "accessibilityButtonChooser",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityButtonChooser()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍按钮选择器动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_BUTTON_CHOOSER</code>，成功时显示无障碍快捷功能选择器</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityButtonChooser());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlTaG9ydGN1dA\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.accessibilityShortcut()",
+              "type": "method",
+              "name": "accessibilityShortcut",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityShortcut()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍快捷方式动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_SHORTCUT</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityShortcut());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlBbGxBcHBz\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.accessibilityAllApps()",
+              "type": "method",
+              "name": "accessibilityAllApps",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityAllApps()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍“所有应用”动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_ALL_APPS</code>，具体呈现由系统实现决定</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityAllApps());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmRpc21pc3NOb3RpZmljYXRpb25TaGFkZQ\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.dismissNotificationShade()",
+              "type": "method",
+              "name": "dismissNotificationShade",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.dismissNotificationShade()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受收起通知栏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.dismissNotificationShade());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmJhY2s\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.back()",
+              "type": "method",
+              "name": "back",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.back()</code>、全局 <code>back()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受返回动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_BACK</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(back());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhvbWU\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.home()",
+              "type": "method",
+              "name": "home",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.home()</code>、全局 <code>home()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受主页动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_HOME</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(home());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnBvd2VyRGlhbG9n\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.powerDialog()",
+              "type": "method",
+              "name": "powerDialog",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.powerDialog()</code>、全局 <code>powerDialog()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受电源菜单动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_POWER_DIALOG</code>，成功时显示系统电源菜单</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(powerDialog());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.notifications()",
+              "type": "method",
+              "name": "notifications",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.notifications()</code>、全局 <code>notifications()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受展开通知栏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_NOTIFICATIONS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(notifications());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnF1aWNrU2V0dGluZ3M\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.quickSettings()",
+              "type": "method",
+              "name": "quickSettings",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.quickSettings()</code>、全局 <code>quickSettings()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受展开快捷设置动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_QUICK_SETTINGS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(quickSettings());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnJlY2VudHM\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.recents()",
+              "type": "method",
+              "name": "recents",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.recents()</code>、全局 <code>recents()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受最近任务动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_RECENTS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(recents());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNwbGl0U2NyZWVu\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            },
+            {
+              "textRaw": "[m] automator.splitScreen()",
+              "type": "method",
+              "name": "splitScreen",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.splitScreen()</code>、全局 <code>splitScreen()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受切换分屏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN</code>，设备或系统版本不支持时可返回 false</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(splitScreen());\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOnJvb3RBdXRvbWF0b3I\"></a></p>\n",
+              "signatures": [
+                {
+                  "params": []
+                }
+              ]
+            }
+          ],
           "type": "module",
-          "displayName": "高权限自动化 (RootAutomator)"
+          "displayName": "[@] automator"
         },
         {
-          "textRaw": "自动化配置 (AutomatorConfiguration)",
-          "name": "自动化配置_(automatorconfiguration)",
-          "desc": "<p>待补充...</p>\n",
+          "textRaw": "[@] RootAutomator",
+          "name": "[@]_rootautomator",
+          "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：全局构造器 <code>RootAutomator</code></li>\n<li><strong>参数</strong>：模块本身通过构造器使用，详见 <code>new RootAutomator(...)</code></li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> 构造器 }</li>\n<li><strong>异常</strong>：读取入口本身不抛出</li>\n<li><strong>权限</strong>：实例化必须具有 root，或已运行且可访问可写触摸设备的 Shizuku</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每个实例维护独立触点槽位、默认触点 ID 与底层 root shell 或 Shizuku 命令缓冲区</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(typeof RootAutomator); // function\n</code></pre>\n<p><a id=\"api-symbol-Y29uc3RydWN0OnJvb3RBdXRvbWF0b3I\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "[c] new RootAutomator(waitForReady?)",
+              "name": "[c]_new_rootautomator(waitforready?)",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>[ waitForReady = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> | <a href=\"../types/data-types.md#number\">number</a> } - 布尔 true 最多等待 5000 ms 就绪，false 不等待；数字直接作为等待超时毫秒数，负数不等待</li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> } - 将核心输入设备对象包装成 Rhino 原生代理</li>\n<li><strong>异常</strong>：超过 1 个参数、root 与 Shizuku 都不可用、Shizuku 无法访问可写输入设备、初始化失败或等待超时时抛出</li>\n<li><strong>权限</strong>：需要 root 或 operational Shizuku；Shizuku 后端还必须解析到可写输入设备</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：root 后端启动输入事件进程；Shizuku 后端映射屏幕坐标并批量执行 <code>sendevent</code>；结束使用时应调用 <code>exit()</code></li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(true);\ntry {\n    ra.tap(300, 600);\n} finally {\n    ra.exit();\n}\n</code></pre>\n<p><a id=\"api-symbol-ZHluYW1pYzpyb290QXV0b21hdG9yLmluc3RhbmNlLmZvcndhcmRlZC1tZXRob2Rz\"></a></p>\n",
+              "type": "module",
+              "displayName": "[c] new RootAutomator(waitForReady?)"
+            },
+            {
+              "textRaw": "[dynamic] RootAutomator 实例转发方法",
+              "name": "[dynamic]_rootautomator_实例转发方法",
+              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>ra.&lt;publicMethod&gt;(...)</code>；方法来自核心 <code>RootAutomator</code> Java 对象</li>\n<li><strong>参数</strong>：依具体 public 方法而定；常用方法包括 <code>sendEvent</code>、<code>touch</code>、<code>setScreenMetrics</code>、<code>tap</code>、<code>swipe</code>、<code>press</code>、<code>longPress</code>、<code>touchDown</code>、<code>touchUp</code>、<code>touchMove</code>、<code>getDefaultId</code>、<code>setDefaultId</code> 与 <code>exit</code></li>\n<li><ins><strong>returns</strong></ins> { <code>any</code> } - 保留对应 Java 方法的返回值</li>\n<li><strong>异常</strong>：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出</li>\n<li><strong>权限</strong>：沿用构造实例时选择的 root 或 Shizuku 后端</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；固定提交未采用旧 JavaScript 模块的名称过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(5000);\nconst tap = ra.tap; // 已绑定内部 receiver\ntry {\n    ra.setScreenMetrics(device.width, device.height);\n    tap(320, 640);\n} finally {\n    ra.exit();\n}\n</code></pre>\n",
+              "type": "module",
+              "displayName": "[dynamic] RootAutomator 实例转发方法"
+            }
+          ],
           "type": "module",
-          "displayName": "自动化配置 (AutomatorConfiguration)"
-        },
-        {
-          "textRaw": "选择器 (UiSelector)",
-          "name": "选择器_(uiselector)",
-          "desc": "<p>UiSelector (选择器), 亦可看作是 <a href=\"ui-object.md\">控件节点</a> 的条件筛选器, 用于通过附加不同的条件, 筛选出一个或一组活动窗口中的 <code>控件节点</code>, 并做进一步处理, 如 [ 执行 <a href=\"ui-object-actions.md\">控件行为</a> (点击, 长按, 设置文本等) / 判断位置 / 获取文本内容 / 获取控件特定状态 / 在 <a href=\"../../reference/glossaries/glossary.md#控件层级\">控件层级</a> 中进行 <a href=\"ui-object.md#m-compass\">罗盘</a> 导航 ] 等.</p>\n<p>详情参阅 <a href=\"ui-selector.md\">选择器 (UiSelector)</a> 章节.</p>\n",
-          "type": "module",
-          "displayName": "选择器 (UiSelector)"
-        },
-        {
-          "textRaw": "控件节点 (UiObject)",
-          "name": "控件节点_(uiobject)",
-          "desc": "<p>UiObject 通常被称为 [ 控件 / 节点 / 控件节点 ], 可看做是一个通过安卓无障碍服务包装的 <a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo\">AccessibilityNodeInfo</a> 对象, 代表一个当前活动窗口中的节点, 通过此节点可收集控件信息或执行控件行为, 进而实现一系列自动化操作.</p>\n<p>详情参阅 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 章节.</p>\n",
-          "type": "module",
-          "displayName": "控件节点 (UiObject)"
-        },
-        {
-          "textRaw": "控件集合 (UiObjectCollection)",
-          "name": "控件集合_(uiobjectcollection)",
-          "desc": "<p>UiObjectCollection 代表 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 的对象集合.</p>\n<p>详情参阅 <a href=\"ui-object-collection.md\">控件集合 (UiObjectCollection)</a> 章节.</p>\n",
-          "type": "module",
-          "displayName": "控件集合 (UiObjectCollection)"
-        },
-        {
-          "textRaw": "控件节点行为 (UiObjectActions)",
-          "name": "控件节点行为_(uiobjectactions)",
-          "desc": "<p>UiObjectActions 是一个 Java 接口, 代表 <a href=\"ui-object.md\">控件节点 (UiObject)</a> 的行为集合.</p>\n<p>详情参阅 <a href=\"ui-object-actions.md\">控件节点行为 (UiObjectActions)</a> 章节.</p>\n<hr>\n",
-          "type": "module",
-          "displayName": "控件节点行为 (UiObjectActions)"
+          "displayName": "[@] RootAutomator"
         }
       ],
       "type": "module",
       "displayName": "自动化 (Automator)"
-    },
-    {
-      "textRaw": "基于坐标的触摸模拟",
-      "name": "基于坐标的触摸模拟",
-      "desc": "<p>本章节介绍了一些使用坐标进行点击、滑动的函数. 这些函数有的需要安卓7.0以上, 有的需要root权限.</p>\n<p>要获取要点击的位置的坐标, 可以在开发者选项中开启&quot;指针位置&quot;.</p>\n<p>基于坐标的脚本通常会有分辨率的问题, 这时可以通过<code>setScreenMetrics()</code>函数来进行自动坐标放缩. 这个函数会影响本章节的所有点击、长按、滑动等函数. 通过设定脚本设计时的分辨率, 使得脚本在其他分辨率下自动放缩坐标.</p>\n<p>控件和坐标也可以相互结合. 一些控件是无法点击的(clickable为false), 无法通过<code>.click()</code>函数来点击, 这时如果安卓版本在7.0以上或者有root权限, 就可以通过以下方式来点击：</p>\n<pre><code>//获取这个控件\nvar widget = id(&quot;xxx&quot;).findOne();\n//获取其中心位置并点击\nclick(widget.bounds().centerX(), widget.bounds().centerY());\n//如果用root权限则用Tap\n</code></pre>",
-      "methods": [
-        {
-          "textRaw": "setScreenMetrics(width, height)",
-          "type": "method",
-          "name": "setScreenMetrics",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "width {number} 屏幕宽度, 单位像素 ",
-                  "name": "width",
-                  "type": "number",
-                  "desc": "屏幕宽度, 单位像素"
-                },
-                {
-                  "textRaw": "height {number} 屏幕高度, 单位像素 ",
-                  "name": "height",
-                  "type": "number",
-                  "desc": "屏幕高度, 单位像素"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "width"
-                },
-                {
-                  "name": "height"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>设置脚本坐标点击所适合的屏幕宽高. 如果脚本运行时, 屏幕宽度不一致会自动放缩坐标.</p>\n<p>例如在1920*1080的设备中, 某个操作的代码为</p>\n<pre><code>setScreenMetrics(1080, 1920);\nclick(800, 200);\nlongClick(300, 500);\n</code></pre><p>那么在其他设备上Monkey King会自动放缩坐标以便脚本仍然有效. 例如在540 * 960的屏幕中<code>click(800, 200)</code>实际上会点击位置(400, 100).</p>\n"
-        }
-      ],
-      "type": "module",
-      "displayName": "基于坐标的触摸模拟"
-    },
-    {
-      "textRaw": "RootAutomator",
-      "name": "rootautomator",
-      "desc": "<p>RootAutomator是一个使用root权限来模拟触摸的对象, 用它可以完成触摸与多点触摸, 并且这些动作的执行没有延迟.</p>\n<p>一个脚本中最好只存在一个RootAutomator, 并且保证脚本结束退出他. 可以在exit事件中退出RootAutomator, 例如：</p>\n<pre><code>var ra = new RootAutomator();\nevents.on(&#39;exit&#39;, function(){\n  ra.exit();\n});\n//执行一些点击操作\n...\n\n</code></pre><p><strong>注意以下命令需要root权限</strong></p>\n",
-      "methods": [
-        {
-          "textRaw": "RootAutomator.tap(x, y[, id])",
-          "type": "method",
-          "name": "tap",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 横坐标 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "横坐标"
-                },
-                {
-                  "textRaw": "`y` {number} 纵坐标 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "纵坐标"
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1, 可以通过setDefaultId指定. ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1, 可以通过setDefaultId指定.",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                },
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>点击位置(x, y). 其中id是一个整数值, 用于区分多点触摸, 不同的id表示不同的&quot;手指&quot;, 例如：</p>\n<pre><code>var ra = new RootAutomator();\n//让&quot;手指1&quot;点击位置(100, 100)\nra.tap(100, 100, 1);\n//让&quot;手指2&quot;点击位置(200, 200);\nra.tap(200, 200, 2);\nra.exit();\n</code></pre><p>如果不需要多点触摸, 则不需要id这个参数.\n多点触摸通常用于手势或游戏操作, 例如模拟双指捏合、双指上滑等.</p>\n<p>某些情况下可能存在tap点击无反应的情况, 这时可以用<code>RootAutomator.press()</code>函数代替.</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.swipe(x1, x2, y1, y2[, duration, id])",
-          "type": "method",
-          "name": "swipe",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x1` {number} 滑动起点横坐标 ",
-                  "name": "x1",
-                  "type": "number",
-                  "desc": "滑动起点横坐标"
-                },
-                {
-                  "textRaw": "`y1` {number} 滑动起点纵坐标 ",
-                  "name": "y1",
-                  "type": "number",
-                  "desc": "滑动起点纵坐标"
-                },
-                {
-                  "textRaw": "`x2` {number} 滑动终点横坐标 ",
-                  "name": "x2",
-                  "type": "number",
-                  "desc": "滑动终点横坐标"
-                },
-                {
-                  "textRaw": "`y2` {number} 滑动终点纵坐标 ",
-                  "name": "y2",
-                  "type": "number",
-                  "desc": "滑动终点纵坐标"
-                },
-                {
-                  "textRaw": "`duration` {number} 滑动时长, 单位毫秒, 默认值为300 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "滑动时长, 单位毫秒, 默认值为300",
-                  "optional": true
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x1"
-                },
-                {
-                  "name": "x2"
-                },
-                {
-                  "name": "y1"
-                },
-                {
-                  "name": "y2"
-                },
-                {
-                  "name": "duration",
-                  "optional": true
-                },
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟一次从(x1, y1)到(x2, y2)的时间为duration毫秒的滑动.</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.press(x, y, duration[, id])",
-          "type": "method",
-          "name": "press",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 横坐标 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "横坐标"
-                },
-                {
-                  "textRaw": "`y` {number} 纵坐标 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "纵坐标"
-                },
-                {
-                  "textRaw": "`duration` {number} 按下时长 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "按下时长"
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                },
-                {
-                  "name": "duration"
-                },
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟按下位置(x, y), 时长为duration毫秒.</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.longPress(x, y[\\, id\\])",
-          "type": "method",
-          "name": "longPress",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 横坐标 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "横坐标"
-                },
-                {
-                  "textRaw": "`y` {number} 纵坐标 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "纵坐标"
-                },
-                {
-                  "textRaw": "`duration` {number} 按下时长 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "按下时长"
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y[\\"
-                },
-                {
-                  "name": "id\\"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟长按位置(x, y).</p>\n<p>以上为简单模拟触摸操作的函数. 如果要模拟一些复杂的手势, 需要更底层的函数.</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.touchDown(x, y[, id])",
-          "type": "method",
-          "name": "touchDown",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 横坐标 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "横坐标"
-                },
-                {
-                  "textRaw": "`y` {number} 纵坐标 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "纵坐标"
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                },
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟手指按下位置(x, y).</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.touchMove(x, y[, id])",
-          "type": "method",
-          "name": "touchMove",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 横坐标 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "横坐标"
-                },
-                {
-                  "textRaw": "`y` {number} 纵坐标 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "纵坐标"
-                },
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                },
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟移动手指到位置(x, y).</p>\n"
-        },
-        {
-          "textRaw": "RootAutomator.touchUp([id])",
-          "type": "method",
-          "name": "touchUp",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`id` {number} 多点触摸id, 可选, 默认为1 ",
-                  "name": "id",
-                  "type": "number",
-                  "desc": "多点触摸id, 可选, 默认为1",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "id",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟手指弹起.</p>\n"
-        }
-      ],
-      "type": "module",
-      "displayName": "RootAutomator"
-    },
-    {
-      "textRaw": "使用root权限点击和滑动的简单命令",
-      "name": "使用root权限点击和滑动的简单命令",
-      "desc": "<p>注意：本章节的函数在后续版本很可能有改动！请勿过分依赖本章节函数的副作用. 推荐使用<code>RootAutomator</code>代替本章节的触摸函数.</p>\n<p>以下函数均需要root权限, 可以实现任意位置的点击、滑动等.</p>\n<ul>\n<li>这些函数通常首字母大写以表示其特殊的权限.</li>\n<li>这些函数均不返回任何值.</li>\n<li>并且, 这些函数的执行是异步的、非阻塞的, 在不同机型上所用的时间不同. 脚本不会等待动作执行完成才继续执行. 因此最好在每个函数之后加上适当的sleep来达到期望的效果.</li>\n</ul>\n<p>例如:</p>\n<pre><code>Tap(100, 100);\nsleep(500);\n</code></pre><p>注意, 动作的执行可能无法被停止, 例如：</p>\n<pre><code>for(var i = 0; i &lt; 100; i++){\n  Tap(100, 100);\n}\n</code></pre><p>这段代码执行后可能会出现在任务管理中停止脚本后点击仍然继续的情况.\n因此, 强烈建议在每个动作后加上延时：</p>\n<pre><code>for(var i = 0; i &lt; 100; i++){\n  Tap(100, 100);\n  sleep(500);\n}\n</code></pre>",
-      "methods": [
-        {
-          "textRaw": "Tap(x, y)",
-          "type": "method",
-          "name": "Tap",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "x, y {number} 要点击的坐标. ",
-                  "name": "x,",
-                  "desc": "y {number} 要点击的坐标."
-                },
-                {
-                  "name": "y"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>点击位置(x, y), 您可以通过&quot;开发者选项&quot;开启指针位置来确定点击坐标.</p>\n"
-        },
-        {
-          "textRaw": "Swipe(x1, y1, x2, y2, \\[duration\\])",
-          "type": "method",
-          "name": "Swipe",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "x1, y1 {number} 滑动起点的坐标 ",
-                  "name": "x1,",
-                  "desc": "y1 {number} 滑动起点的坐标"
-                },
-                {
-                  "textRaw": "x2, y2 {number} 滑动终点的坐标 ",
-                  "name": "x2,",
-                  "desc": "y2 {number} 滑动终点的坐标"
-                },
-                {
-                  "textRaw": "duration {number} 滑动动作所用的时间 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "滑动动作所用的时间"
-                },
-                {
-                  "name": "y2"
-                },
-                {
-                  "name": "\\[duration\\"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x1"
-                },
-                {
-                  "name": "y1"
-                },
-                {
-                  "name": "x2"
-                },
-                {
-                  "name": "y2"
-                },
-                {
-                  "name": "\\[duration\\"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>滑动. 从(x1, y1)位置滑动到(x2, y2)位置.</p>\n"
-        }
-      ],
-      "type": "module",
-      "displayName": "使用root权限点击和滑动的简单命令"
-    },
-    {
-      "textRaw": "基于控件的操作",
-      "name": "基于控件的操作",
-      "desc": "<p>基于控件的操作指的是选择屏幕上的控件, 获取其信息或对其进行操作. 对于一般软件而言, 基于控件的操作对不同机型有很好的兼容性；但是对于游戏而言, 由于游戏界面并不是由控件构成, 无法采用本章节的方法, 也无法使用本章节的函数. 有关游戏脚本的编写, 请参考《基于坐标的操作》.</p>\n<p>基于控件的操作依赖于无障碍服务, 因此最好在脚本开头使用<code>auto()</code>函数来确保无障碍服务已经启用. 如果运行到某个需要权限的语句无障碍服务并没启动, 则会抛出异常并跳转到无障碍服务界面. 这样的用户体验并不好, 因为需要重新运行脚本, 后续会加入等待无障碍服务启动并让脚本继续运行的函数.</p>\n<p>您也可以在脚本开头使用<code>&quot;auto&quot;;</code>表示这个脚本需要无障碍服务, 但是不推荐这种做法, 因为这个标记必须在脚本的最开头(前面不能有注释或其他语句、空格等), 我们推荐使用<code>auto()</code>函数来确保无障碍服务已启用.</p>\n",
-      "methods": [
-        {
-          "textRaw": "auto([mode])",
-          "type": "method",
-          "name": "auto",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`mode` {string} 模式 ",
-                  "name": "mode",
-                  "type": "string",
-                  "desc": "模式",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "mode",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>检查无障碍服务是否已经启用, 如果没有启用则抛出异常并跳转到无障碍服务启用界面；同时设置无障碍模式为mode. mode的可选值为：</p>\n<ul>\n<li><code>fast</code> 快速模式. 该模式下会启用控件缓存, 从而选择器获取屏幕控件更快. 对于需要快速的控件操作的脚本可以使用该模式, 一般脚本则没有必要使用该函数.</li>\n<li><code>normal</code> 正常模式, 默认.</li>\n</ul>\n<p>如果不加mode参数, 则为正常模式.</p>\n<p>建议使用<code>auto.waitFor()</code>和<code>auto.setMode()</code>代替该函数, 因为<code>auto()</code>函数如果无障碍服务未启动会停止脚本；而<code>auto.waitFor()</code>则会在在无障碍服务启动后继续运行.</p>\n<p>示例：</p>\n<pre><code>auto(&quot;fast&quot;);\n</code></pre><p>示例2：</p>\n<pre><code>auto();\n</code></pre>"
-        },
-        {
-          "textRaw": "auto.waitFor()",
-          "type": "method",
-          "name": "waitFor",
-          "desc": "<p>检查无障碍服务是否已经启用, 如果没有启用则跳转到无障碍服务启用界面, 并等待无障碍服务启动；当无障碍服务启动后脚本会继续运行.</p>\n<p>因为该函数是阻塞的, 因此除非是有协程特性, 否则不能在ui模式下运行该函数, 建议在ui模式下使用<code>auto()</code>函数.</p>\n",
-          "signatures": [
-            {
-              "params": []
-            }
-          ]
-        },
-        {
-          "textRaw": "auto.setMode(mode)",
-          "type": "method",
-          "name": "setMode",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`mode` {string} 模式 ",
-                  "name": "mode",
-                  "type": "string",
-                  "desc": "模式"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "mode"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>设置无障碍模式为mode. mode的可选值为：</p>\n<ul>\n<li><code>fast</code> 快速模式. 该模式下会启用控件缓存, 从而选择器获取屏幕控件更快. 对于需要快速的控件查看和操作的脚本可以使用该模式, 一般脚本则没有必要使用该函数.</li>\n<li><code>normal</code> 正常模式, 默认.</li>\n</ul>\n"
-        },
-        {
-          "textRaw": "auto.setFlags(flags)",
-          "type": "method",
-          "name": "setFlags",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>flags</code> {string} | {Array} 一些标志, 来启用和禁用某些特性, 包括：<ul>\n<li><code>findOnUiThread</code> 使用该特性后, 选择器搜索时会在主进程进行. 该特性用于解决线程安全问题导致的次生问题, 不过目前貌似已知问题并不是线程安全问题.</li>\n<li><code>useUsageStats</code> 使用该特性后, 将会以&quot;使用情况统计&quot;服务的结果来检测当前正在运行的应用包名（需要授予&quot;查看使用情况统计&quot;权限). 如果觉得currentPackage()返回的结果不太准确, 可以尝试该特性.</li>\n<li><code>useShell</code> 使用该特性后, 将使用shell命令获取当前正在运行的应用的包名、活动名称, 但是需要root权限.</li>\n</ul>\n</li>\n</ul>\n<p>启用有关automator的一些特性. 例如：</p>\n<pre><code>auto.setFlags([&quot;findOnUiThread&quot;, &quot;useShell&quot;]);\n</code></pre>",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "name": "flags"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "textRaw": "auto.setWindowFilter(filter)",
-          "type": "method",
-          "name": "setWindowFilter",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><code>filter</code> {Function} 参数为窗口(<a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo/\">AccessibilityWindowInfo</a>), 返回值为Boolean的函数.</li>\n</ul>\n<p>设置窗口过滤器. 这个过滤器可以决定哪些窗口是目标窗口, 并影响选择器的搜索. 例如, 如果想要选择器在所有窗口（包括状态栏、输入法等）中搜索, 只需要使用以下代码：</p>\n<pre><code>auto.setWindowFilter(function(window){\n    //不管是如何窗口, 都返回true, 表示在该窗口中搜索\n    return true;\n});\n</code></pre><p>又例如, 当前使用了分屏功能, 屏幕上有Monkey King和QQ两个应用, 但我们只想选择器对QQ界面进行搜索, 则：</p>\n<pre><code>auto.setWindowFilter(function(window){\n    // 对于应用窗口, 他的title属性就是应用的名称, 因此可以通过title属性来判断一个应用\n    return window.title == &quot;QQ&quot;;\n});\n</code></pre><p>选择器默认是在当前活跃的窗口中搜索, 不会搜索诸如悬浮窗、状态栏之类的, 使用WindowFilter则可以控制搜索的窗口.</p>\n<p>需要注意的是, 如果WindowFilter返回的结果均为false, 则选择器的搜索结果将为空.</p>\n<p>另外setWindowFilter函数也会影响<code>auto.windowRoots</code>的结果.</p>\n<p>该函数需要Android 5.0以上才有效.</p>\n",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "name": "filter"
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      "properties": [
-        {
-          "textRaw": "auto.service",
-          "name": "service",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li><a href=\"https://developer.android.com/reference/android/accessibilityservice/AccessibilityService/\">AccessibilityService</a></li>\n</ul>\n<p>获取无障碍服务. 如果无障碍服务没有启动, 则返回<code>null</code>.</p>\n<p>参见<a href=\"https://developer.android.com/reference/android/accessibilityservice/AccessibilityService/\">AccessibilityService</a>.</p>\n"
-        },
-        {
-          "textRaw": "auto.windows",
-          "name": "windows",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li>{Array}</li>\n</ul>\n<p>当前所有窗口(<a href=\"https://developer.android.com/reference/android/view/accessibility/AccessibilityWindowInfo/\">AccessibilityWindowInfo</a>)的数组, 可能包括状态栏、输入法、当前应用窗口, 弹出窗口、悬浮窗、分屏应用窗口等. 可以分别获取每个窗口的布局信息.</p>\n<p>该函数需要Android 5.0以上才能运行.</p>\n"
-        },
-        {
-          "textRaw": "auto.root",
-          "name": "root",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li>{UiObject}</li>\n</ul>\n<p>当前窗口的布局根元素. 如果无障碍服务未启动或者WindowFilter均返回false, 则会返回<code>null</code>.</p>\n<p>如果不设置windowFilter, 则当前窗口即为活跃的窗口（获取到焦点、正在触摸的窗口）；如果设置了windowFilter, 则获取的是过滤的窗口中的第一个窗口.</p>\n<p>如果系统是Android5.0以下, 则始终返回当前活跃的窗口的布局根元素.</p>\n"
-        },
-        {
-          "textRaw": "auto.rootInActiveWindow",
-          "name": "rootInActiveWindow",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li>{UiObject}</li>\n</ul>\n<p>当前活跃的窗口（获取到焦点、正在触摸的窗口）的布局根元素. 如果无障碍服务未启动则为<code>null</code>.</p>\n"
-        },
-        {
-          "textRaw": "auto.windowRoots",
-          "name": "windowRoots",
-          "desc": "<p><strong>[v4.1.0新增]</strong></p>\n<ul>\n<li>{Array}</li>\n</ul>\n<p>返回当前被WindowFilter过滤的窗口的布局根元素组成的数组.</p>\n<p>如果系统是Android5.0以下, 则始终返回当前活跃的窗口的布局根元素的数组.</p>\n"
-        }
-      ],
-      "type": "module",
-      "displayName": "基于控件的操作"
-    },
-    {
-      "textRaw": "SimpleActionAutomator",
-      "name": "simpleactionautomator",
-      "desc": "<p>SimpleActionAutomator提供了一些模拟简单操作的函数, 例如点击文字、模拟按键等. 这些函数可以直接作为全局函数使用.</p>\n",
-      "methods": [
-        {
-          "textRaw": "click(text[, i])",
-          "type": "method",
-          "name": "click",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`text` {string} 要点击的文本 ",
-                  "name": "text",
-                  "type": "string",
-                  "desc": "要点击的文本"
-                },
-                {
-                  "textRaw": "`i` {number} 如果相同的文本在屏幕中出现多次, 则i表示要点击第几个文本, i从0开始计算 ",
-                  "name": "i",
-                  "type": "number",
-                  "desc": "如果相同的文本在屏幕中出现多次, 则i表示要点击第几个文本, i从0开始计算",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "text"
-                },
-                {
-                  "name": "i",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.</p>\n<p>该函数可以点击大部分包含文字的按钮. 例如微信主界面下方的&quot;微信&quot;, &quot;联系人&quot;, &quot;发现&quot;, &quot;我&quot;的按钮.<br>\n通常与while同时使用以便点击按钮直至成功. 例如:</p>\n<pre><code>while(!click(&quot;扫一扫&quot;));\n</code></pre><p>当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部点击成功.</p>\n<p>i是从0开始计算的, 也就是, <code>click(&quot;啦啦啦&quot;, 0)</code>表示点击屏幕上第一个&quot;啦啦啦&quot;, <code>click(&quot;啦啦啦&quot;, 1)</code>表示点击屏幕上第二个&quot;啦啦啦&quot;.</p>\n<blockquote>\n<p>文本所在区域指的是, 从文本处向其父视图寻找, 直至发现一个可点击的部件为止.</p>\n</blockquote>\n"
-        },
-        {
-          "textRaw": "click(left, top, bottom, right)",
-          "type": "method",
-          "name": "click",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`left` {number} 要点击的长方形区域左边与屏幕左边的像素距离 ",
-                  "name": "left",
-                  "type": "number",
-                  "desc": "要点击的长方形区域左边与屏幕左边的像素距离"
-                },
-                {
-                  "textRaw": "`top` {number} 要点击的长方形区域上边与屏幕上边的像素距离 ",
-                  "name": "top",
-                  "type": "number",
-                  "desc": "要点击的长方形区域上边与屏幕上边的像素距离"
-                },
-                {
-                  "textRaw": "`bottom` {number} 要点击的长方形区域下边与屏幕下边的像素距离 ",
-                  "name": "bottom",
-                  "type": "number",
-                  "desc": "要点击的长方形区域下边与屏幕下边的像素距离"
-                },
-                {
-                  "textRaw": "`right` {number} 要点击的长方形区域右边与屏幕右边的像素距离 ",
-                  "name": "right",
-                  "type": "number",
-                  "desc": "要点击的长方形区域右边与屏幕右边的像素距离"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "left"
-                },
-                {
-                  "name": "top"
-                },
-                {
-                  "name": "bottom"
-                },
-                {
-                  "name": "right"
-                }
-              ]
-            }
-          ],
-          "desc": "<p><strong>注意, 该函数一般只用于录制的脚本中使用, 在自己写的代码中使用该函数一般不要使用该函数. </strong></p>\n<p>点击在指定区域的控件. 当屏幕中并未包含与该区域严格匹配的区域, 或者该区域不能点击时返回false, 否则返回true.</p>\n<p>有些按钮或者部件是图标而不是文字（例如发送朋友圈的照相机图标以及QQ下方的消息、联系人、动态图标）, 这时不能通过<code>click(text, i)</code>来点击, 可以通过描述图标所在的区域来点击. left, bottom, top, right描述的就是点击的区域.</p>\n<p>至于要定位点击的区域, 可以在悬浮窗使用布局分析工具查看控件的bounds属性.</p>\n<p>通过无障碍服务录制脚本会生成该语句.</p>\n"
-        },
-        {
-          "textRaw": "scrollUp([i])",
-          "type": "method",
-          "name": "scrollUp",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`i` {number} 要滑动的控件序号 ",
-                  "name": "i",
-                  "type": "number",
-                  "desc": "要滑动的控件序号",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "i",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>找到第i+1个可滑动控件上滑或<strong>左滑</strong>. 返回是否操作成功. 屏幕上没有可滑动的控件时返回false.</p>\n<p>另外不加参数时<code>scrollUp()</code>会寻找面积最大的可滑动的控件上滑或左滑, 例如微信消息列表等.</p>\n<p>参数为一个整数i时会找到第i + 1个可滑动控件滑动. 例如<code>scrollUp(0)</code>为滑动第一个可滑动控件.</p>\n"
-        },
-        {
-          "textRaw": "scrollDown([i])",
-          "type": "method",
-          "name": "scrollDown",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`i` {number} 要滑动的控件序号 ",
-                  "name": "i",
-                  "type": "number",
-                  "desc": "要滑动的控件序号",
-                  "optional": true
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "i",
-                  "optional": true
-                }
-              ]
-            }
-          ],
-          "desc": "<p>找到第i+1个可滑动控件下滑或<strong>右滑</strong>. 返回是否操作成功. 屏幕上没有可滑动的控件时返回false.</p>\n<p>另外不加参数时<code>scrollUp()</code>会寻找面积最大的可滑动的控件下滑或右滑.</p>\n<p>参数为一个整数i时会找到第i + 1个可滑动控件滑动. 例如<code>scrollUp(0)</code>为滑动第一个可滑动控件.</p>\n"
-        },
-        {
-          "textRaw": "setText([i, ]text)",
-          "type": "method",
-          "name": "setText",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "i {number} 表示要输入的为第i + 1个输入框 ",
-                  "name": "i",
-                  "type": "number",
-                  "desc": "表示要输入的为第i + 1个输入框",
-                  "optional": true
-                },
-                {
-                  "textRaw": "text {string} 要输入的文本 ",
-                  "name": "text",
-                  "type": "string",
-                  "desc": "要输入的文本"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "i",
-                  "optional": true
-                },
-                {
-                  "name": "text"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>返回是否输入成功. 当找不到对应的文本框时返回false.</p>\n<p>不加参数i则会把所有输入框的文本都置为text. 例如<code>setText(&quot;测试&quot;)</code>.</p>\n<p>这里的输入文本的意思是, 把输入框的文本置为text, 而不是在原来的文本上追加.</p>\n"
-        },
-        {
-          "textRaw": "input([i, ]text)",
-          "type": "method",
-          "name": "input",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "i {number} 表示要输入的为第i + 1个输入框 ",
-                  "name": "i",
-                  "type": "number",
-                  "desc": "表示要输入的为第i + 1个输入框",
-                  "optional": true
-                },
-                {
-                  "textRaw": "text {string} 要输入的文本 ",
-                  "name": "text",
-                  "type": "string",
-                  "desc": "要输入的文本"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "i",
-                  "optional": true
-                },
-                {
-                  "name": "text"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>返回是否输入成功. 当找不到对应的文本框时返回false.</p>\n<p>不加参数i则会把所有输入框的文本追加内容text. 例如<code>input(&quot;测试&quot;)</code>.</p>\n"
-        }
-      ],
-      "modules": [
-        {
-          "textRaw": "longClick(text[, i]))",
-          "name": "longclick(text[,_i]))",
-          "desc": "<ul>\n<li><code>text</code> {string} 要长按的文本</li>\n<li><code>i</code> {number} 如果相同的文本在屏幕中出现多次, 则i表示要长按第几个文本, i从0开始计算</li>\n</ul>\n<p>返回是否点击成功. 当屏幕中并未包含该文本, 或者该文本所在区域不能点击时返回false, 否则返回true.</p>\n<p>当不指定参数i时则会尝试点击屏幕上出现的所有文字text并返回是否全部长按成功.</p>\n",
-          "type": "module",
-          "displayName": "longClick(text[, i]))"
-        }
-      ],
-      "type": "module",
-      "displayName": "SimpleActionAutomator"
-    }
-  ],
-  "properties": [
-    {
-      "textRaw": "安卓7.0以上的触摸和手势模拟",
-      "type": "property",
-      "name": "0以上的触摸和手势模拟",
-      "desc": "<p><strong>注意以下命令只有Android7.0及以上才有效</strong></p>\n",
-      "methods": [
-        {
-          "textRaw": "click(x, y)",
-          "type": "method",
-          "name": "click",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 要点击的坐标的x值 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "要点击的坐标的x值"
-                },
-                {
-                  "textRaw": "`y` {number} 要点击的坐标的y值 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "要点击的坐标的y值"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟点击坐标(x, y), 并返回是否点击成功. 只有在点击执行完成后脚本才继续执行.</p>\n<p>一般而言, 只有点击过程(大约150毫秒)中被其他事件中断(例如用户自行点击)才会点击失败.</p>\n<p>使用该函数模拟连续点击时可能有点击速度过慢的问题, 这时可以用<code>press()</code>函数代替.</p>\n"
-        },
-        {
-          "textRaw": "longClick(x, y)",
-          "type": "method",
-          "name": "longClick",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 要长按的坐标的x值 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "要长按的坐标的x值"
-                },
-                {
-                  "textRaw": "`y` {number} 要长按的坐标的y值 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "要长按的坐标的y值"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟长按坐标(x, y), 并返回是否成功. 只有在长按执行完成（大约600毫秒）时脚本才会继续执行.</p>\n<p>一般而言, 只有长按过程中被其他事件中断(例如用户自行点击)才会长按失败.</p>\n"
-        },
-        {
-          "textRaw": "press(x, y, duration)",
-          "type": "method",
-          "name": "press",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x` {number} 要按住的坐标的x值 ",
-                  "name": "x",
-                  "type": "number",
-                  "desc": "要按住的坐标的x值"
-                },
-                {
-                  "textRaw": "`y` {number} 要按住的坐标的y值 ",
-                  "name": "y",
-                  "type": "number",
-                  "desc": "要按住的坐标的y值"
-                },
-                {
-                  "textRaw": "`duration` {number} 按住时长, 单位毫秒 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "按住时长, 单位毫秒"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x"
-                },
-                {
-                  "name": "y"
-                },
-                {
-                  "name": "duration"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟按住坐标(x, y), 并返回是否成功. 只有按住操作执行完成时脚本才会继续执行.</p>\n<p>如果按住时间过短, 那么会被系统认为是点击；如果时长超过500毫秒, 则认为是长按.</p>\n<p>一般而言, 只有按住过程中被其他事件中断才会操作失败.</p>\n<p>一个连点器的例子如下：</p>\n<pre><code>//循环100次\nfor(var i = 0; i &lt; 100; i++){\n  //点击位置(500, 1000), 每次用时1毫秒\n  press(500, 1000, 1);\n}\n</code></pre>"
-        },
-        {
-          "textRaw": "swipe(x1, y1, x2, y2, duration)",
-          "type": "method",
-          "name": "swipe",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`x1` {number} 滑动的起始坐标的x值 ",
-                  "name": "x1",
-                  "type": "number",
-                  "desc": "滑动的起始坐标的x值"
-                },
-                {
-                  "textRaw": "`y1` {number} 滑动的起始坐标的y值 ",
-                  "name": "y1",
-                  "type": "number",
-                  "desc": "滑动的起始坐标的y值"
-                },
-                {
-                  "textRaw": "`x2` {number} 滑动的结束坐标的x值 ",
-                  "name": "x2",
-                  "type": "number",
-                  "desc": "滑动的结束坐标的x值"
-                },
-                {
-                  "textRaw": "`y2` {number} 滑动的结束坐标的y值 ",
-                  "name": "y2",
-                  "type": "number",
-                  "desc": "滑动的结束坐标的y值"
-                },
-                {
-                  "textRaw": "`duration` {number} 滑动时长, 单位毫秒 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "滑动时长, 单位毫秒"
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "x1"
-                },
-                {
-                  "name": "y1"
-                },
-                {
-                  "name": "x2"
-                },
-                {
-                  "name": "y2"
-                },
-                {
-                  "name": "duration"
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟从坐标(x1, y1)滑动到坐标(x2, y2), 并返回是否成功. 只有滑动操作执行完成时脚本才会继续执行.</p>\n<p>一般而言, 只有滑动过程中被其他事件中断才会滑动失败.</p>\n"
-        },
-        {
-          "textRaw": "gesture(duration, [x1, y1], [x2, y2], ...)",
-          "type": "method",
-          "name": "gesture",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "textRaw": "`duration` {number} 手势的时长 ",
-                  "name": "duration",
-                  "type": "number",
-                  "desc": "手势的时长"
-                },
-                {
-                  "textRaw": "[x, y] ... 手势滑动路径的一系列坐标 ",
-                  "name": "[x,",
-                  "desc": "y] ... 手势滑动路径的一系列坐标",
-                  "optional": true
-                },
-                {
-                  "name": "y1",
-                  "optional": true
-                },
-                {
-                  "name": "x2",
-                  "optional": true
-                },
-                {
-                  "name": "y2",
-                  "optional": true
-                },
-                {
-                  "name": "..."
-                }
-              ]
-            },
-            {
-              "params": [
-                {
-                  "name": "duration"
-                },
-                {
-                  "name": "x1",
-                  "optional": true
-                },
-                {
-                  "name": "y1",
-                  "optional": true
-                },
-                {
-                  "name": "x2",
-                  "optional": true
-                },
-                {
-                  "name": "y2",
-                  "optional": true
-                },
-                {
-                  "name": "..."
-                }
-              ]
-            }
-          ],
-          "desc": "<p>模拟手势操作. 例如<code>gesture(1000, [0, 0], [500, 500], [500, 1000])</code>为模拟一个从(0, 0)到(500, 500)到(500, 100)的手势操作, 时长为2秒.</p>\n"
-        },
-        {
-          "textRaw": "gestures([delay1, duration1, [x1, y1], [x2, y2], ...], [delay2, duration2, [x3, y3], [x4, y4], ...], ...)",
-          "type": "method",
-          "name": "gestures",
-          "desc": "<p>同时模拟多个手势. 每个手势的参数为[delay, duration, 坐标], delay为延迟多久(毫秒)才执行该手势；duration为手势执行时长；坐标为手势经过的点的坐标. 其中delay参数可以省略, 默认为0.</p>\n<p>例如手指捏合：</p>\n<pre><code>gestures([0, 500, [800, 300], [500, 1000]],\n         [0, 500, [300, 1500], [500, 1000]]);\n</code></pre>",
-          "signatures": [
-            {
-              "params": [
-                {
-                  "name": "delay1",
-                  "optional": true
-                },
-                {
-                  "name": "duration1",
-                  "optional": true
-                },
-                {
-                  "name": "x1",
-                  "optional": true
-                },
-                {
-                  "name": "y1",
-                  "optional": true
-                },
-                {
-                  "name": "x2",
-                  "optional": true
-                },
-                {
-                  "name": "y2",
-                  "optional": true
-                },
-                {
-                  "name": "...",
-                  "optional": true
-                },
-                {
-                  "name": "delay2",
-                  "optional": true
-                },
-                {
-                  "name": "duration2",
-                  "optional": true
-                },
-                {
-                  "name": "x3",
-                  "optional": true
-                },
-                {
-                  "name": "y3",
-                  "optional": true
-                },
-                {
-                  "name": "x4",
-                  "optional": true
-                },
-                {
-                  "name": "y4",
-                  "optional": true
-                },
-                {
-                  "name": "...",
-                  "optional": true
-                },
-                {
-                  "name": "..."
-                }
-              ]
-            }
-          ]
-        }
-      ]
     }
   ]
 }

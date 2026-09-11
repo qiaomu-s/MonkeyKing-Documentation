@@ -220,7 +220,7 @@ export function resolveFragmentOverride(
     return {
       kind: 'link',
       targetEntryId: 'api.automation.automator',
-      fragment: 'click-x-y',
+      fragment: 'm-automator-click-target-index',
     }
   }
 
@@ -233,7 +233,7 @@ export function resolveFragmentOverride(
     return {
       kind: 'link',
       targetEntryId: 'api.automation.automator',
-      fragment: 'click-x-y',
+      fragment: 'm-automator-click-target-index',
     }
   }
 
@@ -338,10 +338,7 @@ export function resolveFragmentOverride(
     return { kind: 'unlink' }
   }
 
-  if (
-    sameStem(targetLegacyStem, 'intentOptionsType') ||
-    sameStem(targetLegacyStem, 'util')
-  ) {
+  if (sameStem(targetLegacyStem, 'intentOptionsType')) {
     return { kind: 'unlink' }
   }
 

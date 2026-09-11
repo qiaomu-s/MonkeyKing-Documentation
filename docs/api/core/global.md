@@ -874,7 +874,7 @@ wait(() => device.isScreenOff(), 5e3, 250, {
 等待指定名称的 Activity 出现 (前置).<br>
 此方法相当于 `wait(() => currentActivity() === activityName, ...args)`,<br>
 因此其所有重载方法的结构与 wait 一致.<br>
-为节约篇幅, 将仅列出方法签名等重要信息.
+以下完整列出该方法的公开重载；其参数、返回值和等待规则继承 [wait](#m-wait) 的说明.
 
 所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 `currentActivity()`；参数校验、limit、interval、callback、权限与返回规则继承 [wait](#m-wait)。Activity 名称会转换为字符串后进行全等比较。
 
@@ -988,7 +988,7 @@ waitForActivity('com.example.MainActivity', 5e3, 250, {
 等待指定包名的应用出现 (前置).<br>
 此方法相当于 `wait(() => currentPackage() === packageName, ...args)`,<br>
 因此其所有重载方法的结构与 wait 一致.<br>
-为节约篇幅, 将仅列出方法签名等重要信息.
+以下完整列出该方法的公开重载；其参数、返回值和等待规则继承 [wait](#m-wait) 的说明.
 
 所有重载要求 1 至 4 个参数，并在非 UI 线程同步轮询 `currentPackage()`；参数校验、limit、interval、callback、权限与返回规则继承 [wait](#m-wait)。包名会转换为字符串后进行全等比较。
 

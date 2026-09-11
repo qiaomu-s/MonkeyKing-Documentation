@@ -6,6 +6,13 @@
       "name": "文档更新日志_(changelog)",
       "modules": [
         {
+          "textRaw": "v6.7.0 文档全量对账",
+          "name": "v6.7.0_文档全量对账",
+          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2026/09/10</p>\n\n<ul>\n<li><code>新增</code> 以 Monkey King 源码固定提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 为唯一事实来源的可审计 API manifest、覆盖映射和缺口报告。</li>\n<li><code>新增</code> <code>util</code>、<code>cvt</code>、<code>fmt</code>、<code>jsox</code>、<code>mime</code>、<code>zip</code>、<code>nanoid</code>、<code>pinyin</code>、<code>pinyin4j</code>、<code>sysprops</code>、<code>sqlite</code>、<code>mediainfo</code> 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。</li>\n<li><code>优化</code> 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的源码对账；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。</li>\n<li><code>修复</code> 统一 VitePress 页面锚点、旧链接和品牌说明，清除正文中的未完成占位标记，并保留历史 <code>all.json</code> 顺序及 10 个冻结 JSON 文件。</li>\n<li><code>新增</code> <code>api:extract</code>、<code>api:coverage</code>、<code>api:check</code>、<code>examples:check</code>、固定源码 checkout 和 Android / 模拟器 smoke 验证门禁。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "v6.7.0 文档全量对账"
+        },
+        {
           "textRaw": "v1.1.8",
           "name": "v1.1.8",
           "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2023/12/01</p>\n\n<ul>\n<li><code>新增</code> <a href=\"../api/utilities/opencc.md\">中文转换 (OpenCC)</a> 文档</li>\n<li><code>新增</code> <a href=\"../api/types/opencc-conversion.md\">OpenCCConversion</a> 类型</li>\n<li><code>新增</code> <a href=\"../api/automation/ui-selector.md\">选择器</a> 章节增加 plus / append 条目</li>\n<li><code>新增</code> <a href=\"../api/system/console.md\">控制台 (Console)</a> 章节增加 <a href=\"../api/system/console.md#m-settouchable\">setTouchable</a> 条目</li>\n<li><code>新增</code> <a href=\"../api/types/console-build-options.md\">ConsoleBuildOptions</a> 章节增加 <a href=\"../api/types/console-build-options.md#p-touchable\">touchable</a> 条目</li>\n<li><code>优化</code> <a href=\"../api/media/ocr.md\">光学字符识别 (OCR)</a> 章节增加 Paddle 工作模式使用提示</li>\n<li><code>优化</code> 完善 <a href=\"../api/system/shizuku.md\">Shizuku</a> 章节</li>\n<li><code>优化</code> 完善 <a href=\"../api/automation/ui-selector.md\">选择器</a> 章节</li>\n</ul>\n",

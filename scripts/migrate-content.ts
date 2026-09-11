@@ -37,6 +37,13 @@ import {
 
 export interface MigrationContext {
   readonly current: ContentEntry
+  /**
+   * Identifies whether the input came from the retained legacy tree or the
+   * canonical docs tree. Canonical pages may have intentionally removed a
+   * one-off legacy repair artifact while legacy fallback migration must still
+   * enforce that repair.
+   */
+  readonly sourceKind?: 'legacy' | 'canonical'
   readonly entries?: readonly ContentEntry[]
   readonly headingIndex?: HeadingIndex
 }
@@ -66,6 +73,12 @@ interface AuditedRepairGroup {
   readonly expectedOccurrences: number
   readonly variants: readonly RepairVariant[]
   readonly additionalRepairedTexts?: readonly string[]
+  /**
+   * Some pages were fully rewritten in the canonical corpus and no longer
+   * contain the historical artifact. Keep strict validation for legacy input,
+   * but allow the canonical rewrite to omit that artifact.
+   */
+  readonly allowCanonicalAbsent?: boolean
 }
 
 export const legacyImageNames = Object.freeze([
@@ -245,6 +258,7 @@ const auditedRepairGroups: readonly AuditedRepairGroup[] = Object.freeze([
     id: 'keys-string-placeholder',
     legacySource: 'api/keys.md',
     expectedOccurrences: 1,
+    allowCanonicalAbsent: true,
     variants: Object.freeze([
       Object.freeze({
         oldText:
@@ -392,6 +406,7 @@ function countAtLineBoundary(value: string, search: string): number {
 function applyAuditedRepairGroup(
   markdown: string,
   group: AuditedRepairGroup,
+  allowCanonicalAbsent = false,
 ): string {
   const oldCount = group.variants.reduce(
     (count, variant) => count + countAtLineBoundary(markdown, variant.oldText),
@@ -418,6 +433,9 @@ function applyAuditedRepairGroup(
   if (oldCount === 0 && repairedCount === group.expectedOccurrences) {
     return markdown
   }
+  if (allowCanonicalAbsent && oldCount === 0 && repairedCount === 0) {
+    return markdown
+  }
 
   throw new Error(
     `Audited repair state mismatch for ${group.legacySource} (${group.id}): ` +
@@ -427,11 +445,19 @@ function applyAuditedRepairGroup(
 
 export function repairKnownContentDefects(
   markdown: string,
-  context: Pick<MigrationContext, 'current'>,
+  context: Pick<MigrationContext, 'current' | 'sourceKind'>,
 ): string {
   let repaired = auditedRepairGroups
     .filter((group) => group.legacySource === context.current.legacySource)
-    .reduce(applyAuditedRepairGroup, markdown)
+    .reduce(
+      (value, group) =>
+        applyAuditedRepairGroup(
+          value,
+          group,
+          context.sourceKind === 'canonical' && group.allowCanonicalAbsent === true,
+        ),
+      markdown,
+    )
 
   if (context.current.legacySource === 'api/ocrOptionsType.md') {
     const duplicateTitle = '# OcrOptions\n\n## OcrOptions\n'
@@ -699,7 +725,7 @@ function normalizeMarkdownSyntax(markdown: string): string {
 
 export function preprocessMarkdown(
   markdown: string,
-  context: Pick<MigrationContext, 'current'>,
+  context: Pick<MigrationContext, 'current' | 'sourceKind'>,
 ): string {
   const brandContext = {
     current: {
@@ -1203,6 +1229,7 @@ export async function migrateContent(
     return {
       entry,
       markdown: readFileSync(inputPath, 'utf8'),
+      sourceKind: inputPath === canonicalPath ? ('canonical' as const) : ('legacy' as const),
     }
   })
 
@@ -1214,6 +1241,7 @@ export async function migrateContent(
     entry: source.entry,
     markdown: preprocessMarkdown(source.markdown, {
       current: source.entry,
+      sourceKind: source.sourceKind,
     }),
   }))
 

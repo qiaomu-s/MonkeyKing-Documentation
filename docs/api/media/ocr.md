@@ -30,7 +30,7 @@ fn(image: OcrImage, region: OcrRegion): Result[]
 
 - `image` 是路径时，运行时先用 `images.read` 解码；路径无效会抛出 `WrappedIllegalArgumentException`。
 - 省略 `image` 时同步捕获屏幕；调用前应先执行 `images.requestScreenCapture(...)`。
-- `options.region` 缺省、`null` 或 `undefined` 时识别整张图；区域也可作为第二个位置参数直接传入。
+- `options.region` 缺省或为 `undefined` 时识别整张图；显式为 `null` 时返回空数组。区域也可作为第二个位置参数直接传入。
 - 区域识别先裁剪图像；`detect` 返回的 `bounds` 会重新偏移到原图坐标系。
 - 每个公开入口最多接受三个实参。未知模式、错误参数数量或无法解析的图片会抛出参数异常。
 - 识别所需的引擎库会在首次调用对应引擎时检查并准备。

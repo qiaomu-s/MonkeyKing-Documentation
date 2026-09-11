@@ -66,14 +66,9 @@ const allowedDottedAutoJsLines = [
     'api/ui.md',
     '例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`',
   ],
-  ['api/web.md', '> 注: 上述设置参考自 Auto.js 4.1.1 Alpha2 源码.'],
   [
     'api/crypto.md',
     '> 注: 本章节参考自 [Auto.js Pro 文档](https://pro.autojs.org/docs/zh/v8/crypto.html).',
-  ],
-  [
-    'api/progress.md',
-    '文档以 Auto.js 4.1.1 Alpha2 的原始文档为基础, 逐步完成部署及更新.',
   ],
   [
     'api/cryptoKeyType.md',
@@ -106,10 +101,6 @@ const allowedDottedAutoJsLines = [
   [
     'api/uiSelectorType.md',
     "如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [classNameEndsWith](#m-classnameendswith) (如 `classNameEndsWith('RecyclerView')`) 或 [classNameMatches](#m-classnamematches) (如 `classNameMatches(/.*Rec.*/)`).",
-  ],
-  [
-    'api/app.md',
-    '但如果有root权限, 则在intent的参数加上`"root": true`即可. 例如使用root权限跳转到Auto.js的设置界面为：',
   ],
 ] as const
 const externalOnlyDottedAutoJsLine = [
@@ -549,7 +540,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 18, occurrences: 18 })
+    }).toEqual({ lines: 15, occurrences: 15 })
     expect(remaining).toEqual(expected)
     for (const entry of contentEntries) {
       expect(() =>
@@ -587,7 +578,7 @@ describe('deterministic Markdown migration', () => {
         (count, { occurrences }) => count + occurrences,
         0,
       ),
-    }).toEqual({ lines: 35, uniqueLines: 33, occurrences: 54 })
+    }).toEqual({ lines: 26, uniqueLines: 25, occurrences: 41 })
     expect(
       remaining.filter(({ legacySource }) => legacySource === 'docs/index.md'),
     ).toEqual([])
@@ -653,7 +644,6 @@ describe('deterministic Markdown migration', () => {
       'api/canvas.md',
       'api/dataTypes.md',
       'api/httpRequestHeadersType.md',
-      'api/keys.md',
       'api/color.md',
       'api/events.md',
       'api/image.md',
@@ -681,7 +671,6 @@ describe('deterministic Markdown migration', () => {
     expect(repairedBySource.get('api/httpRequestHeadersType.md')).toContain(
       '&lt;cookie-name&gt;=&lt;cookie-value&gt;',
     )
-    expect(repairedBySource.get('api/keys.md')).toContain('&lt;String&gt;')
     expect(repairedBySource.get('api/color.md')).not.toContain("'yellow'`.")
     expect(repairedBySource.get('api/events.md')).toContain("## 事件: 'exit'")
     expect(repairedBySource.get('api/image.md')).not.toContain('    * ``\n')
@@ -693,6 +682,14 @@ describe('deterministic Markdown migration', () => {
     expect(repairedBySource.get('api/sensors.md')).toContain(
       'x 轴和 y 轴位于设备屏幕平面内，z 轴垂直于设备屏幕表面。',
     )
+
+    const keys = entryFor('api/keys.md')
+    expect(
+      repairKnownContentDefects(
+        '* code {number} | <String> 要按下的按键的数字代码或名称. 参见下表.\n',
+        { current: keys, sourceKind: 'legacy' },
+      ),
+    ).toContain('&lt;String&gt;')
   })
 
   test.each([
@@ -951,6 +948,7 @@ describe('deterministic Markdown migration', () => {
       entry,
       markdown: preprocessMarkdown(readCatalogMarkdown(entry), {
         current: entry,
+        sourceKind: 'canonical',
       }),
     }))
     const headingIndex = await buildHeadingIndex(sources)
@@ -1228,7 +1226,7 @@ describe('content migration orchestration', () => {
         .update(readFileSync(resolve(root, 'docs/public/images/logo.png')))
         .digest('hex'),
     ).toBe(expectedLogoSha256)
-  })
+  }, 30_000)
 
   test('repairs a drifted migrated logo from the committed brand source', async () => {
     copyCurrentContentCorpus(root)

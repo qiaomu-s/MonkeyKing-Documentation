@@ -20,7 +20,7 @@ storages 模块可用于保存 [ 简单数据 / 配置信息 / 列表清单 ] �
 - [null](../types/data-types.md#null)
 - [Array](../types/data-types.md#array)
 - [Object](../types/data-types.md#object)
-- ... ...
+- 其他可被 `JSON.stringify` 序列化的复合值；不支持 `undefined`、`bigint`、函数和循环引用
 
 具体的存入规则详见 [Storage#put](../types/storage.md#m-put) 小节.
 

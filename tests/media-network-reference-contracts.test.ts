@@ -234,32 +234,36 @@ describe('media, network, and related type reference contracts', () => {
   })
 
   test('preserves source-faithful null, color-comparison, and WebView overload contracts', () => {
+    const barcode = markdown('docs/api/media/barcode.md')
+    expect(barcode).toContain(
+      'MonkeyKing 6.7.0 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围',
+    )
+    expect(barcode).toContain('按 `result.format` 自行过滤')
+
     const ocr = markdown('docs/api/media/ocr.md')
     expect(ocr).toContain(
-      'options.region` 缺省、`null` 或 `undefined` 时识别整张图',
+      'options.region` 缺省或为 `undefined` 时识别整张图；显式为 `null` 时返回空数组',
     )
-    expect(ocr).not.toContain('显式为 `null` 时返回空数组')
 
     const ocrOptions = markdown('docs/api/types/ocr-options.md')
     expect(ocrOptions).toContain(
-      '属性省略、为 `null` 或为 `undefined` 时均识别整张图',
+      '属性省略或为 `undefined` 时识别整张图；显式为 `null` 时返回空数组',
     )
-    expect(ocrOptions).not.toContain('显式为 `null` 时返回空数组')
 
     const color = markdown('docs/api/media/color.md')
     expect(color).toContain('### isEqual(colorA, colorB, thresholdOrOptions?)')
-    expect(color).toContain('公开实现与 `isSimilar` 使用同一颜色检测器')
+    expect(color).toContain('当前 6.7.0 实现使用与 `colors.isSimilar` 相同的颜色检测器')
     expect(color).not.toContain('### isEqual(colorA, colorB, alphaMatters?)')
     expect(color).not.toContain('是否考虑 `A (alpha)` 分量')
 
     const colorType = markdown('docs/api/types/color.md')
     expect(colorType).toContain('### isEqual(other, thresholdOrOptions?)')
-    expect(colorType).toContain('静态 `colors.isEqual` 的实例转发')
+    expect(colorType).toContain('当前实现通过 `colors.isEqual` 的动态转发')
     expect(colorType).not.toContain('### isEqual(other, alphaMatters?)')
 
     const web = markdown('docs/api/network/web.md')
-    expect(web).toContain('### newInjectableWebView(context, url?)')
-    expect(web).toContain('第一个参数是 Android `Context`，第二个参数是可选 URL')
+    expect(web).toContain('### newInjectableWebView([context], url?)')
+    expect(web).toContain('传入两个参数时第一个按 Android `Context` 解包')
     expect(web).not.toContain('通过 `activity` 参数可传入不同的 `org.mozilla.javascript.Context`')
 
     const colorOpening = color.slice(0, color.indexOf('<p style='))

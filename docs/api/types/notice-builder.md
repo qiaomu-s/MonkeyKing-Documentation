@@ -8,7 +8,9 @@ NoticeBuilder 表示一个通知构建器.
 
 - [notice.getBuilder](../system/notice.md#m-getbuilder)
 
-> 注: 本章节仅列出部分属性或方法.
+> 注：本页记录 Monkey King 文档直接使用的构造器方法和样式入口；未在本页展开的
+> `NotificationCompat.Builder` 成员仍可通过 Java/Android 互操作调用，完整签名请查阅
+> [AndroidX 官方参考](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder)。
 
 ---
 
@@ -172,7 +174,8 @@ img.shoot();
 - [NotificationCompat.BigTextStyle](#bigtextstyle)
 - [NotificationCompat.InboxStyle](#inboxstyle)
 - [NotificationCompat.MessagingStyle](#messagingstyle)
-- ... ...
+
+其他样式类可直接传给 `setStyle`；其行为和可用方法以 AndroidX 官方参考为准。
 
 #### BigTextStyle
 

@@ -26,7 +26,7 @@ text("立即开始").minHeight(0.2).clickable(true);
 - [m#] desc
 - [m#] id
 - [m#] className
-- ... ...
+- 以及本页后续列出的属性筛选器（如 `packageName`、`bounds`、`clickable`、`enabled`）
 
 状态方法:
 
@@ -48,7 +48,7 @@ text("立即开始").minHeight(0.2).clickable(true);
 - [m#] longClick
 - [m#] focus
 - [m#] clearFocus
-- ... ...
+- 以及本页后续列出的其他控件行为方法
 
 一个选择器构建之后, 需要执行一个上述 "动作" 才能发挥选择器的作用:
 
@@ -4375,6 +4375,36 @@ pickup(contentValid(true), '@');
 pickup({ contentValid: true }, '@');
 ```
 
+<a id="api-symbol-Z2xvYmFsOmNvbnRlbnRJbnZhbGlk"></a>
+
+## [m#] contentInvalid
+
+### contentInvalid(b?)
+
+**`6.7.0`** **`Overload [1-2]/2`** **`Global`**
+
+- **[ b = true ]** { [boolean](../types/data-types.md#boolean) }
+- <ins>**returns**</ins> { [UiSelector](ui-selector.md) }
+
+按控件的内容无效状态筛选。省略参数时筛选内容无效的控件；传入 `false` 时筛选内容有效的控件。
+
+- 筛选条件说明：控件的 `contentInvalid` 状态与指定布尔值相符
+- 关联控件属性：`isContentValid()` 的反向状态
+- 权限 / 线程 / 副作用：构建选择器不申请权限；实际查找需要无障碍服务，调用同步完成且不修改控件。
+
+```js
+var invalid = contentInvalid();
+var valid = contentInvalid(false);
+console.log(invalid instanceof UiSelector, valid instanceof UiSelector);
+```
+
+[拾取选择器](#m-pickup) 示例：
+
+```js
+pickup(contentInvalid(), '@');
+pickup({ contentInvalid: true }, '@');
+```
+
 ## [m#] contextClickable
 
 ### contextClickable(b?)
@@ -6315,3 +6345,61 @@ console.log(sel); // text("立即开始").minHeight(0.2).clickable(true).descMat
 即可保持 `sel` 变量不变.<br>
 
 关于选择器的拼接, 可参阅 [plus](#m-plus) 与 [append](#m-append) 方法小节.
+
+<a id="api-symbol-Z2xvYmFsOmRldGVjdA"></a>
+
+## [m#] detect
+
+### detect(widget, compass?, resultType?, callback?)
+
+**`6.7.0`** **`Global`**
+
+- `widget` { [UiObject](ui-object.md) } - 作为检测起点的控件
+- `compass` { [Detect.Compass](../types/data-types.md#detectcompass) } - 可选的控件罗盘方向
+- `resultType` { [DetectResult](../types/data-types.md#detectresult) } - 可选的结果类型；源码别名为 `Detect.ResultType`
+- `callback` { [Function](../types/data-types.md#function) } - 可选结果转换回调
+- <ins>**returns**</ins> { [any](../types/data-types.md#any) } - 未提供回调时按 `resultType` 返回控件或值，提供回调时返回回调结果
+
+对一个已有的 `UiObject` 执行罗盘导航和结果类型检测。参数数量和第二、三参数的类型决定重载；`widget` 不是控件或参数数量超过 4 个时抛出参数异常。调用需要无障碍服务，执行同步完成。
+
+```js
+var widget = text('Monkey King').findOnce();
+if (widget !== null) {
+    var result = detect(widget, 'parent', 'widget');
+    console.log(result);
+}
+```
+
+<a id="api-symbol-Z2xvYmFsOmV4aXN0c0FsbA"></a>
+
+## [m#] existsAll
+
+### existsAll(...selectors)
+
+**`6.7.0`** **`Global`**
+
+- `selectors` { [...](../../project/about.md#可变参数)[PickupSelector](../types/data-types.md#pickupselector)[[]](../../project/about.md#可变参数) } - 一个或多个选择器或可被 `pickup` 接受的混合选择器
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+
+当所有传入选择器都能通过 `pickup(selector, '?')` 找到控件时返回 `true`；没有参数时 `Array#every` 的结果为 `true`。查找需要无障碍服务，函数同步执行；非法选择器由 `pickup` 的参数校验抛出。
+
+```js
+console.log(existsAll(text('标题'), id('submit')));
+```
+
+<a id="api-symbol-Z2xvYmFsOmV4aXN0c09uZQ"></a>
+
+## [m#] existsOne
+
+### existsOne(...selectors)
+
+**`6.7.0`** **`Global`**
+
+- `selectors` { [...](../../project/about.md#可变参数)[PickupSelector](../types/data-types.md#pickupselector)[[]](../../project/about.md#可变参数) } - 一个或多个选择器或可被 `pickup` 接受的混合选择器
+- <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
+
+当任一传入选择器能通过 `pickup(selector, '?')` 找到控件时返回 `true`；没有参数时返回 `false`。查找需要无障碍服务，函数同步执行；非法选择器由 `pickup` 的参数校验抛出。
+
+```js
+console.log(existsOne(text('标题'), id('submit')));
+```
