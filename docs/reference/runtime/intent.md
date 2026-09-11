@@ -2,7 +2,7 @@
 
 Android `Intent` 是组件之间传递操作请求和数据的消息对象。Monkey King 提供全局 Java 类 `Intent`，并由 `app` 模块负责把 JavaScript 对象转换为 Intent、启动 Activity 或 Service、发送广播。完整平台字段和方法请查阅 [android.content.Intent 官方文档](https://developer.android.com/reference/android/content/Intent)。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 ## Intent
 

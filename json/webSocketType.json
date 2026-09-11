@@ -4,7 +4,7 @@
     {
       "textRaw": "WebSocket",
       "name": "websocket",
-      "desc": "<p>Monkey King 的 <code>WebSocket</code> 是对\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-web-socket/\">OkHttp WebSocket</a>\n的 Rhino 2.0 封装，并继承 <a href=\"../types/event-emitter.md\">EventEmitter</a> 的事件接口。\n构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。</p>\n<p>本页按 Monkey King 6.7.0 的固定源码描述公开行为。网络权限、DNS、TLS\n证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由\n<code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间\n阻塞操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\n\nsocket\n    .on(WebSocket.EVENT_OPEN, function () {\n        socket.send(&#39;Hello from Rhino 2.0&#39;);\n    })\n    .on(WebSocket.EVENT_TEXT, function (text) {\n        console.log(text);\n        socket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;done&#39;);\n    })\n    .on(WebSocket.EVENT_FAILURE, function (error) {\n        console.error(error);\n    });\n\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOndlYlNvY2tldA\"></a></p>\n",
+      "desc": "<p>Monkey King 的 <code>WebSocket</code> 是对\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-web-socket/\">OkHttp WebSocket</a>\n的 Rhino 2.0 封装，并继承 <a href=\"../types/event-emitter.md\">EventEmitter</a> 的事件接口。\n构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。</p>\n<p>本页按 Monkey King 6.7.0 的实现合同描述公开行为。网络权限、DNS、TLS\n证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由\n<code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间\n阻塞操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\n\nsocket\n    .on(WebSocket.EVENT_OPEN, function () {\n        socket.send(&#39;Hello from Rhino 2.0&#39;);\n    })\n    .on(WebSocket.EVENT_TEXT, function (text) {\n        console.log(text);\n        socket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;done&#39;);\n    })\n    .on(WebSocket.EVENT_FAILURE, function (error) {\n        console.error(error);\n    });\n\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOndlYlNvY2tldA\"></a></p>\n",
       "modules": [
         {
           "textRaw": "WebSocket 模块",
@@ -164,7 +164,7 @@
                 {
                   "textRaw": "WebSocket.CODE_BAD_GATEWAY",
                   "name": "CODE_BAD_GATEWAY",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1014</strong></p>\n<p>网关从上游收到无效响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM\"></a></p>\n"
+                  "desc": "<p><strong>版本：6.7.0 · 值：1014</strong></p>\n<p>网关从外部组件收到无效响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_TLS_HANDSHAKE_FAIL",

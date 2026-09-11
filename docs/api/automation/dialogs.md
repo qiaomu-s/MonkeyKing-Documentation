@@ -1,6 +1,6 @@
 # 对话框 (Dialogs)
 
-`dialogs` 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+`dialogs` 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 <a id="api-symbol-bW9kdWxlOmRpYWxvZ3M"></a>
 ## [@] dialogs
@@ -381,7 +381,7 @@ dialogs.build({
     toast("开始下载....");
 }).on("neutral", ()=>{
     //监听中性键
-    app.openUrl("https://www.autojs.org");
+    app.openUrl("https://example.com");
 }).on("check", (checked)=>{
     //监听勾选框
     log(checked);

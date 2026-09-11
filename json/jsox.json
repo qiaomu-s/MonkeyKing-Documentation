@@ -63,7 +63,7 @@
             {
               "textRaw": "异常、生命周期与副作用",
               "name": "异常、生命周期与副作用",
-              "desc": "<ul>\n<li>不支持的模块名、无法解析为扩展模块的值会抛出参数异常。</li>\n<li><code>jsox.extendAll</code> 只接受零个参数；<code>jsox</code> 与 <code>jsox.extend</code> 可接受零个或多个模块名。</li>\n<li>扩展同步完成，不访问文件、网络或 Android 权限。</li>\n<li>新成员安装到当前脚本运行时的内建对象及其原型，并在该运行时后续代码中持续可见；这些属性按永久属性注册。</li>\n<li>对同一模块重复扩展不会创建另一套内建对象，但仍应避免在无必要时反复执行全局修改。</li>\n</ul>\n<!-- fixed-source-contracts:start -->\n",
+              "desc": "<ul>\n<li>不支持的模块名、无法解析为扩展模块的值会抛出参数异常。</li>\n<li><code>jsox.extendAll</code> 只接受零个参数；<code>jsox</code> 与 <code>jsox.extend</code> 可接受零个或多个模块名。</li>\n<li>扩展同步完成，不访问文件、网络或 Android 权限。</li>\n<li>新成员安装到当前脚本运行时的内建对象及其原型，并在该运行时后续代码中持续可见；这些属性按永久属性注册。</li>\n<li>对同一模块重复扩展不会创建另一套内建对象，但仍应避免在无必要时反复执行全局修改。</li>\n</ul>\n<!-- api-contracts:start -->\n",
               "type": "module",
               "displayName": "异常、生命周期与副作用"
             }
@@ -72,20 +72,20 @@
           "displayName": "jsox"
         },
         {
-          "textRaw": "固定源码合同表",
-          "name": "固定源码合同表",
-          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-Y2FsbDpqc294\"></a> <code>call:jsox</code></td>\n<td><code>jsox(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L27</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-anNveC5leHRlbmQ\"></a> <code>jsox.extend</code></td>\n<td><code>jsox.extend(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L35</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox.extend);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-anNveC5leHRlbmRBbGw\"></a> <code>jsox.extendAll</code></td>\n<td><code>jsox.extendAll(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/jsox/Jsox.kt:L67</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox.extendAll);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmpzb3g\"></a> <code>module:jsox</code></td>\n<td><code>jsox</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L777</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "textRaw": "API 合同表",
+          "name": "api_合同表",
+          "desc": "<p>下表覆盖本页在产品版本 <code>6.7.0</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-Y2FsbDpqc294\"></a> <code>call:jsox</code></td>\n<td><code>jsox(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-anNveC5leHRlbmQ\"></a> <code>jsox.extend</code></td>\n<td><code>jsox.extend(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox.extend);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-anNveC5leHRlbmRBbGw\"></a> <code>jsox.extendAll</code></td>\n<td><code>jsox.extendAll(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox.extendAll);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmpzb3g\"></a> <code>module:jsox</code></td>\n<td><code>jsox</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：无需额外 Android 权限；线程：同步执行</td>\n<td>生命周期：无模块级持久资源；副作用：除明确记录的 I/O 外仅返回计算结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof jsox);</code></td>\n</tr>\n</tbody>\n</table>\n",
           "modules": [
             {
               "textRaw": "Rhino 2.0 表格读取示例",
               "name": "rhino_2.0_表格读取示例",
-              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: jsox&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: jsox&#39;);\n</code></pre>\n<!-- api-contracts:end -->\n",
               "type": "module",
               "displayName": "Rhino 2.0 表格读取示例"
             }
           ],
           "type": "module",
-          "displayName": "固定源码合同表"
+          "displayName": "API 合同表"
         }
       ],
       "type": "module",

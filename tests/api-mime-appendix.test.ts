@@ -51,7 +51,7 @@ describe('MIME appendix generator', () => {
     ])
     expect(mime.renderMimeAppendix(constants)).toBe(
       [
-        '| 稳定锚点 | 公开成员 | 固定源码声明值 |',
+        '| 稳定锚点 | 公开成员 | 常量值 |',
         '| --- | --- | --- |',
         '| <a id="mime-constant-application-json"></a> | `mime.APPLICATION_JSON` | `"application/json"` |',
         '| <a id="mime-constant-application-json-alias"></a> | `mime.APPLICATION_JSON_ALIAS` | `APPLICATION_JSON` |',

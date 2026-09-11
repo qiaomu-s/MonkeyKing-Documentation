@@ -2,7 +2,7 @@
 
 Rhino 引擎提供了脚本化 Java 的便捷性.
 
-> 注: 此章节参考并修改自 [Auto.js Pro](https://pro.autojs.org/) 及 [Scripting Java](http://udn.realityripple.com/docs/Mozilla/Projects/Rhino/Scripting_Java/).
+> 注: 本章节说明 Monkey King Rhino 环境中的 Java 互操作；语言标准之外的行为以对应官方参考资料为准。
 
 > 注: ECMA 标准并未包含与 Java 的交互, 本章节所有功能均作为扩展功能而非语言标准使用.
 

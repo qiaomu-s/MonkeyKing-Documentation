@@ -2,7 +2,7 @@
 
 Android 的 `Context` 表示组件或应用所处的运行环境，可用于访问资源、系统服务、包信息以及启动组件。Monkey King 只负责把相关 Java 类型和实例带入 Rhino；完整 Android API 请查阅 [android.content.Context 官方文档](https://developer.android.com/reference/android/content/Context)。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 ## Monkey King 中的可用入口
 
@@ -27,7 +27,7 @@ console.log(Context.MODE_PRIVATE);          // 0
 - **异常**：应用上下文尚未初始化时抛出 `IllegalStateException`；正常脚本执行阶段已经完成初始化
 - **权限 / 线程 / 副作用**：不需要权限，可在任意线程读取，不会创建 Activity
 
-固定源码提交不会向普通脚本注入小写全局变量 `context`。旧脚本若依赖 `context`，应明确取得应用上下文，或由调用方传入组件上下文。
+实现合同提交不会向普通脚本注入小写全局变量 `context`。旧脚本若依赖 `context`，应明确取得应用上下文，或由调用方传入组件上下文。
 
 ```js
 const context = GlobalAppContext.get();

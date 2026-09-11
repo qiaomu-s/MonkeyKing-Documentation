@@ -115,7 +115,7 @@ describe('Monkey King 6.7.0 source-backed module contracts', () => {
     expect(tables).toHaveLength(1)
     expect(rendered).toContain('<th>稳定锚点</th>')
     expect(rendered).toContain('<th>公开成员</th>')
-    expect(rendered).toContain('<th>固定源码声明值</th>')
+    expect(rendered).toContain('<th>常量值</th>')
     expect(tbody).not.toBeNull()
     expect([...(tbody?.[1] ?? '').matchAll(/<tr>/g)]).toHaveLength(2540)
     expect([...rendered.matchAll(/<a id="mime-constant-[a-z0-9-]+"><\/a>/g)])

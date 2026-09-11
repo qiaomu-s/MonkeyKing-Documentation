@@ -2,7 +2,7 @@
 
 本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。
 
-本文于 2026-09-10 按 [Monkey King 源码](https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966) 固定提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文按 Monkey King 6.7.0 的公开行为核对。
 
 ## 先确认版本与执行环境
 
@@ -291,7 +291,7 @@ if (argv && argv.intent) {
 - 网页版支持浅色 / 深色主题和本地全文搜索。
 - 应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 `https://docs.monkeyking.com` 为准。
 - 搜索不到新 API 时，先确认页面底部更新时间与应用版本。
-- 失效链接或错误签名请提交文档 issue，并附页面 URL 和标题锚点。
+- 失效链接或错误签名请通过应用内反馈入口或授权支持渠道提交，并附页面 URL 和标题锚点。
 
 ## 如何提交有效反馈
 
@@ -303,4 +303,4 @@ if (argv && argv.intent) {
 4. 可直接运行的最小复现脚本。
 5. 完整日志、异常栈和预期结果。
 
-文档问题请提交到 [MonkeyKing-Documentation issues](https://github.com/qiaomu-s/MonkeyKing-Documentation/issues)；应用行为问题请提交到 [Monkey King 源码仓 issues](https://github.com/qiaomu-s/AutoJs6/issues)。
+文档或应用行为问题请通过应用内反馈入口或授权支持渠道提交。

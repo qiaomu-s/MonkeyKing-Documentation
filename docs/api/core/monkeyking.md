@@ -2,7 +2,7 @@
 
 `monkeyking` 全局对象包含应用身份、版本、屏幕方向、Root 模式、权限状态和进程生命周期接口。`$monkeyking` 指向同一对象，`app.monkeyking` 也指向该对象。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。修改 Root 偏好、重启或退出应用都有进程级副作用，调用前应保存脚本状态。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。修改 Root 偏好、重启或退出应用都有进程级副作用，调用前应保存脚本状态。
 
 ---
 
@@ -176,7 +176,7 @@ console.log(monkeyking.getRootMode() === RootMode.FORCE_NON_ROOT);
 
 设置 Monkey King 的 Root 模式.
 
-数值模式只识别 `1`（强制 Root）、`0`（强制非 Root）和 `-1`（自动检测）；固定提交中其他数值不会改变模式，也不会抛出异常。
+数值模式只识别 `1`（强制 Root）、`0`（强制非 Root）和 `-1`（自动检测）；产品版本中其他数值不会改变模式，也不会抛出异常。
 
 默认情况下, Monkey King 将根据 `su` 二进制名称特征来判断是否具有 Root 权限.
 但有时设备可能使用了非常规 Root 方式或 Root 权限检测结果出现异常, 此时可设置 `强制 Root 模式` 或 `强制非 Root 模式` 来改变 Monkey King 对 Root 权限的检测结果.
@@ -272,7 +272,7 @@ console.log(monkeyking.canDisplayOverOtherApps()); // e.g. true
 
 应用显示名称，当前为 `Monkey King`。
 
-属性不可删除，但固定提交未附加 `READONLY` 标志；脚本可在当前对象上重新赋值，重新赋值不会修改 Android 应用名称。
+属性不可删除，但产品版本未附加 `READONLY` 标志；脚本可在当前对象上重新赋值，重新赋值不会修改 Android 应用名称。
 
 ```js
 console.log(monkeyking.name); // Monkey King

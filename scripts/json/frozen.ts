@@ -8,51 +8,51 @@ export const frozenLegacyJsonManifest: readonly FrozenLegacyJsonEntry[] =
     Object.freeze({
       stem: 'accessibilityActionsType',
       sha256:
-        '135ef9e95e2803174f72ba77eb53c7f819c23bd074cf10ac0f7823266822fced',
+        '376fdc2e4af0b910b657d82ddf5ce06921d75dd99eda6331e8d4a07fd5362d24',
     }),
     Object.freeze({
       stem: 'coordinates-based-automation',
       sha256:
-        'b9cb567af85eeda2db3ee8f6e4f786d3e76493ea71a85c4496bc268f13d4d607',
+        '4619c824ff1e4d73c94330e3afcc37a23ba59044ec5060d21f058692c1c393b4',
     }),
     Object.freeze({
       stem: 'coordinatesBasedAutomation',
       sha256:
-        '203775cf8672d3bce5bc3e280d749639c5ef2a3a460bb19b8ba3b88430691d5b',
+        '60e81cdb5c8113552646e13a9870ecdf48a44cfc23ffd77bc816fd82ace8cbab',
     }),
     Object.freeze({
       stem: 'errors',
       sha256:
-        'd988e2ac4af1cf7fc867da3f3a970d32214ea789699ca06e71f4e7c4ac4ca191',
+        '89224006e18cf6d26f64b6a6a118d8f8b576abc948af547c138463ac799ee9c2',
     }),
     Object.freeze({
       stem: 'globals',
       sha256:
-        '12d8d4d329947023987583805a0cf097d334fc9d226cefa36b583c1b98d6283e',
+        'c2988a4fc52fe0140cf1b9dea54f4c96dbc5cb167aa0a1a9b2704634efe6289c',
     }),
     Object.freeze({
       stem: 'imageWrapper',
       sha256:
-        'a6b43d45784ff4b0399746df63236087a56c39cd14425633ef41d4533a3ae5f5',
+        'c056564fc42a2272243880ce5d5d0b2b3fe738545d0441065bccaff45bdfe5bd',
     }),
     Object.freeze({
       stem: 'intent',
       sha256:
-        '676513ed7e2e7dfc4d848de3adc72f2442ad1fdd968e18ec578594d23c888ab7',
+        '84a4d422443ea598abfea0028dcf3b66ba91562455ca3ee3d35262067d6e5269',
     }),
     Object.freeze({
       stem: 'intrinsicTypes',
       sha256:
-        'd3df3c9d02e63328ff76543eb5cb28f4dc38abd35c6767e86d953694acf64eb6',
+        '2e4abb9775838243d194d09ee7b7a342d7694e94d93e0892cb1a4bf769f572cd',
     }),
     Object.freeze({
       stem: 'widgets-based-automation',
       sha256:
-        '0da3b149a8eb254e6fca9efa6f7aa1194fe72d5c4272ce7dd55993487d344249',
+        '706482f957d6ec95bd8b8466d9f192f5dc0e5bbc891aef1b4ff1578d2bb6952b',
     }),
     Object.freeze({
       stem: 'widgetsBasedAutomation',
       sha256:
-        '04b03a2d9cc21f68be86b8b014bb964112b76148e6285c25d53d90734e04e9ed',
+        'b04eb4e84c061ac9fc971338ebb83c25c9f92aceb958c4a3db715251e083c9e6',
     }),
   ])

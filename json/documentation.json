@@ -5,7 +5,7 @@
       "textRaw": "关于文档 (About)",
       "name": "关于文档 (About)",
       "type": "misc",
-      "desc": "<p>Monkey King 文档, 包含模块 API 使用方法及用例.<br>\n项目复刻 (Fork) 自 <a href=\"https://github.com/hyb1996/AutoJs-Docs/\">hyb1996/AutoJs-Docs</a> (GitHub).<br>\n项目地址: <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation\">qiaomu-s/MonkeyKing-Documentation</a> (GitHub).</p>\n<hr>\n",
+      "desc": "<p>Monkey King 官方产品文档，包含模块 API 使用方法、参数约定和可运行示例。<br>\n本文档面向获授权的 Monkey King 6.7.0 使用环境。</p>\n<hr>\n",
       "miscs": [
         {
           "textRaw": "文档阅读示例",
@@ -524,7 +524,7 @@
         {
           "textRaw": "声明",
           "name": "声明",
-          "desc": "<p>当前项目 (文档) 及 <a href=\"https://github.com/qiaomu-s/AutoJs6\">Monkey King 源码</a> (App) 均为二次开发.<br>\n相对于 <a href=\"https://github.com/hyb1996/Auto.js/\">原始 App</a>, 二次开发的 App 中会增加或修改部分模块功能.<br>\n相对于 <a href=\"https://github.com/hyb1996/AutoJs-Docs/\">原始文档</a>, 二次开发的文档将进行部分增删或重新编写.<br>\n开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>\n如有任何不当之处, 欢迎提交 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues\">Issue</a> 或 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/pulls\">PR</a>.<br></p>\n",
+          "desc": "<p>当前文档按 Monkey King 6.7.0 的公开行为合同维护；外部 Android、Java 和网络类型仅说明产品入口与差异。\n开发者会持续修订示例、参数和兼容性说明。发现问题时，请通过应用内反馈入口或授权支持渠道提交复现脚本和日志。</p>\n",
           "type": "misc",
           "displayName": "声明"
         }

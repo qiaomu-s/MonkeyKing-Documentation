@@ -4,7 +4,7 @@
     {
       "textRaw": "模块 (Module)",
       "name": "模块_(module)",
-      "desc": "<p>Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 <code>require.cache</code> 返回同一真值导出。固定提交对假值导出的缓存例外见 <a href=\"#p-require-cache\">require.cache</a>。</p>\n<p>模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 <code>node_modules</code>，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n<hr>\n",
+      "desc": "<p>Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 <code>require.cache</code> 返回同一真值导出。产品版本对假值导出的缓存例外见 <a href=\"#p-require-cache\">require.cache</a>。</p>\n<p>模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 <code>node_modules</code>，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<hr>\n",
       "modules": [
         {
           "textRaw": "[p] module",
@@ -111,7 +111,7 @@
             {
               "textRaw": "Module#loaded",
               "name": "module#loaded",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 构造时为 <code>false</code></li>\n<li><strong>副作用</strong>：可写；固定提交的 <code>jvm-npm.js</code> 不会自行把它改为 <code>true</code>，不应将它当作可靠加载完成信号</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.loaded);\n</code></pre>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 构造时为 <code>false</code></li>\n<li><strong>副作用</strong>：可写；产品版本的 <code>jvm-npm.js</code> 不会自行把它改为 <code>true</code>，不应将它当作可靠加载完成信号</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(module.loaded);\n</code></pre>\n",
               "type": "module",
               "displayName": "Module#loaded"
             },
@@ -265,7 +265,7 @@
               "textRaw": "Promise#await()",
               "type": "method",
               "name": "Promise#await",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Continuation</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - 完成值；非 nullish 的拒绝原因会在记录 / Toast 后作为普通恢复值返回</li>\n<li><strong>异常</strong>：continuation 未启用时抛出异常；nullish 拒绝会使内部 <code>resumeError</code> 在恢复前抛出，当前等待可能一直保持等待</li>\n<li><strong>线程 / 副作用</strong>：暂停当前 continuation，直至 Promise 完成</li>\n</ul>\n<p>固定提交的 <code>Promise#await()</code> 复用 <code>continuation.await()</code>：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 <code>await</code> 语义。</p>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst value = Promise.resolve(42).await();\nconsole.log(value); // 42\n\nconst recovered = Promise.reject(new Error(&#39;failed&#39;)).await();\nconsole.log(recovered.message); // failed；同时会记录 / Toast\n</code></pre>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Continuation</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#any\">any</a> } - 完成值；非 nullish 的拒绝原因会在记录 / Toast 后作为普通恢复值返回</li>\n<li><strong>异常</strong>：continuation 未启用时抛出异常；nullish 拒绝会使内部 <code>resumeError</code> 在恢复前抛出，当前等待可能一直保持等待</li>\n<li><strong>线程 / 副作用</strong>：暂停当前 continuation，直至 Promise 完成</li>\n</ul>\n<p>产品版本的 <code>Promise#await()</code> 复用 <code>continuation.await()</code>：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 <code>await</code> 语义。</p>\n<p>以下等待示例仅适用于已启用 continuation 特性的脚本。</p>\n<pre><code class=\"lang-js\">if (!continuation.enabled) {\n    throw new Error(&#39;当前脚本未启用 continuation&#39;);\n}\n\nconst value = Promise.resolve(42).await();\nconsole.log(value); // 42\n\nconst recovered = Promise.reject(new Error(&#39;failed&#39;)).await();\nconsole.log(recovered.message); // failed；同时会记录 / Toast\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -413,7 +413,7 @@
               "textRaw": "ResultAdapter#callback()",
               "type": "method",
               "name": "ResultAdapter#callback",
-              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#function\">Function</a> } - <code>(result, error) =&gt; void</code></li>\n<li><strong>异常</strong>：回调完成底层适配器失败时向调用方传播</li>\n<li><strong>副作用 / 生命周期</strong>：返回绑定当前实例的 Node 风格回调；只能用于单次完成流程</li>\n</ul>\n<p>固定提交的实现只会在 <code>get()</code> 尚未开始等待时通过底层适配器完成；若先进入阻塞式 <code>get()</code>，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 <code>setResult</code> / <code>setError</code>。</p>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nconst callback = adapter.callback();\ncallback(&#39;ready&#39;, null);\nconsole.log(adapter.get()); // ready\n</code></pre>\n",
+              "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#function\">Function</a> } - <code>(result, error) =&gt; void</code></li>\n<li><strong>异常</strong>：回调完成底层适配器失败时向调用方传播</li>\n<li><strong>副作用 / 生命周期</strong>：返回绑定当前实例的 Node 风格回调；只能用于单次完成流程</li>\n</ul>\n<p>产品版本的实现只会在 <code>get()</code> 尚未开始等待时通过底层适配器完成；若先进入阻塞式 <code>get()</code>，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 <code>setResult</code> / <code>setError</code>。</p>\n<pre><code class=\"lang-js\">const adapter = new ResultAdapter();\nconst callback = adapter.callback();\ncallback(&#39;ready&#39;, null);\nconsole.log(adapter.get()); // ready\n</code></pre>\n",
               "signatures": [
                 {
                   "params": []
@@ -468,7 +468,7 @@
         {
           "textRaw": "内置第三方入口",
           "name": "内置第三方入口",
-          "desc": "<p><code>axios</code>、<code>cheerio</code>、<code>dayjs</code> 和 <code>i18n</code> 是按首次访问延迟加载的全局属性。它们打包在应用源码提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 中，不从网络动态更新。</p>\n<ul>\n<li><a href=\"https://axios-http.com/docs/intro\"><code>axios</code></a>：内置文件自报版本 <code>1.1.2</code>；Monkey King 使用适配 Android/Rhino 的构建。</li>\n<li><a href=\"https://cheerio.js.org/docs/intro\"><code>cheerio</code></a>：使用提交内的单文件打包版本；源码未保留可验证的独立版本字段。</li>\n<li><a href=\"https://day.js.org/docs/en/installation/installation\"><code>dayjs</code></a>：使用提交内的核心单文件构建；未预装全部插件和地区包。</li>\n<li><code>i18n</code>：基于提交内的 <code>banana-i18n.js</code>，并增加本地 JSON 目录加载约定，详见 <a href=\"../utilities/i18n.md\">Internationalization</a>。</li>\n</ul>\n<p>首次读取属性时可能同步加载并执行较大的打包文件；需要控制启动耗时时，可在真正使用前再访问。以下示例只演示 Monkey King 入口，不替代上游完整文档。</p>\n<pre><code class=\"lang-js\">axios.get(&#39;https://example.com&#39;)\n    .then(response =&gt; console.log(response.status))\n    .catch(error =&gt; console.error(error));\n</code></pre>\n<pre><code class=\"lang-js\">const $ = cheerio.load(&#39;&lt;main&gt;&lt;h1&gt;Monkey King&lt;/h1&gt;&lt;/main&gt;&#39;);\nconsole.log($(&#39;h1&#39;).text()); // Monkey King\n</code></pre>\n<pre><code class=\"lang-js\">const date = dayjs(&#39;2026-09-10T08:30:00&#39;);\nconsole.log(date.format(&#39;YYYY-MM-DD HH:mm&#39;)); // 2026-09-10 08:30\n</code></pre>\n<pre><code class=\"lang-js\">i18n.setLocale(&#39;zh-CN&#39;);\ni18n.load({ &#39;zh-CN&#39;: { hello: &#39;你好，$1&#39; } });\nconsole.log(i18n(&#39;hello&#39;, &#39;Monkey King&#39;));\n</code></pre>\n<p><code>axios</code> 的请求适配器、Cookie、证书与线程行为受 Android/Rhino 构建影响；<code>cheerio</code> 不提供浏览器 DOM；<code>dayjs</code> 未自动安装上游全部插件；<code>i18n</code> 的路径与语言回退由 Monkey King 包装层管理。</p>\n",
+          "desc": "<p><code>axios</code>、<code>cheerio</code>、<code>dayjs</code> 和 <code>i18n</code> 是按首次访问延迟加载的全局属性。它们打包在应用产品版本 <code>6.7.0</code> 中，不从网络动态更新。</p>\n<ul>\n<li><a href=\"https://axios-http.com/docs/intro\"><code>axios</code></a>：内置文件自报版本 <code>1.1.2</code>；Monkey King 使用适配 Android/Rhino 的构建。</li>\n<li><a href=\"https://cheerio.js.org/docs/intro\"><code>cheerio</code></a>：使用内置的单文件打包版本；产品文档未公开独立版本字段。</li>\n<li><a href=\"https://day.js.org/docs/en/installation/installation\"><code>dayjs</code></a>：使用内置的核心单文件构建；未预装全部插件和地区包。</li>\n<li><code>i18n</code>：基于内置的 <code>banana-i18n.js</code>，并增加本地 JSON 目录加载约定，详见 <a href=\"../utilities/i18n.md\">Internationalization</a>。</li>\n</ul>\n<p>首次读取属性时可能同步加载并执行较大的打包文件；需要控制启动耗时时，可在真正使用前再访问。以下示例只演示 Monkey King 入口，不替代组件官方文档。</p>\n<pre><code class=\"lang-js\">axios.get(&#39;https://example.com&#39;)\n    .then(response =&gt; console.log(response.status))\n    .catch(error =&gt; console.error(error));\n</code></pre>\n<pre><code class=\"lang-js\">const $ = cheerio.load(&#39;&lt;main&gt;&lt;h1&gt;Monkey King&lt;/h1&gt;&lt;/main&gt;&#39;);\nconsole.log($(&#39;h1&#39;).text()); // Monkey King\n</code></pre>\n<pre><code class=\"lang-js\">const date = dayjs(&#39;2026-09-10T08:30:00&#39;);\nconsole.log(date.format(&#39;YYYY-MM-DD HH:mm&#39;)); // 2026-09-10 08:30\n</code></pre>\n<pre><code class=\"lang-js\">i18n.setLocale(&#39;zh-CN&#39;);\ni18n.load({ &#39;zh-CN&#39;: { hello: &#39;你好，$1&#39; } });\nconsole.log(i18n(&#39;hello&#39;, &#39;Monkey King&#39;));\n</code></pre>\n<p><code>axios</code> 的请求适配器、Cookie、证书与线程行为受 Android/Rhino 构建影响；<code>cheerio</code> 不提供浏览器 DOM；<code>dayjs</code> 未自动安装可选插件；<code>i18n</code> 的路径与语言回退由 Monkey King 包装层管理。</p>\n",
           "type": "module",
           "displayName": "内置第三方入口"
         }
@@ -477,7 +477,7 @@
         {
           "textRaw": "[p] require.cache",
           "name": "cache",
-          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><strong>异常</strong>：读取本身不抛出模块错误</li>\n<li><strong>副作用 / 生命周期</strong>：删除或替换成员会改变当前运行时之后的加载行为</li>\n</ul>\n<p>以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 <code>false</code>、<code>0</code>、空字符串或 <code>null</code> 时，固定提交的真值判断不会形成稳定缓存命中。删除某个键可让下一次 <code>require</code> 重新加载对应模块，这可能重复注册监听器或产生其他副作用。</p>\n<pre><code class=\"lang-js\">const path = require.resolve(&#39;./counter&#39;);\ndelete require.cache[path];\nconst fresh = require(&#39;./counter&#39;);\n</code></pre>\n"
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n<li><strong>异常</strong>：读取本身不抛出模块错误</li>\n<li><strong>副作用 / 生命周期</strong>：删除或替换成员会改变当前运行时之后的加载行为</li>\n</ul>\n<p>以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 <code>false</code>、<code>0</code>、空字符串或 <code>null</code> 时，产品版本的真值判断不会形成稳定缓存命中。删除某个键可让下一次 <code>require</code> 重新加载对应模块，这可能重复注册监听器或产生其他副作用。</p>\n<pre><code class=\"lang-js\">const path = require.resolve(&#39;./counter&#39;);\ndelete require.cache[path];\nconst fresh = require(&#39;./counter&#39;);\n</code></pre>\n"
         },
         {
           "textRaw": "[m] require.resolve",
@@ -528,12 +528,12 @@
         {
           "textRaw": "[p] require.debug",
           "name": "debug",
-          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 固定提交中默认为 <code>true</code></li>\n</ul>\n<p>控制解析失败并回退到原生加载器时是否向 Java 标准输出打印诊断信息。</p>\n<pre><code class=\"lang-js\">require.debug = false;\n</code></pre>\n"
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Writable</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#boolean\">boolean</a> } - 产品版本中默认为 <code>true</code></li>\n</ul>\n<p>控制解析失败并回退到原生加载器时是否向 Java 标准输出打印诊断信息。</p>\n<pre><code class=\"lang-js\">require.debug = false;\n</code></pre>\n"
         },
         {
           "textRaw": "[p] require.extensions",
           "name": "extensions",
-          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n</ul>\n<p>固定提交初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。</p>\n<pre><code class=\"lang-js\">console.log(Object.keys(require.extensions)); // []\n</code></pre>\n"
+          "desc": "<p><strong><code>≤ 6.6.4</code></strong> <strong><code>Low-level</code></strong></p>\n<ul>\n<li>{ <a href=\"../types/data-types.md#object\">Object</a> }</li>\n</ul>\n<p>产品版本初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。</p>\n<pre><code class=\"lang-js\">console.log(Object.keys(require.extensions)); // []\n</code></pre>\n"
         },
         {
           "textRaw": "[p] require.root",

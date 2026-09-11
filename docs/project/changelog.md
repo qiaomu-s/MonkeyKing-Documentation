@@ -1,14 +1,13 @@
 # 文档更新日志 (Changelog)
 
-## v6.7.0 文档全量对账
+## v6.7.0 文档版本说明
 
-<p style="font: bold 0.8em sans-serif; color: #888888">2026/09/10</p>
+<p style="font: bold 0.8em sans-serif; color: #888888">2026/09/11</p>
 
-- `新增` 以 Monkey King 源码固定提交 `bafa2986212d27b6b59f1324f89548b72a810966` 为唯一事实来源的可审计 API manifest、覆盖映射和缺口报告。
+- `新增` 完成 Monkey King 6.7.0 的公开 API 清单、覆盖映射和兼容数据整理。
 - `新增` `util`、`cvt`、`fmt`、`jsox`、`mime`、`zip`、`nanoid`、`pinyin`、`pinyin4j`、`sysprops`、`sqlite`、`mediainfo` 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。
-- `优化` 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的源码对账；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。
-- `修复` 统一 VitePress 页面锚点、旧链接和品牌说明，清除正文中的未完成占位标记，并保留历史 `all.json` 顺序及 10 个冻结 JSON 文件。
-- `新增` `api:extract`、`api:coverage`、`api:check`、`examples:check`、固定源码 checkout 和 Android / 模拟器 smoke 验证门禁。
+- `优化` 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的行为整理；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。
+- `修复` 统一页面锚点、外部参考链接和兼容标识，清除正文中的未完成占位标记。
 
 ## v1.1.8
 
@@ -46,7 +45,7 @@
 
 - `新增` [密文 (Crypto)](../api/utilities/crypto.md) 文档
 - `新增` [CryptoCipherOptions](../api/types/crypto-cipher-options.md) / [CryptoKey](../api/types/crypto-key.md) / [CryptoKeyPair](../api/types/crypto-key-pair.md) 等类型
-- `修复` floaty 模块 widht 拼写失误 _[`issue #1`](https://github.com/qiaomu-s/MonkeyKing-Documentation/issues/1)_
+- `修复` floaty 模块 widht 拼写失误。
 - `优化` 完善 [Base64](../api/utilities/base64.md) 章节
 - `优化` 完善 [颜色 (Color)](../api/media/color.md) 章节
 

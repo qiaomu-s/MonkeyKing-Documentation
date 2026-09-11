@@ -4,7 +4,7 @@
     {
       "textRaw": "全局对象",
       "name": "全局对象",
-      "desc": "<p>在 JavaScript 中, <a href=\"https://stackoverflow.com/questions/9108925/how-is-almost-everything-in-javascript-an-object\">几乎一切都是对象</a>.<br>此处的全局 &quot;对象&quot; 包括 [ 变量 / 方法 / 构造器 ] 等.<br>全局对象随处可用, 包括 ECMA 标准内置对象 (如 [ Number / RegExp / String ] 等).</p>\n<hr>\n<blockquote>\n<p>注: 为便于使用, 一些 AutoJs6 模块中的方法也被全局化 (如 <code>images.captureScreen()</code> 等).<br>相应的全局化方法均以 <code>Global</code> 标签标注.</p>\n</blockquote>\n<hr>\n<blockquote>\n<p>注: 文件即可作为脚本运行使用, 也可作为模块被导入使用 (使用 require 方法).<br>当作为模块使用时, <code>exports</code> 和 <code>module</code> 可作为全局对象使用.<br>另在 UI 模式下也有一些专属全局对象, 如 <code>activity</code> 等.</p>\n</blockquote>\n<hr>\n<blockquote>\n<p>注: AutoJs6 对全局对象做了防覆写保护, 以下全局声明或赋值将导致异常或非预期结果:</p>\n<pre><code class=\"lang-js\">/* 以全局对象 sleep 为例 */\n\n/* 声明无效 */\nlet sleep = 1; /* 异常: 变量 sleep 重复声明. */\nconst sleep = 1; /* 同上. */\nvar sleep = 1; /* 同上 */\n\n/* 覆写无效 (非严格模式) */\nsleep = 1;\ntypeof sleep; // &quot;function&quot; - 覆写未生效.\n\n/* 覆写无效 (严格模式) */\n&quot;use strict&quot;;\nsleep = 1; /* 异常: 无法修改只读属性: sleep. */\n</code></pre>\n<p>局部作用域不受上述情况影响:</p>\n<pre><code class=\"lang-js\">(function () {\n    let sleep = 1;\n    return typeof sleep;\n})(); // &quot;number&quot;\n</code></pre>\n</blockquote>\n<hr>\n",
+      "desc": "<p>在 JavaScript 中, <a href=\"https://stackoverflow.com/questions/9108925/how-is-almost-everything-in-javascript-an-object\">几乎一切都是对象</a>.<br>此处的全局 &quot;对象&quot; 包括 [ 变量 / 方法 / 构造器 ] 等.<br>全局对象随处可用, 包括 ECMA 标准内置对象 (如 [ Number / RegExp / String ] 等).</p>\n<hr>\n<blockquote>\n<p>注: 为便于使用, 一些 Monkey King 模块中的方法也被全局化 (如 <code>images.captureScreen()</code> 等).<br>相应的全局化方法均以 <code>Global</code> 标签标注.</p>\n</blockquote>\n<hr>\n<blockquote>\n<p>注: 文件即可作为脚本运行使用, 也可作为模块被导入使用 (使用 require 方法).<br>当作为模块使用时, <code>exports</code> 和 <code>module</code> 可作为全局对象使用.<br>另在 UI 模式下也有一些专属全局对象, 如 <code>activity</code> 等.</p>\n</blockquote>\n<hr>\n<blockquote>\n<p>注: Monkey King 对全局对象做了防覆写保护, 以下全局声明或赋值将导致异常或非预期结果:</p>\n<pre><code class=\"lang-js\">/* 以全局对象 sleep 为例 */\n\n/* 声明无效 */\nlet sleep = 1; /* 异常: 变量 sleep 重复声明. */\nconst sleep = 1; /* 同上. */\nvar sleep = 1; /* 同上 */\n\n/* 覆写无效 (非严格模式) */\nsleep = 1;\ntypeof sleep; // &quot;function&quot; - 覆写未生效.\n\n/* 覆写无效 (严格模式) */\n&quot;use strict&quot;;\nsleep = 1; /* 异常: 无法修改只读属性: sleep. */\n</code></pre>\n<p>局部作用域不受上述情况影响:</p>\n<pre><code class=\"lang-js\">(function () {\n    let sleep = 1;\n    return typeof sleep;\n})(); // &quot;number&quot;\n</code></pre>\n</blockquote>\n<hr>\n",
       "modules": [
         {
           "textRaw": "[m] sleep",
@@ -407,10 +407,10 @@
             {
               "params": [
                 {
-                  "textRaw": "`version` {string} | {number} Auto.js的版本或版本号 ",
+                  "textRaw": "`version` {string} | {number} 历史兼容环境的版本或版本号 ",
                   "name": "version",
                   "type": "string",
-                  "desc": "| {number} Auto.js的版本或版本号"
+                  "desc": "| {number} 历史兼容环境的版本或版本号"
                 }
               ]
             },
@@ -422,7 +422,7 @@
               ]
             }
           ],
-          "desc": "<p>表示此脚本需要Auto.js版本达到指定版本才能运行. 例如<code>requiresAutojsVersion(&quot;3.0.0 Beta&quot;)</code>表示脚本需要在Auto.js 3.0.0 Beta以及以上运行.</p>\n<p>调用该函数时会判断运行脚本的Auto.js的版本号, 如果没有达到要求则抛出异常.</p>\n<p>version参数可以是整数表示版本号, 例如<code>requiresAutojsVersion(250)</code>；也可以是字符串格式表示的版本, 例如&quot;3.0.0 Beta&quot;, &quot;3.1.0 Alpha4&quot;, &quot;3.2.0&quot;等.</p>\n<p>可以通过<code>app.autojs.versionCode</code>和<code>app.autojs.versionName</code>获取当前的Auto.js版本号和版本.</p>\n"
+          "desc": "<p>表示此脚本需要历史兼容环境版本达到指定版本才能运行. 例如<code>requiresAutojsVersion(&quot;3.0.0 Beta&quot;)</code>表示脚本需要在历史兼容环境 3.0.0 Beta以及以上运行.</p>\n<p>调用该函数时会判断运行脚本的历史兼容环境的版本号, 如果没有达到要求则抛出异常.</p>\n<p>version参数可以是整数表示版本号, 例如<code>requiresAutojsVersion(250)</code>；也可以是字符串格式表示的版本, 例如&quot;3.0.0 Beta&quot;, &quot;3.1.0 Alpha4&quot;, &quot;3.2.0&quot;等.</p>\n<p>可以通过<code>app.autojs.versionCode</code>和<code>app.autojs.versionName</code>获取当前的历史兼容环境版本号和版本.</p>\n"
         },
         {
           "textRaw": "runtime.requestPermissions(permissions)",
@@ -447,7 +447,7 @@
               ]
             }
           ],
-          "desc": "<p>动态申请安卓的权限. 例如：</p>\n<pre><code>//请求GPS权限\nruntime.requestPermissions([&quot;access_fine_location&quot;]);\n</code></pre><p>尽管安卓有很多权限, 但必须写入Manifest才能动态申请, 为了防止权限的滥用, 目前Auto.js只能额外申请两个权限：</p>\n<ul>\n<li><code>access_fine_location</code> GPS权限</li>\n<li><code>record_audio</code> 录音权限</li>\n</ul>\n<p>您可以通过APK编辑器来增加Auto.js以及Auto.js打包的应用的权限.</p>\n<p>安卓所有的权限列表参见<a href=\"https://developer.android.com/guide/topics/permissions/overview\">Permissions Overview</a>. （并没有用）</p>\n"
+          "desc": "<p>动态申请安卓的权限. 例如：</p>\n<pre><code>//请求GPS权限\nruntime.requestPermissions([&quot;access_fine_location&quot;]);\n</code></pre><p>尽管安卓有很多权限, 但必须写入Manifest才能动态申请, 为了防止权限的滥用, 目前历史兼容环境只能额外申请两个权限：</p>\n<ul>\n<li><code>access_fine_location</code> GPS权限</li>\n<li><code>record_audio</code> 录音权限</li>\n</ul>\n<p>您可以通过APK编辑器来增加历史兼容环境以及历史兼容环境打包的应用的权限.</p>\n<p>安卓所有的权限列表参见<a href=\"https://developer.android.com/guide/topics/permissions/overview\">Permissions Overview</a>. （并没有用）</p>\n"
         },
         {
           "textRaw": "runtime.loadJar(path)",

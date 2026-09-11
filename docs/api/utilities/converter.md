@@ -127,14 +127,14 @@ console.log(cvt.bytes(1500, { toUnit: 'KB', fractionDigits: 3 })); // 1.465
 
 **v6.7.0**
 
-- **参数**：参数总数必须为 1 至 4；当前固定源码应使用以选项对象收尾的重载
+- **参数**：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载
 - <ins>**returns**</ins> { `number | java.math.BigDecimal` }
 - **异常**：除通用校验外，选项对象含非空 `strict` 时抛出异常
 - **副作用 / 生命周期**：同步纯计算，不持有资源
 
 强制使用严格单位规则。`KB`、`MB` 等 SI 单位以 1000 为基数，`KiB`、`MiB` 等 IEC 单位以 1024 为基数。选项对象中不得再提供非空的 `strict`。
 
-可用形式为 `strict(source, options)`、`strict(source, toUnit, options)`、`strict(source, fromUnit, toUnit, options)`。固定源码的纯位置参数分支会把模式布尔值传入 `strict` 选项槽，继而触发空值校验；因此 `strict(source)` 或 `strict(source, fromUnit, toUnit)` 当前会抛出异常。
+可用形式为 `strict(source, options)`、`strict(source, toUnit, options)`、`strict(source, fromUnit, toUnit, options)`。实现合同的纯位置参数分支会把模式布尔值传入 `strict` 选项槽，继而触发空值校验；因此 `strict(source)` 或 `strict(source, fromUnit, toUnit)` 当前会抛出异常。
 
 ```js
 console.log(cvt.bytes.strict(1, { fromUnit: 'KB', toUnit: 'B' })); // 1000
@@ -145,12 +145,12 @@ console.log(cvt.bytes.strict(1, { fromUnit: 'KiB', toUnit: 'B' })); // 1024
 
 **v6.7.0**
 
-- **参数**：参数总数必须为 1 至 4；当前固定源码应使用以选项对象收尾的重载
+- **参数**：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载
 - <ins>**returns**</ins> { `number | java.math.BigDecimal` }
 - **异常**：除通用校验外，选项对象含非空 `strict` 时抛出异常
 - **副作用 / 生命周期**：同步纯计算，不持有资源
 
-强制使用宽松单位规则。单位不区分 SI 与 IEC 标识，`K`、`KB`、`KiB` 会统一按 1024 进位。选项对象中不得再提供非空的 `strict`。可用形式与 `strict` 相同；纯位置参数分支在当前固定源码中同样会触发空值校验异常。
+强制使用宽松单位规则。单位不区分 SI 与 IEC 标识，`K`、`KB`、`KiB` 会统一按 1024 进位。选项对象中不得再提供非空的 `strict`。可用形式与 `strict` 相同；纯位置参数分支在当前实现合同中同样会触发空值校验异常。
 
 ```js
 console.log(cvt.bytes.loose(1, { fromUnit: 'KB', toUnit: 'B' })); // 1024
@@ -165,23 +165,23 @@ console.log(cvt.bytes.loose('2 MiB', { toUnit: 'KiB' })); // 2048
 - `fractionDigits` 为负数、`autoCarryThreshold` 非正数、非 `AUTO` 目标使用自定义进位阈值、单位无效或参数个数不在 1 至 4 之间时会抛出异常。
 - 本模块只进行同步内存计算，不访问文件、网络或 Android 权限，也不维护需要关闭的资源。
 
-<!-- fixed-source-contracts:start -->
+<!-- api-contracts:start -->
 
-## 固定源码合同表
+## API 合同表
 
-下表覆盖本页在固定提交 `bafa2986212d` 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| <a id="api-symbol-Y2FsbDpjdnQuYnl0ZXM"></a> `call:cvt.bytes` | `cvt.bytes(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L42` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLkFVVE8"></a> `cvt.bytes.AUTO` | `cvt.bytes.AUTO` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L32` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.AUTO);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLklFQ19ESVY"></a> `cvt.bytes.IEC_DIV` | `cvt.bytes.IEC_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L33` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.IEC_DIV);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLmxvb3Nl"></a> `cvt.bytes.loose` | `cvt.bytes.loose(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L171` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.loose);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLlNJX0RJVg"></a> `cvt.bytes.SI_DIV` | `cvt.bytes.SI_DIV` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L34` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.SI_DIV);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLnN0cmljdA"></a> `cvt.bytes.strict` | `cvt.bytes.strict(...args)` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L165` | 参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.strict);` |
-| <a id="api-symbol-Y3Z0LmJ5dGVzLlVOSVRT"></a> `cvt.bytes.UNITS` | `cvt.bytes.UNITS` · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/converter/Bytes.kt:L31` | 属性访问；无调用参数 | 返回：按固定源码声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.UNITS);` |
-| <a id="api-symbol-bW9kdWxlOmN2dA"></a> `module:cvt` | `cvt` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L766` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt);` |
-| <a id="api-symbol-bW9kdWxlOmN2dC5ieXRlcw"></a> `module:cvt.bytes` | `bytes` 模块入口 · 固定源码 `app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L767` | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
+| <a id="api-symbol-Y2FsbDpjdnQuYnl0ZXM"></a> `call:cvt.bytes` | `cvt.bytes(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLkFVVE8"></a> `cvt.bytes.AUTO` | `cvt.bytes.AUTO` · 实现合同  | 属性访问；无调用参数 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.AUTO);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLklFQ19ESVY"></a> `cvt.bytes.IEC_DIV` | `cvt.bytes.IEC_DIV` · 实现合同  | 属性访问；无调用参数 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.IEC_DIV);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLmxvb3Nl"></a> `cvt.bytes.loose` | `cvt.bytes.loose(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.loose);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLlNJX0RJVg"></a> `cvt.bytes.SI_DIV` | `cvt.bytes.SI_DIV` · 实现合同  | 属性访问；无调用参数 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.SI_DIV);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLnN0cmljdA"></a> `cvt.bytes.strict` | `cvt.bytes.strict(...args)` · 实现合同  | 参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes.strict);` |
+| <a id="api-symbol-Y3Z0LmJ5dGVzLlVOSVRT"></a> `cvt.bytes.UNITS` | `cvt.bytes.UNITS` · 实现合同  | 属性访问；无调用参数 | 返回：按实现合同声明；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(cvt.bytes.UNITS);` |
+| <a id="api-symbol-bW9kdWxlOmN2dA"></a> `module:cvt` | `cvt` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；初始化或目标成员异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt);` |
+| <a id="api-symbol-bW9kdWxlOmN2dC5ieXRlcw"></a> `module:cvt.bytes` | `bytes` 模块入口 · 实现合同  | 入口：全局或父模块属性；无构造参数 | 返回：模块对象；参数校验、状态或底层异常原样传播 | 权限：无需 Android 权限；线程：同步转换 | 生命周期：无持久资源；副作用：无，仅返回转换结果 | ≤ v6.6.4（旧文档未记录精确版本） | Rhino 2.0：`console.log(typeof cvt.bytes);` |
 
 ### Rhino 2.0 表格读取示例
 
@@ -189,4 +189,4 @@ console.log(cvt.bytes.loose('2 MiB', { toUnit: 'KiB' })); // 2048
 console.log('Rhino 2.0 contract table: converter');
 ```
 
-<!-- fixed-source-contracts:end -->
+<!-- api-contracts:end -->

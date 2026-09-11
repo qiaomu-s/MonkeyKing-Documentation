@@ -2,9 +2,8 @@
 
 <!-- type=misc -->
 
-Monkey King 文档, 包含模块 API 使用方法及用例.<br>
-项目复刻 (Fork) 自 [hyb1996/AutoJs-Docs](https://github.com/hyb1996/AutoJs-Docs/) (GitHub).<br>
-项目地址: [qiaomu-s/MonkeyKing-Documentation](https://github.com/qiaomu-s/MonkeyKing-Documentation) (GitHub).
+Monkey King 官方产品文档，包含模块 API 使用方法、参数约定和可运行示例。<br>
+本文档面向获授权的 Monkey King 6.7.0 使用环境。
 
 ---
 
@@ -443,8 +442,5 @@ typeof foo.bar('hello', 3); // string
 
 ## 声明
 
-当前项目 (文档) 及 [Monkey King 源码](https://github.com/qiaomu-s/AutoJs6) (App) 均为二次开发.<br>
-相对于 [原始 App](https://github.com/hyb1996/Auto.js/), 二次开发的 App 中会增加或修改部分模块功能.<br>
-相对于 [原始文档](https://github.com/hyb1996/AutoJs-Docs/), 二次开发的文档将进行部分增删或重新编写.<br>
-开发者无法保证对 API 的完全理解及文档的无纰漏撰写.<br>
-如有任何不当之处, 欢迎提交 [Issue](https://github.com/qiaomu-s/MonkeyKing-Documentation/issues) 或 [PR](https://github.com/qiaomu-s/MonkeyKing-Documentation/pulls).<br>
+当前文档按 Monkey King 6.7.0 的公开行为合同维护；外部 Android、Java 和网络类型仅说明产品入口与差异。
+开发者会持续修订示例、参数和兼容性说明。发现问题时，请通过应用内反馈入口或授权支持渠道提交复现脚本和日志。

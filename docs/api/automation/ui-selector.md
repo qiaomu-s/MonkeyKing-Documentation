@@ -168,8 +168,8 @@ wD.id(); // com.test.xyz:id/some_entry
 
 `id('some_entry')` 则是一个 ID 资源项名称筛选器.<br>
 它不包含包名信息, 匹配时只关心资源项名称, 因此 `wA`, `wC` 和 `wD` 均可匹配.<br>
-需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本筛选时会考虑前台活动应用的包名.<br>
-如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idEndsWith](#m-idendswith) (如 `idEndsWith('some_entry')`) 或 [idMatches](#m-idmatches) (如 `idMatches(/.*some_entry/)`).
+需额外留意上述匹配方式与旧版选择器行为不同；旧版筛选时会考虑前台活动应用的包名.<br>
+如果脚本需要兼容旧版行为, 建议使用 [idEndsWith](#m-idendswith) (如 `idEndsWith('some_entry')`) 或 [idMatches](#m-idmatches) (如 `idMatches(/.*some_entry/)`).
 
 [拾取选择器](#m-pickup) 示例:
 
@@ -216,8 +216,8 @@ wD.id(); // com.test.xyz:id/some_entry
 
 `idStartsWith('some_')` 则是一个仅包含 ID 资源项名称的前缀匹配筛选器.<br>
 它不包含包名信息, 匹配时只关心资源项名称, 因此 `wA`, `wB`, `wC` 和 `wD` 均可匹配.<br>
-需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本筛选时会考虑前台活动应用的包名.<br>
-如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [idMatches](#m-idmatches) (如 `idMatches(/.*some_.*/)`).
+需额外留意上述匹配方式与旧版选择器行为不同；旧版筛选时会考虑前台活动应用的包名.<br>
+如果脚本需要兼容旧版行为, 建议使用 [idMatches](#m-idmatches) (如 `idMatches(/.*some_.*/)`).
 
 [拾取选择器](#m-pickup) 示例:
 
@@ -1162,8 +1162,8 @@ wD.className(); // androidx.recyclerview.widget.RecyclerView
 `classNameStartsWith('androidx.recyclerview.widget.Rec')` 同样是一个类名前缀选择器, 可以匹配控件 `wD`.<br>
 但 `classNameStartsWith('Rec')` 不能匹配上述任何控件, 因为只有 `android.widget.` 开头的类名才能使用简称形式进行前缀筛选.
 
-需额外留意上述匹配方式与 Auto.js 4.x 版本不同, 4.x 版本在做类名前缀筛选时, 不支持简称形式.<br>
-如果编写的代码需兼容不同的 Auto.js 版本, 建议使用 [classNameEndsWith](#m-classnameendswith) (如 `classNameEndsWith('RecyclerView')`) 或 [classNameMatches](#m-classnamematches) (如 `classNameMatches(/.*Rec.*/)`).
+需额外留意上述匹配方式与旧版选择器行为不同；旧版在做类名前缀筛选时不支持简称形式.<br>
+如果脚本需要兼容旧版行为, 建议使用 [classNameEndsWith](#m-classnameendswith) (如 `classNameEndsWith('RecyclerView')`) 或 [classNameMatches](#m-classnamematches) (如 `classNameMatches(/.*Rec.*/)`).
 
 [拾取选择器](#m-pickup) 示例:
 

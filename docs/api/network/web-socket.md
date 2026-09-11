@@ -5,7 +5,7 @@ Monkey King 的 <code>WebSocket</code> 是对
 的 Rhino 2.0 封装，并继承 [EventEmitter](../types/event-emitter.md) 的事件接口。
 构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。
 
-本页按 Monkey King 6.7.0 的固定源码描述公开行为。网络权限、DNS、TLS
+本页按 Monkey King 6.7.0 的实现合同描述公开行为。网络权限、DNS、TLS
 证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由
 <code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间
 阻塞操作。
@@ -275,7 +275,7 @@ socket.exitOnClose();
 
 **版本：6.7.0 · 值：1014**
 
-网关从上游收到无效响应。
+网关从外部组件收到无效响应。
 
 <a id="api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM"></a>
 

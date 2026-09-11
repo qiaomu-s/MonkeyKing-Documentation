@@ -22,7 +22,7 @@ test.describe('desktop documentation journeys', () => {
     const primaryNavigation = page.getByRole('navigation', {
       name: 'Main Navigation',
     })
-    for (const linkName of ['首页', '使用指南', 'API', '参考资料', '更新日志']) {
+    for (const linkName of ['首页', '使用指南', 'API', '参考资料', '版本与支持']) {
       await expect(
         primaryNavigation.getByRole('link', {
           name: linkName,
@@ -192,7 +192,7 @@ test.describe('mobile documentation journeys', () => {
       has: page.getByRole('link', { name: 'API', exact: true }),
     })
     await expect(mobileNavigation).toBeVisible()
-    for (const linkName of ['首页', '使用指南', 'API', '参考资料', '更新日志']) {
+    for (const linkName of ['首页', '使用指南', 'API', '参考资料', '版本与支持']) {
       await expect(
         mobileNavigation.getByRole('link', {
           name: linkName,

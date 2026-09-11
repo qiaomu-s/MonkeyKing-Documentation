@@ -2,7 +2,7 @@
 
 ---
 
-本页前半部分保留布局与控件属性教程，后半部分给出按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对的运行时 API 合同。
+本页前半部分保留布局与控件属性教程，后半部分给出按 Monkey King 6.7.0 产品版本 `6.7.0` 核对的运行时 API 合同。
 
 ---
 
@@ -110,7 +110,7 @@ $ui.post(() => {
 }, 5000);
 ```
 
-**注意：**并不是所有属性都能在js代码设置, 有一些属性只能在布局创建时设置, 例如style属性；还有一些属性虽然能在代码中设置, 但是还没支持；对于这些情况, 在Auto.js Pro 8.1.0+会抛出异常, 其他版本则不会抛出异常.
+**注意：**并不是所有属性都能在 JavaScript 代码中设置；布局专用属性或尚未支持的属性可能抛出异常，具体以 Monkey King 6.7.0 的运行结果为准。
 
 ## attr(name)
 
@@ -719,7 +719,7 @@ ui.layout(
 
 图片控件的半径. 如果设置为控件宽高的一半并且控件的宽高相同则图片将剪切为圆形显示；否则图片为圆角矩形显示, 半径即为四个圆角的半径, 也可以通过`radiusTopLeft`, `radiusTopRight`, `radiusBottomLeft`, `radiusBottomRight`等属性分别设置四个圆角的半径.
 
-例如, 圆角矩形的Auto.js图标：`<img w="100" h="100" radius="20" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`
+例如, 圆角矩形图标：`<img w="100" h="100" radius="20" bg="white" src="https://example.com/icon.png" />`
 
 有关该属性的单位, 参见[尺寸的单位: Dimension](#尺寸的单位-dimension).
 
@@ -742,7 +742,7 @@ ui.layout(
 ## borderWidth
 
 图片控件的边框宽度. 用于在图片外面显示一个边框, 边框会随着图片控件的外形(圆角等)改变而相应变化.
-例如, 圆角矩形带灰色边框的Auto.js图标：`<img w="100" h="100" radius="20" borderWidth="5" borderColor="gray" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`
+例如, 圆角矩形带灰色边框的图标：`<img w="100" h="100" radius="20" borderWidth="5" borderColor="gray" bg="white" src="https://example.com/icon.png" />`
 
 ## borderColor
 
@@ -752,7 +752,7 @@ ui.layout(
 
 指定该图片控件的图片是否剪切为圆形显示. 如果为`true`, 则图片控件会使其宽高保持一致(如果宽高不一致, 则保持高度等于宽度)并使圆形的半径为宽度的一半.
 
-例如, 圆形的Auto.js图标：`<img w="100" h="100" circle="true" bg="white" src="http://www.autojs.org/assets/uploads/profile/3-profileavatar.png" />`
+例如, 圆形图标：`<img w="100" h="100" circle="true" bg="white" src="https://example.com/icon.png" />`
 
 # 垂直布局: vertical
 
@@ -1100,7 +1100,7 @@ ui.useAndroidLayout(true);
 
 # 运行时 API 参考
 
-以下合同描述 Monkey King 6.7.0 固定提交中的 Rhino 运行时对象。尺寸返回值均为像素；需要 Activity 的成员只能在 UI 脚本已创建界面后使用。
+以下合同描述 Monkey King 6.7.0 产品版本中的 Rhino 运行时对象。尺寸返回值均为像素；需要 Activity 的成员只能在 UI 脚本已创建界面后使用。
 
 <a id="api-symbol-bW9kdWxlOnVp"></a>
 ## [@] ui

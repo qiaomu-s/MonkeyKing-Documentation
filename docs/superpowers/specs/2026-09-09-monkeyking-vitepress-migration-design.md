@@ -3,7 +3,7 @@
 日期：2026-09-09
 状态：已完成（阶段一迁移与阶段二 6.7.0 API 对账均已落地）
 
-> 本文第 1、8、9 节保留了最初设计时的阶段边界，作为历史记录。阶段二的文档仓库工作已于 2026-09-10 按固定源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 完成；Android 应用侧 WebView 改造仍按原计划另行处理。
+> 本文第 1、8、9 节保留了最初设计时的阶段边界，作为历史记录。阶段二的文档仓库工作已于 2026-09-10 按实现合同提交 `6.7.0` 完成；Android 应用侧 WebView 改造仍按原计划另行处理。
 
 ## 1. 目标与阶段边界
 
@@ -49,7 +49,7 @@
 - 显示名统一为 `Monkey King`；仓库和工程标识使用 `MonkeyKing`。
 - JS 全局对象按应用现状使用 `monkeyking`，Android 包名按应用现状使用 `com.qiaomu.monkeyking`。
 - 复用 MonkeyKing 应用当前文档 Logo；站点主色复用应用默认主题色 `#00695C`。
-- 上游来源、许可证和历史记录可以保留 AutoJs6 名称，但不得把上游品牌继续作为本站当前产品身份。
+- 外部组件来源、许可证和历史记录可以保留 AutoJs6 名称，但不得把外部组件品牌继续作为本站当前产品身份。
 
 ## 3. 信息架构
 
@@ -116,7 +116,7 @@ npm run build:android
   → 稳定入口 dist/android/index.html
 ```
 
-未来应用侧将把该目录复制到 `app/src/main/assets/docs/`，并使用 `WebViewAssetLoader` 从 HTTPS 虚拟域加载，而不是继续使用 `file:///android_asset/docs/`。应用侧修改单独设计和实施。
+未来应用侧将把该目录复制到 ，并使用 `WebViewAssetLoader` 从 HTTPS 虚拟域加载，而不是继续使用 `file:///android_asset/docs/`。应用侧修改单独设计和实施。
 
 ### 兼容 JSON
 
@@ -201,7 +201,7 @@ GitHub Pages 的自定义域设置保持 `docs.monkeyking.com`，DNS 与仓库 P
 - `dist/android/index.html`、页面、搜索和静态资源在 `/assets/docs/` 基路径下加载成功。
 - 除明确允许的历史归属外，用户可见页面不再把 AutoJs6 作为当前产品身份。
 - GitHub Actions 成功将站点发布到 `docs.monkeyking.com`。
-- README 记录固定源码、API 全量对账结果和本地验证命令；Android 应用侧改造仍不属于本仓库范围。
+- README 记录实现合同、API 全量对账结果和本地验证命令；Android 应用侧改造仍不属于本仓库范围。
 
 ## 9. 原阶段二入口条件与结果
 

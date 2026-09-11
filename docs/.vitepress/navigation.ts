@@ -53,9 +53,9 @@ export const topNav: DefaultTheme.NavItem[] = [
     activeMatch: '^/reference/',
   },
   {
-    text: '更新日志',
+    text: '版本与支持',
     link: '/project/changelog.html',
-    activeMatch: '^/project/changelog(?:\\.html)?$',
+    activeMatch: '^/project/',
   },
 ]
 

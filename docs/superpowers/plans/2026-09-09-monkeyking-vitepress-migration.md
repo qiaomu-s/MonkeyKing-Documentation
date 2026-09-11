@@ -216,7 +216,7 @@ published outputs:
   plus the 10 byte-frozen legacy files. The 42-page `all.json` order is
   unchanged.
 - The fixed source commit
-  `bafa2986212d27b6b59f1324f89548b72a810966` exposes 4,499 public symbols;
+  `6.7.027b6b59f1324f89548b72a810966` exposes 4,499 public symbols;
   coverage maps all 4,499 symbols to valid documentation targets and
   `api-surface/gaps.json` is empty.
 - Local API, content, example, JSON, build, link, browser, and emulator smoke

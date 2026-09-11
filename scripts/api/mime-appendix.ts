@@ -174,7 +174,7 @@ export function renderMimeAppendix(
   constants: readonly MimeConstant[],
 ): string {
   return [
-    '| 稳定锚点 | 公开成员 | 固定源码声明值 |',
+    '| 稳定锚点 | 公开成员 | 常量值 |',
     '| --- | --- | --- |',
     ...constants.map(({ name, value, anchor }) => {
       if (value.includes('`')) {

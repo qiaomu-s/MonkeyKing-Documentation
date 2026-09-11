@@ -4,7 +4,7 @@
     {
       "textRaw": "疑难解答 (Troubleshooting)",
       "name": "疑难解答_(troubleshooting)",
-      "desc": "<p>本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。</p>\n<p>本文于 2026-09-10 按 <a href=\"https://github.com/qiaomu-s/AutoJs6/tree/bafa2986212d27b6b59f1324f89548b72a810966\">Monkey King 源码</a> 固定提交 <code>bafa2986212d27b6b59f1324f89548b72a810966</code> 核对。</p>\n",
+      "desc": "<p>本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。</p>\n<p>本文按 Monkey King 6.7.0 的公开行为核对。</p>\n",
       "modules": [
         {
           "textRaw": "先确认版本与执行环境",
@@ -206,14 +206,14 @@
         {
           "textRaw": "文档显示或搜索异常",
           "name": "文档显示或搜索异常",
-          "desc": "<ul>\n<li>网页版支持浅色 / 深色主题和本地全文搜索。</li>\n<li>应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 <code>https://docs.monkeyking.com</code> 为准。</li>\n<li>搜索不到新 API 时，先确认页面底部更新时间与应用版本。</li>\n<li>失效链接或错误签名请提交文档 issue，并附页面 URL 和标题锚点。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>网页版支持浅色 / 深色主题和本地全文搜索。</li>\n<li>应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 <code>https://docs.monkeyking.com</code> 为准。</li>\n<li>搜索不到新 API 时，先确认页面底部更新时间与应用版本。</li>\n<li>失效链接或错误签名请通过应用内反馈入口或授权支持渠道提交，并附页面 URL 和标题锚点。</li>\n</ul>\n",
           "type": "module",
           "displayName": "如何提交有效反馈"
         },
         {
           "textRaw": "如何提交有效反馈",
           "name": "如何提交有效反馈",
-          "desc": "<p>最小反馈应包含：</p>\n<ol>\n<li>Monkey King <code>versionName</code> 和 <code>versionCode</code>。</li>\n<li>Android API 级别、设备型号或模拟器镜像。</li>\n<li>脚本执行方式及已授予权限。</li>\n<li>可直接运行的最小复现脚本。</li>\n<li>完整日志、异常栈和预期结果。</li>\n</ol>\n<p>文档问题请提交到 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation/issues\">MonkeyKing-Documentation issues</a>；应用行为问题请提交到 <a href=\"https://github.com/qiaomu-s/AutoJs6/issues\">Monkey King 源码仓 issues</a>。</p>\n",
+          "desc": "<p>最小反馈应包含：</p>\n<ol>\n<li>Monkey King <code>versionName</code> 和 <code>versionCode</code>。</li>\n<li>Android API 级别、设备型号或模拟器镜像。</li>\n<li>脚本执行方式及已授予权限。</li>\n<li>可直接运行的最小复现脚本。</li>\n<li>完整日志、异常栈和预期结果。</li>\n</ol>\n<p>文档或应用行为问题请通过应用内反馈入口或授权支持渠道提交。</p>\n",
           "type": "module",
           "displayName": "如何提交有效反馈"
         }

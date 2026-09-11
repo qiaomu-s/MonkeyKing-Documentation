@@ -1,10 +1,10 @@
 # 模块 (Module)
 
-Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 `require.cache` 返回同一真值导出。固定提交对假值导出的缓存例外见 [require.cache](#p-require-cache)。
+Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 `require.cache` 返回同一真值导出。产品版本对假值导出的缓存例外见 [require.cache](#p-require-cache)。
 
 模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 `node_modules`，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 核对。
+本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
 
 ---
 
@@ -64,7 +64,7 @@ console.log(settings.theme);
 - **异常**：读取本身不抛出模块错误
 - **副作用 / 生命周期**：删除或替换成员会改变当前运行时之后的加载行为
 
-以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 `false`、`0`、空字符串或 `null` 时，固定提交的真值判断不会形成稳定缓存命中。删除某个键可让下一次 `require` 重新加载对应模块，这可能重复注册监听器或产生其他副作用。
+以已解析文件名为键保存模块导出。真值导出命中缓存时不会再次执行模块；导出为 `false`、`0`、空字符串或 `null` 时，产品版本的真值判断不会形成稳定缓存命中。删除某个键可让下一次 `require` 重新加载对应模块，这可能重复注册监听器或产生其他副作用。
 
 ```js
 const path = require.resolve('./counter');
@@ -124,7 +124,7 @@ console.log(require.paths());
 
 **`≤ 6.6.4`** **`Writable`**
 
-- { [boolean](../types/data-types.md#boolean) } - 固定提交中默认为 `true`
+- { [boolean](../types/data-types.md#boolean) } - 产品版本中默认为 `true`
 
 控制解析失败并回退到原生加载器时是否向 Java 标准输出打印诊断信息。
 
@@ -138,7 +138,7 @@ require.debug = false;
 
 - { [Object](../types/data-types.md#object) }
 
-固定提交初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。
+产品版本初始化为空对象，加载器没有读取自定义扩展处理器的逻辑。保留该属性是兼容表面，不应依赖它注册新文件类型。
 
 ```js
 console.log(Object.keys(require.extensions)); // []
@@ -245,7 +245,7 @@ console.log(module.children.length);
 **`≤ 6.6.4`**
 
 - { [boolean](../types/data-types.md#boolean) } - 构造时为 `false`
-- **副作用**：可写；固定提交的 `jvm-npm.js` 不会自行把它改为 `true`，不应将它当作可靠加载完成信号
+- **副作用**：可写；产品版本的 `jvm-npm.js` 不会自行把它改为 `true`，不应将它当作可靠加载完成信号
 
 ```js
 console.log(module.loaded);
@@ -379,7 +379,7 @@ Promise.resolve('ok').finally(() => console.log('finished'));
 - **异常**：continuation 未启用时抛出异常；nullish 拒绝会使内部 `resumeError` 在恢复前抛出，当前等待可能一直保持等待
 - **线程 / 副作用**：暂停当前 continuation，直至 Promise 完成
 
-固定提交的 `Promise#await()` 复用 `continuation.await()`：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 `await` 语义。
+产品版本的 `Promise#await()` 复用 `continuation.await()`：非 nullish 的拒绝原因不会在等待点重新抛出，而是作为普通恢复值返回。该行为不是标准 `await` 语义。
 
 以下等待示例仅适用于已启用 continuation 特性的脚本。
 
@@ -538,7 +538,7 @@ const outcome = adapter.get();
 - **异常**：回调完成底层适配器失败时向调用方传播
 - **副作用 / 生命周期**：返回绑定当前实例的 Node 风格回调；只能用于单次完成流程
 
-固定提交的实现只会在 `get()` 尚未开始等待时通过底层适配器完成；若先进入阻塞式 `get()`，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 `setResult` / `setError`。
+产品版本的实现只会在 `get()` 尚未开始等待时通过底层适配器完成；若先进入阻塞式 `get()`，之后才调用这个 callback，它只写入暂存结果而不会通知阻塞方。对真正异步的非 UI 回调，优先在原生回调中直接调用 `setResult` / `setError`。
 
 ```js
 const adapter = new ResultAdapter();
@@ -613,14 +613,14 @@ if (continuation.enabled) {
 
 ## 内置第三方入口
 
-`axios`、`cheerio`、`dayjs` 和 `i18n` 是按首次访问延迟加载的全局属性。它们打包在应用源码提交 `bafa2986212d27b6b59f1324f89548b72a810966` 中，不从网络动态更新。
+`axios`、`cheerio`、`dayjs` 和 `i18n` 是按首次访问延迟加载的全局属性。它们打包在应用产品版本 `6.7.0` 中，不从网络动态更新。
 
 - [`axios`](https://axios-http.com/docs/intro)：内置文件自报版本 `1.1.2`；Monkey King 使用适配 Android/Rhino 的构建。
-- [`cheerio`](https://cheerio.js.org/docs/intro)：使用提交内的单文件打包版本；源码未保留可验证的独立版本字段。
-- [`dayjs`](https://day.js.org/docs/en/installation/installation)：使用提交内的核心单文件构建；未预装全部插件和地区包。
-- `i18n`：基于提交内的 `banana-i18n.js`，并增加本地 JSON 目录加载约定，详见 [Internationalization](../utilities/i18n.md)。
+- [`cheerio`](https://cheerio.js.org/docs/intro)：使用内置的单文件打包版本；产品文档未公开独立版本字段。
+- [`dayjs`](https://day.js.org/docs/en/installation/installation)：使用内置的核心单文件构建；未预装全部插件和地区包。
+- `i18n`：基于内置的 `banana-i18n.js`，并增加本地 JSON 目录加载约定，详见 [Internationalization](../utilities/i18n.md)。
 
-首次读取属性时可能同步加载并执行较大的打包文件；需要控制启动耗时时，可在真正使用前再访问。以下示例只演示 Monkey King 入口，不替代上游完整文档。
+首次读取属性时可能同步加载并执行较大的打包文件；需要控制启动耗时时，可在真正使用前再访问。以下示例只演示 Monkey King 入口，不替代组件官方文档。
 
 ```js
 axios.get('https://example.com')
@@ -644,4 +644,4 @@ i18n.load({ 'zh-CN': { hello: '你好，$1' } });
 console.log(i18n('hello', 'Monkey King'));
 ```
 
-`axios` 的请求适配器、Cookie、证书与线程行为受 Android/Rhino 构建影响；`cheerio` 不提供浏览器 DOM；`dayjs` 未自动安装上游全部插件；`i18n` 的路径与语言回退由 Monkey King 包装层管理。
+`axios` 的请求适配器、Cookie、证书与线程行为受 Android/Rhino 构建影响；`cheerio` 不提供浏览器 DOM；`dayjs` 未自动安装可选插件；`i18n` 的路径与语言回退由 Monkey King 包装层管理。

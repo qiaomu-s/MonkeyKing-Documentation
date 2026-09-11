@@ -43,7 +43,7 @@ ui.layout(<vertical>
 /* 创建一个 InjectableWebView 实例. */
 let webView = newInjectableWebView();
 /* 加载指定的 URL；请显式写出协议. */
-webView.loadUrl('https://www.github.com');
+webView.loadUrl('https://example.com');
 /* 注入 JavaScript 脚本, 显示 alert 消息框. */
 webView.inject('alert("hello")');
 /* 附加视图对象到 id 为 main 的视图上. */
@@ -54,7 +54,7 @@ ui.main.addView(webView);
 
 ```js
 'ui';
-activity.setContentView(web.newInjectableWebView('https://www.github.com'));
+activity.setContentView(web.newInjectableWebView('https://example.com'));
 ```
 
 除上述注入简单的 `alert` 消息框外, 还支持其他更多注入方式:

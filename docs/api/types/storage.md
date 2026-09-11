@@ -2,12 +2,12 @@
 
 ## Rhino 2.0 运行时合同
 
-Storage 是 `storages.create(name)` 在 Monkey King **v6.7.0** 固定源码中返回的 `StorageNativeObject`。旧成员无法恢复首次发布版本时统一标记为 **≤ v6.6.4（旧文档未记录精确版本）**。
+Storage 是 `storages.create(name)` 在 Monkey King **v6.7.0** 实现合同中返回的 `StorageNativeObject`。旧成员无法恢复首次发布版本时统一标记为 **≤ v6.6.4（旧文档未记录精确版本）**。
 
 - **权限与线程**：使用应用内部 SharedPreferences，不需要额外 Android 运行时权限。`put`、`remove`、`clear` 与 `selfRemove` 使用异步 `apply()`；对应 `Sync` 方法使用同步 `commit()`，可能阻塞调用线程。
 - **生命周期与副作用**：数据跨脚本持久化，直到显式删除、应用数据被清除或应用卸载。所有写入、删除与清空方法都会修改持久化状态。
 - **异常**：方法必须以 Storage 实例作为 `this`；参数数量错误、写入 `undefined`、JSON 序列化失败或存储名为 nullish 时同步抛出异常。
-- **返回值**：除 `get` 外，当前固定源码中的实例方法均返回 Storage 本身以支持链式调用。特别注意：`contains(key)` 当前也返回 Storage，而不是布尔值；这是固定源码行为。
+- **返回值**：除 `get` 外，当前实现合同中的实例方法均返回 Storage 本身以支持链式调用。特别注意：`contains(key)` 当前也返回 Storage，而不是布尔值；这是实现合同行为。
 
 ```js
 // Rhino 2.0
@@ -121,7 +121,7 @@ sto.get('apple'); /* 获取的数据是 null. */
 ### contains(key)
 
 - **key** { [string](data-types.md#string) } - 键名
-- <ins>**returns**</ins> { [Storage](storage.md) } - 固定源码返回当前 Storage，而不是布尔值
+- <ins>**returns**</ins> { [Storage](storage.md) } - 实现合同返回当前 Storage，而不是布尔值
 
 底层会检查本地存储中是否存在键值 `key`，但当前 `StorageNativeObject` 通过链式包装返回当前 Storage 实例，布尔检查结果不会暴露给脚本。不要把返回值当作存在性判断；需要判断时可结合 `get(key, sentinel)` 使用哨兵值。
 
@@ -163,7 +163,7 @@ sto.clear();
 sto.get('apple'); // undefined
 ```
 
-## 固定源码补充成员
+## 实现合同补充成员
 
 ### storage.name
 
@@ -191,11 +191,11 @@ sto.get('apple'); // undefined
 
 ### storage.selfRemove(name)
 
-当前固定源码要求 **恰好 1 个** `name` 参数，并调用 `storages.remove(name)` 的异步删除路径；它不会自动采用 `storage.name`。返回当前 Storage。
+当前实现合同要求 **恰好 1 个** `name` 参数，并调用 `storages.remove(name)` 的异步删除路径；它不会自动采用 `storage.name`。返回当前 Storage。
 
 ### storage.selfRemoveSync(name)
 
-当前固定源码同样要求 **恰好 1 个** `name` 参数，使用 `storages.removeSync(name)` 同步删除指定命名空间，并返回当前 Storage。
+当前实现合同同样要求 **恰好 1 个** `name` 参数，使用 `storages.removeSync(name)` 同步删除指定命名空间，并返回当前 Storage。
 
 ```js
 const storage = storages.create('temporary-contract');

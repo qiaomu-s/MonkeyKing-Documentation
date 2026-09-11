@@ -2,41 +2,34 @@
   "source": "..\\api\\progress.md",
   "modules": [
     {
-      "textRaw": "文档进度 (Progress)",
-      "name": "文档进度_(progress)",
-      "desc": "<p>截至 <strong>2026-09-10</strong>，文档仓库已按 Monkey King 6.7.0 固定源码提交\n<code>bafa2986212d27b6b59f1324f89548b72a810966</code> 完成全量 API 对账。</p>\n",
+      "textRaw": "兼容性说明 (Compatibility)",
+      "name": "兼容性说明_(compatibility)",
+      "desc": "<p>本文说明 Monkey King 6.7.0 文档与运行环境的兼容范围，面向脚本使用者和集成维护者。</p>\n",
       "modules": [
         {
-          "textRaw": "总体状态",
-          "name": "总体状态",
-          "desc": "<table>\n<thead>\n<tr>\n<th>指标</th>\n<th style=\"text-align:right\">当前值</th>\n<th>验证方式</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Canonical Markdown 页面</td>\n<td style=\"text-align:right\">113</td>\n<td><code>npm run check:content</code></td>\n</tr>\n<tr>\n<td>兼容 JSON 文件</td>\n<td style=\"text-align:right\">125</td>\n<td><code>npm run json:build</code> 与 JSON 契约测试</td>\n</tr>\n<tr>\n<td>固定源码公开符号</td>\n<td style=\"text-align:right\">4,499</td>\n<td><code>npm run api:extract</code></td>\n</tr>\n<tr>\n<td>已映射公开符号</td>\n<td style=\"text-align:right\">4,499 / 4,499</td>\n<td><code>npm run api:check</code></td>\n</tr>\n<tr>\n<td>未映射符号</td>\n<td style=\"text-align:right\">0</td>\n<td><code>api-surface/gaps.json</code></td>\n</tr>\n<tr>\n<td>JavaScript 示例</td>\n<td style=\"text-align:right\">2,180</td>\n<td><code>npm run examples:check</code></td>\n</tr>\n<tr>\n<td>构建页面</td>\n<td style=\"text-align:right\">115 HTML</td>\n<td><code>npm run build:web</code> 与链接检查</td>\n</tr>\n</tbody>\n</table>\n<p>“完成”表示页面已存在、正文包含版本信息和 Rhino 2.0 示例，并且每个固定源码公开符号都映射到唯一有效页面锚点。Android、Java、OkHttp、OpenCV 和 MediaInfo 等外部类型只在本仓库说明 Monkey King 的入口与差异，完整 API 以其官方资料为准。</p>\n",
+          "textRaw": "当前基线",
+          "name": "当前基线",
+          "desc": "<table>\n<thead>\n<tr>\n<th>项目</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>产品版本</td>\n<td>Monkey King 6.7.0</td>\n</tr>\n<tr>\n<td>Android</td>\n<td>API 24 及以上</td>\n</tr>\n<tr>\n<td>JavaScript 引擎</td>\n<td>Rhino 2.0 语法环境</td>\n</tr>\n<tr>\n<td>文档页面</td>\n<td>113 个 canonical 页面</td>\n</tr>\n<tr>\n<td>兼容数据</td>\n<td>125 个 JSON 文件</td>\n</tr>\n<tr>\n<td>示例</td>\n<td>每个公开成员至少一个 Rhino 2.0 示例</td>\n</tr>\n</tbody>\n</table>\n",
           "type": "module",
-          "displayName": "总体状态"
+          "displayName": "当前基线"
         },
         {
-          "textRaw": "分领域页面",
-          "name": "分领域页面",
-          "desc": "<table>\n<thead>\n<tr>\n<th>领域</th>\n<th style=\"text-align:right\">页面数</th>\n<th style=\"text-align:center\">状态</th>\n<th>入口</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>使用指南与项目说明</td>\n<td style=\"text-align:right\">6</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../guide/overview.md\">综述</a>、<a href=\"../guide/manual.md\">使用手册</a>、<a href=\"../guide/troubleshooting.md\">疑难解答</a></td>\n</tr>\n<tr>\n<td>核心 API</td>\n<td style=\"text-align:right\">5</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/core/global.md\">全局对象</a>、<a href=\"../api/core/modules.md\">模块</a>、<a href=\"../api/core/monkeyking.md\">Monkey King</a></td>\n</tr>\n<tr>\n<td>自动化 API</td>\n<td style=\"text-align:right\">9</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/automation/automator.md\">自动化</a>、<a href=\"../api/automation/ui-selector.md\">选择器</a>、<a href=\"../api/automation/ui-object.md\">控件</a></td>\n</tr>\n<tr>\n<td>系统 API</td>\n<td style=\"text-align:right\">17</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/system/device.md\">设备</a>、<a href=\"../api/system/sqlite.md\">SQLite</a>、<a href=\"../api/system/threads.md\">线程</a></td>\n</tr>\n<tr>\n<td>媒体 API</td>\n<td style=\"text-align:right\">9</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/media/image.md\">图像</a>、<a href=\"../api/media/ocr.md\">OCR</a>、<a href=\"../api/media/mediainfo.md\">MediaInfo</a></td>\n</tr>\n<tr>\n<td>网络 API</td>\n<td style=\"text-align:right\">3</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/network/web.md\">Web</a>、<a href=\"../api/network/http.md\">HTTP</a>、<a href=\"../api/network/web-socket.md\">WebSocket</a></td>\n</tr>\n<tr>\n<td>工具 API</td>\n<td style=\"text-align:right\">20</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/utilities/util.md\">Util</a>、<a href=\"../api/utilities/converter.md\">数据转换</a>、<a href=\"../api/utilities/mime.md\">MIME</a>、<a href=\"../api/utilities/zip.md\">Zip</a></td>\n</tr>\n<tr>\n<td>类型参考</td>\n<td style=\"text-align:right\">31</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../api/types/data-types.md\">数据类型</a>、<a href=\"../api/types/image-wrapper.md\">图像包装类</a>、<a href=\"../api/types/notice-builder.md\">通知类型</a></td>\n</tr>\n<tr>\n<td>Android / 运行时参考</td>\n<td style=\"text-align:right\">7</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../reference/android/activity.md\">Activity</a>、<a href=\"../reference/android/context.md\">Context</a>、<a href=\"../reference/runtime/runtime.md\">Runtime</a></td>\n</tr>\n<tr>\n<td>术语与颜色表</td>\n<td style=\"text-align:right\">6</td>\n<td style=\"text-align:center\">√</td>\n<td><a href=\"../reference/glossaries/glossary.md\">术语</a>、<a href=\"../reference/color-table.md\">颜色表</a></td>\n</tr>\n</tbody>\n</table>\n",
+          "textRaw": "使用建议",
+          "name": "使用建议",
+          "desc": "<ul>\n<li>需要 Android、Java、OkHttp 或 MediaInfo 类型时，先阅读对应的权限、线程和生命周期说明。</li>\n<li>需要在不同设备运行时，优先检查无障碍、Root、Shizuku、OCR、传感器和存储权限。</li>\n<li>需要兼容旧脚本时，可保留文档中明确标记的历史兼容值；新脚本应优先使用当前入口和当前包名。</li>\n<li>页面中的版本标签以 Monkey King 6.7.0 为准；旧版本行为只在影响迁移时保留说明。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "分领域页面"
+          "displayName": "问题反馈"
         },
         {
-          "textRaw": "新增的 6.7.0 页面",
-          "name": "新增的 6.7.0 页面",
-          "desc": "<ul>\n<li>工具：<a href=\"../api/utilities/util.md\"><code>util</code></a>、<a href=\"../api/utilities/converter.md\"><code>cvt</code></a>、<a href=\"../api/utilities/formatter.md\"><code>fmt</code></a>、<a href=\"../api/utilities/jsox.md\"><code>jsox</code></a>、<a href=\"../api/utilities/mime.md\"><code>mime</code></a>、<a href=\"../api/utilities/zip.md\"><code>zip</code></a>、<a href=\"../api/utilities/nanoid.md\"><code>nanoid</code></a>、<a href=\"../api/utilities/pinyin.md\"><code>pinyin</code></a>、<a href=\"../api/utilities/pinyin4j.md\"><code>pinyin4j</code></a>。</li>\n<li>系统：<a href=\"../api/system/sysprops.md\"><code>sysprops</code></a>、<a href=\"../api/system/sqlite.md\"><code>sqlite</code></a>。</li>\n<li>媒体：<a href=\"../api/media/mediainfo.md\"><code>mediainfo</code></a>。</li>\n</ul>\n",
+          "textRaw": "问题反馈",
+          "name": "问题反馈",
+          "desc": "<p>请通过应用内反馈入口或授权支持渠道提交产品版本、Android API 级别、设备信息、最小复现脚本和完整错误日志。</p>\n",
           "type": "module",
-          "displayName": "本地验收"
-        },
-        {
-          "textRaw": "本地验收",
-          "name": "本地验收",
-          "desc": "<p>修改正文、目录或 API 清单后，至少运行以下命令：</p>\n<pre><code class=\"lang-bash\">npx tsc --noEmit\nnpm run api:coverage -- --check\nnpm run api:check\nnpm run examples:check\nnpm run check:content\nnpm run json:build\nnpm test\nnpm run build:web\nnpm run check:links\n</code></pre>\n<p>完整 CI 顺序、固定源码 checkout 和 Android / 模拟器 smoke 验证见 <a href=\"https://github.com/qiaomu-s/MonkeyKing-Documentation#本地开发\">仓库 README</a>。</p>\n",
-          "type": "module",
-          "displayName": "本地验收"
+          "displayName": "问题反馈"
         }
       ],
       "type": "module",
-      "displayName": "文档进度 (Progress)"
+      "displayName": "兼容性说明 (Compatibility)"
     }
   ]
 }

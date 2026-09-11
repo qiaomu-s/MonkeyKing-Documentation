@@ -32,7 +32,7 @@
 
 ```js
 'ui';
-let webView = web.newInjectableWebView('https://www.github.com');
+let webView = web.newInjectableWebView('https://example.com');
 webView.inject('navigator.userAgent', value => console.log(value));
 activity.setContentView(webView);
 ```

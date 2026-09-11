@@ -81,8 +81,8 @@
           "displayName": "[m] throwable"
         },
         {
-          "textRaw": "固定源码补充方法",
-          "name": "固定源码补充方法",
+          "textRaw": "实现合同补充方法",
+          "name": "实现合同补充方法",
           "desc": "<p>以下方法与 <code>color</code>、<code>throwable</code> 一样同步执行，不持有外部资源，版本记作 <strong>≤ v6.6.4（旧文档未记录精确版本）</strong>。</p>\n",
           "methods": [
             {
@@ -128,7 +128,7 @@
               "textRaw": "s13n.bytes(source, fromUnit?)",
               "type": "method",
               "name": "bytes",
-              "desc": "<p>接受 1 至 2 个参数，把数值字节单位统一为整数 byte。省略 <code>fromUnit</code> 时按 byte 解释；提供第二个参数时必须是字符串单位，支持值以 <a href=\"converter.md\">cvt.bytes</a> 的字节单位解析规则为准。非法参数数量、非字符串单位或不可转换数值会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(s13n.bytes(2, &#39;KB&#39;));  // 2048\nconsole.log(s13n.bytes(1.5, &#39;MB&#39;));\n</code></pre>\n<p>这些转换本身无需 Android 权限且没有持久副作用；若上游值来自文件、网络或硬件，资源生命周期仍由上游 API 管理。</p>\n<!-- fixed-source-contracts:start -->\n",
+              "desc": "<p>接受 1 至 2 个参数，把数值字节单位统一为整数 byte。省略 <code>fromUnit</code> 时按 byte 解释；提供第二个参数时必须是字符串单位，支持值以 <a href=\"converter.md\">cvt.bytes</a> 的字节单位解析规则为准。非法参数数量、非字符串单位或不可转换数值会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(s13n.bytes(2, &#39;KB&#39;));  // 2048\nconsole.log(s13n.bytes(1.5, &#39;MB&#39;));\n</code></pre>\n<p>这些转换本身无需 Android 权限且没有持久副作用；若外部输入值来自文件、网络或硬件，资源生命周期仍由相关 API 管理。</p>\n<!-- api-contracts:start -->\n",
               "signatures": [
                 {
                   "params": [
@@ -144,23 +144,23 @@
             }
           ],
           "type": "module",
-          "displayName": "固定源码补充方法"
+          "displayName": "实现合同补充方法"
         },
         {
-          "textRaw": "固定源码合同表",
-          "name": "固定源码合同表",
-          "desc": "<p>下表覆盖本页在固定提交 <code>bafa2986212d</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、源码位置、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOnMxM24\"></a> <code>module:s13n</code></td>\n<td><code>s13n</code> 模块入口 · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/ScriptRuntime.kt:L765</code></td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5ieXRlcw\"></a> <code>s13n.bytes</code></td>\n<td><code>s13n.bytes(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L170</code></td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Any；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.bytes);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5jb2xvcg\"></a> <code>s13n.color</code></td>\n<td><code>s13n.color(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L74</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.color);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5wb2ludA\"></a> <code>s13n.point</code></td>\n<td><code>s13n.point(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L97</code></td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：AndroidPoint；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.point);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aHJvd2FibGU\"></a> <code>s13n.throwable</code></td>\n<td><code>s13n.throwable(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L84</code></td>\n<td>参数：按固定源码声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按固定源码声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.throwable);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aW1l\"></a> <code>s13n.time</code></td>\n<td><code>s13n.time(...args)</code> · 固定源码 <code>app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/s13n/S13n.kt:L123</code></td>\n<td>参数：1 至 3 个参数；可选项与默认值见本页说明或源码守卫</td>\n<td>返回：Double；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.time);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "textRaw": "API 合同表",
+          "name": "api_合同表",
+          "desc": "<p>下表覆盖本页在产品版本 <code>6.7.0</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOnMxM24\"></a> <code>module:s13n</code></td>\n<td><code>s13n</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5ieXRlcw\"></a> <code>s13n.bytes</code></td>\n<td><code>s13n.bytes(...args)</code> · 实现合同</td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或页面约束</td>\n<td>返回：Any；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.bytes);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5jb2xvcg\"></a> <code>s13n.color</code></td>\n<td><code>s13n.color(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.color);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi5wb2ludA\"></a> <code>s13n.point</code></td>\n<td><code>s13n.point(...args)</code> · 实现合同</td>\n<td>参数：1 至 2 个参数；可选项与默认值见本页说明或页面约束</td>\n<td>返回：AndroidPoint；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.point);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aHJvd2FibGU\"></a> <code>s13n.throwable</code></td>\n<td><code>s13n.throwable(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.throwable);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-czEzbi50aW1l\"></a> <code>s13n.time</code></td>\n<td><code>s13n.time(...args)</code> · 实现合同</td>\n<td>参数：1 至 3 个参数；可选项与默认值见本页说明或页面约束</td>\n<td>返回：Double；参数校验、状态或底层异常原样传播</td>\n<td>权限：内存标准化无需权限，文件或资源输入受来源权限约束；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅创建标准值或包装对象</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof s13n.time);</code></td>\n</tr>\n</tbody>\n</table>\n",
           "modules": [
             {
               "textRaw": "Rhino 2.0 表格读取示例",
               "name": "rhino_2.0_表格读取示例",
-              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: s13n&#39;);\n</code></pre>\n<!-- fixed-source-contracts:end -->\n",
+              "desc": "<pre><code class=\"lang-js\">console.log(&#39;Rhino 2.0 contract table: s13n&#39;);\n</code></pre>\n<!-- api-contracts:end -->\n",
               "type": "module",
               "displayName": "Rhino 2.0 表格读取示例"
             }
           ],
           "type": "module",
-          "displayName": "固定源码合同表"
+          "displayName": "API 合同表"
         }
       ],
       "type": "module",

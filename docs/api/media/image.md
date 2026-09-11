@@ -136,13 +136,13 @@ images.save(clip, "/sdcard/clip.png");
     * `AREA` 区域插值
     * `CUBIC` 三次样条插值
     * `LANCZOS4` Lanczos插值
-      参见[InterpolationFlags](https://docs.opencv.org/3.4.4/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121/)
+      参见[InterpolationFlags](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121/)
 
 * 返回 {Image}
 
 调整图片大小, 并返回调整后的图片. 例如把图片放缩为200*300：`images.resize(img, [200, 300])`.
 
-参见[Imgproc.resize](https://docs.opencv.org/3.4.4/da/d54/group__imgproc__transform.html#ga47a974309e9102f5f08231edc7e7529d/).
+参见[Imgproc.resize](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga47a974309e9102f5f08231edc7e7529d/).
 
 ## images.scale(img, fx, fy[, interpolation])
 
@@ -157,13 +157,13 @@ images.save(clip, "/sdcard/clip.png");
     * `AREA` 区域插值
     * `CUBIC` 三次样条插值
     * `LANCZOS4` Lanczos插值
-      参见[InterpolationFlags](https://docs.opencv.org/3.4.4/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121/)
+      参见[InterpolationFlags](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121/)
 
 * 返回 {Image}
 
 放缩图片, 并返回放缩后的图片. 例如把图片变成原来的一半：`images.scale(img, 0.5, 0.5)`.
 
-参见[Imgproc.resize](https://docs.opencv.org/3.4.4/da/d54/group__imgproc__transform.html#ga47a974309e9102f5f08231edc7e7529d/).
+参见[Imgproc.resize](https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga47a974309e9102f5f08231edc7e7529d/).
 
 ## images.rotate(img, degree[, x, y])
 
@@ -210,7 +210,7 @@ images.save(clip, "/sdcard/clip.png");
 * `img` {Image} 图片
 * `threshold` {number} 阈值
 * `maxVal` {number} 最大值
-* `type` {string} 阈值化类型, 默认为"BINARY", 参见[ThresholdTypes](https://docs.opencv.org/3.4.4/d7/d1b/group__imgproc__misc.html#gaa9e58d2860d4afa658ef70a9b1115576/), 可选的值:
+* `type` {string} 阈值化类型, 默认为"BINARY", 参见[ThresholdTypes](https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html#gaa9e58d2860d4afa658ef70a9b1115576/), 可选的值:
     * `BINARY`
     * `BINARY_INV`
     * `TRUNC`
@@ -223,7 +223,7 @@ images.save(clip, "/sdcard/clip.png");
 
 将图片阈值化, 并返回处理后的图像. 可以用这个函数进行图片二值化. 例如：`images.threshold(img, 100, 255, "BINARY")`, 这个代码将图片中大于100的值全部变成255, 其余变成0, 从而达到二值化的效果. 如果img是一张灰度化图片, 这个代码将会得到一张黑白图片.
 
-可以参考有关博客（比如[threshold函数的使用](https://blog.csdn.net/u012566751/article/details/77046445/)）或者OpenCV文档[threshold](https://docs.opencv.org/3.4.4/d7/d1b/group__imgproc__misc.html#gae8a4a146d1ca78c626a53577199e9c57/).
+可以参考有关博客（比如[threshold函数的使用](https://blog.csdn.net/u012566751/article/details/77046445/)）或者OpenCV文档[threshold](https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html#gae8a4a146d1ca78c626a53577199e9c57/).
 
 ## images.adaptiveThreshold(img, maxValue, adaptiveMethod, thresholdType, blockSize, C)
 
@@ -243,7 +243,7 @@ images.save(clip, "/sdcard/clip.png");
 
 对图片进行自适应阈值化处理, 并返回处理后的图像.
 
-可以参考有关博客（比如[threshold与adaptiveThreshold](https://blog.csdn.net/guduruyu/article/details/68059450/)）或者OpenCV文档[adaptiveThreshold](https://docs.opencv.org/3.4.4/d7/d1b/group__imgproc__misc.html#ga72b913f352e4a1b1b397736707afcde3
+可以参考有关博客（比如[threshold与adaptiveThreshold](https://blog.csdn.net/guduruyu/article/details/68059450/)）或者OpenCV文档[adaptiveThreshold](https://docs.opencv.org/4.x/d7/d1b/group__imgproc__misc.html#ga72b913f352e4a1b1b397736707afcde3
 /).
 
 ## images.cvtColor(img, code[, dstCn])
@@ -251,7 +251,7 @@ images.save(clip, "/sdcard/clip.png");
 **[v4.1.0新增]**
 
 * `img` {Image} 图片
-* `code` {string} 颜色空间转换的类型, 可选的值有一共有205个（参见[ColorConversionCodes](https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga4e0972be5de079fed4e3a10e24ef5ef0/)）, 这里只列出几个：
+* `code` {string} 颜色空间转换的类型, 可选的值有一共有205个（参见[ColorConversionCodes](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html#ga4e0972be5de079fed4e3a10e24ef5ef0/)）, 这里只列出几个：
     * `BGR2GRAY` BGR转换为灰度
     * `BGR2HSV ` BGR转换为HSV
 * `dstCn` {number} 目标图像的颜色通道数量, 如果不填写则根据其他参数自动决定.
@@ -259,7 +259,7 @@ images.save(clip, "/sdcard/clip.png");
 
 对图像进行颜色空间转换, 并返回转换后的图像.
 
-可以参考有关博客（比如[颜色空间转换](https://blog.csdn.net/u011574296/article/details/70896811?locationNum=14&fps=1)）或者OpenCV文档[cvtColor](https://docs.opencv.org/3.4.4/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab/).
+可以参考有关博客（比如[颜色空间转换](https://blog.csdn.net/u011574296/article/details/70896811?locationNum=14&fps=1)）或者OpenCV文档[cvtColor](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab/).
 
 ## images.inRange(img, lowerBound, upperBound)
 
@@ -308,7 +308,7 @@ images.save(clip, "/sdcard/clip.png");
 
 对图像进行模糊（平滑处理）, 返回处理后的图像.
 
-可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[blur](https://docs.opencv.org/3.4.4/d4/d86/group__imgproc__filter.html#ga8c45db9afe636703801b0b2e440fce37/).
+可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[blur](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#ga8c45db9afe636703801b0b2e440fce37/).
 
 ## images.medianBlur(img, size)
 
@@ -320,7 +320,7 @@ images.save(clip, "/sdcard/clip.png");
 
 对图像进行中值滤波, 返回处理后的图像.
 
-可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[blur](https://docs.opencv.org/3.4.4/d4/d86/group__imgproc__filter.html#ga564869aa33e58769b4469101aac458f9/).
+可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[blur](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#ga564869aa33e58769b4469101aac458f9/).
 
 ## images.gaussianBlur(img, size[, sigmaX, sigmaY, type])
 
@@ -335,7 +335,7 @@ images.save(clip, "/sdcard/clip.png");
 
 对图像进行高斯模糊, 返回处理后的图像.
 
-可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[GaussianBlur](https://docs.opencv.org/3.4.4/d4/d86/group__imgproc__filter.html#gaabe8c836e97159a9193fb0b11ac52cf1/).
+可以参考有关博客（比如[实现图像平滑处理](https://www.cnblogs.com/denny402/p/3848316.html)）或者OpenCV文档[GaussianBlur](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#gaabe8c836e97159a9193fb0b11ac52cf1/).
 
 ## images.matToImage(mat)
 
