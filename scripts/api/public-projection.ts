@@ -12,6 +12,7 @@ import {
   type PublicApiManifest,
   type PublicApiModule,
   type PublicApiSymbol,
+  type PublicCoverageRule,
 } from './model'
 
 /** A source-backed gap shape accepted by the projection helper. */
@@ -33,7 +34,7 @@ function uniqueStable(values: readonly string[]): string[] {
   return [...new Set(values)]
 }
 
-function projectRule(rule: CoverageRule): CoverageRule {
+function projectRule(rule: CoverageRule): PublicCoverageRule {
   return {
     id: rule.id,
     patterns: uniqueStable(rule.patterns),

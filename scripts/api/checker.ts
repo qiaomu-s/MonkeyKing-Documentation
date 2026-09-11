@@ -310,7 +310,7 @@ export async function validateApiSurface(
       for (const symbol of patternMatches) included.set(symbol.id, symbol)
     }
 
-    for (const pattern of rule.exclude ?? []) {
+    for (const pattern of ('exclude' in rule ? rule.exclude ?? [] : [])) {
       const excluded = symbolMatcher.match(pattern, included)
       if (excluded.length === 0) {
         errors.push({

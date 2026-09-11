@@ -186,10 +186,18 @@ export interface PublicApiManifest {
   readonly symbols: readonly PublicApiSymbol[]
 }
 
+export interface PublicCoverageRule {
+  readonly id: string
+  readonly patterns: readonly string[]
+  readonly status: CoverageStatus
+  readonly target?: string
+  readonly reason?: string
+}
+
 export interface PublicApiCoverage {
   readonly schemaVersion: typeof API_COVERAGE_SCHEMA_VERSION
   readonly productVersion: typeof API_PRODUCT_VERSION
-  readonly rules: readonly CoverageRule[]
+  readonly rules: readonly PublicCoverageRule[]
 }
 
 export interface PublicApiGap {
