@@ -1,19 +1,11 @@
-# MonkeyKing-Documentation
+# Monkey King 文档
 
-Monkey King 的官方文档仓库。站点使用 VitePress 构建，源码仓库为
-[`qiaomu-s/MonkeyKing-Documentation`](https://github.com/qiaomu-s/MonkeyKing-Documentation)，
-正式站点为 [`https://docs.monkeyking.com`](https://docs.monkeyking.com)。
+Monkey King 6.7.0 的中文使用指南、API 参考与兼容数据说明。文档站点使用 VitePress 构建，
+适合在浏览器中阅读，也可作为应用内离线帮助页发布。
 
-> [!IMPORTANT]
-> 文档已按 Monkey King 6.7.0 固定源码提交
-> `bafa2986212d27b6b59f1324f89548b72a810966` 完成公开 API 全量对账。
-> `api-surface/manifest.json`、`api-surface/coverage.json` 和 `api-surface/gaps.json` 的门禁
-> 确保每个公开符号都有唯一的页面与锚点映射；重新生成或修改文档后请运行完整验证命令。
+> 文档版本：**6.7.0** · 内容更新时间：**2026-09-11**
 
-## 阶段二：Monkey King 6.7.0 API 全量对账
-
-阶段二已完成：固定源码提交中的公开 API 已建立可审计 manifest，113 个目录页面、125 个兼容 JSON
-和全部 Rhino 2.0 示例均通过本地覆盖检查。
+站点入口：<https://docs.monkeyking.com>
 
 ## 本地开发
 
@@ -33,8 +25,8 @@ npm ci
 | `npm run docs:dev` | 启动 VitePress 本地开发服务器 |
 | `npm run docs:preview` | 预览已生成的 `dist/web/` 网站产物 |
 | `npx tsc --noEmit` | 检查 TypeScript 类型 |
-| `npm run api:extract -- --source <源码仓> --ref <提交> --check` | 从固定源码提交校验公开 API manifest |
-| `npm run api:mime -- --source <源码仓> --ref <提交> --check` | 校验固定源码生成的 MIME 常量附录 |
+| `npm run api:extract -- --source <source> --ref <ref> --check` | 校验公开 API manifest |
+| `npm run api:mime -- --source <source> --ref <ref> --check` | 校验 MIME 常量附录 |
 | `npm run api:coverage -- --check` | 校验每个公开符号唯一映射到有效文档锚点 |
 | `npm run api:check` | 校验 manifest、coverage、页面与锚点契约 |
 | `npm run examples:check` | 校验 Rhino 2.0 JavaScript 示例和占位代码 |
@@ -90,8 +82,7 @@ npm run api:smoke -- --serial emulator-5554
 
 ### Web
 
-`npm run build:web` 生成 `dist/web/`。该目录使用站点根路径 `/`，包含 VitePress 页面、
-静态资源、`CNAME` 和公开兼容 JSON，是 GitHub Pages 唯一上传的目录。构建产物不提交到 Git。
+`npm run build:web` 生成 `dist/web/`，包含页面、静态资源和兼容 JSON。构建产物不提交到版本库。
 
 ### Android
 
@@ -102,32 +93,8 @@ npm run api:smoke -- --serial emulator-5554
 Android 集成属于独立工作：应用应使用 `WebViewAssetLoader` 通过 HTTPS 虚拟域加载离线站点，
 而不是继续使用 `file:///android_asset/docs/`。本仓库只生成并验证离线产物，不修改应用代码。
 
-## GitHub Pages 发布
+## 内容质量
 
-`.github/workflows/pages.yml` 在面向 `master` 的拉取请求和 `master` push 上运行相同的质量门禁。
-只有 `master` push 全部通过后，工作流才会上传精确的 `dist/web/` Pages artifact，并部署到
-`github-pages` 环境。并发运行按 Git ref 分组；同一 ref 的旧运行会被取消。
-
-首次发布前，仓库管理员需要完成一次 GitHub 与 DNS 配置：
-
-1. 在仓库 **Settings → Pages → Build and deployment** 中把 Source 设为 **GitHub Actions**。
-2. 创建 fine-grained PAT，并保存为 Actions Secret `MONKEYKING_SOURCE_TOKEN`。该令牌只授权
-   `qiaomu-s/AutoJs6` 的 **Contents: read** 与 **Metadata: read**；工作流两次 checkout 都关闭凭据持久化。
-3. 在 Pages 的 Custom domain 中填写 `docs.monkeyking.com`。仓库中的
-   `docs/public/CNAME` 会随网站构建进入发布产物，请勿删除。
-4. 在 DNS 服务商创建 `CNAME` 记录：主机记录 `docs`，目标 `qiaomu-s.github.io`。记录值不要带
-   `https://`、仓库路径或结尾斜杠，并等待 DNS 生效。
-5. 建议在 GitHub 账户中验证自定义域。GitHub 签发证书且域名检查成功后，在 Pages 设置中启用
-   **Enforce HTTPS**。
-
-工作流不会创建仓库、修改远端、配置 DNS 或替管理员启用 Pages；这些操作需要由仓库所有者完成。
-
-## 上游来源与许可证
-
-MonkeyKing-Documentation 保留了历史文档的来源说明和 Git 历史。部分内容源自
-[`SuperMonster003/AutoJs6-Documentation`](https://github.com/SuperMonster003/AutoJs6-Documentation)，
-其上游又源自 [`hyb1996/AutoJs-Docs`](https://github.com/hyb1996/AutoJs-Docs)。旧生成器曾参考
-Node.js 文档工具链；这些名称仅用于历史归属，不代表本站当前品牌。
-
-版权、授权条件和需保留的声明以仓库中的 [`LICENSE`](./LICENSE) 及各文件现有声明为准。迁移或引用
-上游内容时必须继续保留相应署名与许可证要求。
+提交内容前建议运行 `npm run check:content`、`npm run examples:check`、`npm run public:scan`
+和 `npm test`。`public:scan` 会检查 README、文档、兼容 JSON、API 清单与构建产物中的公开文案，
+避免把内部路径、版本提交标识或维护流程带到用户界面。
