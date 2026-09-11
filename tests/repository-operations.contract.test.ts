@@ -109,7 +109,8 @@ describe('repository operations contract', () => {
   test('documents local installation and product workflows in Chinese', () => {
     const readme = readOptionalText(readmePath)
 
-    expect(readme).toContain('MonkeyKing-Documentation')
+    expect(readme).toContain('Monkey King 文档')
+    expect(readme).not.toContain('MonkeyKing-Documentation')
     expect(readme).toContain('Monkey King 官方产品文档')
     expect(readme).toContain('Node.js 22.23.2')
     expect(readme).toContain('npm@11.17.0')
