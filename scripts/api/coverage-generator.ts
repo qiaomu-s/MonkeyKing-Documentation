@@ -2,7 +2,6 @@ import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import {
-  type ApiCoverage,
   type ApiManifest,
   type ApiSymbol,
   type CoverageRule,
@@ -39,7 +38,6 @@ export interface ApiCoverageArtifacts {
 
 type HeadingRecord = MarkdownHeadingRecord
 type CoverageSymbol = ApiSymbol | PublicApiSymbol
-type CoverageManifest = ApiManifest | PublicApiManifest
 
 export const defaultOwnerPages: Readonly<Record<string, string>> = Object.freeze({
   global: 'docs/api/core/global.md',
