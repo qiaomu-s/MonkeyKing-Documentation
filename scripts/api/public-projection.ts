@@ -133,3 +133,9 @@ export function isPublicApiCoverage(value: unknown): value is PublicApiCoverage 
     Array.isArray(candidate.rules)
   )
 }
+
+// Descriptive aliases keep the projection API easy to discover for private
+// audit tooling without creating a second implementation path.
+export const projectPublicManifest = projectApiManifest
+export const projectPublicCoverage = projectApiCoverage
+export const projectPublicGaps = projectApiGaps
