@@ -230,7 +230,7 @@ export function stableJson(value: unknown): string {
 
 export function manifestMatches(
   existingText: string,
-  manifest: ApiManifest,
+  manifest: unknown,
 ): boolean {
   return existingText === stableJson(manifest)
 }
