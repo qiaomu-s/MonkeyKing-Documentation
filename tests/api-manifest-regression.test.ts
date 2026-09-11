@@ -6,12 +6,15 @@ describe('pinned MonkeyKing API manifest', () => {
     const manifest = JSON.parse(
       readFileSync(resolve(process.cwd(), 'api-surface/manifest.json'), 'utf8'),
     ) as {
-      source: { repository: string }
+      schemaVersion: number
+      productVersion: string
       symbols: Array<{ id: string }>
     }
     const symbolIds = new Set(manifest.symbols.map(({ id }) => id))
 
-    expect(manifest.source.repository).toBe('qiaomu-s/AutoJs6')
+    expect(manifest).toMatchObject({ schemaVersion: 2, productVersion: '6.7.0' })
+    expect(manifest).not.toHaveProperty('source')
+    expect(symbolIds.has('global:__engine__')).toBe(false)
     for (const id of [
       'events.on',
       'events.emit',

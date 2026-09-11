@@ -1,5 +1,15 @@
-export const API_MANIFEST_SCHEMA_VERSION = 1 as const
-export const API_COVERAGE_SCHEMA_VERSION = 1 as const
+/**
+ * The extractor keeps a richer, source-backed model internally.  That model
+ * is intentionally versioned separately from the files that are published in
+ * `api-surface/`: source locations are useful while auditing, but must never
+ * cross the public documentation boundary.
+ */
+export const INTERNAL_API_MANIFEST_SCHEMA_VERSION = 1 as const
+export const INTERNAL_API_COVERAGE_SCHEMA_VERSION = 1 as const
+
+export const API_MANIFEST_SCHEMA_VERSION = 2 as const
+export const API_COVERAGE_SCHEMA_VERSION = 2 as const
+export const API_PRODUCT_VERSION = '6.7.0' as const
 
 export interface SourceLocation {
   readonly path: string
@@ -113,7 +123,7 @@ export interface AppliedOverride {
 }
 
 export interface ApiManifest {
-  readonly schemaVersion: typeof API_MANIFEST_SCHEMA_VERSION
+  readonly schemaVersion: typeof INTERNAL_API_MANIFEST_SCHEMA_VERSION
   readonly source: ApiSourceIdentity
   readonly modules: readonly ApiModule[]
   readonly symbols: readonly ApiSymbol[]
@@ -139,9 +149,60 @@ export interface CoverageRule {
 }
 
 export interface ApiCoverage {
-  readonly schemaVersion: typeof API_COVERAGE_SCHEMA_VERSION
+  readonly schemaVersion: typeof INTERNAL_API_COVERAGE_SCHEMA_VERSION
   readonly sourceRef: string
   readonly rules: readonly CoverageRule[]
+}
+
+/**
+ * Public manifest contract.  Keep this type deliberately small: consumers
+ * need the runtime surface and its documentation metadata, never extraction
+ * evidence such as repository names, paths, line numbers, or provider lists.
+ */
+export interface PublicApiModule {
+  readonly id: string
+  readonly name: string
+  readonly className: string
+  readonly aliases: readonly string[]
+  readonly dynamic?: boolean
+}
+
+export interface PublicApiSymbol {
+  readonly id: string
+  readonly owner: string
+  readonly name: string
+  readonly kind: ApiSymbolKind
+  readonly public: true
+  readonly canonicalId?: string | null
+  readonly annotations: readonly string[]
+  readonly signatures: readonly string[]
+  readonly overloads: readonly string[]
+}
+
+export interface PublicApiManifest {
+  readonly schemaVersion: typeof API_MANIFEST_SCHEMA_VERSION
+  readonly productVersion: typeof API_PRODUCT_VERSION
+  readonly modules: readonly PublicApiModule[]
+  readonly symbols: readonly PublicApiSymbol[]
+}
+
+export interface PublicApiCoverage {
+  readonly schemaVersion: typeof API_COVERAGE_SCHEMA_VERSION
+  readonly productVersion: typeof API_PRODUCT_VERSION
+  readonly rules: readonly CoverageRule[]
+}
+
+export interface PublicApiGap {
+  readonly symbolId: string
+  readonly owner: string
+  readonly name: string
+  readonly kind: ApiSymbolKind
+  readonly expectedPage?: string
+  readonly reason: string
+}
+
+export interface PublicApiGaps {
+  readonly gaps: readonly PublicApiGap[]
 }
 
 function sortJsonValue(value: unknown): unknown {

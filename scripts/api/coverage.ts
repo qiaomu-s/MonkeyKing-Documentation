@@ -7,8 +7,15 @@ import {
 } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { assertApiSurface } from './checker'
 import { generateApiCoverageArtifacts } from './coverage-generator'
-import { stableJson, type ApiManifest } from './model'
+import {
+  stableJson,
+  type ApiManifest,
+  type PublicApiCoverage,
+  type PublicApiManifest,
+} from './model'
+import { isPublicApiManifest, projectApiGaps } from './public-projection'
 
 export interface CoverageArguments {
   readonly root: string
@@ -16,6 +23,7 @@ export interface CoverageArguments {
   readonly output: string
   readonly gaps: string
   readonly check: boolean
+  readonly internalManifest?: string
 }
 
 export function parseCoverageArguments(args: readonly string[]): CoverageArguments {
@@ -24,6 +32,7 @@ export function parseCoverageArguments(args: readonly string[]): CoverageArgumen
   let output = 'api-surface/coverage.json'
   let gaps = 'api-surface/gaps.json'
   let check = false
+  let internalManifest: string | undefined
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index]
@@ -40,6 +49,9 @@ export function parseCoverageArguments(args: readonly string[]): CoverageArgumen
       case '--gaps':
         gaps = args[++index] ?? ''
         break
+      case '--internal-manifest':
+        internalManifest = args[++index] ?? ''
+        break
       case '--check':
         check = true
         break
@@ -51,25 +63,72 @@ export function parseCoverageArguments(args: readonly string[]): CoverageArgumen
   if (!root || !manifest || !output || !gaps) {
     throw new Error('api:coverage arguments must not be empty.')
   }
-  return { root, manifest, output, gaps, check }
+  if (internalManifest === '') {
+    throw new Error('api:coverage requires a non-empty --internal-manifest value.')
+  }
+  return {
+    root,
+    manifest,
+    output,
+    gaps,
+    check,
+    ...(internalManifest ? { internalManifest } : {}),
+  }
 }
 
 export async function runCoverage(arguments_: CoverageArguments): Promise<void> {
   const root = resolve(arguments_.root)
-  const manifest = JSON.parse(
+  const manifestPayload = JSON.parse(
     readFileSync(resolve(root, arguments_.manifest), 'utf8'),
-  ) as ApiManifest
-  const artifacts = await generateApiCoverageArtifacts({
-    manifest,
-    projectRoot: root,
-  })
+  ) as ApiManifest | PublicApiManifest
   const outputPath = resolve(root, arguments_.output)
   const gapsPath = resolve(root, arguments_.gaps)
-  const output = stableJson(artifacts.coverage)
-  const gapsOutput = stableJson({
-    sourceRef: manifest.source.commit,
-    gaps: artifacts.gaps,
+
+  // Public validation intentionally does not recreate route decisions without
+  // the internal evidence model.  It validates the committed, already
+  // projected artifacts instead.
+  if (isPublicApiManifest(manifestPayload) && !arguments_.internalManifest) {
+    if (!arguments_.check) {
+      throw new Error(
+        'Generating API coverage requires --internal-manifest <private audit file>.',
+      )
+    }
+    if (!existsSync(gapsPath)) {
+      throw new Error(`API coverage gap inventory is missing: ${arguments_.gaps}`)
+    }
+    const expectedGaps = stableJson({ gaps: [] })
+    if (readFileSync(gapsPath, 'utf8') !== expectedGaps) {
+      throw new Error('API coverage gap inventory is not empty or has drifted.')
+    }
+    if (!existsSync(outputPath)) {
+      throw new Error(`API coverage is missing: ${arguments_.output}`)
+    }
+    const coverage = JSON.parse(
+      readFileSync(outputPath, 'utf8'),
+    ) as PublicApiCoverage
+    const report = await assertApiSurface({
+      manifest: manifestPayload,
+      coverage,
+      projectRoot: root,
+    })
+    process.stdout.write(
+      `API coverage valid: ${report.mappedSymbolCount}/${report.publicSymbolCount} ` +
+        'public symbols mapped.\n',
+    )
+    return
+  }
+
+  const routingManifest = arguments_.internalManifest
+    ? (JSON.parse(
+        readFileSync(resolve(root, arguments_.internalManifest), 'utf8'),
+      ) as ApiManifest)
+    : (manifestPayload as ApiManifest)
+  const artifacts = await generateApiCoverageArtifacts({
+    manifest: routingManifest,
+    projectRoot: root,
   })
+  const output = stableJson(artifacts.coverage)
+  const gapsOutput = stableJson(projectApiGaps(artifacts.gaps))
 
   if (arguments_.check) {
     if (!existsSync(gapsPath)) {
@@ -90,7 +149,7 @@ export async function runCoverage(arguments_: CoverageArguments): Promise<void> 
       throw new Error('API coverage drift detected. Run api:coverage.')
     }
     process.stdout.write(
-      `API coverage matches ${artifacts.coverage.sourceRef}: ` +
+      `API coverage matches Monkey King ${artifacts.coverage.productVersion}: ` +
         `${artifacts.coverage.rules.length} rules.\n`,
     )
     return

@@ -7,8 +7,16 @@ import type {
   ApiManifest,
   ApiSymbol,
   CoverageRule,
+  PublicApiCoverage,
+  PublicApiManifest,
+  PublicApiSymbol,
 } from './model'
-import { coverageSchema, manifestSchema } from './schema'
+import {
+  coverageSchema,
+  internalCoverageSchema,
+  internalManifestSchema,
+  manifestSchema,
+} from './schema'
 
 export interface ApiCheckError {
   readonly code:
@@ -30,6 +38,7 @@ export interface ApiCheckError {
     | 'invalid-target'
     | 'missing-page'
     | 'missing-anchor'
+    | 'forbidden-symbol'
   readonly message: string
   readonly symbolId?: string
   readonly ruleId?: string
@@ -42,14 +51,30 @@ export interface ApiCheckReport {
 }
 
 export interface ValidateApiSurfaceOptions {
-  readonly manifest: ApiManifest | unknown
-  readonly coverage: ApiCoverage | unknown
+  readonly manifest: ApiManifest | PublicApiManifest | unknown
+  readonly coverage: ApiCoverage | PublicApiCoverage | unknown
   readonly projectRoot: string
 }
 
 const ajv = new Ajv({ allErrors: true, strict: false })
 const validateManifestSchema = ajv.compile(manifestSchema)
 const validateCoverageSchema = ajv.compile(coverageSchema)
+const validateInternalManifestSchema = ajv.compile(internalManifestSchema)
+const validateInternalCoverageSchema = ajv.compile(internalCoverageSchema)
+
+function schemaVersion(value: unknown): number | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const version = (value as { schemaVersion?: unknown }).schemaVersion
+  return typeof version === 'number' ? version : undefined
+}
+
+function isInternalManifest(value: unknown): value is ApiManifest {
+  return schemaVersion(value) === 1
+}
+
+function isInternalCoverage(value: unknown): value is ApiCoverage {
+  return schemaVersion(value) === 1
+}
 
 function patternToRegExp(pattern: string): RegExp {
   const escaped = pattern
@@ -123,9 +148,9 @@ function addDuplicateIdErrors<T extends { readonly id: string }>(
 }
 
 function resolvedAliasTarget(
-  symbol: ApiSymbol,
+  symbol: ApiSymbol | PublicApiSymbol,
   rulesBySymbol: ReadonlyMap<string, CoverageRule>,
-  symbolsById: ReadonlyMap<string, ApiSymbol>,
+  symbolsById: ReadonlyMap<string, ApiSymbol | PublicApiSymbol>,
   visited = new Set<string>(),
 ): string | undefined {
   if (!symbol.canonicalId || visited.has(symbol.id)) return undefined
@@ -143,7 +168,7 @@ function resolvedAliasTarget(
 }
 
 interface TargetCheck {
-  readonly symbol: ApiSymbol
+  readonly symbol: ApiSymbol | PublicApiSymbol
   readonly rule: CoverageRule
   readonly target: string
   readonly page: string
@@ -154,34 +179,61 @@ export async function validateApiSurface(
   options: ValidateApiSurfaceOptions,
 ): Promise<ApiCheckReport> {
   const errors: ApiCheckError[] = []
-  const manifestValid = validateManifestSchema(options.manifest)
+  const internalManifestPayload = isInternalManifest(options.manifest)
+  const internalCoveragePayload = isInternalCoverage(options.coverage)
+  const manifestValid = internalManifestPayload
+    ? validateInternalManifestSchema(options.manifest)
+    : validateManifestSchema(options.manifest)
   if (!manifestValid) {
     errors.push({
       code: 'manifest-schema',
-      message: formatAjvErrors('manifest', validateManifestSchema.errors),
+      message: formatAjvErrors(
+        'manifest',
+        internalManifestPayload
+          ? validateInternalManifestSchema.errors
+          : validateManifestSchema.errors,
+      ),
     })
   }
-  const coverageValid = validateCoverageSchema(options.coverage)
+  const coverageValid = internalCoveragePayload
+    ? validateInternalCoverageSchema(options.coverage)
+    : validateCoverageSchema(options.coverage)
   if (!coverageValid) {
     errors.push({
       code: 'coverage-schema',
-      message: formatAjvErrors('coverage', validateCoverageSchema.errors),
+      message: formatAjvErrors(
+        'coverage',
+        internalCoveragePayload
+          ? validateInternalCoverageSchema.errors
+          : validateCoverageSchema.errors,
+      ),
     })
   }
 
   const publicSymbolCount = manifestValid
-    ? (options.manifest as ApiManifest).symbols.filter((symbol) => symbol.public)
-        .length
+    ? (options.manifest as ApiManifest | PublicApiManifest).symbols.filter(
+        (symbol) => symbol.public,
+      ).length
     : 0
   if (!manifestValid || !coverageValid) {
     return { errors, publicSymbolCount, mappedSymbolCount: 0 }
   }
 
-  const manifest = options.manifest as ApiManifest
-  const coverage = options.coverage as ApiCoverage
+  const manifest = options.manifest as ApiManifest | PublicApiManifest
+  const coverage = options.coverage as ApiCoverage | PublicApiCoverage
   const symbols = manifest.symbols
   const rules = coverage.rules
   const publicSymbols = symbols.filter((symbol) => symbol.public)
+
+  for (const symbol of publicSymbols) {
+    if (symbol.id === 'global:__engine__') {
+      errors.push({
+        code: 'forbidden-symbol',
+        message: 'The internal global:__engine__ symbol must not be public.',
+        symbolId: symbol.id,
+      })
+    }
+  }
 
   addDuplicateIdErrors(
     manifest.modules,
@@ -190,23 +242,26 @@ export async function validateApiSurface(
     errors,
   )
   addDuplicateIdErrors(
-    symbols,
+    symbols as readonly (ApiSymbol | PublicApiSymbol)[],
     'duplicate-symbol',
     'Manifest symbols',
     errors,
   )
-  addDuplicateIdErrors(
-    manifest.assets,
-    'duplicate-asset',
-    'Manifest assets',
-    errors,
-  )
-  addDuplicateIdErrors(
-    manifest.overrides,
-    'duplicate-override',
-    'Manifest overrides',
-    errors,
-  )
+  if (internalManifestPayload) {
+    const internalManifest = manifest as ApiManifest
+    addDuplicateIdErrors(
+      internalManifest.assets,
+      'duplicate-asset',
+      'Manifest assets',
+      errors,
+    )
+    addDuplicateIdErrors(
+      internalManifest.overrides,
+      'duplicate-override',
+      'Manifest overrides',
+      errors,
+    )
+  }
   addDuplicateIdErrors(
     rules,
     'duplicate-rule',
@@ -216,19 +271,23 @@ export async function validateApiSurface(
 
   const symbolsById = new Map(symbols.map((symbol) => [symbol.id, symbol]))
   const symbolMatcher = createCoverageSymbolMatcher(publicSymbols)
-  if (manifest.source.commit !== coverage.sourceRef) {
-    errors.push({
-      code: 'source-ref-mismatch',
-      message:
-        `Coverage sourceRef ${coverage.sourceRef} does not match manifest commit ` +
-        `${manifest.source.commit}.`,
-    })
+  if (internalManifestPayload && internalCoveragePayload) {
+    const internalManifest = manifest as ApiManifest
+    const internalCoverage = coverage as ApiCoverage
+    if (internalManifest.source.commit !== internalCoverage.sourceRef) {
+      errors.push({
+        code: 'source-ref-mismatch',
+        message:
+          `Coverage sourceRef ${internalCoverage.sourceRef} does not match manifest commit ` +
+          `${internalManifest.source.commit}.`,
+      })
+    }
   }
 
   const matchedRules = new Map<string, CoverageRule[]>()
   for (const rule of rules) {
     let validRule = true
-    const included = new Map<string, ApiSymbol>()
+    const included = new Map<string, ApiSymbol | PublicApiSymbol>()
 
     for (const pattern of rule.patterns) {
       if (pattern === '*') {

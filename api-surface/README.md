@@ -1,68 +1,32 @@
-# API surface audit
+# 公开 API 清单
 
-Last audited: 2026-09-10
+`api-surface/` 保存 Monkey King 6.7.0 的公开 API 目录和文档覆盖关系。
+这些文件是产品文档的一部分，字段只描述运行时可用的模块、符号、签名和
+文档锚点，不包含内部审计信息。
 
-The source of truth is Monkey King 6.7.0 commit
-`bafa2986212d27b6b59f1324f89548b72a810966`. Extraction reads that commit
-through `git ls-tree` and `git show`; it never reads the source repository's
-floating working tree.
+## 文件
 
-- `manifest.json` is the deterministic public module and symbol inventory.
-- `gaps.json` lists public symbols that do not yet resolve to a unique,
-  addressable member section in the documentation.
-- `coverage.json` is generated only when `gaps.json` is empty. A partial
-  coverage file is intentionally not written.
+- `manifest.json`：公开模块与符号清单，schema v2。
+- `coverage.json`：每个公开符号对应的文档页面与锚点，schema v2。
+- `gaps.json`：尚未建立文档映射的公开符号；发布版本应为空数组。
 
-Regenerate and verify the source manifest:
+清单包含 `productVersion: "6.7.0"`。别名使用 `canonicalId` 指向同一公开
+入口，别名本身不重复占用文档锚点。
 
-```bash
-npm run api:extract -- \
-  --source /path/to/MonkeyKing \
-  --ref bafa2986212d27b6b59f1324f89548b72a810966
-
-npm run api:extract -- \
-  --source /path/to/MonkeyKing \
-  --ref bafa2986212d27b6b59f1324f89548b72a810966 \
-  --check
-```
-
-Recompute documentation coverage:
+## 本地校验
 
 ```bash
-npm run api:coverage
-```
-
-Regenerate the 2,540-row MIME constant appendix from the same fixed source
-commit:
-
-```bash
-npm run api:mime -- \
-  --source /path/to/MonkeyKing \
-  --ref bafa2986212d27b6b59f1324f89548b72a810966 \
-  --document docs/api/utilities/mime.md
-
-npm run api:mime -- \
-  --source /path/to/MonkeyKing \
-  --ref bafa2986212d27b6b59f1324f89548b72a810966 \
-  --document docs/api/utilities/mime.md \
-  --check
-```
-
-`api:mime` reads `runtime/api/Mime.kt` through `git show`, validates exactly
-2,540 unique `@JvmField` names and `mime-constant-*` anchors, and replaces only
-the content between the `mime-constant-manifest` markers. Check mode performs a
-byte comparison and fails on drift; it never rewrites the document.
-
-The `api:coverage` command always refreshes `gaps.json`. It exits non-zero while any public
-symbol lacks a real target and writes `coverage.json` only after all gaps are
-resolved. Once coverage is complete, validate the committed mapping with:
-
-```bash
-npm run api:coverage -- --check
 npm run api:check
+npm run check:content
+npm run public:scan
 ```
 
-Every coverage rule matches exactly one public symbol. Alias rules resolve via
-`canonicalId`; two non-alias symbols may not share a documentation target.
-Runtime-computed or reflected surfaces must be declared explicitly in
-`scripts/api/overrides.ts` with a fixed source location and reason.
+`api:check` 会验证清单和覆盖文件的 schema、符号唯一性、别名解析、页面存在性
+以及锚点有效性。`public:scan` 会检查发布目录中是否混入内部审计字段或其他不应
+面向用户展示的内容。
+
+## 页面映射约定
+
+每条非别名规则都使用 `docs/...md#anchor` 形式的目标；别名规则通过
+`canonicalId` 解析到对应的主入口。一个非别名符号只能占用一个目标，缺失目标时
+应先补充 API 页面，再重新生成覆盖清单。

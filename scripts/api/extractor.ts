@@ -1,5 +1,5 @@
 import {
-  API_MANIFEST_SCHEMA_VERSION,
+  INTERNAL_API_MANIFEST_SCHEMA_VERSION,
   type AnnotationEvidence,
   type ApiManifest,
   type ApiModule,
@@ -1888,7 +1888,7 @@ export async function extractApiManifest(
     .sort((left, right) => compareText(left.id, right.id))
 
   return {
-    schemaVersion: API_MANIFEST_SCHEMA_VERSION,
+    schemaVersion: INTERNAL_API_MANIFEST_SCHEMA_VERSION,
     source: {
       repository: options.repository,
       ref: options.ref,
