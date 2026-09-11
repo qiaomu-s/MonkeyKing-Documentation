@@ -1,8 +1,12 @@
-# MonkeyKing-Documentation
+# Monkey King 文档
 
 Monkey King 官方产品文档。站点使用 VitePress 构建，面向授权用户提供使用指南、API 参考、兼容性说明和版本记录。
 
-当前文档基线为 Monkey King 6.7.0，包含 113 个页面、4,499 个公开 API 符号和 125 个兼容 JSON 文件。
+文档版本：**6.7.0** · 内容更新时间：**2026-09-11**
+
+当前文档基线包含 113 个页面、4,499 个公开 API 符号和 125 个兼容 JSON 文件。
+
+站点入口：<https://docs.monkeyking.com>
 
 ## 本地预览
 
