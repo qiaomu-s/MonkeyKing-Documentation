@@ -9,6 +9,7 @@ import {
   type DeclarationHint,
   type DynamicAssignmentName,
   type DynamicOverride,
+  type PublicApiManifest,
   type SourceLocation,
 } from './model'
 import {
@@ -20,6 +21,7 @@ import {
   type BalancedRange,
 } from './lexer'
 import type { SourceReader } from './source-reader'
+import { projectApiManifest } from './public-projection'
 
 export interface ExtractApiManifestOptions {
   readonly repository: string
@@ -1905,4 +1907,12 @@ export async function extractApiManifest(
       compareText(left.id, right.id),
     ),
   }
+}
+
+/** Extract and immediately project the source-backed model for public use. */
+export async function extractPublicApiManifest(
+  reader: SourceReader,
+  options: ExtractApiManifestOptions,
+): Promise<PublicApiManifest> {
+  return projectApiManifest(await extractApiManifest(reader, options))
 }

@@ -154,6 +154,11 @@ export interface ApiCoverage {
   readonly rules: readonly CoverageRule[]
 }
 
+// Explicit names for private audit consumers.  `ApiManifest`/`ApiCoverage`
+// remain aliases for existing extractor callers.
+export type InternalApiManifest = ApiManifest
+export type InternalApiCoverage = ApiCoverage
+
 /**
  * Public manifest contract.  Keep this type deliberately small: consumers
  * need the runtime surface and its documentation metadata, never extraction
