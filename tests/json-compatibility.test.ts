@@ -22,6 +22,7 @@ import {
 import type { ContentEntry } from '../scripts/content/catalog'
 import {
   buildLegacyJson,
+  checkLegacyJson,
   createLegacyJsonOutputs,
   resolveEntryMarkdownPath,
 } from '../scripts/json/build'
@@ -607,6 +608,63 @@ describe('legacy JSON compatibility', () => {
       contentEntries.reduce((count, entry) => count + entry.jsonNames.length, 1) +
         frozenLegacyJsonStems.length,
     )
+  })
+
+  test('checks generated JSON without Git or writing output', () => {
+    const temporaryRoot = createTemporaryJsonProject()
+
+    try {
+      buildLegacyJson(temporaryRoot)
+      const before = snapshotJsonDirectory(temporaryRoot)
+
+      expect(() => checkLegacyJson(temporaryRoot)).not.toThrow()
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects JSON drift without rewriting the changed file', () => {
+    const temporaryRoot = createTemporaryJsonProject()
+    const jsonPath = resolve(temporaryRoot, 'json/overview.json')
+
+    try {
+      buildLegacyJson(temporaryRoot)
+      writeFileSync(jsonPath, `${readFileSync(jsonPath, 'utf8')}\n`)
+      const before = snapshotJsonDirectory(temporaryRoot)
+
+      expect(() => checkLegacyJson(temporaryRoot)).toThrow(/JSON drift.*overview\.json/i)
+      expect(snapshotJsonDirectory(temporaryRoot)).toEqual(before)
+      expect(temporaryJsonArtifacts(temporaryRoot)).toEqual([])
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('rejects missing, unexpected, and altered frozen JSON', () => {
+    const temporaryRoot = createTemporaryJsonProject()
+    const jsonDirectory = resolve(temporaryRoot, 'json')
+    const generatedPath = resolve(jsonDirectory, 'overview.json')
+    const frozenPath = resolve(jsonDirectory, Object.keys(frozenJsonHashes)[0])
+
+    try {
+      buildLegacyJson(temporaryRoot)
+      rmSync(generatedPath)
+      expect(() => checkLegacyJson(temporaryRoot)).toThrow(/inventory|missing/i)
+
+      writeFileSync(generatedPath, createLegacyJsonOutputs(temporaryRoot).find(
+        ({ filename }) => filename === 'overview.json',
+      )?.text ?? '')
+      writeFileSync(resolve(jsonDirectory, 'rogue.json'), '{}')
+      expect(() => checkLegacyJson(temporaryRoot)).toThrow(/inventory|unexpected/i)
+
+      rmSync(resolve(jsonDirectory, 'rogue.json'))
+      writeFileSync(frozenPath, '{}')
+      expect(() => checkLegacyJson(temporaryRoot)).toThrow(/Frozen legacy JSON hash mismatch/i)
+    } finally {
+      rmSync(temporaryRoot, { recursive: true, force: true })
+    }
   })
 
   test('rejects unexpected JSON without deleting or rewriting it', () => {

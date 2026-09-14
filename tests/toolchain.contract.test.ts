@@ -17,7 +17,7 @@ type PackageJson = {
 const packageJsonPath = resolve(process.cwd(), 'package.json')
 const packageLockPath = resolve(process.cwd(), 'package-lock.json')
 const nvmrcPath = resolve(process.cwd(), '.nvmrc')
-const workflowPath = resolve(process.cwd(), '.github/workflows/pages.yml')
+const workflowPath = resolve(process.cwd(), '.github/workflows/quality.yml')
 const readmePath = resolve(process.cwd(), 'README.md')
 const pinnedNodeVersion = '22.23.2'
 
@@ -109,6 +109,26 @@ describe('root toolchain contract', () => {
     expect(Object.keys(requiredPublicScripts)).toHaveLength(11)
     expect(scripts).toMatchObject(requiredPublicScripts)
     expect(scripts?.['migrate:content']).toBe('tsx scripts/migrate-content.ts')
+  })
+
+  test('runs the Vercel quality gates before publishing only the web output', () => {
+    const { scripts } = readPackageJson()
+    const expectedGates = [
+      'npx tsc --noEmit',
+      'npm run api:coverage -- --check',
+      'npm run api:check',
+      'npm run examples:check',
+      'npm run check:content',
+      'npm run json:build -- --check',
+      'npm test',
+      'npm run build:web',
+      'npm run public:scan',
+      'npm run check:links',
+    ]
+
+    expect(scripts?.['build:vercel']).toBe(expectedGates.join(' && '))
+    expect(scripts?.['build:vercel']).not.toContain('build:android')
+    expect(scripts?.['build:vercel']).not.toContain('git diff')
   })
 
   test('type-checks the VitePress configuration and custom theme sources', () => {

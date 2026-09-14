@@ -1,6 +1,7 @@
 .idea
 .worktrees/
 .source/
+.vercel/
 .DS_Store
 *.bak
 *.zip
@@ -21,3 +22,4 @@ docs/.vitepress/cache/
 playwright-report/
 test-results/
 blob-report/
+.env*

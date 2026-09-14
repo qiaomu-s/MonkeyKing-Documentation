@@ -23,6 +23,7 @@
     "check:links": "tsx scripts/check-links.ts",
     "build:web": "tsx scripts/build.ts web",
     "build:android": "tsx scripts/build.ts android",
+    "build:vercel": "npx tsc --noEmit && npm run api:coverage -- --check && npm run api:check && npm run examples:check && npm run check:content && npm run json:build -- --check && npm test && npm run build:web && npm run public:scan && npm run check:links",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

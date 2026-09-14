@@ -2,7 +2,9 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const rootDirectory = process.cwd()
-const workflowPath = resolve(rootDirectory, '.github/workflows/pages.yml')
+const workflowPath = resolve(rootDirectory, '.github/workflows/quality.yml')
+const obsoletePagesWorkflowPath = resolve(rootDirectory, '.github/workflows/pages.yml')
+const vercelConfigPath = resolve(rootDirectory, 'vercel.json')
 const readmePath = resolve(rootDirectory, 'README.md')
 const projectMetadataPath = resolve(rootDirectory, 'project.json')
 const gitignorePath = resolve(rootDirectory, '.gitignore')
@@ -32,7 +34,8 @@ describe('repository operations contract', () => {
   test('runs the complete Node 22.23.2 quality gate for trusted master runs', () => {
     const workflow = readOptionalText(workflowPath)
 
-    expect(existsSync(workflowPath), 'Pages workflow must exist').toBe(true)
+    expect(existsSync(workflowPath), 'quality workflow must exist').toBe(true)
+    expect(existsSync(obsoletePagesWorkflowPath)).toBe(false)
     expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
     expect(workflow).toContain('workflow_dispatch:')
     expect(workflow).not.toContain('pull_request:')
@@ -67,26 +70,38 @@ describe('repository operations contract', () => {
     ])
   })
 
-  test('publishes only the master web artifact with least-required Pages access', () => {
+  test('runs master-only quality gates without GitHub Pages deployment access', () => {
     const workflow = readOptionalText(workflowPath)
-    const masterOnlyCondition =
-      "if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')"
 
     expect(workflow).toContain('permissions:\n  contents: read')
-    expect(workflow).toContain('group: pages-${{ github.ref }}')
+    expect(workflow).toContain('group: quality-${{ github.ref }}')
     expect(workflow).toContain('cancel-in-progress: true')
-    expect(workflow).toContain(masterOnlyCondition)
-    expect(workflow).toContain('uses: actions/upload-pages-artifact@v3')
-    expect(workflow).toContain('path: ./dist/web')
-    expect(workflow).toMatch(
-      /deploy:\s*\n\s+if: github\.ref == 'refs\/heads\/master' && \(github\.event_name == 'push' \|\| github\.event_name == 'workflow_dispatch'\)[\s\S]*?needs: quality[\s\S]*?permissions:\s*\n\s+pages: write\s*\n\s+id-token: write/,
-    )
-    expect(workflow).toContain('name: github-pages')
-    expect(workflow).toContain('url: ${{ steps.deployment.outputs.page_url }}')
-    expect(workflow).toContain('uses: actions/deploy-pages@v4')
+    expect(workflow).toContain("if: github.ref == 'refs/heads/master'")
+    expect(workflow).not.toMatch(/upload-pages-artifact|deploy-pages|github-pages/)
+    expect(workflow).not.toMatch(/pages: write|id-token: write|^  deploy:/m)
   })
 
-  test('keeps protected API auditing separate from public Pages builds', () => {
+  test('configures Vercel static web builds for master only', () => {
+    expect(existsSync(vercelConfigPath), 'root Vercel config must exist').toBe(true)
+    if (!existsSync(vercelConfigPath)) return
+
+    const config = JSON.parse(readFileSync(vercelConfigPath, 'utf8')) as Record<string, unknown>
+    expect(config).toMatchObject({
+      framework: null,
+      installCommand: 'npm ci',
+      buildCommand: 'npm run build:vercel',
+      outputDirectory: 'dist/web',
+      git: { deploymentEnabled: { master: true, '**': false } },
+    })
+    expect((config.git as { deploymentEnabled: unknown }).deploymentEnabled).toEqual({
+      master: true,
+      '**': false,
+    })
+    expect(config).not.toHaveProperty('nodeVersion')
+    expect(JSON.stringify(config)).not.toMatch(/MONKEYKING_SOURCE_TOKEN|\.source\/monkeyking|AutoJs6/)
+  })
+
+  test('keeps protected API auditing separate from public quality builds', () => {
     const workflow = readOptionalText(internalAuditWorkflowPath)
 
     expect(existsSync(internalAuditWorkflowPath)).toBe(true)
@@ -156,10 +171,13 @@ describe('repository operations contract', () => {
     expect(existsSync(projectMetadataPath)).toBe(false)
   })
 
-  test('ignores operating-system metadata and generated VitePress caches', () => {
+  test('ignores OS metadata, VitePress caches, and local Vercel links', () => {
     const gitignore = readOptionalText(gitignorePath)
 
     expect(gitignore).toMatch(/^\.DS_Store$/m)
     expect(gitignore).toMatch(/^docs\/\.vitepress\/cache\/$/m)
+    expect(gitignore).toMatch(/^\.vercel\/$/m)
+    expect(gitignore.match(/^\.vercel\/?$/gm)).toEqual(['.vercel/'])
+    expect(gitignore).toMatch(/^\.env\*$/m)
   })
 })

@@ -1,4 +1,4 @@
-name: Pages
+name: Quality
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: quality-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -80,24 +80,3 @@ jobs:
 
       - name: Run browser tests
         run: npm run test:e2e
-
-      - name: Upload GitHub Pages artifact
-        if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist/web
-
-  deploy:
-    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    needs: quality
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy GitHub Pages site
-        id: deployment
-        uses: actions/deploy-pages@v4

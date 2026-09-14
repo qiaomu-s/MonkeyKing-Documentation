@@ -280,6 +280,30 @@ export function buildLegacyJson(
   }
 }
 
+/** Verify committed compatibility output against source without requiring Git or rewriting files. */
+export function checkLegacyJson(rootDirectory = process.cwd()): void {
+  validateCatalog(validateContentCatalog)
+  validateFrozenManifest()
+
+  const projectRoot = resolve(rootDirectory)
+  assertRegularDirectory(projectRoot, 'project root')
+  const jsonDirectory = resolveWithin(projectRoot, 'json')
+  assertRegularDirectory(jsonDirectory, 'legacy JSON output')
+  verifyFrozenLegacyJson(jsonDirectory, 'during check')
+  validateFinalJsonInventory(jsonDirectory)
+  validateJsonSchema(jsonDirectory)
+
+  const drifted = createLegacyJsonOutputs(projectRoot)
+    .filter(({ filename, text }) =>
+      readFileSync(resolveJsonOutputPath(jsonDirectory, filename), 'utf8') !== text,
+    )
+    .map(({ filename }) => filename)
+
+  if (drifted.length > 0) {
+    throw new Error(`Compatibility JSON drift detected: ${drifted.join(', ')}`)
+  }
+}
+
 function validateCatalog(validator: () => readonly string[]): void {
   const errors = validator()
   if (errors.length > 0) {
@@ -467,8 +491,16 @@ if (
   invokedPath &&
   import.meta.url === pathToFileURL(resolve(invokedPath)).href
 ) {
-  buildLegacyJson()
-  process.stdout.write(
-    `Generated ${expectedGeneratedJsonFilenames.length} active/all JSON files and preserved ${frozenLegacyJsonManifest.length} frozen files.\n`,
-  )
+  const arguments_ = process.argv.slice(2)
+  if (arguments_.length === 1 && arguments_[0] === '--check') {
+    checkLegacyJson()
+    process.stdout.write('Compatibility JSON matches its source.\n')
+  } else if (arguments_.length === 0) {
+    buildLegacyJson()
+    process.stdout.write(
+      `Generated ${expectedGeneratedJsonFilenames.length} active/all JSON files and preserved ${frozenLegacyJsonManifest.length} frozen files.\n`,
+    )
+  } else {
+    throw new Error('Usage: npm run json:build [-- --check]')
+  }
 }
