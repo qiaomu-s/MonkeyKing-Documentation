@@ -1,0 +1,12 @@
+{
+  "source": "..\\docs\\reference\\dm\\image.md",
+  "modules": [
+    {
+      "textRaw": "dm 图色与找图",
+      "name": "dm_图色与找图",
+      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n<p>图色接口在输入图像上工作。输入可以是屏幕、离线图片或冻结帧：</p>\n<pre><code class=\"lang-js\">dm.SetDisplayInput(&#39;pic:./assets/images/login.png&#39;);\ndm.EnablePicCache(1);\nconst point = dm.findColor(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9, 0);\nif (point) console.log(point.x, point.y);\n</code></pre>\n<p>兼容接口保留 PascalCase、返回值和输出参数：</p>\n<pre><code class=\"lang-js\">const x = { value: -1 };\nconst y = { value: -1 };\nconst found = dm.FindColor(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9, 0, x, y);\n</code></pre>\n<p><code>findColor</code>、<code>findMultiColor</code>、颜色块检测和找图都遵守区域边界与扫描方向。<code>Sim</code> 使用百分比相似度；默认保留完整像素检查，避免用抽样换取速度。透明模板会使用透明掩码，多结果按所选扫描方向返回。</p>\n<p>一次截图多次识别时可使用 <code>keepScreen(true)</code>，结束后调用 <code>keepScreen(false)</code>。图片缓存由 <code>EnablePicCache</code> 控制，资源生命周期由 <code>DmBuffer.close()</code> 管理。</p>\n",
+      "type": "module",
+      "displayName": "dm 图色与找图"
+    }
+  ]
+}

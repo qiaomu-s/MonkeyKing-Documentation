@@ -9,9 +9,11 @@
 | 产品版本 | Monkey King 6.7.0 |
 | Android | API 24 及以上 |
 | JavaScript 引擎 | Rhino 2.0 语法环境 |
-| 文档页面 | 113 个 canonical 页面 |
-| 兼容数据 | 125 个 JSON 文件 |
-| 示例 | 每个公开成员至少一个 Rhino 2.0 示例 |
+| 文档页面 | 121 个 canonical 页面 |
+| 兼容数据 | 133 个 JSON 文件 |
+| 示例 | 6.7.0 公开 API 基线中每个成员至少一个 Rhino 2.0 示例 |
+
+`dm` 页面为预览参考，仅适用于已提供 `dm` 全局对象的授权构建，不计入 Monkey King 6.7.0 的 4,499 个公开 API 符号基线。
 
 ## 使用建议
 

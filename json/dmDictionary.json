@@ -1,0 +1,21 @@
+{
+  "source": "..\\docs\\reference\\dm\\dictionary.md",
+  "modules": [
+    {
+      "textRaw": "dm 明文字库",
+      "name": "dm_明文字库",
+      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n<p>字库条目格式：</p>\n<pre><code class=\"lang-text\">HEX$文字$指标$高度\n</code></pre>\n<p>点阵按列主序编码，每列从高位到低位写入 HEX。高度小于 4 时，末尾空白列属于格式补零，读取时会恢复为紧边界。文字标签不能包含 <code>$</code>、<code>|</code>、制表符或换行。</p>\n",
+      "modules": [
+        {
+          "textRaw": "制作和加载",
+          "name": "制作和加载",
+          "desc": "<pre><code class=\"lang-js\">const glyph = dm.FetchWord(10, 20, 80, 60, &#39;ffffff&#39;, &#39;确&#39;);\ndm.AddDict(0, glyph);\ndm.SaveDict(0, &#39;./assets/dm/main.dm.txt&#39;);\n\ndm.SetDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.UseDict(0);\n</code></pre>\n<p><code>SetDictMem</code> 接收 <code>byte[]</code> 或已关闭前会保持有效的 <code>DmBuffer</code>，不接受裸地址。<code>GetDictCount</code>、<code>GetDict</code> 可用于检查加载结果，重复文字不会自动去重，多个字形变体可以同时存在。</p>\n<p>损坏行应保留并显示行号；编辑器不会静默删除或改写。加密字库不在兼容范围内。</p>\n",
+          "type": "module",
+          "displayName": "制作和加载"
+        }
+      ],
+      "type": "module",
+      "displayName": "dm 明文字库"
+    }
+  ]
+}

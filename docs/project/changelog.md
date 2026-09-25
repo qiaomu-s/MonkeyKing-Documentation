@@ -1,5 +1,13 @@
 # 文档更新日志 (Changelog)
 
+## dm 预览参考
+
+<p style="font: bold 0.8em sans-serif; color: #888888">2026/09/25</p>
+
+- `预览` `dm` 图色、找图、公开明文字库、字库识别、通用 OCR 和 Android 兼容约定文档。
+- `预览` VS Code 大漠字库编辑器和截图工作台制作、换图验证、代码生成教程。
+- `明确` 不提供加密、解密、密码设置或私有加密资源解析。
+
 ## v6.7.0 文档版本说明
 
 <p style="font: bold 0.8em sans-serif; color: #888888">2026/09/11</p>

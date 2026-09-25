@@ -18,6 +18,7 @@ export const sidebarSectionLabels = Object.freeze({
   'reference/android': 'Android 参考',
   'reference/runtime': '运行时参考',
   'reference/glossaries': '术语表',
+  'reference/dm': '大漠参考',
   reference: '其他参考',
 } satisfies Record<ContentSectionId, string>)
 

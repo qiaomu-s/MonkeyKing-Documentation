@@ -1,0 +1,12 @@
+{
+  "source": "..\\docs\\reference\\dm\\vscode.md",
+  "modules": [
+    {
+      "textRaw": "VS Code 大漠字库工具",
+      "name": "vs_code_大漠字库工具",
+      "desc": "<p>预览状态：仅适用于已提供大漠字库工具的授权扩展版本。</p>\n<p>扩展提供“大漠字库编辑器”和截图工作台中的“大漠字库”模式。<code>*.dm.txt</code>、<code>*.dm.dict</code> 默认使用独立编辑器，普通 <code>.txt</code> 通过“打开为大漠字库”命令进入。</p>\n<p>制作流程：</p>\n<ol>\n<li>打开截图工作台，获取设备快照或打开本地 PNG/JPEG/BMP/GIF。</li>\n<li>框选文字区域，选择前景色、偏色、反色和分割间距。</li>\n<li>查看原图、二值化图、投影和紧边界候选。</li>\n<li>标注文字，必要时逐像素修改，再追加到字库。</li>\n<li>保存后换另一张图片测试 <code>Ocr</code>、<code>FindStr</code>、<code>FindStrFast</code>。</li>\n<li>调整阈值、行高和间距，并用代码生成器插入 PascalCase 或 camelCase 调用。</li>\n</ol>\n<p>缩放只改变显示，不改变取样像素。自动分割只产生候选，文字标签必须由用户确认。编辑器保留 BOM、换行和损坏原文；使用 VS Code 的“使用编码重新打开”选择 GB18030，避免猜测编码后覆盖原文件。</p>\n<p>设备验证会创建临时 <code>Dm</code> 实例，不会修改运行脚本的字库。图片最多 32 MiB、6,400 万像素，字库最多 8 MiB、10,000 条。没有设备时仍可完成离线制作与匹配测试。</p>\n",
+      "type": "module",
+      "displayName": "VS Code 大漠字库工具"
+    }
+  ]
+}

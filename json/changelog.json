@@ -6,6 +6,13 @@
       "name": "文档更新日志_(changelog)",
       "modules": [
         {
+          "textRaw": "dm 预览参考",
+          "name": "dm_预览参考",
+          "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2026/09/25</p>\n\n<ul>\n<li><code>预览</code> <code>dm</code> 图色、找图、公开明文字库、字库识别、通用 OCR 和 Android 兼容约定文档。</li>\n<li><code>预览</code> VS Code 大漠字库编辑器和截图工作台制作、换图验证、代码生成教程。</li>\n<li><code>明确</code> 不提供加密、解密、密码设置或私有加密资源解析。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "dm 预览参考"
+        },
+        {
           "textRaw": "v6.7.0 文档版本说明",
           "name": "v6.7.0_文档版本说明",
           "desc": "<p style=\"font: bold 0.8em sans-serif; color: #888888\">2026/09/11</p>\n\n<ul>\n<li><code>新增</code> 完成 Monkey King 6.7.0 的公开 API 清单、覆盖映射和兼容数据整理。</li>\n<li><code>新增</code> <code>util</code>、<code>cvt</code>、<code>fmt</code>、<code>jsox</code>、<code>mime</code>、<code>zip</code>、<code>nanoid</code>、<code>pinyin</code>、<code>pinyin4j</code>、<code>sysprops</code>、<code>sqlite</code>、<code>mediainfo</code> 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。</li>\n<li><code>优化</code> 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的行为整理；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。</li>\n<li><code>修复</code> 统一页面锚点、外部参考链接和兼容标识，清除正文中的未完成占位标记。</li>\n</ul>\n",

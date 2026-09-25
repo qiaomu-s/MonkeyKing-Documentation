@@ -11,6 +11,7 @@ export const contentSections = Object.freeze([
   Object.freeze({ id: 'reference/android', title: 'Android Reference' }),
   Object.freeze({ id: 'reference/runtime', title: 'Runtime Reference' }),
   Object.freeze({ id: 'reference/glossaries', title: 'Glossaries' }),
+  Object.freeze({ id: 'reference/dm', title: '大漠参考' }),
   Object.freeze({ id: 'reference', title: 'Reference' }),
 ] as const)
 
@@ -245,6 +246,14 @@ const contentDefinitions = [
   ['httpRequestMethodsGlossary', 'reference/glossaries/http-request-methods', 'HTTP Request Methods - HTTP 请求方法'],
   ['mimeTypeGlossary', 'reference/glossaries/mime-types', 'MIME Types - MIME 类型'],
   ['notificationChannelGlossary', 'reference/glossaries/notification-channels', 'Notification Channels - 通知渠道'],
+  [undefined, 'reference/dm/overview', 'dm - 图色与文字识别总览', ['dm']],
+  [undefined, 'reference/dm/image', 'dm 图色与找图', ['dmImage']],
+  [undefined, 'reference/dm/dictionary', 'dm 明文字库', ['dmDictionary']],
+  [undefined, 'reference/dm/text', 'dm 字库文字识别', ['dmText']],
+  [undefined, 'reference/dm/ocr-auto', 'dm 通用 OCR', ['dmOcrAuto']],
+  [undefined, 'reference/dm/compatibility', 'dm Android 兼容约定', ['dmCompatibility']],
+  [undefined, 'reference/dm/examples', 'dm Java / JS 示例', ['dmExamples']],
+  [undefined, 'reference/dm/vscode', 'VS Code 大漠字库工具', ['dmVscode']],
   ['colorTable', 'reference/color-table', 'Color Table - 颜色列表'],
 ] as const satisfies readonly ContentEntryDefinition[]
 

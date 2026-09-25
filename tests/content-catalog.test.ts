@@ -35,6 +35,14 @@ const expectedCanonicalOnlyEntries = [
   ['api.utilities.nanoid', 'docs/api/utilities/nanoid.md', 'nanoid'],
   ['api.utilities.pinyin', 'docs/api/utilities/pinyin.md', 'pinyin'],
   ['api.utilities.pinyin4j', 'docs/api/utilities/pinyin4j.md', 'pinyin4j'],
+  ['reference.dm.overview', 'docs/reference/dm/overview.md', 'dm'],
+  ['reference.dm.image', 'docs/reference/dm/image.md', 'dmImage'],
+  ['reference.dm.dictionary', 'docs/reference/dm/dictionary.md', 'dmDictionary'],
+  ['reference.dm.text', 'docs/reference/dm/text.md', 'dmText'],
+  ['reference.dm.ocr-auto', 'docs/reference/dm/ocr-auto.md', 'dmOcrAuto'],
+  ['reference.dm.compatibility', 'docs/reference/dm/compatibility.md', 'dmCompatibility'],
+  ['reference.dm.examples', 'docs/reference/dm/examples.md', 'dmExamples'],
+  ['reference.dm.vscode', 'docs/reference/dm/vscode.md', 'dmVscode'],
 ] as const
 const expectedLegacyAllEntryIds = [
   'guide.overview',
@@ -115,7 +123,7 @@ describe('content catalog contract', () => {
     expect(existsSync(resolve(process.cwd(), 'scripts/content/catalog.ts'))).toBe(true)
   })
 
-  test('contains the complete legacy corpus plus the twelve 6.7.0 module pages', () => {
+  test('contains the complete legacy corpus plus canonical-only module and dm pages', () => {
     const legacyEntryCount =
       expectedLegacyMarkdownSources.length - deletedLegacySources.length
 
@@ -135,6 +143,7 @@ describe('content catalog contract', () => {
       'reference/android',
       'reference/runtime',
       'reference/glossaries',
+      'reference/dm',
       'reference',
     ])
     expect([...new Set(contentEntries.map(({ section }) => section))]).toEqual(
@@ -172,7 +181,7 @@ describe('content catalog contract', () => {
     expectUnique(jsonNames)
   })
 
-  test('declares the twelve canonical-only 6.7.0 module pages and JSON entry names', () => {
+  test('declares every canonical-only module and preview reference JSON entry name', () => {
     expect(
       contentEntries
         .filter(({ legacySource }) => legacySource === undefined)

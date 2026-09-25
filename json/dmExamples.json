@@ -1,0 +1,28 @@
+{
+  "source": "..\\docs\\reference\\dm\\examples.md",
+  "modules": [
+    {
+      "textRaw": "dm Java / JS 示例",
+      "name": "dm_java_/_js_示例",
+      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n",
+      "modules": [
+        {
+          "textRaw": "Java",
+          "name": "java",
+          "desc": "<pre><code class=\"lang-java\">import android.content.Context;\nimport android.graphics.Bitmap;\nimport com.monkeyking.dm.Dm;\nimport com.monkeyking.dm.DmMatch;\n\npublic final class DmExamples {\n    private DmExamples() {}\n\n    public static DmMatch findLogin(\n            Context context,\n            Bitmap bitmap,\n            byte[] dictionaryBytes\n    ) {\n        try (Dm dm = new Dm(context.getCacheDir())) {\n            dm.setImage(bitmap);\n            dm.SetDictMem(0, dictionaryBytes, dictionaryBytes.length);\n            dm.UseDict(0);\n            return dm.findStr(\n                    0, 0, bitmap.getWidth() - 1, bitmap.getHeight() - 1,\n                    &quot;登录&quot;, &quot;ffffff&quot;, 0.9\n            );\n        }\n    }\n}\n</code></pre>\n",
+          "type": "module",
+          "displayName": "Java"
+        },
+        {
+          "textRaw": "Rhino / JavaScript",
+          "name": "rhino_/_javascript",
+          "desc": "<pre><code class=\"lang-js\">dm.SetPath(&#39;./assets&#39;);\ndm.SetDict(0, &#39;./dm/main.dm.txt&#39;);\ndm.UseDict(0);\nconst one = dm.findStr(0, 0, 1079, 1919, &#39;登录&#39;, &#39;ffffff&#39;, 0.9);\nconst many = dm.findStrEx(0, 0, 1079, 1919, &#39;登录|确定&#39;, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p>兼容模式：</p>\n<pre><code class=\"lang-js\">const x = { value: -1 }, y = { value: -1 };\nconst ok = dm.FindStrFast(0, 0, 1079, 1919, &#39;确定&#39;, &#39;ffffff&#39;, 0.9, x, y);\n</code></pre>\n",
+          "type": "module",
+          "displayName": "Rhino / JavaScript"
+        }
+      ],
+      "type": "module",
+      "displayName": "dm Java / JS 示例"
+    }
+  ]
+}
