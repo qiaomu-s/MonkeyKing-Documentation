@@ -11,7 +11,7 @@ import { MONKEYKING_API_BASELINE } from './overrides'
 import { GitSourceReader, type SourceReader } from './source-reader'
 
 export const MIME_SOURCE_PATH =
-  'app/src/main/java/com/qiaomu/monkeyking/runtime/api/Mime.kt'
+  'app/src/main/java/com/monkeyking/runtime/api/Mime.kt'
 export const MIME_CONSTANT_COUNT = 2_540
 export const MIME_APPENDIX_START = '<!-- mime-constant-manifest:start -->'
 export const MIME_APPENDIX_END = '<!-- mime-constant-manifest:end -->'

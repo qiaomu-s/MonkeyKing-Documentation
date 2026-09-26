@@ -174,6 +174,7 @@ const contentDefinitions = [
   ['color', 'api/media/color', 'Color - 颜色'],
   ['image', 'api/media/image', 'Images - 图像'],
   ['ocr', 'api/media/ocr', 'OCR - 光学字符识别'],
+  [undefined, 'api/media/dm', 'dm - 图色与文字识别 API', ['dmApi']],
   ['barcode', 'api/media/barcode', 'Barcode - 条码'],
   ['qrcode', 'api/media/qr-code', 'QR Code - 二维码'],
   ['media', 'api/media/media', 'Media - 多媒体'],

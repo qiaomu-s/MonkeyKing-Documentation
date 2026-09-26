@@ -354,7 +354,7 @@ describe('legacy JSON compatibility', () => {
         'toc.json',
         'util.json',
       ],
-      currentOnlyFiles: ['monkeyking.json'],
+      currentOnlyFiles: ['dmApi.json', 'monkeyking.json'],
     })
 
     const fixtureFilenamesInOrder = Object.keys(fixture.files)

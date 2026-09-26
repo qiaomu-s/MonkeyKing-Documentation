@@ -12,13 +12,14 @@
       "util.json"
     ],
     "currentOnlyFiles": [
+      "dmApi.json",
       "monkeyking.json"
     ]
   },
   "files": {
     "accessibilityActionsType.json": "588f629eb8591ba898e79582cd6a73ead6d6f1b536e82ec793d856f54ab00b02",
     "activity.json": "ce7dc41c8674ba1c8232efcddddf53a60a4fb72d9c08e4d0cbfac7bee62f19a3",
-    "all.json": "d8ebeb52a3863206f2af1c40c3db1db6538d75f0c323a96b6f2e7c08372eedd4",
+    "all.json": "c81d0f098aa4efe18f21c13091af00ab0e5f22da7720826f6eb31223e3ccc24c",
     "androidBundleType.json": "ce7dc41c8674ba1c8232efcddddf53a60a4fb72d9c08e4d0cbfac7bee62f19a3",
     "androidRectType.json": "c93c8a7fbcadec092a9be25e0046abd73c7ead345194e9fb38c9957142e66c51",
     "apiLevel.json": "ce7dc41c8674ba1c8232efcddddf53a60a4fb72d9c08e4d0cbfac7bee62f19a3",
@@ -26,11 +27,11 @@
     "appType.json": "622a02219425f0fab51e7ad62bee3b898f22eeb25cdf60ec7ab95538edba1584",
     "arrayx.json": "5ee0118cb9161b4468400296c3b542cd10b0eaedbc2f3ba113590fc6b8a5fbd6",
     "autojs.json": "858c663287d54adb9e54a3e81e83addb2d7388b30ebea6bc3f88314b5140005d",
-    "automator.json": "0992f2e3471fa2f07b3ac48e0d3c2b7f47be443836a5f26aca9a0436bc3609ed",
+    "automator.json": "0375274b58a79e4565dc082147fcde6c5802389c25589f03c4c68299b8508e39",
     "barcode.json": "53acf9b92aaff7f3b2a7c1106563af7c9d870f24f3a46223de8c530cae8d37ce",
     "base64.json": "a945362086044b05c200047de2d18e9ebb833963c7247e992be6176d3383c439",
     "canvas.json": "7a5ca5032ae98592e0747746a6fcaf2f2e6cb109634f89f9a515875678cacc75",
-    "changelog.json": "58a7eb9055c7ba4ea817825dfb28dde0a3f70a9879e4dba716f925ba092308d0",
+    "changelog.json": "a2c4e29fd46fc00638feef91b7da29f1c719b60165808c84d3f92636511f7695",
     "color.json": "f5346508034c06f0ca796196a75ed0baee54ae4697035f45f11f2a1ae5ba93e1",
     "colorTable.json": "79e5c0b81f5a6999bedeacaa10ffaff9651833b7883e01a703c3df1b455bbbdb",
     "colorType.json": "d9c5ab5ad3dc3618d38648e2a92b54abaa4d6a35c04d511cde86b2bbe5de3231",
@@ -68,7 +69,7 @@
     "httpResponseHeadersType.json": "9da5f19449c5f86d8b62cfd2c8248834ba390309755737700802f55d3c59cbe6",
     "httpResponseType.json": "fc2993147a4fb1fc2e9268fed35d5694ebad08fb4b8335f393ea472744eaeafe",
     "i18n.json": "75da99b9c0f6b1877fdcb62a7ac91cdb8fe481a6dead83ac530091463146e7e3",
-    "image.json": "299a5e19fcb063e148124f2f906e3c8052ed727424c42d8c01b13f91f368f736",
+    "image.json": "92ce1cfc5a72566acb2fa342d49efdc07b0908336dc5455d16b1c398efdaa70d",
     "imageWrapper.json": "c3a4684b8c06065996403047290be784be66c3e407bb79a7fb158d11d6d8608d",
     "imageWrapperType.json": "2ddaba8e932dc05ec161fc1b45eaeac283477d2ed516cb2d58319b62c514921b",
     "injectableWebClientType.json": "97af238916681caf851845c457d75daa3747902e1167f7159c6ed5c8c0539161",

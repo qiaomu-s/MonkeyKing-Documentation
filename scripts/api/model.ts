@@ -94,6 +94,13 @@ export interface DynamicOverride {
   readonly key?: string
   readonly owner?: string
   readonly idPrefix?: string
+  readonly module?: {
+    readonly id: string
+    readonly name: string
+    readonly className: string
+    readonly aliases: readonly string[]
+    readonly source: SourceLocation
+  }
   readonly assignments?: readonly DynamicAssignmentName[]
   readonly includeAnnotatedMembers?: boolean
   readonly includePublicMembers?: boolean
@@ -102,6 +109,7 @@ export interface DynamicOverride {
   readonly reason: string
   readonly source: SourceLocation
   readonly members?: readonly DynamicOverrideMember[]
+  readonly optional?: boolean
 }
 
 export type DynamicAssignmentName =

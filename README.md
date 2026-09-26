@@ -4,7 +4,7 @@ Monkey King 官方产品文档。站点使用 VitePress 构建，面向授权用
 
 文档版本：**6.7.0** · 内容更新时间：**2026-09-25**
 
-当前站点包含 121 个页面和 133 个兼容 JSON 文件。其中 4,499 个公开 API 符号属于 Monkey King 6.7.0 已审计基线；`dm` 页面为预览参考，不计入该基线。
+当前站点包含 122 个 canonical 页面和 134 个兼容 JSON 文件。Monkey King 6.7.0 的公开 API 基线包含 72 个模块、4,720 个公开符号，`dm` 已纳入正式 API 与兼容数据。
 
 站点入口：<https://docs.monkeyking.com>
 

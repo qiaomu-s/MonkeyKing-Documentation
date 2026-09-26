@@ -893,7 +893,7 @@ describe('deterministic Markdown migration', () => {
       expect(totals).toEqual({
         automaticFragments: 169,
         overrides: 64,
-        unlinked: 20,
+        unlinked: 21,
       })
       expect(changedSources).toBeGreaterThan(0)
     } else {

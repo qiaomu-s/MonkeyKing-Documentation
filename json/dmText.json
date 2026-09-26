@@ -4,7 +4,7 @@
     {
       "textRaw": "dm 字库文字识别",
       "name": "dm_字库文字识别",
-      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n<p><code>Ocr</code> 使用当前字库识别区域内文字：</p>\n<pre><code class=\"lang-js\">dm.SetDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.UseDict(0);\nconst value = dm.Ocr(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p><code>FindStr</code> 先识别区域，再搜索目标文字；<code>FindStrFast</code> 针对目标字符搜索，适合已知目标且需要低延迟的场景：</p>\n<pre><code class=\"lang-js\">const hit = dm.findStrFast(0, 0, 1079, 1919, &#39;确定&#39;, &#39;ffffff&#39;, 0.9);\nif (hit) console.log(hit.value, hit.x, hit.y);\n</code></pre>\n<p><code>GetWordsNoDict</code> 只做前景分割，不依赖字库。行高、字间距和分割间距会影响文字分组，必须在第二张图片上复测。工作台会分别显示文字、命中框、耗时和未识别前景区域。</p>\n<p>字体、字号、抗锯齿、缩放比例和设备密度变化都会改变点阵。Android 字体生成的模板应在目标设备截图上制作或验证。</p>\n",
+      "desc": "<p>运行条件：本页适用于提供 <code>dm</code> 全局对象的 Monkey King 6.7.0 构建。</p>\n<p><code>Ocr</code> 使用当前字库识别区域内文字：</p>\n<pre><code class=\"lang-js\">dm.SetDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.UseDict(0);\nconst value = dm.Ocr(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p><code>FindStr</code> 先识别区域，再搜索目标文字；<code>FindStrFast</code> 针对目标字符搜索，适合已知目标且需要低延迟的场景：</p>\n<pre><code class=\"lang-js\">const hit = dm.findStrFast(0, 0, 1079, 1919, &#39;确定&#39;, &#39;ffffff&#39;, 0.9);\nif (hit) console.log(hit.value, hit.x, hit.y);\n</code></pre>\n<p><code>GetWordsNoDict</code> 只做前景分割，不依赖字库。行高、字间距和分割间距会影响文字分组，必须在第二张图片上复测。工作台会分别显示文字、命中框、耗时和未识别前景区域。</p>\n<p>字体、字号、抗锯齿、缩放比例和设备密度变化都会改变点阵。Android 字体生成的模板应在目标设备截图上制作或验证。</p>\n",
       "type": "module",
       "displayName": "dm 字库文字识别"
     }

@@ -4,7 +4,7 @@
     {
       "textRaw": "dm Java / JS 示例",
       "name": "dm_java_/_js_示例",
-      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n",
+      "desc": "<p>运行条件：本页适用于提供 <code>dm</code> 全局对象的 Monkey King 6.7.0 构建。</p>\n",
       "modules": [
         {
           "textRaw": "Java",

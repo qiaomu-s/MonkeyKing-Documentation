@@ -14,6 +14,7 @@ export interface ExtractArguments {
   readonly source: string
   readonly ref: string
   readonly check: boolean
+  readonly workingTree: boolean
   readonly output: string
   /** Optional private-audit destination; never part of the public artifact. */
   readonly internalOutput?: string
@@ -23,6 +24,7 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
   let source: string | undefined
   let ref: string = MONKEYKING_API_BASELINE
   let check = false
+  let workingTree = false
   let output = 'api-surface/manifest.json'
   let internalOutput: string | undefined
 
@@ -44,6 +46,9 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
       case '--check':
         check = true
         break
+      case '--working-tree':
+        workingTree = true
+        break
       default:
         throw new Error(`Unknown api:extract argument: ${argument}`)
     }
@@ -61,13 +66,14 @@ export function parseExtractArguments(args: readonly string[]): ExtractArguments
     source,
     ref,
     check,
+    workingTree,
     output,
     ...(internalOutput ? { internalOutput } : {}),
   }
 }
 
 export async function runExtract(arguments_: ExtractArguments): Promise<void> {
-  const reader = new GitSourceReader(arguments_.source)
+  const reader = new GitSourceReader(arguments_.source, arguments_.workingTree)
   const manifest = await extractApiManifest(reader, {
     repository: MONKEYKING_SOURCE_REPOSITORY,
     ref: arguments_.ref,

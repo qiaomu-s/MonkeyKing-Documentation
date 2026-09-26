@@ -1249,6 +1249,14 @@
       "target": "docs/api/automation/automator.md#api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM"
     },
     {
+      "id": "coverage:automator.perform",
+      "patterns": [
+        "automator.perform"
+      ],
+      "status": "documented",
+      "target": "docs/api/automation/automator.md#api-symbol-YXV0b21hdG9yLnBlcmZvcm0"
+    },
+    {
       "id": "coverage:automator.powerDialog",
       "patterns": [
         "automator.powerDialog"
@@ -3943,6 +3951,1782 @@
       ],
       "status": "documented",
       "target": "docs/api/automation/dialogs.md#api-symbol-ZGlhbG9ncy5zaW5nbGVDaG9pY2U"
+    },
+    {
+      "id": "coverage:dm.addDict",
+      "patterns": [
+        "dm.addDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uYWRkRGljdA"
+    },
+    {
+      "id": "coverage:dm.AddDict",
+      "patterns": [
+        "dm.AddDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQWRkRGljdA"
+    },
+    {
+      "id": "coverage:dm.appendPicAddr",
+      "patterns": [
+        "dm.appendPicAddr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uYXBwZW5kUGljQWRkcg"
+    },
+    {
+      "id": "coverage:dm.AppendPicAddr",
+      "patterns": [
+        "dm.AppendPicAddr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQXBwZW5kUGljQWRkcg"
+    },
+    {
+      "id": "coverage:dm.bgr2rgb",
+      "patterns": [
+        "dm.bgr2rgb"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uYmdyMnJnYg"
+    },
+    {
+      "id": "coverage:dm.BGR2RGB",
+      "patterns": [
+        "dm.BGR2RGB"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQkdSMlJHQg"
+    },
+    {
+      "id": "coverage:dm.buffer",
+      "patterns": [
+        "dm.buffer"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uYnVmZmVy"
+    },
+    {
+      "id": "coverage:dm.cancel",
+      "patterns": [
+        "dm.cancel"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FuY2Vs"
+    },
+    {
+      "id": "coverage:dm.capture",
+      "patterns": [
+        "dm.capture"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FwdHVyZQ"
+    },
+    {
+      "id": "coverage:dm.Capture",
+      "patterns": [
+        "dm.Capture"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2FwdHVyZQ"
+    },
+    {
+      "id": "coverage:dm.captureGif",
+      "patterns": [
+        "dm.captureGif"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FwdHVyZUdpZg"
+    },
+    {
+      "id": "coverage:dm.CaptureGif",
+      "patterns": [
+        "dm.CaptureGif"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2FwdHVyZUdpZg"
+    },
+    {
+      "id": "coverage:dm.captureJpg",
+      "patterns": [
+        "dm.captureJpg"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FwdHVyZUpwZw"
+    },
+    {
+      "id": "coverage:dm.CaptureJpg",
+      "patterns": [
+        "dm.CaptureJpg"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2FwdHVyZUpwZw"
+    },
+    {
+      "id": "coverage:dm.capturePng",
+      "patterns": [
+        "dm.capturePng"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FwdHVyZVBuZw"
+    },
+    {
+      "id": "coverage:dm.CapturePng",
+      "patterns": [
+        "dm.CapturePng"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2FwdHVyZVBuZw"
+    },
+    {
+      "id": "coverage:dm.capturePre",
+      "patterns": [
+        "dm.capturePre"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2FwdHVyZVByZQ"
+    },
+    {
+      "id": "coverage:dm.CapturePre",
+      "patterns": [
+        "dm.CapturePre"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2FwdHVyZVByZQ"
+    },
+    {
+      "id": "coverage:dm.clearDict",
+      "patterns": [
+        "dm.clearDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2xlYXJEaWN0"
+    },
+    {
+      "id": "coverage:dm.ClearDict",
+      "patterns": [
+        "dm.ClearDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ2xlYXJEaWN0"
+    },
+    {
+      "id": "coverage:dm.close",
+      "patterns": [
+        "dm.close"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY2xvc2U"
+    },
+    {
+      "id": "coverage:dm.cmpColor",
+      "patterns": [
+        "dm.cmpColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uY21wQ29sb3I"
+    },
+    {
+      "id": "coverage:dm.CmpColor",
+      "patterns": [
+        "dm.CmpColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uQ21wQ29sb3I"
+    },
+    {
+      "id": "coverage:dm.enableDisplayDebug",
+      "patterns": [
+        "dm.enableDisplayDebug"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZW5hYmxlRGlzcGxheURlYnVn"
+    },
+    {
+      "id": "coverage:dm.EnableDisplayDebug",
+      "patterns": [
+        "dm.EnableDisplayDebug"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRW5hYmxlRGlzcGxheURlYnVn"
+    },
+    {
+      "id": "coverage:dm.enableFindPicMultithread",
+      "patterns": [
+        "dm.enableFindPicMultithread"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZW5hYmxlRmluZFBpY011bHRpdGhyZWFk"
+    },
+    {
+      "id": "coverage:dm.EnableFindPicMultithread",
+      "patterns": [
+        "dm.EnableFindPicMultithread"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRW5hYmxlRmluZFBpY011bHRpdGhyZWFk"
+    },
+    {
+      "id": "coverage:dm.enableGetColorByCapture",
+      "patterns": [
+        "dm.enableGetColorByCapture"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZW5hYmxlR2V0Q29sb3JCeUNhcHR1cmU"
+    },
+    {
+      "id": "coverage:dm.EnableGetColorByCapture",
+      "patterns": [
+        "dm.EnableGetColorByCapture"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRW5hYmxlR2V0Q29sb3JCeUNhcHR1cmU"
+    },
+    {
+      "id": "coverage:dm.enablePicCache",
+      "patterns": [
+        "dm.enablePicCache"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZW5hYmxlUGljQ2FjaGU"
+    },
+    {
+      "id": "coverage:dm.EnablePicCache",
+      "patterns": [
+        "dm.EnablePicCache"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRW5hYmxlUGljQ2FjaGU"
+    },
+    {
+      "id": "coverage:dm.enableShareDict",
+      "patterns": [
+        "dm.enableShareDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZW5hYmxlU2hhcmVEaWN0"
+    },
+    {
+      "id": "coverage:dm.EnableShareDict",
+      "patterns": [
+        "dm.EnableShareDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRW5hYmxlU2hhcmVEaWN0"
+    },
+    {
+      "id": "coverage:dm.fetchWord",
+      "patterns": [
+        "dm.fetchWord"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmV0Y2hXb3Jk"
+    },
+    {
+      "id": "coverage:dm.FetchWord",
+      "patterns": [
+        "dm.FetchWord"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmV0Y2hXb3Jk"
+    },
+    {
+      "id": "coverage:dm.findColor",
+      "patterns": [
+        "dm.findColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZENvbG9y"
+    },
+    {
+      "id": "coverage:dm.FindColor",
+      "patterns": [
+        "dm.FindColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZENvbG9y"
+    },
+    {
+      "id": "coverage:dm.findColorBlock",
+      "patterns": [
+        "dm.findColorBlock"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZENvbG9yQmxvY2s"
+    },
+    {
+      "id": "coverage:dm.FindColorBlock",
+      "patterns": [
+        "dm.FindColorBlock"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZENvbG9yQmxvY2s"
+    },
+    {
+      "id": "coverage:dm.findColorBlockEx",
+      "patterns": [
+        "dm.findColorBlockEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZENvbG9yQmxvY2tFeA"
+    },
+    {
+      "id": "coverage:dm.FindColorBlockEx",
+      "patterns": [
+        "dm.FindColorBlockEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZENvbG9yQmxvY2tFeA"
+    },
+    {
+      "id": "coverage:dm.findColorE",
+      "patterns": [
+        "dm.findColorE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZENvbG9yRQ"
+    },
+    {
+      "id": "coverage:dm.FindColorE",
+      "patterns": [
+        "dm.FindColorE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZENvbG9yRQ"
+    },
+    {
+      "id": "coverage:dm.findColorEx",
+      "patterns": [
+        "dm.findColorEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZENvbG9yRXg"
+    },
+    {
+      "id": "coverage:dm.FindColorEx",
+      "patterns": [
+        "dm.FindColorEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZENvbG9yRXg"
+    },
+    {
+      "id": "coverage:dm.findMulColor",
+      "patterns": [
+        "dm.findMulColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZE11bENvbG9y"
+    },
+    {
+      "id": "coverage:dm.FindMulColor",
+      "patterns": [
+        "dm.FindMulColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZE11bENvbG9y"
+    },
+    {
+      "id": "coverage:dm.findMultiColor",
+      "patterns": [
+        "dm.findMultiColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZE11bHRpQ29sb3I"
+    },
+    {
+      "id": "coverage:dm.FindMultiColor",
+      "patterns": [
+        "dm.FindMultiColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZE11bHRpQ29sb3I"
+    },
+    {
+      "id": "coverage:dm.findMultiColorE",
+      "patterns": [
+        "dm.findMultiColorE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZE11bHRpQ29sb3JF"
+    },
+    {
+      "id": "coverage:dm.FindMultiColorE",
+      "patterns": [
+        "dm.FindMultiColorE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZE11bHRpQ29sb3JF"
+    },
+    {
+      "id": "coverage:dm.findMultiColorEx",
+      "patterns": [
+        "dm.findMultiColorEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZE11bHRpQ29sb3JFeA"
+    },
+    {
+      "id": "coverage:dm.FindMultiColorEx",
+      "patterns": [
+        "dm.FindMultiColorEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZE11bHRpQ29sb3JFeA"
+    },
+    {
+      "id": "coverage:dm.findPic",
+      "patterns": [
+        "dm.findPic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpYw"
+    },
+    {
+      "id": "coverage:dm.FindPic",
+      "patterns": [
+        "dm.FindPic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpYw"
+    },
+    {
+      "id": "coverage:dm.findPicE",
+      "patterns": [
+        "dm.findPicE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY0U"
+    },
+    {
+      "id": "coverage:dm.FindPicE",
+      "patterns": [
+        "dm.FindPicE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY0U"
+    },
+    {
+      "id": "coverage:dm.findPicEx",
+      "patterns": [
+        "dm.findPicEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY0V4"
+    },
+    {
+      "id": "coverage:dm.FindPicEx",
+      "patterns": [
+        "dm.FindPicEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY0V4"
+    },
+    {
+      "id": "coverage:dm.findPicExS",
+      "patterns": [
+        "dm.findPicExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY0V4Uw"
+    },
+    {
+      "id": "coverage:dm.FindPicExS",
+      "patterns": [
+        "dm.FindPicExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY0V4Uw"
+    },
+    {
+      "id": "coverage:dm.findPicMem",
+      "patterns": [
+        "dm.findPicMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY01lbQ"
+    },
+    {
+      "id": "coverage:dm.FindPicMem",
+      "patterns": [
+        "dm.FindPicMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY01lbQ"
+    },
+    {
+      "id": "coverage:dm.findPicMemE",
+      "patterns": [
+        "dm.findPicMemE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY01lbUU"
+    },
+    {
+      "id": "coverage:dm.FindPicMemE",
+      "patterns": [
+        "dm.FindPicMemE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY01lbUU"
+    },
+    {
+      "id": "coverage:dm.findPicMemEx",
+      "patterns": [
+        "dm.findPicMemEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY01lbUV4"
+    },
+    {
+      "id": "coverage:dm.FindPicMemEx",
+      "patterns": [
+        "dm.FindPicMemEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY01lbUV4"
+    },
+    {
+      "id": "coverage:dm.findPicS",
+      "patterns": [
+        "dm.findPicS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1M"
+    },
+    {
+      "id": "coverage:dm.FindPicS",
+      "patterns": [
+        "dm.FindPicS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1M"
+    },
+    {
+      "id": "coverage:dm.findPicSim",
+      "patterns": [
+        "dm.findPicSim"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbQ"
+    },
+    {
+      "id": "coverage:dm.FindPicSim",
+      "patterns": [
+        "dm.FindPicSim"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbQ"
+    },
+    {
+      "id": "coverage:dm.findPicSimE",
+      "patterns": [
+        "dm.findPicSimE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbUU"
+    },
+    {
+      "id": "coverage:dm.FindPicSimE",
+      "patterns": [
+        "dm.FindPicSimE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbUU"
+    },
+    {
+      "id": "coverage:dm.findPicSimEx",
+      "patterns": [
+        "dm.findPicSimEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbUV4"
+    },
+    {
+      "id": "coverage:dm.FindPicSimEx",
+      "patterns": [
+        "dm.FindPicSimEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbUV4"
+    },
+    {
+      "id": "coverage:dm.findPicSimMem",
+      "patterns": [
+        "dm.findPicSimMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbU1lbQ"
+    },
+    {
+      "id": "coverage:dm.FindPicSimMem",
+      "patterns": [
+        "dm.FindPicSimMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbU1lbQ"
+    },
+    {
+      "id": "coverage:dm.findPicSimMemE",
+      "patterns": [
+        "dm.findPicSimMemE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbU1lbUU"
+    },
+    {
+      "id": "coverage:dm.FindPicSimMemE",
+      "patterns": [
+        "dm.FindPicSimMemE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbU1lbUU"
+    },
+    {
+      "id": "coverage:dm.findPicSimMemEx",
+      "patterns": [
+        "dm.findPicSimMemEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFBpY1NpbU1lbUV4"
+    },
+    {
+      "id": "coverage:dm.FindPicSimMemEx",
+      "patterns": [
+        "dm.FindPicSimMemEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFBpY1NpbU1lbUV4"
+    },
+    {
+      "id": "coverage:dm.findShape",
+      "patterns": [
+        "dm.findShape"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFNoYXBl"
+    },
+    {
+      "id": "coverage:dm.FindShape",
+      "patterns": [
+        "dm.FindShape"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFNoYXBl"
+    },
+    {
+      "id": "coverage:dm.findShapeE",
+      "patterns": [
+        "dm.findShapeE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFNoYXBlRQ"
+    },
+    {
+      "id": "coverage:dm.FindShapeE",
+      "patterns": [
+        "dm.FindShapeE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFNoYXBlRQ"
+    },
+    {
+      "id": "coverage:dm.findShapeEx",
+      "patterns": [
+        "dm.findShapeEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFNoYXBlRXg"
+    },
+    {
+      "id": "coverage:dm.FindShapeEx",
+      "patterns": [
+        "dm.FindShapeEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFNoYXBlRXg"
+    },
+    {
+      "id": "coverage:dm.findStr",
+      "patterns": [
+        "dm.findStr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0cg"
+    },
+    {
+      "id": "coverage:dm.FindStr",
+      "patterns": [
+        "dm.FindStr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0cg"
+    },
+    {
+      "id": "coverage:dm.findStrE",
+      "patterns": [
+        "dm.findStrE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckU"
+    },
+    {
+      "id": "coverage:dm.FindStrE",
+      "patterns": [
+        "dm.FindStrE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckU"
+    },
+    {
+      "id": "coverage:dm.findStrEx",
+      "patterns": [
+        "dm.findStrEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckV4"
+    },
+    {
+      "id": "coverage:dm.FindStrEx",
+      "patterns": [
+        "dm.FindStrEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckV4"
+    },
+    {
+      "id": "coverage:dm.findStrExS",
+      "patterns": [
+        "dm.findStrExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckV4Uw"
+    },
+    {
+      "id": "coverage:dm.FindStrExS",
+      "patterns": [
+        "dm.FindStrExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckV4Uw"
+    },
+    {
+      "id": "coverage:dm.findStrFast",
+      "patterns": [
+        "dm.findStrFast"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckZhc3Q"
+    },
+    {
+      "id": "coverage:dm.FindStrFast",
+      "patterns": [
+        "dm.FindStrFast"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckZhc3Q"
+    },
+    {
+      "id": "coverage:dm.findStrFastE",
+      "patterns": [
+        "dm.findStrFastE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckZhc3RF"
+    },
+    {
+      "id": "coverage:dm.FindStrFastE",
+      "patterns": [
+        "dm.FindStrFastE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckZhc3RF"
+    },
+    {
+      "id": "coverage:dm.findStrFastEx",
+      "patterns": [
+        "dm.findStrFastEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckZhc3RFeA"
+    },
+    {
+      "id": "coverage:dm.FindStrFastEx",
+      "patterns": [
+        "dm.FindStrFastEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckZhc3RFeA"
+    },
+    {
+      "id": "coverage:dm.findStrFastExS",
+      "patterns": [
+        "dm.findStrFastExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckZhc3RFeFM"
+    },
+    {
+      "id": "coverage:dm.FindStrFastExS",
+      "patterns": [
+        "dm.FindStrFastExS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckZhc3RFeFM"
+    },
+    {
+      "id": "coverage:dm.findStrFastS",
+      "patterns": [
+        "dm.findStrFastS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0ckZhc3RT"
+    },
+    {
+      "id": "coverage:dm.FindStrFastS",
+      "patterns": [
+        "dm.FindStrFastS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0ckZhc3RT"
+    },
+    {
+      "id": "coverage:dm.findStrS",
+      "patterns": [
+        "dm.findStrS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0clM"
+    },
+    {
+      "id": "coverage:dm.FindStrS",
+      "patterns": [
+        "dm.FindStrS"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0clM"
+    },
+    {
+      "id": "coverage:dm.findStrWithFont",
+      "patterns": [
+        "dm.findStrWithFont"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0cldpdGhGb250"
+    },
+    {
+      "id": "coverage:dm.FindStrWithFont",
+      "patterns": [
+        "dm.FindStrWithFont"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0cldpdGhGb250"
+    },
+    {
+      "id": "coverage:dm.findStrWithFontE",
+      "patterns": [
+        "dm.findStrWithFontE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0cldpdGhGb250RQ"
+    },
+    {
+      "id": "coverage:dm.FindStrWithFontE",
+      "patterns": [
+        "dm.FindStrWithFontE"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0cldpdGhGb250RQ"
+    },
+    {
+      "id": "coverage:dm.findStrWithFontEx",
+      "patterns": [
+        "dm.findStrWithFontEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZmluZFN0cldpdGhGb250RXg"
+    },
+    {
+      "id": "coverage:dm.FindStrWithFontEx",
+      "patterns": [
+        "dm.FindStrWithFontEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRmluZFN0cldpdGhGb250RXg"
+    },
+    {
+      "id": "coverage:dm.freePic",
+      "patterns": [
+        "dm.freePic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZnJlZVBpYw"
+    },
+    {
+      "id": "coverage:dm.FreePic",
+      "patterns": [
+        "dm.FreePic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uRnJlZVBpYw"
+    },
+    {
+      "id": "coverage:dm.getAveHSV",
+      "patterns": [
+        "dm.getAveHSV"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0QXZlSFNW"
+    },
+    {
+      "id": "coverage:dm.GetAveHSV",
+      "patterns": [
+        "dm.GetAveHSV"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0QXZlSFNW"
+    },
+    {
+      "id": "coverage:dm.getAveRGB",
+      "patterns": [
+        "dm.getAveRGB"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0QXZlUkdC"
+    },
+    {
+      "id": "coverage:dm.GetAveRGB",
+      "patterns": [
+        "dm.GetAveRGB"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0QXZlUkdC"
+    },
+    {
+      "id": "coverage:dm.getColor",
+      "patterns": [
+        "dm.getColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0Q29sb3I"
+    },
+    {
+      "id": "coverage:dm.GetColor",
+      "patterns": [
+        "dm.GetColor"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0Q29sb3I"
+    },
+    {
+      "id": "coverage:dm.getColorBGR",
+      "patterns": [
+        "dm.getColorBGR"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0Q29sb3JCR1I"
+    },
+    {
+      "id": "coverage:dm.GetColorBGR",
+      "patterns": [
+        "dm.GetColorBGR"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0Q29sb3JCR1I"
+    },
+    {
+      "id": "coverage:dm.getColorHSV",
+      "patterns": [
+        "dm.getColorHSV"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0Q29sb3JIU1Y"
+    },
+    {
+      "id": "coverage:dm.GetColorHSV",
+      "patterns": [
+        "dm.GetColorHSV"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0Q29sb3JIU1Y"
+    },
+    {
+      "id": "coverage:dm.getColorNum",
+      "patterns": [
+        "dm.getColorNum"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0Q29sb3JOdW0"
+    },
+    {
+      "id": "coverage:dm.GetColorNum",
+      "patterns": [
+        "dm.GetColorNum"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0Q29sb3JOdW0"
+    },
+    {
+      "id": "coverage:dm.getDict",
+      "patterns": [
+        "dm.getDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0RGljdA"
+    },
+    {
+      "id": "coverage:dm.GetDict",
+      "patterns": [
+        "dm.GetDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0RGljdA"
+    },
+    {
+      "id": "coverage:dm.getDictCount",
+      "patterns": [
+        "dm.getDictCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0RGljdENvdW50"
+    },
+    {
+      "id": "coverage:dm.GetDictCount",
+      "patterns": [
+        "dm.GetDictCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0RGljdENvdW50"
+    },
+    {
+      "id": "coverage:dm.getDictInfo",
+      "patterns": [
+        "dm.getDictInfo"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0RGljdEluZm8"
+    },
+    {
+      "id": "coverage:dm.GetDictInfo",
+      "patterns": [
+        "dm.GetDictInfo"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0RGljdEluZm8"
+    },
+    {
+      "id": "coverage:dm.getFrameInfo",
+      "patterns": [
+        "dm.getFrameInfo"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0RnJhbWVJbmZv"
+    },
+    {
+      "id": "coverage:dm.getLastFindTimings",
+      "patterns": [
+        "dm.getLastFindTimings"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0TGFzdEZpbmRUaW1pbmdz"
+    },
+    {
+      "id": "coverage:dm.getNowDict",
+      "patterns": [
+        "dm.getNowDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0Tm93RGljdA"
+    },
+    {
+      "id": "coverage:dm.GetNowDict",
+      "patterns": [
+        "dm.GetNowDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0Tm93RGljdA"
+    },
+    {
+      "id": "coverage:dm.getPicSize",
+      "patterns": [
+        "dm.getPicSize"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0UGljU2l6ZQ"
+    },
+    {
+      "id": "coverage:dm.GetPicSize",
+      "patterns": [
+        "dm.GetPicSize"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0UGljU2l6ZQ"
+    },
+    {
+      "id": "coverage:dm.getResultCount",
+      "patterns": [
+        "dm.getResultCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0UmVzdWx0Q291bnQ"
+    },
+    {
+      "id": "coverage:dm.GetResultCount",
+      "patterns": [
+        "dm.GetResultCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0UmVzdWx0Q291bnQ"
+    },
+    {
+      "id": "coverage:dm.getResultPos",
+      "patterns": [
+        "dm.getResultPos"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0UmVzdWx0UG9z"
+    },
+    {
+      "id": "coverage:dm.GetResultPos",
+      "patterns": [
+        "dm.GetResultPos"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0UmVzdWx0UG9z"
+    },
+    {
+      "id": "coverage:dm.getScreenData",
+      "patterns": [
+        "dm.getScreenData"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0U2NyZWVuRGF0YQ"
+    },
+    {
+      "id": "coverage:dm.GetScreenData",
+      "patterns": [
+        "dm.GetScreenData"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0U2NyZWVuRGF0YQ"
+    },
+    {
+      "id": "coverage:dm.getScreenDataBmp",
+      "patterns": [
+        "dm.getScreenDataBmp"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0U2NyZWVuRGF0YUJtcA"
+    },
+    {
+      "id": "coverage:dm.GetScreenDataBmp",
+      "patterns": [
+        "dm.GetScreenDataBmp"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0U2NyZWVuRGF0YUJtcA"
+    },
+    {
+      "id": "coverage:dm.getWordResultCount",
+      "patterns": [
+        "dm.getWordResultCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0V29yZFJlc3VsdENvdW50"
+    },
+    {
+      "id": "coverage:dm.GetWordResultCount",
+      "patterns": [
+        "dm.GetWordResultCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0V29yZFJlc3VsdENvdW50"
+    },
+    {
+      "id": "coverage:dm.getWordResultPos",
+      "patterns": [
+        "dm.getWordResultPos"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0V29yZFJlc3VsdFBvcw"
+    },
+    {
+      "id": "coverage:dm.GetWordResultPos",
+      "patterns": [
+        "dm.GetWordResultPos"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0V29yZFJlc3VsdFBvcw"
+    },
+    {
+      "id": "coverage:dm.getWordResultStr",
+      "patterns": [
+        "dm.getWordResultStr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0V29yZFJlc3VsdFN0cg"
+    },
+    {
+      "id": "coverage:dm.GetWordResultStr",
+      "patterns": [
+        "dm.GetWordResultStr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0V29yZFJlc3VsdFN0cg"
+    },
+    {
+      "id": "coverage:dm.getWords",
+      "patterns": [
+        "dm.getWords"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0V29yZHM"
+    },
+    {
+      "id": "coverage:dm.GetWords",
+      "patterns": [
+        "dm.GetWords"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0V29yZHM"
+    },
+    {
+      "id": "coverage:dm.getWordsNoDict",
+      "patterns": [
+        "dm.getWordsNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uZ2V0V29yZHNOb0RpY3Q"
+    },
+    {
+      "id": "coverage:dm.GetWordsNoDict",
+      "patterns": [
+        "dm.GetWordsNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uR2V0V29yZHNOb0RpY3Q"
+    },
+    {
+      "id": "coverage:dm.imageToBmp",
+      "patterns": [
+        "dm.imageToBmp"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uaW1hZ2VUb0JtcA"
+    },
+    {
+      "id": "coverage:dm.ImageToBmp",
+      "patterns": [
+        "dm.ImageToBmp"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uSW1hZ2VUb0JtcA"
+    },
+    {
+      "id": "coverage:dm.isDisplayDead",
+      "patterns": [
+        "dm.isDisplayDead"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uaXNEaXNwbGF5RGVhZA"
+    },
+    {
+      "id": "coverage:dm.IsDisplayDead",
+      "patterns": [
+        "dm.IsDisplayDead"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uSXNEaXNwbGF5RGVhZA"
+    },
+    {
+      "id": "coverage:dm.keepScreen",
+      "patterns": [
+        "dm.keepScreen"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ua2VlcFNjcmVlbg"
+    },
+    {
+      "id": "coverage:dm.loadPic",
+      "patterns": [
+        "dm.loadPic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ubG9hZFBpYw"
+    },
+    {
+      "id": "coverage:dm.LoadPic",
+      "patterns": [
+        "dm.LoadPic"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uTG9hZFBpYw"
+    },
+    {
+      "id": "coverage:dm.loadPicByte",
+      "patterns": [
+        "dm.loadPicByte"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ubG9hZFBpY0J5dGU"
+    },
+    {
+      "id": "coverage:dm.LoadPicByte",
+      "patterns": [
+        "dm.LoadPicByte"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uTG9hZFBpY0J5dGU"
+    },
+    {
+      "id": "coverage:dm.matchPicName",
+      "patterns": [
+        "dm.matchPicName"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ubWF0Y2hQaWNOYW1l"
+    },
+    {
+      "id": "coverage:dm.MatchPicName",
+      "patterns": [
+        "dm.MatchPicName"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uTWF0Y2hQaWNOYW1l"
+    },
+    {
+      "id": "coverage:dm.ocr",
+      "patterns": [
+        "dm.ocr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2Ny"
+    },
+    {
+      "id": "coverage:dm.Ocr",
+      "patterns": [
+        "dm.Ocr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uT2Ny"
+    },
+    {
+      "id": "coverage:dm.ocrAuto",
+      "patterns": [
+        "dm.ocrAuto"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2NyQXV0bw"
+    },
+    {
+      "id": "coverage:dm.ocrEx",
+      "patterns": [
+        "dm.ocrEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2NyRXg"
+    },
+    {
+      "id": "coverage:dm.OcrEx",
+      "patterns": [
+        "dm.OcrEx"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uT2NyRXg"
+    },
+    {
+      "id": "coverage:dm.ocrExOne",
+      "patterns": [
+        "dm.ocrExOne"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2NyRXhPbmU"
+    },
+    {
+      "id": "coverage:dm.OcrExOne",
+      "patterns": [
+        "dm.OcrExOne"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uT2NyRXhPbmU"
+    },
+    {
+      "id": "coverage:dm.ocrInFile",
+      "patterns": [
+        "dm.ocrInFile"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2NySW5GaWxl"
+    },
+    {
+      "id": "coverage:dm.OcrInFile",
+      "patterns": [
+        "dm.OcrInFile"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uT2NySW5GaWxl"
+    },
+    {
+      "id": "coverage:dm.rgb2bgr",
+      "patterns": [
+        "dm.rgb2bgr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0ucmdiMmJncg"
+    },
+    {
+      "id": "coverage:dm.RGB2BGR",
+      "patterns": [
+        "dm.RGB2BGR"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uUkdCMkJHUg"
+    },
+    {
+      "id": "coverage:dm.saveDict",
+      "patterns": [
+        "dm.saveDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2F2ZURpY3Q"
+    },
+    {
+      "id": "coverage:dm.SaveDict",
+      "patterns": [
+        "dm.SaveDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2F2ZURpY3Q"
+    },
+    {
+      "id": "coverage:dm.setColGapNoDict",
+      "patterns": [
+        "dm.setColGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0Q29sR2FwTm9EaWN0"
+    },
+    {
+      "id": "coverage:dm.SetColGapNoDict",
+      "patterns": [
+        "dm.SetColGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0Q29sR2FwTm9EaWN0"
+    },
+    {
+      "id": "coverage:dm.setDict",
+      "patterns": [
+        "dm.setDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RGljdA"
+    },
+    {
+      "id": "coverage:dm.SetDict",
+      "patterns": [
+        "dm.SetDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RGljdA"
+    },
+    {
+      "id": "coverage:dm.setDictMem",
+      "patterns": [
+        "dm.setDictMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RGljdE1lbQ"
+    },
+    {
+      "id": "coverage:dm.SetDictMem",
+      "patterns": [
+        "dm.SetDictMem"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RGljdE1lbQ"
+    },
+    {
+      "id": "coverage:dm.setDictPwd",
+      "patterns": [
+        "dm.setDictPwd"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RGljdFB3ZA"
+    },
+    {
+      "id": "coverage:dm.SetDictPwd",
+      "patterns": [
+        "dm.SetDictPwd"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RGljdFB3ZA"
+    },
+    {
+      "id": "coverage:dm.setDisplayInput",
+      "patterns": [
+        "dm.setDisplayInput"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RGlzcGxheUlucHV0"
+    },
+    {
+      "id": "coverage:dm.SetDisplayInput",
+      "patterns": [
+        "dm.SetDisplayInput"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RGlzcGxheUlucHV0"
+    },
+    {
+      "id": "coverage:dm.setExactOcr",
+      "patterns": [
+        "dm.setExactOcr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RXhhY3RPY3I"
+    },
+    {
+      "id": "coverage:dm.SetExactOcr",
+      "patterns": [
+        "dm.SetExactOcr"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RXhhY3RPY3I"
+    },
+    {
+      "id": "coverage:dm.setExcludeRegion",
+      "patterns": [
+        "dm.setExcludeRegion"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RXhjbHVkZVJlZ2lvbg"
+    },
+    {
+      "id": "coverage:dm.SetExcludeRegion",
+      "patterns": [
+        "dm.SetExcludeRegion"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RXhjbHVkZVJlZ2lvbg"
+    },
+    {
+      "id": "coverage:dm.setFindPicMultithreadCount",
+      "patterns": [
+        "dm.setFindPicMultithreadCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkQ291bnQ"
+    },
+    {
+      "id": "coverage:dm.SetFindPicMultithreadCount",
+      "patterns": [
+        "dm.SetFindPicMultithreadCount"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RmluZFBpY011bHRpdGhyZWFkQ291bnQ"
+    },
+    {
+      "id": "coverage:dm.setFindPicMultithreadLimit",
+      "patterns": [
+        "dm.setFindPicMultithreadLimit"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkTGltaXQ"
+    },
+    {
+      "id": "coverage:dm.SetFindPicMultithreadLimit",
+      "patterns": [
+        "dm.SetFindPicMultithreadLimit"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0RmluZFBpY011bHRpdGhyZWFkTGltaXQ"
+    },
+    {
+      "id": "coverage:dm.setImage",
+      "patterns": [
+        "dm.setImage"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0SW1hZ2U"
+    },
+    {
+      "id": "coverage:dm.setMinColGap",
+      "patterns": [
+        "dm.setMinColGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0TWluQ29sR2Fw"
+    },
+    {
+      "id": "coverage:dm.SetMinColGap",
+      "patterns": [
+        "dm.SetMinColGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0TWluQ29sR2Fw"
+    },
+    {
+      "id": "coverage:dm.setMinRowGap",
+      "patterns": [
+        "dm.setMinRowGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0TWluUm93R2Fw"
+    },
+    {
+      "id": "coverage:dm.SetMinRowGap",
+      "patterns": [
+        "dm.SetMinRowGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0TWluUm93R2Fw"
+    },
+    {
+      "id": "coverage:dm.setPath",
+      "patterns": [
+        "dm.setPath"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0UGF0aA"
+    },
+    {
+      "id": "coverage:dm.SetPath",
+      "patterns": [
+        "dm.SetPath"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0UGF0aA"
+    },
+    {
+      "id": "coverage:dm.setPicPwd",
+      "patterns": [
+        "dm.setPicPwd"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0UGljUHdk"
+    },
+    {
+      "id": "coverage:dm.SetPicPwd",
+      "patterns": [
+        "dm.SetPicPwd"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0UGljUHdk"
+    },
+    {
+      "id": "coverage:dm.setRowGapNoDict",
+      "patterns": [
+        "dm.setRowGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0Um93R2FwTm9EaWN0"
+    },
+    {
+      "id": "coverage:dm.SetRowGapNoDict",
+      "patterns": [
+        "dm.SetRowGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0Um93R2FwTm9EaWN0"
+    },
+    {
+      "id": "coverage:dm.setSimdEnabled",
+      "patterns": [
+        "dm.setSimdEnabled"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0U2ltZEVuYWJsZWQ"
+    },
+    {
+      "id": "coverage:dm.setWordGap",
+      "patterns": [
+        "dm.setWordGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0V29yZEdhcA"
+    },
+    {
+      "id": "coverage:dm.SetWordGap",
+      "patterns": [
+        "dm.SetWordGap"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0V29yZEdhcA"
+    },
+    {
+      "id": "coverage:dm.setWordGapNoDict",
+      "patterns": [
+        "dm.setWordGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0V29yZEdhcE5vRGljdA"
+    },
+    {
+      "id": "coverage:dm.SetWordGapNoDict",
+      "patterns": [
+        "dm.SetWordGapNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0V29yZEdhcE5vRGljdA"
+    },
+    {
+      "id": "coverage:dm.setWordLineHeight",
+      "patterns": [
+        "dm.setWordLineHeight"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHQ"
+    },
+    {
+      "id": "coverage:dm.SetWordLineHeight",
+      "patterns": [
+        "dm.SetWordLineHeight"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0V29yZExpbmVIZWlnaHQ"
+    },
+    {
+      "id": "coverage:dm.setWordLineHeightNoDict",
+      "patterns": [
+        "dm.setWordLineHeightNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHROb0RpY3Q"
+    },
+    {
+      "id": "coverage:dm.SetWordLineHeightNoDict",
+      "patterns": [
+        "dm.SetWordLineHeightNoDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uU2V0V29yZExpbmVIZWlnaHROb0RpY3Q"
+    },
+    {
+      "id": "coverage:dm.useDict",
+      "patterns": [
+        "dm.useDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0udXNlRGljdA"
+    },
+    {
+      "id": "coverage:dm.UseDict",
+      "patterns": [
+        "dm.UseDict"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0uVXNlRGljdA"
+    },
+    {
+      "id": "coverage:dm.useScreen",
+      "patterns": [
+        "dm.useScreen"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-ZG0udXNlU2NyZWVu"
     },
     {
       "id": "coverage:dynamic:color.result.forwarded-functions",
@@ -7489,20 +9273,6 @@
       "target": "docs/api/core/global.md#api-symbol-Z2xvYmFsOlJlcXVlc3RCb2R5"
     },
     {
-      "id": "coverage:global:requestScreenCapture",
-      "patterns": [
-        "global:requestScreenCapture"
-      ],
-      "status": "alias"
-    },
-    {
-      "id": "coverage:global:requestScreenCaptureAsync",
-      "patterns": [
-        "global:requestScreenCaptureAsync"
-      ],
-      "status": "alias"
-    },
-    {
       "id": "coverage:global:require",
       "patterns": [
         "global:require"
@@ -9042,6 +10812,14 @@
       "target": "docs/api/media/image.md#image-getheight"
     },
     {
+      "id": "coverage:images.getScreenCaptureInfo",
+      "patterns": [
+        "images.getScreenCaptureInfo"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/image.md#api-symbol-aW1hZ2VzLmdldFNjcmVlbkNhcHR1cmVJbmZv"
+    },
+    {
       "id": "coverage:images.getScreenCaptureOptions",
       "patterns": [
         "images.getScreenCaptureOptions"
@@ -9256,22 +11034,6 @@
       ],
       "status": "documented",
       "target": "docs/api/media/image.md#api-symbol-aW1hZ2VzLnJlY3ljbGU"
-    },
-    {
-      "id": "coverage:images.requestScreenCapture",
-      "patterns": [
-        "images.requestScreenCapture"
-      ],
-      "status": "documented",
-      "target": "docs/api/media/image.md#api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJl"
-    },
-    {
-      "id": "coverage:images.requestScreenCaptureAsync",
-      "patterns": [
-        "images.requestScreenCaptureAsync"
-      ],
-      "status": "documented",
-      "target": "docs/api/media/image.md#api-symbol-aW1hZ2VzLnJlcXVlc3RTY3JlZW5DYXB0dXJlQXN5bmM"
     },
     {
       "id": "coverage:images.resize",
@@ -30552,6 +32314,14 @@
       ],
       "status": "documented",
       "target": "docs/api/automation/dialogs.md#api-symbol-bW9kdWxlOmRpYWxvZ3M"
+    },
+    {
+      "id": "coverage:module:dm",
+      "patterns": [
+        "module:dm"
+      ],
+      "status": "documented",
+      "target": "docs/api/media/dm.md#api-symbol-bW9kdWxlOmRt"
     },
     {
       "id": "coverage:module:engines",

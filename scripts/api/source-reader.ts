@@ -1,10 +1,12 @@
 import { execFileSync } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-export const MONKEYKING_SOURCE_REPOSITORY = 'qiaomu-s/AutoJs6'
+export const MONKEYKING_SOURCE_REPOSITORY = 'qiaomu-s/MonkeyKing'
 
 export interface SourceReader {
   readonly repositoryName: string
+  readonly workingTree?: boolean
   resolveRef(ref: string): string
   listFiles(prefix?: string): string[]
   readFile(path: string): string
@@ -13,10 +15,12 @@ export interface SourceReader {
 export class GitSourceReader implements SourceReader {
   readonly sourceDirectory: string
   readonly repositoryName = MONKEYKING_SOURCE_REPOSITORY
+  readonly workingTree: boolean
   private resolvedCommit: string | null = null
 
-  constructor(sourceDirectory: string) {
+  constructor(sourceDirectory: string, workingTree = false) {
     this.sourceDirectory = resolve(sourceDirectory)
+    this.workingTree = workingTree
   }
 
   resolveRef(ref: string): string {
@@ -29,6 +33,20 @@ export class GitSourceReader implements SourceReader {
   }
 
   listFiles(prefix = ''): string[] {
+    if (this.workingTree) {
+      return this.git([
+        'ls-files',
+        '--cached',
+        '--others',
+        '--exclude-standard',
+        '--',
+        prefix || '.',
+      ])
+        .split('\n')
+        .map((path) => path.trim())
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right, 'en'))
+    }
     const commit = this.requireResolvedCommit()
     const args = ['ls-tree', '-r', '--name-only', commit]
     if (prefix) args.push('--', prefix)
@@ -41,6 +59,14 @@ export class GitSourceReader implements SourceReader {
   }
 
   readFile(path: string): string {
+    if (this.workingTree) {
+      const relativePath = this.resolveWorkingTreePath(path)
+      const absolutePath = resolve(this.sourceDirectory, relativePath)
+      if (!existsSync(absolutePath)) {
+        throw new Error(`Working-tree source file is missing: ${path}`)
+      }
+      return readFileSync(absolutePath, 'utf8')
+    }
     const commit = this.requireResolvedCommit()
     return this.git(['show', `${commit}:${path}`])
   }
@@ -50,6 +76,17 @@ export class GitSourceReader implements SourceReader {
       throw new Error('resolveRef() must be called before reading source files.')
     }
     return this.resolvedCommit
+  }
+
+  private resolveWorkingTreePath(path: string): string {
+    const direct = resolve(this.sourceDirectory, path)
+    if (existsSync(direct)) return path
+
+    const suffix = path.split('/').slice(-4).join('/')
+    const candidates = this.listFiles()
+      .filter((candidate) => candidate.endsWith(`/${suffix}`))
+    if (candidates.length === 1) return candidates[0]
+    return path
   }
 
   private git(args: readonly string[], allowFailure = false): string {

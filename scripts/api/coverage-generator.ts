@@ -84,6 +84,7 @@ export const defaultOwnerPages: Readonly<Record<string, string>> = Object.freeze
   colors: 'docs/api/media/color.md',
   'color.result': 'docs/api/types/color.md',
   images: 'docs/api/media/image.md',
+  dm: 'docs/api/media/dm.md',
   media: 'docs/api/media/media.md',
   mediainfo: 'docs/api/media/mediainfo.md',
   'mediainfo.result': 'docs/api/media/mediainfo.md',

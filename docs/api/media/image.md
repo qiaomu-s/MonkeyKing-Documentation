@@ -919,6 +919,16 @@ images.getScreenCaptureOptions(): {
 
 不接受参数。捕获器尚未建立时返回 `null`；否则返回当前捕获器实际宽高、方向、密度和连续异步模式标记的只读记录。
 
+<a id="api-symbol-aW1hZ2VzLmdldFNjcmVlbkNhcHR1cmVJbmZv"></a>
+
+#### `images.getScreenCaptureInfo()`
+
+```ts
+images.getScreenCaptureInfo(): object
+```
+
+不接受参数，返回当前截图授权和帧变换元数据对象。对象内容由当前捕获器决定；未建立截图输入时返回空的状态记录。
+
 <a id="api-symbol-aW1hZ2VzLnNhdmVJbWFnZQ"></a>
 
 #### `images.saveImage(image, path, format?, quality?)`
@@ -1829,17 +1839,7 @@ console.log(typeof images.readPixels);
 console.log(typeof images.recycle);
 ```
 
-<!-- api-member-contract id="images.requestScreenCapture" version="6.7.0" -->
-`images.requestScreenCapture` · 版本：**6.7.0** · Rhino 2.0 示例：
-```js
-console.log(typeof images.requestScreenCapture);
-```
 
-<!-- api-member-contract id="images.requestScreenCaptureAsync" version="6.7.0" -->
-`images.requestScreenCaptureAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
-```js
-console.log(typeof images.requestScreenCaptureAsync);
-```
 
 <!-- api-member-contract id="images.resize" version="6.7.0" -->
 `images.resize` · 版本：**6.7.0** · Rhino 2.0 示例：
@@ -1905,4 +1905,11 @@ console.log(typeof images.toBytes);
 `module:images` · 版本：**6.7.0** · Rhino 2.0 示例：
 ```js
 console.log(typeof images);
+```
+
+
+<!-- api-member-contract id="images.getScreenCaptureInfo" version="6.7.0" -->
+`images.getScreenCaptureInfo` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof images.getScreenCaptureInfo);
 ```

@@ -1,11 +1,20 @@
 # 文档更新日志 (Changelog)
 
-## dm 预览参考
+## dm 纳入正式 API
 
 <p style="font: bold 0.8em sans-serif; color: #888888">2026/09/25</p>
 
-- `预览` `dm` 图色、找图、公开明文字库、字库识别、通用 OCR 和 Android 兼容约定文档。
-- `预览` VS Code 大漠字库编辑器和截图工作台制作、换图验证、代码生成教程。
+- `新增` `dm` 模块及其 222 个 Rhino 可调用方法进入正式 API 清单、覆盖检查、站内搜索和兼容 JSON。
+- `新增` [dm 图色与文字识别 API](../api/media/dm.md)，保留 PascalCase 兼容入口并补充 camelCase 便捷入口、`DmMatch`、帧信息和缓冲区生命周期说明。
+- `明确` API 清单以 Monkey King 6.7.0 的 Rhino 实际暴露面为准；本次公开 manifest 为 72 个模块、4,720 个公开符号。旧清单中已不再暴露的四个截图别名未继续登记。
+- `明确` `SetPicPwd` 和 `SetDictPwd` 仅记录兼容状态，不支持加密资源解析、解密或密码设置。
+
+## dm 参考与工具
+
+<p style="font: bold 0.8em sans-serif; color: #888888">2026/09/25</p>
+
+- `补充` `dm` 图色、找图、公开明文字库、字库识别、通用 OCR 和 Android 兼容约定文档。
+- `补充` VS Code 大漠字库编辑器和截图工作台制作、换图验证、代码生成教程。
 - `明确` 不提供加密、解密、密码设置或私有加密资源解析。
 
 ## v6.7.0 文档版本说明

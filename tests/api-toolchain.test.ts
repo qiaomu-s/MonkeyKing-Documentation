@@ -82,6 +82,7 @@ describe('API tooling command contract', () => {
       source: '/tmp/MonkeyKing',
       ref: 'fixed-sha',
       check: true,
+      workingTree: false,
       output: 'api-surface/manifest.json',
     })
     expect(() => extractCli.parseExtractArguments([])).toThrow(/--source/)
@@ -92,7 +93,10 @@ describe('API tooling command contract', () => {
         '--internal-output',
         '/tmp/internal-api.json',
       ]),
-    ).toMatchObject({ internalOutput: '/tmp/internal-api.json' })
+    ).toMatchObject({
+      internalOutput: '/tmp/internal-api.json',
+      workingTree: false,
+    })
   })
 
   test('allows the checker root and input files to be overridden', async () => {

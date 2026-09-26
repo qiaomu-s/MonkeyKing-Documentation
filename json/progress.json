@@ -9,7 +9,7 @@
         {
           "textRaw": "当前基线",
           "name": "当前基线",
-          "desc": "<table>\n<thead>\n<tr>\n<th>项目</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>产品版本</td>\n<td>Monkey King 6.7.0</td>\n</tr>\n<tr>\n<td>Android</td>\n<td>API 24 及以上</td>\n</tr>\n<tr>\n<td>JavaScript 引擎</td>\n<td>Rhino 2.0 语法环境</td>\n</tr>\n<tr>\n<td>文档页面</td>\n<td>121 个 canonical 页面</td>\n</tr>\n<tr>\n<td>兼容数据</td>\n<td>133 个 JSON 文件</td>\n</tr>\n<tr>\n<td>示例</td>\n<td>6.7.0 公开 API 基线中每个成员至少一个 Rhino 2.0 示例</td>\n</tr>\n</tbody>\n</table>\n<p><code>dm</code> 页面为预览参考，仅适用于已提供 <code>dm</code> 全局对象的授权构建，不计入 Monkey King 6.7.0 的 4,499 个公开 API 符号基线。</p>\n",
+          "desc": "<table>\n<thead>\n<tr>\n<th>项目</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>产品版本</td>\n<td>Monkey King 6.7.0</td>\n</tr>\n<tr>\n<td>Android</td>\n<td>API 24 及以上</td>\n</tr>\n<tr>\n<td>JavaScript 引擎</td>\n<td>Rhino 2.0 语法环境</td>\n</tr>\n<tr>\n<td>文档页面</td>\n<td>122 个 canonical 页面</td>\n</tr>\n<tr>\n<td>兼容数据</td>\n<td>134 个 JSON 文件</td>\n</tr>\n<tr>\n<td>示例</td>\n<td>6.7.0 公开 API 基线中每个成员至少一个 Rhino 2.0 示例</td>\n</tr>\n</tbody>\n</table>\n<p><code>dm</code> 已纳入 Monkey King 6.7.0 的正式 API 基线，共包含 223 个公开符号（模块本身及 222 个成员）。使用前请确认运行环境提供 <code>dm</code> 全局对象及其对应的图像、字库或 OCR 资源。</p>\n",
           "type": "module",
           "displayName": "当前基线"
         },

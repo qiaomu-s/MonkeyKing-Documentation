@@ -25,6 +25,7 @@ const expectedLegacyMarkdownSources = [
 const expectedCanonicalOnlyEntries = [
   ['api.system.sysprops', 'docs/api/system/sysprops.md', 'sysprops'],
   ['api.system.sqlite', 'docs/api/system/sqlite.md', 'sqlite'],
+  ['api.media.dm', 'docs/api/media/dm.md', 'dmApi'],
   ['api.media.mediainfo', 'docs/api/media/mediainfo.md', 'mediainfo'],
   ['api.utilities.util', 'docs/api/utilities/util.md', 'util'],
   ['api.utilities.converter', 'docs/api/utilities/converter.md', 'cvt'],

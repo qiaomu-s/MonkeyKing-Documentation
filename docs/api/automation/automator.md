@@ -532,6 +532,25 @@ console.log(automator === $automator); // true
 console.log(automator.isServiceRunning());
 ```
 
+<a id="api-symbol-YXV0b21hdG9yLnBlcmZvcm0"></a>
+### [m] automator.perform(action[, options])
+
+**`6.7.0`**
+
+- **入口 / 别名**：`automator.perform(...)`
+- **参数**：`action` 为动作对象；可选 `options` 指定 `frame`、`frameInfo` 和 `timeoutMs`
+- <ins>**returns**</ins> { `object` } - 返回输入执行结果对象；在 UI 线程调用时返回 Promise
+- **坐标**：没有帧元数据时使用物理屏幕像素；传入 `ImageWrapper` 或 `frameInfo` 时使用输入图像坐标并由运行时换算
+- **线程 / 生命周期 / 副作用**：脚本线程同步执行，UI 线程切换为异步提交；`timeoutMs` 只影响本次动作
+
+```js
+const result = automator.perform(
+  { type: 'tap', x: 320, y: 640 },
+  { timeoutMs: 3000 },
+)
+console.log(result.status)
+```
+
 <a id="click-x-y"></a>
 <a id="api-symbol-YXV0b21hdG9yLmNsaWNr"></a>
 ### [m] automator.click(target[, index])
@@ -1084,4 +1103,11 @@ try {
 } finally {
     ra.exit();
 }
+```
+
+
+<!-- api-member-contract id="automator.perform" version="6.7.0" -->
+`automator.perform` · 版本：**6.7.0** · Rhino 2.0 示例：
+```js
+console.log(typeof automator.perform);
 ```

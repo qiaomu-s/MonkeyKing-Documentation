@@ -1414,33 +1414,21 @@ function assertOverrideEvidence(
   sourceFiles: readonly string[],
   override: DynamicOverride,
 ): void {
-  if (!sourceFiles.includes(override.source.path)) {
+  let source: string
+  try {
+    source = reader.readFile(override.source.path)
+  } catch {
     throw new Error(
       `Override ${override.id} references missing source ${override.source.path}.`,
     )
   }
-  const source = reader.readFile(override.source.path)
   const lines = source.split(/\r?\n/)
-  if (override.source.line > lines.length) {
+  if (override.source.line > lines.length && !reader.workingTree) {
     throw new Error(
       `Override ${override.id} line ${override.source.line} is outside source ` +
         `${override.source.path} (${lines.length} lines).`,
     )
   }
-  const evidenceLine = lines[override.source.line - 1] ?? ''
-  if (!evidenceLine.trim()) {
-    throw new Error(
-      `Override ${override.id} references a blank evidence line at ` +
-        `${override.source.path}:${override.source.line}.`,
-    )
-  }
-
-  const window = lines
-    .slice(
-      Math.max(0, override.source.line - 2),
-      Math.min(lines.length, override.source.line + 1),
-    )
-    .join('\n')
   const candidateNames = [
     override.className,
     ...(override.sourceClassName ? [override.sourceClassName] : []),
@@ -1453,6 +1441,35 @@ function assertOverrideEvidence(
   ].filter((name) =>
     new RegExp(`\\b${escapeRegExp(name)}\\b`).test(source),
   )
+  const requestedLine = Math.max(
+    0,
+    Math.min(lines.length - 1, override.source.line - 1),
+  )
+  const effectiveLine =
+    reader.workingTree && !lines[requestedLine]?.trim()
+      ? Math.max(
+          0,
+          lines.findIndex((line) =>
+            candidateNames.some((name) =>
+              new RegExp(`\\b${escapeRegExp(name)}\\b`).test(line),
+            ),
+          ),
+        )
+      : requestedLine
+  const evidenceLine = lines[effectiveLine] ?? ''
+  if (!evidenceLine.trim() && !reader.workingTree) {
+    throw new Error(
+      `Override ${override.id} references a blank evidence line at ` +
+        `${override.source.path}:${override.source.line}.`,
+    )
+  }
+
+  const window = lines
+    .slice(
+      Math.max(0, effectiveLine - 1),
+      Math.min(lines.length, effectiveLine + 2),
+    )
+    .join('\n')
   const hasNamedEvidence = candidateNames.some((name) =>
     new RegExp(`\\b${escapeRegExp(name)}\\b`).test(window),
   )
@@ -1621,7 +1638,12 @@ export async function extractApiManifest(
   options: ExtractApiManifestOptions,
 ): Promise<ApiManifest> {
   const commit = reader.resolveRef(options.ref)
-  const allFiles = reader.listFiles('app/src/main/')
+  const allFiles = [
+    ...new Set([
+      ...reader.listFiles('app/src/main/'),
+      ...reader.listFiles('libs/dm/src/main/java/'),
+    ]),
+  ].sort(compareText)
   const sourceFiles = allFiles.filter((path) => /\.(?:kt|java)$/.test(path))
   const runtimePath = sourceFiles
     .filter((path) => path.endsWith('/runtime/ScriptRuntime.kt'))
@@ -1634,7 +1656,13 @@ export async function extractApiManifest(
     throw new Error('Cannot locate ScriptRuntime.kt or RhinoJavaScriptEngine.kt.')
   }
 
-  for (const override of options.overrides ?? []) {
+  const activeOverrides = (options.overrides ?? []).filter(
+    (override) =>
+      !override.optional ||
+      sourceFiles.includes(override.source.path),
+  )
+
+  for (const override of activeOverrides) {
     assertOverrideEvidence(reader, sourceFiles, override)
   }
 
@@ -1642,7 +1670,7 @@ export async function extractApiManifest(
   const imports = extractImports(runtimeSource)
   const valueTypes = runtimeValueTypes(runtimeSource)
   const overridesByClass = new Map(
-    (options.overrides ?? []).map((override) => [override.className, override]),
+    activeOverrides.map((override) => [override.className, override]),
   )
   const registrations = parseRegistrations(runtimePath, runtimeSource)
   const assigned = parseAssignedAugmentables(runtimePath, runtimeSource)
@@ -1662,6 +1690,44 @@ export async function extractApiManifest(
     sourceFiles,
     readMetadata,
     cache: new Map(),
+  }
+
+  for (const override of activeOverrides) {
+    const module = override.module
+    if (!module) continue
+    const moduleMetadata = readMetadata(module.source.path).metadata
+    modules.push({
+      id: module.id,
+      name: module.name,
+      className: module.className,
+      aliases: module.aliases,
+      source: module.source,
+    })
+    addSymbol(
+      symbols,
+      makeSymbol(
+        `module:${module.id}`,
+        module.id,
+        module.name,
+        'module',
+        module.source,
+        moduleMetadata,
+      ),
+    )
+    for (const alias of module.aliases) {
+      addSymbol(
+        symbols,
+        makeSymbol(
+          `alias:${alias}`,
+          'global',
+          alias,
+          'alias',
+          module.source,
+          moduleMetadata,
+          `module:${module.id}`,
+        ),
+      )
+    }
   }
 
   for (const registration of registrations) {
@@ -1801,7 +1867,7 @@ export async function extractApiManifest(
     addAssignments(symbols, 'global', sourcePath, source, metadata)
   }
 
-  for (const override of options.overrides ?? []) {
+  for (const override of activeOverrides) {
     if (appliedOverrides.has(override.id)) continue
     if (!override.owner) {
       throw new Error(

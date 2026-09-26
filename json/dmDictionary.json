@@ -4,7 +4,7 @@
     {
       "textRaw": "dm 明文字库",
       "name": "dm_明文字库",
-      "desc": "<p>预览状态：仅适用于已提供 <code>dm</code> 全局对象的授权构建。</p>\n<p>字库条目格式：</p>\n<pre><code class=\"lang-text\">HEX$文字$指标$高度\n</code></pre>\n<p>点阵按列主序编码，每列从高位到低位写入 HEX。高度小于 4 时，末尾空白列属于格式补零，读取时会恢复为紧边界。文字标签不能包含 <code>$</code>、<code>|</code>、制表符或换行。</p>\n",
+      "desc": "<p>运行条件：本页适用于提供 <code>dm</code> 全局对象的 Monkey King 6.7.0 构建。</p>\n<p>字库条目格式：</p>\n<pre><code class=\"lang-text\">HEX$文字$指标$高度\n</code></pre>\n<p>点阵按列主序编码，每列从高位到低位写入 HEX。高度小于 4 时，末尾空白列属于格式补零，读取时会恢复为紧边界。文字标签不能包含 <code>$</code>、<code>|</code>、制表符或换行。</p>\n",
       "modules": [
         {
           "textRaw": "制作和加载",

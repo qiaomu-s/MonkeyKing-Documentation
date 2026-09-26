@@ -34,12 +34,12 @@ describe('Git source identity', () => {
       'git@github.com:mirror-owner/renamed-fork.git',
     ])
 
-    expect(sourceReader.MONKEYKING_SOURCE_REPOSITORY).toBe('qiaomu-s/AutoJs6')
+    expect(sourceReader.MONKEYKING_SOURCE_REPOSITORY).toBe('qiaomu-s/MonkeyKing')
     expect(new sourceReader.GitSourceReader(mirror).repositoryName).toBe(
-      'qiaomu-s/AutoJs6',
+      'qiaomu-s/MonkeyKing',
     )
     expect(new sourceReader.GitSourceReader(noOrigin).repositoryName).toBe(
-      'qiaomu-s/AutoJs6',
+      'qiaomu-s/MonkeyKing',
     )
   })
 })

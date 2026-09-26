@@ -121,6 +121,12 @@
       "name": "dialogs"
     },
     {
+      "aliases": [],
+      "className": "Dm",
+      "id": "dm",
+      "name": "dm"
+    },
+    {
       "aliases": [
         "$engines"
       ],
@@ -2444,6 +2450,18 @@
       "id": "automator.notifications",
       "kind": "function",
       "name": "notifications",
+      "overloads": [],
+      "owner": "automator",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface"
+      ],
+      "id": "automator.perform",
+      "kind": "function",
+      "name": "perform",
       "overloads": [],
       "owner": "automator",
       "public": true,
@@ -6258,6 +6276,2226 @@
       "name": "singleChoice",
       "overloads": [],
       "owner": "dialogs",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.addDict",
+      "kind": "function",
+      "name": "addDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.AddDict",
+      "kind": "function",
+      "name": "AddDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.appendPicAddr",
+      "kind": "function",
+      "name": "appendPicAddr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.AppendPicAddr",
+      "kind": "function",
+      "name": "AppendPicAddr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.bgr2rgb",
+      "kind": "function",
+      "name": "bgr2rgb",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.BGR2RGB",
+      "kind": "function",
+      "name": "BGR2RGB",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.buffer",
+      "kind": "function",
+      "name": "buffer",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.cancel",
+      "kind": "function",
+      "name": "cancel",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.capture",
+      "kind": "function",
+      "name": "capture",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.Capture",
+      "kind": "function",
+      "name": "Capture",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.captureGif",
+      "kind": "function",
+      "name": "captureGif",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.CaptureGif",
+      "kind": "function",
+      "name": "CaptureGif",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.captureJpg",
+      "kind": "function",
+      "name": "captureJpg",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.CaptureJpg",
+      "kind": "function",
+      "name": "CaptureJpg",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.capturePng",
+      "kind": "function",
+      "name": "capturePng",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.CapturePng",
+      "kind": "function",
+      "name": "CapturePng",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.capturePre",
+      "kind": "function",
+      "name": "capturePre",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.CapturePre",
+      "kind": "function",
+      "name": "CapturePre",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.clearDict",
+      "kind": "function",
+      "name": "clearDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ClearDict",
+      "kind": "function",
+      "name": "ClearDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.close",
+      "kind": "function",
+      "name": "close",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.cmpColor",
+      "kind": "function",
+      "name": "cmpColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.CmpColor",
+      "kind": "function",
+      "name": "CmpColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.enableDisplayDebug",
+      "kind": "function",
+      "name": "enableDisplayDebug",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.EnableDisplayDebug",
+      "kind": "function",
+      "name": "EnableDisplayDebug",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.enableFindPicMultithread",
+      "kind": "function",
+      "name": "enableFindPicMultithread",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.EnableFindPicMultithread",
+      "kind": "function",
+      "name": "EnableFindPicMultithread",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.enableGetColorByCapture",
+      "kind": "function",
+      "name": "enableGetColorByCapture",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.EnableGetColorByCapture",
+      "kind": "function",
+      "name": "EnableGetColorByCapture",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.enablePicCache",
+      "kind": "function",
+      "name": "enablePicCache",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.EnablePicCache",
+      "kind": "function",
+      "name": "EnablePicCache",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.enableShareDict",
+      "kind": "function",
+      "name": "enableShareDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.EnableShareDict",
+      "kind": "function",
+      "name": "EnableShareDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.fetchWord",
+      "kind": "function",
+      "name": "fetchWord",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FetchWord",
+      "kind": "function",
+      "name": "FetchWord",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findColor",
+      "kind": "function",
+      "name": "findColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindColor",
+      "kind": "function",
+      "name": "FindColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findColorBlock",
+      "kind": "function",
+      "name": "findColorBlock",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindColorBlock",
+      "kind": "function",
+      "name": "FindColorBlock",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findColorBlockEx",
+      "kind": "function",
+      "name": "findColorBlockEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindColorBlockEx",
+      "kind": "function",
+      "name": "FindColorBlockEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findColorE",
+      "kind": "function",
+      "name": "findColorE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindColorE",
+      "kind": "function",
+      "name": "FindColorE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findColorEx",
+      "kind": "function",
+      "name": "findColorEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindColorEx",
+      "kind": "function",
+      "name": "FindColorEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findMulColor",
+      "kind": "function",
+      "name": "findMulColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindMulColor",
+      "kind": "function",
+      "name": "FindMulColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findMultiColor",
+      "kind": "function",
+      "name": "findMultiColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindMultiColor",
+      "kind": "function",
+      "name": "FindMultiColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findMultiColorE",
+      "kind": "function",
+      "name": "findMultiColorE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindMultiColorE",
+      "kind": "function",
+      "name": "FindMultiColorE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findMultiColorEx",
+      "kind": "function",
+      "name": "findMultiColorEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindMultiColorEx",
+      "kind": "function",
+      "name": "FindMultiColorEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPic",
+      "kind": "function",
+      "name": "findPic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPic",
+      "kind": "function",
+      "name": "FindPic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicE",
+      "kind": "function",
+      "name": "findPicE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicE",
+      "kind": "function",
+      "name": "FindPicE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicEx",
+      "kind": "function",
+      "name": "findPicEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicEx",
+      "kind": "function",
+      "name": "FindPicEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicExS",
+      "kind": "function",
+      "name": "findPicExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicExS",
+      "kind": "function",
+      "name": "FindPicExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicMem",
+      "kind": "function",
+      "name": "findPicMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicMem",
+      "kind": "function",
+      "name": "FindPicMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicMemE",
+      "kind": "function",
+      "name": "findPicMemE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicMemE",
+      "kind": "function",
+      "name": "FindPicMemE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicMemEx",
+      "kind": "function",
+      "name": "findPicMemEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicMemEx",
+      "kind": "function",
+      "name": "FindPicMemEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicS",
+      "kind": "function",
+      "name": "findPicS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicS",
+      "kind": "function",
+      "name": "FindPicS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSim",
+      "kind": "function",
+      "name": "findPicSim",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSim",
+      "kind": "function",
+      "name": "FindPicSim",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSimE",
+      "kind": "function",
+      "name": "findPicSimE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSimE",
+      "kind": "function",
+      "name": "FindPicSimE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSimEx",
+      "kind": "function",
+      "name": "findPicSimEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSimEx",
+      "kind": "function",
+      "name": "FindPicSimEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSimMem",
+      "kind": "function",
+      "name": "findPicSimMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSimMem",
+      "kind": "function",
+      "name": "FindPicSimMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSimMemE",
+      "kind": "function",
+      "name": "findPicSimMemE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSimMemE",
+      "kind": "function",
+      "name": "FindPicSimMemE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findPicSimMemEx",
+      "kind": "function",
+      "name": "findPicSimMemEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindPicSimMemEx",
+      "kind": "function",
+      "name": "FindPicSimMemEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findShape",
+      "kind": "function",
+      "name": "findShape",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindShape",
+      "kind": "function",
+      "name": "FindShape",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findShapeE",
+      "kind": "function",
+      "name": "findShapeE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindShapeE",
+      "kind": "function",
+      "name": "FindShapeE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findShapeEx",
+      "kind": "function",
+      "name": "findShapeEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindShapeEx",
+      "kind": "function",
+      "name": "FindShapeEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStr",
+      "kind": "function",
+      "name": "findStr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStr",
+      "kind": "function",
+      "name": "FindStr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrE",
+      "kind": "function",
+      "name": "findStrE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrE",
+      "kind": "function",
+      "name": "FindStrE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrEx",
+      "kind": "function",
+      "name": "findStrEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrEx",
+      "kind": "function",
+      "name": "FindStrEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrExS",
+      "kind": "function",
+      "name": "findStrExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrExS",
+      "kind": "function",
+      "name": "FindStrExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrFast",
+      "kind": "function",
+      "name": "findStrFast",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrFast",
+      "kind": "function",
+      "name": "FindStrFast",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrFastE",
+      "kind": "function",
+      "name": "findStrFastE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrFastE",
+      "kind": "function",
+      "name": "FindStrFastE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrFastEx",
+      "kind": "function",
+      "name": "findStrFastEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrFastEx",
+      "kind": "function",
+      "name": "FindStrFastEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrFastExS",
+      "kind": "function",
+      "name": "findStrFastExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrFastExS",
+      "kind": "function",
+      "name": "FindStrFastExS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrFastS",
+      "kind": "function",
+      "name": "findStrFastS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrFastS",
+      "kind": "function",
+      "name": "FindStrFastS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrS",
+      "kind": "function",
+      "name": "findStrS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrS",
+      "kind": "function",
+      "name": "FindStrS",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrWithFont",
+      "kind": "function",
+      "name": "findStrWithFont",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrWithFont",
+      "kind": "function",
+      "name": "FindStrWithFont",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrWithFontE",
+      "kind": "function",
+      "name": "findStrWithFontE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrWithFontE",
+      "kind": "function",
+      "name": "FindStrWithFontE",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.findStrWithFontEx",
+      "kind": "function",
+      "name": "findStrWithFontEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FindStrWithFontEx",
+      "kind": "function",
+      "name": "FindStrWithFontEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.freePic",
+      "kind": "function",
+      "name": "freePic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.FreePic",
+      "kind": "function",
+      "name": "FreePic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getAveHSV",
+      "kind": "function",
+      "name": "getAveHSV",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetAveHSV",
+      "kind": "function",
+      "name": "GetAveHSV",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getAveRGB",
+      "kind": "function",
+      "name": "getAveRGB",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetAveRGB",
+      "kind": "function",
+      "name": "GetAveRGB",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getColor",
+      "kind": "function",
+      "name": "getColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetColor",
+      "kind": "function",
+      "name": "GetColor",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getColorBGR",
+      "kind": "function",
+      "name": "getColorBGR",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetColorBGR",
+      "kind": "function",
+      "name": "GetColorBGR",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getColorHSV",
+      "kind": "function",
+      "name": "getColorHSV",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetColorHSV",
+      "kind": "function",
+      "name": "GetColorHSV",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getColorNum",
+      "kind": "function",
+      "name": "getColorNum",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetColorNum",
+      "kind": "function",
+      "name": "GetColorNum",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getDict",
+      "kind": "function",
+      "name": "getDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetDict",
+      "kind": "function",
+      "name": "GetDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getDictCount",
+      "kind": "function",
+      "name": "getDictCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetDictCount",
+      "kind": "function",
+      "name": "GetDictCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getDictInfo",
+      "kind": "function",
+      "name": "getDictInfo",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetDictInfo",
+      "kind": "function",
+      "name": "GetDictInfo",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getFrameInfo",
+      "kind": "function",
+      "name": "getFrameInfo",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getLastFindTimings",
+      "kind": "function",
+      "name": "getLastFindTimings",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getNowDict",
+      "kind": "function",
+      "name": "getNowDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetNowDict",
+      "kind": "function",
+      "name": "GetNowDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getPicSize",
+      "kind": "function",
+      "name": "getPicSize",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetPicSize",
+      "kind": "function",
+      "name": "GetPicSize",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getResultCount",
+      "kind": "function",
+      "name": "getResultCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetResultCount",
+      "kind": "function",
+      "name": "GetResultCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getResultPos",
+      "kind": "function",
+      "name": "getResultPos",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetResultPos",
+      "kind": "function",
+      "name": "GetResultPos",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getScreenData",
+      "kind": "function",
+      "name": "getScreenData",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetScreenData",
+      "kind": "function",
+      "name": "GetScreenData",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getScreenDataBmp",
+      "kind": "function",
+      "name": "getScreenDataBmp",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetScreenDataBmp",
+      "kind": "function",
+      "name": "GetScreenDataBmp",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getWordResultCount",
+      "kind": "function",
+      "name": "getWordResultCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetWordResultCount",
+      "kind": "function",
+      "name": "GetWordResultCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getWordResultPos",
+      "kind": "function",
+      "name": "getWordResultPos",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetWordResultPos",
+      "kind": "function",
+      "name": "GetWordResultPos",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getWordResultStr",
+      "kind": "function",
+      "name": "getWordResultStr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetWordResultStr",
+      "kind": "function",
+      "name": "GetWordResultStr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getWords",
+      "kind": "function",
+      "name": "getWords",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetWords",
+      "kind": "function",
+      "name": "GetWords",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.getWordsNoDict",
+      "kind": "function",
+      "name": "getWordsNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.GetWordsNoDict",
+      "kind": "function",
+      "name": "GetWordsNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.imageToBmp",
+      "kind": "function",
+      "name": "imageToBmp",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ImageToBmp",
+      "kind": "function",
+      "name": "ImageToBmp",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.isDisplayDead",
+      "kind": "function",
+      "name": "isDisplayDead",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.IsDisplayDead",
+      "kind": "function",
+      "name": "IsDisplayDead",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.keepScreen",
+      "kind": "function",
+      "name": "keepScreen",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.loadPic",
+      "kind": "function",
+      "name": "loadPic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.LoadPic",
+      "kind": "function",
+      "name": "LoadPic",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.loadPicByte",
+      "kind": "function",
+      "name": "loadPicByte",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.LoadPicByte",
+      "kind": "function",
+      "name": "LoadPicByte",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.matchPicName",
+      "kind": "function",
+      "name": "matchPicName",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.MatchPicName",
+      "kind": "function",
+      "name": "MatchPicName",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ocr",
+      "kind": "function",
+      "name": "ocr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.Ocr",
+      "kind": "function",
+      "name": "Ocr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ocrAuto",
+      "kind": "function",
+      "name": "ocrAuto",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ocrEx",
+      "kind": "function",
+      "name": "ocrEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.OcrEx",
+      "kind": "function",
+      "name": "OcrEx",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ocrExOne",
+      "kind": "function",
+      "name": "ocrExOne",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.OcrExOne",
+      "kind": "function",
+      "name": "OcrExOne",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.ocrInFile",
+      "kind": "function",
+      "name": "ocrInFile",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.OcrInFile",
+      "kind": "function",
+      "name": "OcrInFile",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.rgb2bgr",
+      "kind": "function",
+      "name": "rgb2bgr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.RGB2BGR",
+      "kind": "function",
+      "name": "RGB2BGR",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.saveDict",
+      "kind": "function",
+      "name": "saveDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SaveDict",
+      "kind": "function",
+      "name": "SaveDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setColGapNoDict",
+      "kind": "function",
+      "name": "setColGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetColGapNoDict",
+      "kind": "function",
+      "name": "SetColGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setDict",
+      "kind": "function",
+      "name": "setDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetDict",
+      "kind": "function",
+      "name": "SetDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setDictMem",
+      "kind": "function",
+      "name": "setDictMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetDictMem",
+      "kind": "function",
+      "name": "SetDictMem",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setDictPwd",
+      "kind": "function",
+      "name": "setDictPwd",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetDictPwd",
+      "kind": "function",
+      "name": "SetDictPwd",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setDisplayInput",
+      "kind": "function",
+      "name": "setDisplayInput",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetDisplayInput",
+      "kind": "function",
+      "name": "SetDisplayInput",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setExactOcr",
+      "kind": "function",
+      "name": "setExactOcr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetExactOcr",
+      "kind": "function",
+      "name": "SetExactOcr",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setExcludeRegion",
+      "kind": "function",
+      "name": "setExcludeRegion",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetExcludeRegion",
+      "kind": "function",
+      "name": "SetExcludeRegion",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setFindPicMultithreadCount",
+      "kind": "function",
+      "name": "setFindPicMultithreadCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetFindPicMultithreadCount",
+      "kind": "function",
+      "name": "SetFindPicMultithreadCount",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setFindPicMultithreadLimit",
+      "kind": "function",
+      "name": "setFindPicMultithreadLimit",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetFindPicMultithreadLimit",
+      "kind": "function",
+      "name": "SetFindPicMultithreadLimit",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setImage",
+      "kind": "function",
+      "name": "setImage",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setMinColGap",
+      "kind": "function",
+      "name": "setMinColGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetMinColGap",
+      "kind": "function",
+      "name": "SetMinColGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setMinRowGap",
+      "kind": "function",
+      "name": "setMinRowGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetMinRowGap",
+      "kind": "function",
+      "name": "SetMinRowGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setPath",
+      "kind": "function",
+      "name": "setPath",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetPath",
+      "kind": "function",
+      "name": "SetPath",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setPicPwd",
+      "kind": "function",
+      "name": "setPicPwd",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetPicPwd",
+      "kind": "function",
+      "name": "SetPicPwd",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setRowGapNoDict",
+      "kind": "function",
+      "name": "setRowGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetRowGapNoDict",
+      "kind": "function",
+      "name": "SetRowGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setSimdEnabled",
+      "kind": "function",
+      "name": "setSimdEnabled",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setWordGap",
+      "kind": "function",
+      "name": "setWordGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetWordGap",
+      "kind": "function",
+      "name": "SetWordGap",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setWordGapNoDict",
+      "kind": "function",
+      "name": "setWordGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetWordGapNoDict",
+      "kind": "function",
+      "name": "SetWordGapNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setWordLineHeight",
+      "kind": "function",
+      "name": "setWordLineHeight",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetWordLineHeight",
+      "kind": "function",
+      "name": "SetWordLineHeight",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.setWordLineHeightNoDict",
+      "kind": "function",
+      "name": "setWordLineHeightNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.SetWordLineHeightNoDict",
+      "kind": "function",
+      "name": "SetWordLineHeightNoDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.useDict",
+      "kind": "function",
+      "name": "useDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.UseDict",
+      "kind": "function",
+      "name": "UseDict",
+      "overloads": [],
+      "owner": "dm",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "dm.useScreen",
+      "kind": "function",
+      "name": "useScreen",
+      "overloads": [],
+      "owner": "dm",
       "public": true,
       "signatures": []
     },
@@ -11312,32 +13550,6 @@
       "signatures": []
     },
     {
-      "annotations": [
-        "RhinoRuntimeFunctionInterface"
-      ],
-      "canonicalId": "images.requestScreenCapture",
-      "id": "global:requestScreenCapture",
-      "kind": "global",
-      "name": "requestScreenCapture",
-      "overloads": [],
-      "owner": "global",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [
-        "RhinoRuntimeFunctionInterface"
-      ],
-      "canonicalId": "images.requestScreenCaptureAsync",
-      "id": "global:requestScreenCaptureAsync",
-      "kind": "global",
-      "name": "requestScreenCaptureAsync",
-      "overloads": [],
-      "owner": "global",
-      "public": true,
-      "signatures": []
-    },
-    {
       "annotations": [],
       "id": "global:require",
       "kind": "engine-global",
@@ -13589,6 +15801,18 @@
       "annotations": [
         "RhinoRuntimeFunctionInterface"
       ],
+      "id": "images.getScreenCaptureInfo",
+      "kind": "function",
+      "name": "getScreenCaptureInfo",
+      "overloads": [],
+      "owner": "images",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [
+        "RhinoRuntimeFunctionInterface"
+      ],
       "id": "images.getScreenCaptureOptions",
       "kind": "function",
       "name": "getScreenCaptureOptions",
@@ -13904,30 +16128,6 @@
       "id": "images.recycle",
       "kind": "function",
       "name": "recycle",
-      "overloads": [],
-      "owner": "images",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [
-        "RhinoRuntimeFunctionInterface"
-      ],
-      "id": "images.requestScreenCapture",
-      "kind": "function",
-      "name": "requestScreenCapture",
-      "overloads": [],
-      "owner": "images",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [
-        "RhinoRuntimeFunctionInterface"
-      ],
-      "id": "images.requestScreenCaptureAsync",
-      "kind": "function",
-      "name": "requestScreenCaptureAsync",
       "overloads": [],
       "owner": "images",
       "public": true,
@@ -40604,6 +42804,16 @@
       "name": "dialogs",
       "overloads": [],
       "owner": "dialogs",
+      "public": true,
+      "signatures": []
+    },
+    {
+      "annotations": [],
+      "id": "module:dm",
+      "kind": "module",
+      "name": "dm",
+      "overloads": [],
+      "owner": "dm",
       "public": true,
       "signatures": []
     },

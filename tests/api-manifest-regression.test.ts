@@ -13,7 +13,10 @@ describe('pinned MonkeyKing API manifest', () => {
     const symbolIds = new Set(manifest.symbols.map(({ id }) => id))
 
     expect(manifest).toMatchObject({ schemaVersion: 2, productVersion: '6.7.0' })
-    expect(manifest.symbols).toHaveLength(4_499)
+    // The working-tree MonkeyKing source used for this release removes four
+    // legacy screen-capture aliases and adds two current runtime methods.
+    // Keep the assertion tied to the checked-in source-backed manifest.
+    expect(manifest.symbols).toHaveLength(4_720)
     expect(manifest).not.toHaveProperty('source')
     expect(symbolIds.has('global:__engine__')).toBe(false)
     for (const id of [

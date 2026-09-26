@@ -73,7 +73,7 @@ describe('API extraction overrides', () => {
         (override) => override.id === 'selector-reflected-global-methods',
       )?.source,
     ).toEqual({
-      path: 'app/src/main/java/com/qiaomu/monkeyking/runtime/api/augment/selector/Selector.kt',
+      path: 'app/src/main/java/com/monkeyking/runtime/api/augment/selector/Selector.kt',
       line: 44,
     })
   })
