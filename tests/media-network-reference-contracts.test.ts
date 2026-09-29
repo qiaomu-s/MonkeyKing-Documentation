@@ -8,7 +8,6 @@ import type { ApiManifest } from '../scripts/api/model'
 
 const scopeOwners = new Set([
   'images',
-  'dm',
   'barcode',
   'qrcode',
   'canvas',
@@ -37,7 +36,6 @@ const scopePages = [
   'docs/api/media/canvas.md',
   'docs/api/media/color.md',
   'docs/api/media/image.md',
-  'docs/api/media/dm.md',
   'docs/api/media/media.md',
   'docs/api/media/mediainfo.md',
   'docs/api/media/ocr.md',
