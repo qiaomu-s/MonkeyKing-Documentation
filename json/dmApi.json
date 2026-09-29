@@ -74,7 +74,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -326,7 +326,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -494,23 +494,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>颜色表达式，格式和反色规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
+                  "textRaw": "FindColor 颜色格式与相似度",
+                  "name": "findcolor_颜色格式与相似度",
                   "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindColor 颜色格式与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -550,7 +550,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -592,7 +592,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -634,23 +634,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>颜色表达式，格式和反色规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
+                  "textRaw": "FindColor 颜色格式与相似度",
+                  "name": "findcolor_颜色格式与相似度",
                   "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindColor 颜色格式与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -690,23 +690,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>颜色表达式，格式和反色规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
+                  "textRaw": "FindColor 颜色格式与相似度",
+                  "name": "findcolor_颜色格式与相似度",
                   "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindColor 颜色格式与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -746,7 +746,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -788,23 +788,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>首点颜色表达式，格式见下方多点找色说明。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>多点偏移，使用 `x</td>\n<td>y</td>\n<td>颜色` 格式，多个点以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
-                  "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "textRaw": "FindMultiColor 颜色与偏移格式",
+                  "name": "findmulticolor_颜色与偏移格式",
+                  "desc": "<p>首点 <code>color</code> 使用 RGB 颜色表达式；<code>offsets</code> 使用 <code>x|y|颜色</code> 格式，例如 <code>-1|0|000000,2|1|-ffffff</code>。多个偏移点以逗号分隔；偏移颜色前加 <code>-</code> 表示反色匹配。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindMultiColor 颜色与偏移格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -844,23 +844,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>首点颜色表达式，格式见下方多点找色说明。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>多点偏移，使用 `x</td>\n<td>y</td>\n<td>颜色` 格式，多个点以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
-                  "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "textRaw": "FindMultiColor 颜色与偏移格式",
+                  "name": "findmulticolor_颜色与偏移格式",
+                  "desc": "<p>首点 <code>color</code> 使用 RGB 颜色表达式；<code>offsets</code> 使用 <code>x|y|颜色</code> 格式，例如 <code>-1|0|000000,2|1|-ffffff</code>。多个偏移点以逗号分隔；偏移颜色前加 <code>-</code> 表示反色匹配。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindMultiColor 颜色与偏移格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -900,23 +900,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>首点颜色表达式，格式见下方多点找色说明。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>多点偏移，使用 `x</td>\n<td>y</td>\n<td>颜色` 格式，多个点以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
                 },
                 {
-                  "textRaw": "颜色格式与相似度",
-                  "name": "颜色格式与相似度",
-                  "desc": "<p><code>color</code> 使用 <code>RRGGBB-DRDGDB</code> 格式，例如 <code>123456-000000|aabbcc-030303</code>。多个条件使用 <code>|</code> 分隔；在整个表达式前加 <code>@</code> 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 <code>@123456-000000|aabbcc-030303</code>。该参数只支持 RGB 颜色。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "textRaw": "FindMultiColor 颜色与偏移格式",
+                  "name": "findmulticolor_颜色与偏移格式",
+                  "desc": "<p>首点 <code>color</code> 使用 RGB 颜色表达式；<code>offsets</code> 使用 <code>x|y|颜色</code> 格式，例如 <code>-1|0|000000,2|1|-ffffff</code>。多个偏移点以逗号分隔；偏移颜色前加 <code>-</code> 表示反色匹配。</p>\n<p><code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
                   "type": "module",
-                  "displayName": "颜色格式与相似度"
+                  "displayName": "FindMultiColor 颜色与偏移格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -956,16 +956,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1005,16 +1012,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1054,16 +1068,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1103,16 +1124,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1152,16 +1180,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1201,16 +1236,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1250,16 +1292,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1299,16 +1348,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高，匹配越严格。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1348,16 +1404,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1397,16 +1460,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1446,16 +1516,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1495,16 +1572,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1544,16 +1628,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1593,16 +1684,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindPic 图片偏色与相似度",
+                  "name": "findpic_图片偏色与相似度",
+                  "desc": "<p><code>delta</code> 支持六位 RGB 偏色，例如 <code>202020</code>；也支持两位十六进制灰度偏色，例如 <code>20</code>。<code>similarity</code> 是相似率整数，取值范围为 <code>0</code> 到 <code>100</code>。</p>\n",
+                  "type": "module",
+                  "displayName": "FindPic 图片偏色与相似度"
                 },
                 {
                   "textRaw": "返回值",
@@ -1642,16 +1740,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>形状关系，使用 `x</td>\n<td>y</td>\n<td>e` 格式，多个关系以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindShape 形状格式",
+                  "name": "findshape_形状格式",
+                  "desc": "<p><code>shape</code> 使用 <code>x|y|e</code> 格式，多个关系以逗号分隔；<code>e</code> 为 <code>0</code> 或 <code>1</code>，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 <code>RRGGBB-DRDGDB</code> 格式。</p>\n",
+                  "type": "module",
+                  "displayName": "FindShape 形状格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -1691,16 +1796,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>形状关系，使用 `x</td>\n<td>y</td>\n<td>e` 格式，多个关系以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindShape 形状格式",
+                  "name": "findshape_形状格式",
+                  "desc": "<p><code>shape</code> 使用 <code>x|y|e</code> 格式，多个关系以逗号分隔；<code>e</code> 为 <code>0</code> 或 <code>1</code>，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 <code>RRGGBB-DRDGDB</code> 格式。</p>\n",
+                  "type": "module",
+                  "displayName": "FindShape 形状格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -1740,16 +1852,23 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>形状关系，使用 `x</td>\n<td>y</td>\n<td>e` 格式，多个关系以逗号分隔。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；可用值见下方该函数的官方方向表。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
                 {
                   "textRaw": "扫描方向",
                   "name": "扫描方向",
-                  "desc": "<p><code>direction</code> 使用以下扫描顺序：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n<tr>\n<td><code>4</code></td>\n<td>从中心向外</td>\n</tr>\n<tr>\n<td><code>5</code></td>\n<td>从上到下，从左到右</td>\n</tr>\n<tr>\n<td><code>6</code></td>\n<td>从上到下，从右到左</td>\n</tr>\n<tr>\n<td><code>7</code></td>\n<td>从下到上，从左到右</td>\n</tr>\n<tr>\n<td><code>8</code></td>\n<td>从下到上，从右到左</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<p><code>direction</code> 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：</p>\n<table>\n<thead>\n<tr>\n<th>值</th>\n<th>扫描顺序</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>0</code></td>\n<td>从左到右，从上到下</td>\n</tr>\n<tr>\n<td><code>1</code></td>\n<td>从左到右，从下到上</td>\n</tr>\n<tr>\n<td><code>2</code></td>\n<td>从右到左，从上到下</td>\n</tr>\n<tr>\n<td><code>3</code></td>\n<td>从右到左，从下到上</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "扫描方向"
+                },
+                {
+                  "textRaw": "FindShape 形状格式",
+                  "name": "findshape_形状格式",
+                  "desc": "<p><code>shape</code> 使用 <code>x|y|e</code> 格式，多个关系以逗号分隔；<code>e</code> 为 <code>0</code> 或 <code>1</code>，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 <code>RRGGBB-DRDGDB</code> 格式。</p>\n",
+                  "type": "module",
+                  "displayName": "FindShape 形状格式"
                 },
                 {
                   "textRaw": "返回值",
@@ -2041,7 +2160,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -2419,7 +2538,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -3057,7 +3176,7 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制 RGB 颜色或设备支持的颜色表达式。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
                 },
@@ -3099,9 +3218,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3141,9 +3267,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3183,9 +3316,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3225,9 +3365,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3267,9 +3414,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3309,9 +3463,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3351,9 +3512,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3393,9 +3561,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3435,9 +3610,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3477,9 +3659,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3519,9 +3708,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3561,9 +3757,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -3603,9 +3806,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待识别文字、字体名或字典文本。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4023,9 +4233,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4065,9 +4282,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4107,9 +4331,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4149,9 +4380,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4191,9 +4429,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
@@ -4233,9 +4478,16 @@
                 {
                   "textRaw": "参数",
                   "name": "参数",
-                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+                  "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，取值范围为 <code>0.1</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
                   "type": "module",
                   "displayName": "参数"
+                },
+                {
+                  "textRaw": "OCR 颜色格式与返回串",
+                  "name": "ocr_颜色格式与返回串",
+                  "desc": "<p>颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 <code>RRGGBB-DRDGDB</code>，HSV 使用 <code>H.S.V-DH.DS.DV</code>，灰度使用带 <code>#</code> 的两位十六进制值及可选偏差，例如 <code>#40-0</code>。多个颜色条件使用 <code>|</code> 分隔；<code>Ocr</code> 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 <code>ffffff,\\\\n</code>。也支持在最前面使用 <code>b@</code> 表示按背景色匹配。</p>\n<p>官方兼容返回格式为：<code>OcrEx</code> 返回 <code>字符$x$y|字符$x$y</code>，<code>OcrExOne</code> 返回 <code>文字|x,y|x,y</code>。MonkeyKing 的 camelCase facade 将这两种结果适配为 <code>DmMatch[]</code>，底层兼容入口仍保留原始返回串。</p>\n",
+                  "type": "module",
+                  "displayName": "OCR 颜色格式与返回串"
                 },
                 {
                   "textRaw": "返回值",
