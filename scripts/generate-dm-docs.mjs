@@ -37,6 +37,27 @@ const imageNames = new Set([
   'setPicPwd', 'setPath', 'setDisplayInput', 'enablePicCache',
 ])
 
+const colorMatchNames = new Set([
+  'findColor',
+  'findColorE',
+  'findColorEx',
+  'findMultiColor',
+  'findMultiColorE',
+  'findMultiColorEx',
+])
+
+const scanDirections = [
+  ['0', '从左到右，从上到下'],
+  ['1', '从左到右，从下到上'],
+  ['2', '从右到左，从上到下'],
+  ['3', '从右到左，从下到上'],
+  ['4', '从中心向外'],
+  ['5', '从上到下，从左到右'],
+  ['6', '从上到下，从右到左'],
+  ['7', '从下到上，从左到右'],
+  ['8', '从下到上，从右到左'],
+]
+
 function anchor(name) {
   return Buffer.from(`dm.${name}`).toString('base64url')
 }
@@ -101,16 +122,42 @@ function parameterDescription(param) {
   return '按接口类型传入；不可传入 Java 内部对象。'
 }
 
+function scanDirectionSection() {
+  return `#### 扫描方向
+
+\`direction\` 使用以下扫描顺序：
+
+| 值 | 扫描顺序 |
+| --- | --- |
+${scanDirections.map(([value, description]) => `| \`${value}\` | ${description} |`).join('\n')}
+`.trimEnd()
+}
+
+function colorMatchSection() {
+  return `#### 颜色格式与相似度
+
+\`color\` 使用 \`RRGGBB-DRDGDB\` 格式，例如 \`123456-000000|aabbcc-030303\`。多个条件使用 \`|\` 分隔；在整个表达式前加 \`@\` 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 \`@123456-000000|aabbcc-030303\`。该参数只支持 RGB 颜色。
+
+\`similarity\` 取值范围为 \`0.1\` 到 \`1.0\`；值越高，匹配越严格。
+`.trimEnd()
+}
+
 function functionSection(entry) {
   const name = entry.modern
   const parsed = parseJava(entry)
   const signature = `${name}(${parsed.params.map(({ name: param }) => param).join(', ')})`
+  const hasDirection = parsed.params.some(({ name: param }) => param === 'direction')
+  const isColorMatch = colorMatchNames.has(name)
   const params = parsed.params.length
     ? parsed.params.map(({ type, name: param }) =>
         `| \`${param}\` | \`${type}\` | 是 | — | ${parameterDescription({ type, name: param })} |`).join('\n')
     : '| — | — | — | — | 无参数。 |'
+  const detailSections = [
+    hasDirection ? scanDirectionSection() : '',
+    isColorMatch ? colorMatchSection() : '',
+  ].filter(Boolean).join('\n\n')
   const example = name === 'findColor'
-    ? `const match = dm.findColor(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9, 0)
+    ? `const match = dm.findColor(0, 0, device.width - 1, device.height - 1, '@123456-000000|aabbcc-030303', 1.0, 0)
 if (match) console.log(match.x, match.y)`
     : name === 'ocr'
       ? `dm.setDict(0, './assets/dm/main.dm.txt')
@@ -135,6 +182,7 @@ dm.${signature}
 | --- | --- | --- | --- | --- |
 ${params}
 
+${detailSections ? `${detailSections}\n\n` : ''}\
 #### 返回值
 
 ${returnDescription(name, parsed.returnType)}
