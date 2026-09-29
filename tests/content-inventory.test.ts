@@ -17,7 +17,6 @@ import {
 } from '../scripts/content/catalog'
 import { migratedImageNames } from '../scripts/migrate-content'
 
-const expectedCname = 'docs.monkeyking.com\n'
 const expectedLogoSha256 =
   'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
 
@@ -51,7 +50,6 @@ function writeCanonicalFixture(root: string): void {
     resolve(process.cwd(), 'docs/public/images/logo.png'),
     resolve(root, 'docs/public/logo.png'),
   )
-  writeFixture(root, 'docs/public/CNAME', expectedCname)
 }
 
 function sha256(path: string): string {
@@ -439,9 +437,7 @@ describe('content inventory', () => {
     expect(
       migratedImageNames.some((name) => name.startsWith('autojs6-notification-')),
     ).toBe(false)
-    expect(readFileSync(resolve(process.cwd(), 'docs/public/CNAME'), 'utf8')).toBe(
-      expectedCname,
-    )
+    expect(existsSync(resolve(process.cwd(), 'docs/public/CNAME'))).toBe(false)
     expect(
       sha256(resolve(process.cwd(), 'docs/public/images/logo.png')),
     ).toBe(expectedLogoSha256)

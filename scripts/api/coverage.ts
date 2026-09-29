@@ -149,7 +149,7 @@ export async function runCoverage(arguments_: CoverageArguments): Promise<void> 
       throw new Error('API coverage drift detected. Run api:coverage.')
     }
     process.stdout.write(
-      `API coverage matches Monkey King ${artifacts.coverage.productVersion}: ` +
+      `API coverage matches the published contract: ` +
         `${artifacts.coverage.rules.length} rules.\n`,
     )
     return

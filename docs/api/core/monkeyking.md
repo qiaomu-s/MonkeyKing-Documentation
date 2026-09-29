@@ -2,7 +2,7 @@
 
 `monkeyking` 全局对象包含应用身份、版本、屏幕方向、Root 模式、权限状态和进程生命周期接口。`$monkeyking` 指向同一对象，`app.monkeyking` 也指向该对象。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。修改 Root 偏好、重启或退出应用都有进程级副作用，调用前应保存脚本状态。
+本文于 2026-09-10 按 Monkey King 当前产品行为核对。修改 Root 偏好、重启或退出应用都有进程级副作用，调用前应保存脚本状态。
 
 ---
 
@@ -86,9 +86,6 @@ console.log(monkeyking.isScreenLandscape());
 ## [m] restart
 
 ### restart(scriptsAfterRestart?)
-
-**`v6.7.0`**
-
 - **[ scriptsAfterRestart ]** { [string](../types/data-types.md#string) | [string](../types/data-types.md#string)[] } - 重启后运行的脚本
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：参数超过 1 个或参数既不是字符串、数组也不是 nullish 时抛出异常
@@ -106,9 +103,6 @@ monkeyking.restart('@');
 ## [m] exit
 
 ### exit(scriptsAfterExit?)
-
-**`v6.7.0`**
-
 - **[ scriptsAfterExit ]** { [string](../types/data-types.md#string) | [string](../types/data-types.md#string)[] } - 保存为“下次应用启动后执行”的脚本
 - <ins>**returns**</ins> { [void](../types/data-types.md#void) }
 - **异常**：参数超过 1 个或参数既不是字符串、数组也不是 nullish 时抛出异常
@@ -329,7 +323,7 @@ console.log(monkeyking.orientation);
 重新赋值只改变当前脚本对象上的显示值，不改变实际构建版本。
 
 ```js
-console.log(monkeyking.versionName); // 6.7.0
+console.log(monkeyking.versionName);
 console.log(monkeyking.version.name); /* 同上. */
 ```
 
@@ -400,7 +394,7 @@ console.log(monkeyking.version.name, monkeyking.version.code);
 该快照属性不可删除但可在当前 `version` 对象上重新赋值；不会改变实际构建版本。
 
 ```js
-console.log(monkeyking.version.name); // 6.7.0
+console.log(monkeyking.version.name);
 console.log(monkeyking.versionName); /* 同上. */
 ```
 
@@ -510,9 +504,9 @@ console.log(monkeyking.version.isAtLeast('6.1.3')); // e.g. true
 返回 Monkey King 版本是否不低于 (即大于等于) 参数对应的版本号且根据 `ignoreSuffix` 参数决定是否忽略版本后缀.
 
 ```js
-console.log(monkeyking.version.name); // 6.7.0
-console.log(monkeyking.version.isAtLeast('6.7.0')); // true
-console.log(monkeyking.version.isAtLeast('6.7.0-beta1', true)); // true
+console.log(monkeyking.version.name);
+console.log(monkeyking.version.isAtLeast('6.6.4')); // true
+console.log(monkeyking.version.isAtLeast('6.6.4-beta1', true)); // true
 ```
 
 ## [p+] R

@@ -157,69 +157,69 @@ console.log(recorder.load())   // NaN
 - 所有入口都只操作内存和系统时钟，不申请 Android 权限，也不执行 I/O。
 - 参数数量或类型不符合合同会抛出参数/转换异常；计时键缺失本身不抛异常，而以 `NaN` 表示。
 - 回调快捷形式同步执行回调，耗时包含整个同步调用过程。
-- 本页合同对应 MonkeyKing 6.7.0。
+- 本页合同对应 MonkeyKing。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="call:recorder" version="6.7.0" -->
-`call:recorder` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:recorder" -->
+`call:recorder` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder);
 ```
 
-<!-- api-member-contract id="module:recorder" version="6.7.0" -->
-`module:recorder` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:recorder" -->
+`module:recorder` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder);
 ```
 
-<!-- api-member-contract id="recorder.clear" version="6.7.0" -->
-`recorder.clear` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.clear" -->
+`recorder.clear` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.clear);
 ```
 
-<!-- api-member-contract id="recorder.has" version="6.7.0" -->
-`recorder.has` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.has" -->
+`recorder.has` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.has);
 ```
 
-<!-- api-member-contract id="recorder.isGreaterThan" version="6.7.0" -->
-`recorder.isGreaterThan` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.isGreaterThan" -->
+`recorder.isGreaterThan` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.isGreaterThan);
 ```
 
-<!-- api-member-contract id="recorder.isLessThan" version="6.7.0" -->
-`recorder.isLessThan` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.isLessThan" -->
+`recorder.isLessThan` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.isLessThan);
 ```
 
-<!-- api-member-contract id="recorder.load" version="6.7.0" -->
-`recorder.load` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.load" -->
+`recorder.load` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.load);
 ```
 
-<!-- api-member-contract id="recorder.remove" version="6.7.0" -->
-`recorder.remove` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.remove" -->
+`recorder.remove` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.remove);
 ```
 
-<!-- api-member-contract id="recorder.save" version="6.7.0" -->
-`recorder.save` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.save" -->
+`recorder.save` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.save);
 ```
 
-<!-- api-member-contract id="recorder.shortcut" version="6.7.0" -->
-`recorder.shortcut` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="recorder.shortcut" -->
+`recorder.shortcut` · Rhino 2.0 示例：
 ```js
 console.log(typeof recorder.shortcut);
 ```

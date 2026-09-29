@@ -133,64 +133,64 @@ body.close(): void
 - 默认 `cacheBody = false`，完整读取后不能重复读取。开启缓存只缓存 `string` 或 `bytes` 的同类型结果，不缓存 stream。
 - 响应包装和完整读取同步运行在调用它们的线程；大 body 使用 `stream()`/`saveToFile()` 或把处理放在工作线程。
 - body 不会被 JavaScript 垃圾回收及时、确定地关闭；必须显式消费或关闭。
-- 本页合同对应 MonkeyKing 6.7.0 与其内置 OkHttp 版本。
+- 本页合同对应 MonkeyKing 与其内置 OkHttp 版本。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="dynamic:http.response.body.forwarded-members" version="6.7.0" -->
-`dynamic:http.response.body.forwarded-members` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="dynamic:http.response.body.forwarded-members" -->
+`dynamic:http.response.body.forwarded-members` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.forwardedMembers);
 ```
 
-<!-- api-member-contract id="http.response.body.bytes" version="6.7.0" -->
-`http.response.body.bytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.bytes" -->
+`http.response.body.bytes` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.bytes);
 ```
 
-<!-- api-member-contract id="http.response.body.close" version="6.7.0" -->
-`http.response.body.close` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.close" -->
+`http.response.body.close` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.close);
 ```
 
-<!-- api-member-contract id="http.response.body.contentType" version="6.7.0" -->
-`http.response.body.contentType` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.contentType" -->
+`http.response.body.contentType` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.contentType);
 ```
 
-<!-- api-member-contract id="http.response.body.json" version="6.7.0" -->
-`http.response.body.json` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.json" -->
+`http.response.body.json` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.json);
 ```
 
-<!-- api-member-contract id="http.response.body.saveToFile" version="6.7.0" -->
-`http.response.body.saveToFile` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.saveToFile" -->
+`http.response.body.saveToFile` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.saveToFile);
 ```
 
-<!-- api-member-contract id="http.response.body.stream" version="6.7.0" -->
-`http.response.body.stream` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.stream" -->
+`http.response.body.stream` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.stream);
 ```
 
-<!-- api-member-contract id="http.response.body.string" version="6.7.0" -->
-`http.response.body.string` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body.string" -->
+`http.response.body.string` · Rhino 2.0 示例：
 ```js
 var body = http.get('https://example.com').body;
 console.log(body.string);

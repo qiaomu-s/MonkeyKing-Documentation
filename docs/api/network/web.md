@@ -1,6 +1,6 @@
 # 万维网 (Web)
 
-Monkey King 6.7.0 的 `web` 模块在 Rhino 2.0 中创建可注入的 Android
+Monkey King 的 `web` 模块在 Rhino 2.0 中创建可注入的 Android
 [WebView](https://developer.android.com/reference/android/webkit/WebView)、
 [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient)
 和 WebSocket。WebView 必须在 UI 线程创建和操作；加载远程页面还需要网络权限，
@@ -101,7 +101,7 @@ settings.setDomStorageEnabled(true);
 settings.setDisplayZoomControls(false);
 ```
 
-这些是 MonkeyKing 6.7.0 的默认初始化项；其他 `WebSettings` 选项保持 Android
+这些是 MonkeyKing 的默认初始化项；其他 `WebSettings` 选项保持 Android
 平台默认值，调用方可在页面创建后自行调整。
 
 此外, `InjectableWebView` 内部还初始化了一个默认的 [WebChromeClient](https://developer.android.com/reference/android/webkit/WebChromeClient) 客户端:
@@ -201,26 +201,26 @@ socket.exitOnClose();
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="module:web" version="6.7.0" -->
-`module:web` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:web" -->
+`module:web` · Rhino 2.0 示例：
 ```js
 console.log(typeof web);
 ```
 
-<!-- api-member-contract id="web.newInjectableWebClient" version="6.7.0" -->
-`web.newInjectableWebClient` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="web.newInjectableWebClient" -->
+`web.newInjectableWebClient` · Rhino 2.0 示例：
 ```js
 console.log(typeof web.newInjectableWebClient);
 ```
 
-<!-- api-member-contract id="web.newInjectableWebView" version="6.7.0" -->
-`web.newInjectableWebView` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="web.newInjectableWebView" -->
+`web.newInjectableWebView` · Rhino 2.0 示例：
 ```js
 console.log(typeof web.newInjectableWebView);
 ```
 
-<!-- api-member-contract id="web.newWebSocket" version="6.7.0" -->
-`web.newWebSocket` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="web.newWebSocket" -->
+`web.newWebSocket` · Rhino 2.0 示例：
 ```js
 console.log(typeof web.newWebSocket);
 ```

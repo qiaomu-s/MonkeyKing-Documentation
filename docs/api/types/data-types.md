@@ -2,7 +2,7 @@
 
 ## Rhino 2.0 运行时合同
 
-本页是 Monkey King **v6.7.0** 文档使用的类型记法，不会在 Rhino 2.0 中自动创建同名构造器，也不等同于 TypeScript 的静态类型系统。参数是否合法由各 API 的运行时参数守卫、Rhino 到 Java 的转换以及目标 Android / Java 方法共同决定；返回值也可能是 Java 对象、Rhino 原生对象或 JavaScript 基本值。
+本页是 Monkey King **当前版本** 文档使用的类型记法，不会在 Rhino 2.0 中自动创建同名构造器，也不等同于 TypeScript 的静态类型系统。参数是否合法由各 API 的运行时参数守卫、Rhino 到 Java 的转换以及目标 Android / Java 方法共同决定；返回值也可能是 Java 对象、Rhino 原生对象或 JavaScript 基本值。
 
 - **参数与异常**：类型链接描述可接受值；参数数量错误、强制转换失败或目标 Java API 拒绝值时会同步抛出异常。
 - **返回值**：`void` 表示调用方不应依赖返回结果；Java `null`、JavaScript `null` 与 `undefined` 必须按具体 API 说明区分。
@@ -1425,7 +1425,7 @@ test('utf-8'); /* 字符串小写形式. */
 
 旧版 Monkey King 文档曾用此类型表示[内置扩展插件](../core/plugins.md#旧版-内置扩展插件-名称)名称：`Arrayx`/`Array`、`Numberx`/`Number`、`Mathx`/`Math`。
 
-Monkey King 6.7.0 的 `plugins` 公开表面已不包含 `extend`、`extendAll` 或 `extendAllBut`，因此当前 API 不再接受此类型。它只保留为阅读旧脚本和旧文档时的术语说明。
+Monkey King 的 `plugins` 公开表面已不包含 `extend`、`extendAll` 或 `extendAllBut`，因此当前 API 不再接受此类型。它只保留为阅读旧脚本和旧文档时的术语说明。
 
 ```js
 const legacyExtendModuleNames = ['Arrayx', 'Numberx', 'Mathx'];

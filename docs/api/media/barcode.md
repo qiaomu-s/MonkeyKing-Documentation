@@ -19,7 +19,7 @@ interface BarcodeDetectOptions {
 
 格式字符串不区分大小写，非单词字符会转换为下划线，并可省略 `FORMAT_` 前缀；例如 `"qr-code"`、`"FORMAT_QRCODE"` 和 `"FORMAT_QR_CODE"` 都会归一为 QR Code 格式。未知格式会抛出参数异常。
 
-实现限制：MonkeyKing 6.7.0 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围；如果业务只接受特定格式，请在返回结果层按 `result.format` 自行过滤。`qrcode` 模块不受此限制，它在源码中固定使用 `FORMAT_QR_CODE`。
+实现限制：MonkeyKing 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围；如果业务只接受特定格式，请在返回结果层按 `result.format` 自行过滤。`qrcode` 模块不受此限制，它在源码中固定使用 `FORMAT_QR_CODE`。
 
 `detect` 系列返回 `Barcode.Result`。常用字段包括 `rawValue`、`displayValue`、`rawBytes`、`format`、`formatName`、`valueType`、`valueTypeName`、`boundingBox` 和 `cornerPoints`；对于联系人、网址、Wi-Fi 等结构化内容，还可读取对应的 `contactInfo`、`url`、`wifi` 等字段。
 
@@ -27,7 +27,7 @@ interface BarcodeDetectOptions {
 
 ## `barcode` 模块
 
-脚本运行时自动提供，无需导入。模块本身可调用，也公开下列四个方法。MonkeyKing 6.7.0 的这些入口均为同步入口；扫描器失败或取消时返回空结果，不把 ML Kit 的失败对象直接抛给脚本。
+脚本运行时自动提供，无需导入。模块本身可调用，也公开下列四个方法。MonkeyKing 的这些入口均为同步入口；扫描器失败或取消时返回空结果，不把 ML Kit 的失败对象直接抛给脚本。
 
 <a id="api-symbol-Y2FsbDpiYXJjb2Rl"></a>
 
@@ -125,45 +125,45 @@ console.log(JSON.stringify(values))
 - 文件路径会经 MonkeyKing 文件模块规范化；路径无效时抛出异常。
 - 省略图像时会调用屏幕捕获。首次使用前应在前台请求授权；不要在 UI 线程高频循环调用同步扫描入口。
 - 扫描器每次调用都会创建并等待一次检测任务。脚本结束时无需单独关闭 `barcode` 模块。
-- API 在 MonkeyKing 6.7.0 中可用；可用格式和结构化结果字段由应用内置的 ML Kit 版本决定。
+- API 在 MonkeyKing 中可用；可用格式和结构化结果字段由应用内置的 ML Kit 版本决定。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="barcode.detect" version="6.7.0" -->
-`barcode.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="barcode.detect" -->
+`barcode.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode.detect);
 ```
 
-<!-- api-member-contract id="barcode.detectAll" version="6.7.0" -->
-`barcode.detectAll` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="barcode.detectAll" -->
+`barcode.detectAll` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode.detectAll);
 ```
 
-<!-- api-member-contract id="barcode.recognizeText" version="6.7.0" -->
-`barcode.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="barcode.recognizeText" -->
+`barcode.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode.recognizeText);
 ```
 
-<!-- api-member-contract id="barcode.recognizeTexts" version="6.7.0" -->
-`barcode.recognizeTexts` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="barcode.recognizeTexts" -->
+`barcode.recognizeTexts` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode.recognizeTexts);
 ```
 
-<!-- api-member-contract id="call:barcode" version="6.7.0" -->
-`call:barcode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:barcode" -->
+`call:barcode` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode);
 ```
 
-<!-- api-member-contract id="module:barcode" version="6.7.0" -->
-`module:barcode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:barcode" -->
+`module:barcode` · Rhino 2.0 示例：
 ```js
 console.log(typeof barcode);
 ```

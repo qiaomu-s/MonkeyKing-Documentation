@@ -2,7 +2,7 @@
 
 ## Rhino 2.0 运行时合同
 
-Storage 是 `storages.create(name)` 在 Monkey King **v6.7.0** 实现合同中返回的 `StorageNativeObject`。旧成员无法恢复首次发布版本时统一标记为 **≤ v6.6.4（旧文档未记录精确版本）**。
+Storage 是 `storages.create(name)` 在 Monkey King **当前版本** 实现合同中返回的 `StorageNativeObject`。旧成员无法恢复首次发布版本时统一标记为 **≤ v6.6.4（旧文档未记录精确版本）**。
 
 - **权限与线程**：使用应用内部 SharedPreferences，不需要额外 Android 运行时权限。`put`、`remove`、`clear` 与 `selfRemove` 使用异步 `apply()`；对应 `Sync` 方法使用同步 `commit()`，可能阻塞调用线程。
 - **生命周期与副作用**：数据跨脚本持久化，直到显式删除、应用数据被清除或应用卸载。所有写入、删除与清空方法都会修改持久化状态。

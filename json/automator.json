@@ -4,7 +4,7 @@
     {
       "textRaw": "自动化 (Automator)",
       "name": "自动化_(automator)",
-      "desc": "<p>本页覆盖三组运行时入口：<code>auto</code> 管理 Monkey King 无障碍服务，<code>automator</code> 执行控件、坐标、手势与系统全局动作，<code>RootAutomator</code> 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG8\"></a></p>\n",
+      "desc": "<p>本页覆盖三组运行时入口：<code>auto</code> 管理 Monkey King 无障碍服务，<code>automator</code> 执行控件、坐标、手势与系统全局动作，<code>RootAutomator</code> 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 当前公开 API 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmF1dG8\"></a></p>\n",
       "modules": [
         {
           "textRaw": "[@] auto",
@@ -365,8 +365,38 @@
               "textRaw": "[m] automator.perform(action[, options])",
               "type": "method",
               "name": "perform",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.perform(...)</code></li>\n<li><strong>参数</strong>：<code>action</code> 为动作对象；可选 <code>options</code> 指定 <code>frame</code>、<code>frameInfo</code> 和 <code>timeoutMs</code></li>\n<li><ins><strong>returns</strong></ins> { <code>object</code> } - 返回输入执行结果对象；在 UI 线程调用时返回 Promise</li>\n<li><strong>坐标</strong>：没有帧元数据时使用物理屏幕像素；传入 <code>ImageWrapper</code> 或 <code>frameInfo</code> 时使用输入图像坐标并由运行时换算</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：脚本线程同步执行，UI 线程切换为异步提交；<code>timeoutMs</code> 只影响本次动作</li>\n</ul>\n<pre><code class=\"lang-js\">const result = automator.perform(\n  { type: &#39;tap&#39;, x: 320, y: 640 },\n  { timeoutMs: 3000 },\n)\nconsole.log(result.status)\n</code></pre>\n<p><a id=\"click-x-y\"></a>\n<a id=\"api-symbol-YXV0b21hdG9yLmNsaWNr\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.perform(...)` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.perform(...)`"
+                    },
+                    {
+                      "textRaw": "**参数**：`action` 为动作对象；可选 `options` 指定 `frame`、`frameInfo` 和 `timeoutMs` ",
+                      "name": "**参数**：",
+                      "desc": "action` 为动作对象；可选 `options` 指定 `frame`、`frameInfo` 和 `timeoutMs`",
+                      "optional": true
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { `object` } - 返回输入执行结果对象；在 UI 线程调用时返回 Promise ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " `object` ",
+                      "desc": "返回输入执行结果对象；在 UI 线程调用时返回 Promise"
+                    },
+                    {
+                      "textRaw": "**坐标**：没有帧元数据时使用物理屏幕像素；传入 `ImageWrapper` 或 `frameInfo` 时使用输入图像坐标并由运行时换算 ",
+                      "name": "**坐标**：没有帧元数据时使用物理屏幕像素；传入",
+                      "desc": "`ImageWrapper` 或 `frameInfo` 时使用输入图像坐标并由运行时换算"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：脚本线程同步执行，UI 线程切换为异步提交；`timeoutMs` 只影响本次动作 ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：脚本线程同步执行，UI 线程切换为异步提交；`timeoutMs` 只影响本次动作"
+                    }
+                  ]
+                },
                 {
                   "params": [
                     {
@@ -378,7 +408,8 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">const result = automator.perform(\n  { type: &#39;tap&#39;, x: 320, y: 640 },\n  { timeoutMs: 3000 },\n)\nconsole.log(result.status)\n</code></pre>\n<p><a id=\"click-x-y\"></a>\n<a id=\"api-symbol-YXV0b21hdG9yLmNsaWNr\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.click(target[, index])",
@@ -649,166 +680,641 @@
               "textRaw": "[m] automator.lockScreen()",
               "type": "method",
               "name": "lockScreen",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.lockScreen()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受锁屏全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_LOCK_SCREEN</code>，成功时立即锁定设备</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.lockScreen());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnRha2VTY3JlZW5zaG90\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.lockScreen()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.lockScreen()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受锁屏全局动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受锁屏全局动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "9 以下调用失败会被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_LOCK_SCREEN`，成功时立即锁定设备 ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_LOCK_SCREEN`，成功时立即锁定设备"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.lockScreen());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnRha2VTY3JlZW5zaG90\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.takeScreenshot()",
               "type": "method",
               "name": "takeScreenshot",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.takeScreenshot()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受截图全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_TAKE_SCREENSHOT</code>；它触发系统截图界面，不返回图像数据，读取图像请用 <code>captureScreen()</code></li>\n</ul>\n<pre><code class=\"lang-js\">if (!automator.takeScreenshot()) console.warn(&#39;系统未接受截图动作&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhlYWRzZXRob29r\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.takeScreenshot()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.takeScreenshot()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受截图全局动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受截图全局动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 9 以下调用失败会被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "9 以下调用失败会被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_TAKE_SCREENSHOT`；它触发系统截图界面，不返回图像数据，读取图像请用 `captureScreen()` ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_TAKE_SCREENSHOT`；它触发系统截图界面，不返回图像数据，读取图像请用 `captureScreen()`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">if (!automator.takeScreenshot()) console.warn(&#39;系统未接受截图动作&#39;);\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhlYWRzZXRob29r\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.headsethook()",
               "type": "method",
               "name": "headsethook",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.headsethook()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受耳机键全局动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_KEYCODE_HEADSETHOOK</code>，可能播放、暂停或接听当前媒体/通话</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.headsethook());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b24\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.headsethook()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.headsethook()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受耳机键全局动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受耳机键全局动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_KEYCODE_HEADSETHOOK`，可能播放、暂停或接听当前媒体/通话 ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_KEYCODE_HEADSETHOOK`，可能播放、暂停或接听当前媒体/通话"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.headsethook());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b24\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.accessibilityButton()",
               "type": "method",
               "name": "accessibilityButton",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityButton()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍按钮动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_BUTTON</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityButton());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b25DaG9vc2Vy\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.accessibilityButton()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.accessibilityButton()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍按钮动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受无障碍按钮动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON` ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.accessibilityButton());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b25DaG9vc2Vy\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.accessibilityButtonChooser()",
               "type": "method",
               "name": "accessibilityButtonChooser",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityButtonChooser()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍按钮选择器动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_BUTTON_CHOOSER</code>，成功时显示无障碍快捷功能选择器</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityButtonChooser());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlTaG9ydGN1dA\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.accessibilityButtonChooser()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.accessibilityButtonChooser()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍按钮选择器动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受无障碍按钮选择器动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON_CHOOSER`，成功时显示无障碍快捷功能选择器 ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_BUTTON_CHOOSER`，成功时显示无障碍快捷功能选择器"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.accessibilityButtonChooser());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlTaG9ydGN1dA\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.accessibilityShortcut()",
               "type": "method",
               "name": "accessibilityShortcut",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityShortcut()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍快捷方式动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_SHORTCUT</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityShortcut());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlBbGxBcHBz\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.accessibilityShortcut()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.accessibilityShortcut()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍快捷方式动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受无障碍快捷方式动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_SHORTCUT` ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_SHORTCUT`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.accessibilityShortcut());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlBbGxBcHBz\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.accessibilityAllApps()",
               "type": "method",
               "name": "accessibilityAllApps",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.accessibilityAllApps()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受无障碍“所有应用”动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_ACCESSIBILITY_ALL_APPS</code>，具体呈现由系统实现决定</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.accessibilityAllApps());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmRpc21pc3NOb3RpZmljYXRpb25TaGFkZQ\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.accessibilityAllApps()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.accessibilityAllApps()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受无障碍“所有应用”动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受无障碍“所有应用”动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_ALL_APPS`，具体呈现由系统实现决定 ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_ACCESSIBILITY_ALL_APPS`，具体呈现由系统实现决定"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.accessibilityAllApps());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmRpc21pc3NOb3RpZmljYXRpb25TaGFkZQ\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.dismissNotificationShade()",
               "type": "method",
               "name": "dismissNotificationShade",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.dismissNotificationShade()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受收起通知栏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false</li>\n<li><strong>权限</strong>：需要已连接的无障碍服务</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：同步请求 <code>GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(automator.dismissNotificationShade());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmJhY2s\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.dismissNotificationShade()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.dismissNotificationShade()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受收起通知栏动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受收起通知栏动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出；Android 12 以下的不支持错误被转换为 false ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出；Android",
+                      "desc": "12 以下的不支持错误被转换为 false"
+                    },
+                    {
+                      "textRaw": "**权限**：需要已连接的无障碍服务 ",
+                      "name": "**权限**：需要已连接的无障碍服务"
+                    },
+                    {
+                      "textRaw": "**线程 / 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE` ",
+                      "name": "**线程",
+                      "desc": "/ 生命周期 / 副作用**：同步请求 `GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(automator.dismissNotificationShade());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmJhY2s\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.back()",
               "type": "method",
               "name": "back",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.back()</code>、全局 <code>back()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受返回动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_BACK</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(back());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhvbWU\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.back()`、全局 `back()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.back()`、全局 `back()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受返回动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受返回动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_BACK` ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_BACK`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(back());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLmhvbWU\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.home()",
               "type": "method",
               "name": "home",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.home()</code>、全局 <code>home()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受主页动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_HOME</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(home());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnBvd2VyRGlhbG9n\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.home()`、全局 `home()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.home()`、全局 `home()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受主页动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受主页动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_HOME` ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_HOME`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(home());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnBvd2VyRGlhbG9n\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.powerDialog()",
               "type": "method",
               "name": "powerDialog",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.powerDialog()</code>、全局 <code>powerDialog()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受电源菜单动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_POWER_DIALOG</code>，成功时显示系统电源菜单</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(powerDialog());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.powerDialog()`、全局 `powerDialog()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.powerDialog()`、全局 `powerDialog()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受电源菜单动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受电源菜单动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_POWER_DIALOG`，成功时显示系统电源菜单 ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_POWER_DIALOG`，成功时显示系统电源菜单"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(powerDialog());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.notifications()",
               "type": "method",
               "name": "notifications",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.notifications()</code>、全局 <code>notifications()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受展开通知栏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_NOTIFICATIONS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(notifications());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnF1aWNrU2V0dGluZ3M\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.notifications()`、全局 `notifications()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.notifications()`、全局 `notifications()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受展开通知栏动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受展开通知栏动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_NOTIFICATIONS` ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_NOTIFICATIONS`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(notifications());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnF1aWNrU2V0dGluZ3M\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.quickSettings()",
               "type": "method",
               "name": "quickSettings",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.quickSettings()</code>、全局 <code>quickSettings()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受展开快捷设置动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_QUICK_SETTINGS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(quickSettings());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnJlY2VudHM\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.quickSettings()`、全局 `quickSettings()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.quickSettings()`、全局 `quickSettings()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受展开快捷设置动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受展开快捷设置动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_QUICK_SETTINGS` ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_QUICK_SETTINGS`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(quickSettings());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnJlY2VudHM\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.recents()",
               "type": "method",
               "name": "recents",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.recents()</code>、全局 <code>recents()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受最近任务动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_RECENTS</code></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(recents());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNwbGl0U2NyZWVu\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.recents()`、全局 `recents()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.recents()`、全局 `recents()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受最近任务动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受最近任务动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_RECENTS` ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_RECENTS`"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(recents());\n</code></pre>\n<p><a id=\"api-symbol-YXV0b21hdG9yLnNwbGl0U2NyZWVu\"></a></p>\n"
             },
             {
               "textRaw": "[m] automator.splitScreen()",
               "type": "method",
               "name": "splitScreen",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>automator.splitScreen()</code>、全局 <code>splitScreen()</code></li>\n<li><strong>参数</strong>：必须为 0 个</li>\n<li><ins><strong>returns</strong></ins> { <a href=\"../types/data-types.md#boolean\">boolean</a> } - 系统接受切换分屏动作时为 true</li>\n<li><strong>异常</strong>：传入参数或无障碍服务不可用时抛出</li>\n<li><strong>权限 / 线程 / 生命周期 / 副作用</strong>：需要已连接的无障碍服务；同步请求 <code>GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN</code>，设备或系统版本不支持时可返回 false</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(splitScreen());\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOnJvb3RBdXRvbWF0b3I\"></a></p>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**入口 / 别名**：`automator.splitScreen()`、全局 `splitScreen()` ",
+                      "name": "**入口",
+                      "desc": "/ 别名**：`automator.splitScreen()`、全局 `splitScreen()`"
+                    },
+                    {
+                      "textRaw": "**参数**：必须为 0 个 ",
+                      "name": "**参数**：必须为",
+                      "desc": "0 个"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 系统接受切换分屏动作时为 true ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " [boolean](../types/data-types.md#boolean) ",
+                      "desc": "系统接受切换分屏动作时为 true"
+                    },
+                    {
+                      "textRaw": "**异常**：传入参数或无障碍服务不可用时抛出 ",
+                      "name": "**异常**：传入参数或无障碍服务不可用时抛出"
+                    },
+                    {
+                      "textRaw": "**权限 / 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN`，设备或系统版本不支持时可返回 false ",
+                      "name": "**权限",
+                      "desc": "/ 线程 / 生命周期 / 副作用**：需要已连接的无障碍服务；同步请求 `GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN`，设备或系统版本不支持时可返回 false"
+                    }
+                  ]
+                },
                 {
                   "params": []
                 }
-              ]
+              ],
+              "desc": "<pre><code class=\"lang-js\">console.log(splitScreen());\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOnJvb3RBdXRvbWF0b3I\"></a></p>\n"
             }
           ],
           "type": "module",
@@ -817,19 +1323,19 @@
         {
           "textRaw": "[@] RootAutomator",
           "name": "[@]_rootautomator",
-          "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：全局构造器 <code>RootAutomator</code></li>\n<li><strong>参数</strong>：模块本身通过构造器使用，详见 <code>new RootAutomator(...)</code></li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> 构造器 }</li>\n<li><strong>异常</strong>：读取入口本身不抛出</li>\n<li><strong>权限</strong>：实例化必须具有 root，或已运行且可访问可写触摸设备的 Shizuku</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每个实例维护独立触点槽位、默认触点 ID 与底层 root shell 或 Shizuku 命令缓冲区</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(typeof RootAutomator); // function\n</code></pre>\n<p><a id=\"api-symbol-Y29uc3RydWN0OnJvb3RBdXRvbWF0b3I\"></a></p>\n",
+          "desc": "<ul>\n<li><strong>入口 / 别名</strong>：全局构造器 <code>RootAutomator</code></li>\n<li><strong>参数</strong>：模块本身通过构造器使用，详见 <code>new RootAutomator(...)</code></li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> 构造器 }</li>\n<li><strong>异常</strong>：读取入口本身不抛出</li>\n<li><strong>权限</strong>：实例化必须具有 root，或已运行且可访问可写触摸设备的 Shizuku</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：每个实例维护独立触点槽位、默认触点 ID 与底层 root shell 或 Shizuku 命令缓冲区</li>\n</ul>\n<pre><code class=\"lang-js\">console.log(typeof RootAutomator); // function\n</code></pre>\n<p><a id=\"api-symbol-Y29uc3RydWN0OnJvb3RBdXRvbWF0b3I\"></a></p>\n",
           "modules": [
             {
               "textRaw": "[c] new RootAutomator(waitForReady?)",
               "name": "[c]_new_rootautomator(waitforready?)",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>[ waitForReady = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> | <a href=\"../types/data-types.md#number\">number</a> } - 布尔 true 最多等待 5000 ms 就绪，false 不等待；数字直接作为等待超时毫秒数，负数不等待</li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> } - 将核心输入设备对象包装成 Rhino 原生代理</li>\n<li><strong>异常</strong>：超过 1 个参数、root 与 Shizuku 都不可用、Shizuku 无法访问可写输入设备、初始化失败或等待超时时抛出</li>\n<li><strong>权限</strong>：需要 root 或 operational Shizuku；Shizuku 后端还必须解析到可写输入设备</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：root 后端启动输入事件进程；Shizuku 后端映射屏幕坐标并批量执行 <code>sendevent</code>；结束使用时应调用 <code>exit()</code></li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(true);\ntry {\n    ra.tap(300, 600);\n} finally {\n    ra.exit();\n}\n</code></pre>\n<p><a id=\"api-symbol-ZHluYW1pYzpyb290QXV0b21hdG9yLmluc3RhbmNlLmZvcndhcmRlZC1tZXRob2Rz\"></a></p>\n",
+              "desc": "<ul>\n<li><strong>[ waitForReady = <code>false</code> ]</strong> { <a href=\"../types/data-types.md#boolean\">boolean</a> | <a href=\"../types/data-types.md#number\">number</a> } - 布尔 true 最多等待 5000 ms 就绪，false 不等待；数字直接作为等待超时毫秒数，负数不等待</li>\n<li><ins><strong>returns</strong></ins> { <code>RootAutomator</code> } - 将核心输入设备对象包装成 Rhino 原生代理</li>\n<li><strong>异常</strong>：超过 1 个参数、root 与 Shizuku 都不可用、Shizuku 无法访问可写输入设备、初始化失败或等待超时时抛出</li>\n<li><strong>权限</strong>：需要 root 或 operational Shizuku；Shizuku 后端还必须解析到可写输入设备</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：root 后端启动输入事件进程；Shizuku 后端映射屏幕坐标并批量执行 <code>sendevent</code>；结束使用时应调用 <code>exit()</code></li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(true);\ntry {\n    ra.tap(300, 600);\n} finally {\n    ra.exit();\n}\n</code></pre>\n<p><a id=\"api-symbol-ZHluYW1pYzpyb290QXV0b21hdG9yLmluc3RhbmNlLmZvcndhcmRlZC1tZXRob2Rz\"></a></p>\n",
               "type": "module",
               "displayName": "[c] new RootAutomator(waitForReady?)"
             },
             {
               "textRaw": "[dynamic] RootAutomator 实例转发方法",
               "name": "[dynamic]_rootautomator_实例转发方法",
-              "desc": "<p><strong><code>6.7.0</code></strong></p>\n<ul>\n<li><strong>入口 / 别名</strong>：<code>ra.&lt;publicMethod&gt;(...)</code>；方法来自核心 <code>RootAutomator</code> Java 对象</li>\n<li><strong>参数</strong>：依具体 public 方法而定；常用方法包括 <code>sendEvent</code>、<code>touch</code>、<code>setScreenMetrics</code>、<code>tap</code>、<code>swipe</code>、<code>press</code>、<code>longPress</code>、<code>touchDown</code>、<code>touchUp</code>、<code>touchMove</code>、<code>getDefaultId</code>、<code>setDefaultId</code> 与 <code>exit</code></li>\n<li><ins><strong>returns</strong></ins> { <code>any</code> } - 保留对应 Java 方法的返回值</li>\n<li><strong>异常</strong>：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出</li>\n<li><strong>权限</strong>：沿用构造实例时选择的 root 或 Shizuku 后端</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；产品版本未采用旧 JavaScript 模块的名称过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(5000);\nconst tap = ra.tap; // 已绑定内部 receiver\ntry {\n    ra.setScreenMetrics(device.width, device.height);\n    tap(320, 640);\n} finally {\n    ra.exit();\n}\n</code></pre>\n<p><code>automator.perform</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof automator.perform);\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>入口 / 别名</strong>：<code>ra.&lt;publicMethod&gt;(...)</code>；方法来自核心 <code>RootAutomator</code> Java 对象</li>\n<li><strong>参数</strong>：依具体 public 方法而定；常用方法包括 <code>sendEvent</code>、<code>touch</code>、<code>setScreenMetrics</code>、<code>tap</code>、<code>swipe</code>、<code>press</code>、<code>longPress</code>、<code>touchDown</code>、<code>touchUp</code>、<code>touchMove</code>、<code>getDefaultId</code>、<code>setDefaultId</code> 与 <code>exit</code></li>\n<li><ins><strong>returns</strong></ins> { <code>any</code> } - 保留对应 Java 方法的返回值</li>\n<li><strong>异常</strong>：参数转换、输入设备写入、等待就绪、线程中断或 shell/Shizuku 执行失败时抛出</li>\n<li><strong>权限</strong>：沿用构造实例时选择的 root 或 Shizuku 后端</li>\n<li><strong>线程 / 生命周期 / 副作用</strong>：读取实例上存在的 public 函数时生成绑定到内部对象的函数，因此脱离属性调用仍保留 receiver；产品版本未采用旧 JavaScript 模块的名称过滤器</li>\n</ul>\n<pre><code class=\"lang-js\">const ra = new RootAutomator(5000);\nconst tap = ra.tap; // 已绑定内部 receiver\ntry {\n    ra.setScreenMetrics(device.width, device.height);\n    tap(320, 640);\n} finally {\n    ra.exit();\n}\n</code></pre>\n<p><code>automator.perform</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof automator.perform);\n</code></pre>\n",
               "type": "module",
               "displayName": "[dynamic] RootAutomator 实例转发方法"
             }

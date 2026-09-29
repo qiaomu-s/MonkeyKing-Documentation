@@ -1023,8 +1023,8 @@ function validateApiLayout(
   const allowedFiles = new Set([
     ...expectedMarkdownNames,
     '.gitignore',
-    'index.html',
     'CNAME',
+    'index.html',
   ])
   const allowedDirectories = new Set(['images', 'static'])
   const actualMarkdownNames = new Set<string>()
@@ -1053,7 +1053,6 @@ function validateApiLayout(
       'images',
       'static',
       'index.html',
-      'CNAME',
     ]) {
       if (!topLevel.some(({ name }) => name === required)) {
         throw new Error(`Missing api artifact: api/${required}`)
@@ -1086,8 +1085,8 @@ function validateDocsLayout(
   const allowedFiles = new Set([
     ...entries.map(({ source }) => source),
     'docs/index.md',
-    'docs/public/CNAME',
     'docs/public/logo.png',
+    'docs/public/CNAME',
     ...imageNames.map(
       (name) => `docs/public/images/${migratedImageName(name)}`,
     ),
@@ -1287,14 +1286,10 @@ export async function migrateContent(
     }
   }
 
-  const expectedPublicCname = 'docs.monkeyking.com\n'
   const legacyCname = resolveRepoPath(rootDirectory, 'api/CNAME')
   const publicCname = resolveRepoPath(rootDirectory, 'docs/public/CNAME')
-  if (existsSync(legacyCname) || existsSync(publicCname)) {
-    writeIfChanged(publicCname, expectedPublicCname)
-  } else if (options.entries === undefined) {
-    throw new Error('Missing api/CNAME and docs/public/CNAME')
-  }
+  if (existsSync(legacyCname)) removeIfPresent(legacyCname)
+  if (existsSync(publicCname)) removeIfPresent(publicCname)
 
   const pathsDeleted = removeLegacyArtifacts(rootDirectory)
 

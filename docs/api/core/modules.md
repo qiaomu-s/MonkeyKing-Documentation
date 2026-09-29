@@ -1,10 +1,10 @@
 # 模块 (Module)
 
-Monkey King 6.7.0 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 `require.cache` 返回同一真值导出。产品版本对假值导出的缓存例外见 [require.cache](#p-require-cache)。
+Monkey King 在 Rhino 2.0 运行时提供 CommonJS 风格的模块系统。每个 JavaScript 或 JSON 文件对应一个模块；通常模块只在第一次加载时执行，之后从 `require.cache` 返回同一真值导出。产品版本对假值导出的缓存例外见 [require.cache](#p-require-cache)。
 
 模块系统支持应用内置模块、相对或绝对文件、目录包、逐级查找的 `node_modules`，以及由原生加载器处理的 HTTP/HTTPS URL。它不是 Node.js 运行时：Node 内置模块、原生扩展和依赖 Node 系统 API 的 npm 包不保证可用。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
+本文于 2026-09-10 按 Monkey King 当前产品行为核对。
 
 ---
 
@@ -613,7 +613,7 @@ if (continuation.enabled) {
 
 ## 内置第三方入口
 
-`axios`、`cheerio`、`dayjs` 和 `i18n` 是按首次访问延迟加载的全局属性。它们打包在应用产品版本 `6.7.0` 中，不从网络动态更新。
+`axios`、`cheerio`、`dayjs` 和 `i18n` 是按首次访问延迟加载的全局属性。它们打包在应用当前公开 API 中，不从网络动态更新。
 
 - [`axios`](https://axios-http.com/docs/intro)：内置文件自报版本 `1.1.2`；Monkey King 使用适配 Android/Rhino 的构建。
 - [`cheerio`](https://cheerio.js.org/docs/intro)：使用内置的单文件打包版本；产品文档未公开独立版本字段。

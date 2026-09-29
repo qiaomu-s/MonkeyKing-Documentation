@@ -1,6 +1,6 @@
 # 通用应用 (App)
 
-`app` 用于解析和启动 Android `Intent`、查询安装应用、打开系统页面，以及通过 Shizuku、root 或普通 shell 操作双开用户。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
+`app` 用于解析和启动 Android `Intent`、查询安装应用、打开系统页面，以及通过 Shizuku、root 或普通 shell 操作双开用户。本文按 Monkey King 当前产品行为核对。
 
 <a id="api-symbol-bW9kdWxlOmFwcA"></a>
 ## [@] app
@@ -47,7 +47,7 @@ console.log(Number.isFinite(app.versionCode)); // true
 - **线程 / 生命周期 / 副作用**：运行时初始化时赋值；读取无副作用
 
 ```js
-console.log(app.versionName); // 例如 "6.7.0"
+console.log(app.versionName);
 ```
 
 <a id="api-symbol-YXBwLmZpbGVQcm92aWRlckF1dGhvcml0eQ"></a>

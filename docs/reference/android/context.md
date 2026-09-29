@@ -2,7 +2,7 @@
 
 Android 的 `Context` 表示组件或应用所处的运行环境，可用于访问资源、系统服务、包信息以及启动组件。Monkey King 只负责把相关 Java 类型和实例带入 Rhino；完整 Android API 请查阅 [android.content.Context 官方文档](https://developer.android.com/reference/android/content/Context)。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
+本文于 2026-09-10 按 Monkey King 当前产品行为核对。
 
 ## Monkey King 中的可用入口
 

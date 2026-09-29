@@ -1,8 +1,8 @@
 # Monkey King 使用手册 (Manual)
 
-本页给出 Monkey King 6.7.0 的最小可运行工作流。API 细节以各分类页面为准；运行环境为 Android 上的 Rhino 2.0，而不是浏览器或 Node.js。
+本页给出 Monkey King 的最小可运行工作流。API 细节以各分类页面为准；运行环境为 Android 上的 Rhino 2.0，而不是浏览器或 Node.js。
 
-示例于 2026-09-10 按产品版本 `6.7.0` 复核。
+示例于 2026-09-10 按当前公开 API 复核。
 
 ## 创建并运行脚本
 

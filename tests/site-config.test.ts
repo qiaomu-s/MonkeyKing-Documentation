@@ -91,11 +91,7 @@ describe('VitePress site configuration', () => {
     )
   })
 
-  test('publishes the custom domain through the VitePress public directory', () => {
-    const cnamePath = resolve(process.cwd(), 'docs/public/CNAME')
-
-    expect(existsSync(cnamePath), 'docs/public/CNAME must exist').toBe(true)
-    if (!existsSync(cnamePath)) return
-    expect(readFileSync(cnamePath, 'utf8')).toBe('docs.monkeyking.com\n')
+  test('does not publish a custom-domain declaration', () => {
+    expect(existsSync(resolve(process.cwd(), 'docs/public/CNAME'))).toBe(false)
   })
 })

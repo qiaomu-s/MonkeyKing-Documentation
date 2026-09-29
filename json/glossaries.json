@@ -4,7 +4,7 @@
     {
       "textRaw": "术语 (Glossaries)",
       "name": "术语_(glossaries)",
-      "desc": "<p>本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。</p>\n<p>本文按 Monkey King 6.7.0 的公开行为核对。</p>\n",
+      "desc": "<p>本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。</p>\n<p>本文按 Monkey King 的公开行为核对。</p>\n",
       "modules": [
         {
           "textRaw": "内置模块",
@@ -14,7 +14,7 @@
             {
               "textRaw": "查看内置模块",
               "name": "查看内置模块",
-              "desc": "<p>内置模块随 Monkey King 6.7.0 发布，并在 Rhino runtime 初始化时注册或加载。APK 是 ZIP 容器，\n但普通脚本只需要通过模块名、<code>$</code> 前缀别名或全局入口调用公开能力。</p>\n",
+              "desc": "<p>内置模块随 Monkey King 发布，并在 Rhino runtime 初始化时注册或加载。APK 是 ZIP 容器，\n但普通脚本只需要通过模块名、<code>$</code> 前缀别名或全局入口调用公开能力。</p>\n",
               "type": "module",
               "displayName": "查看内置模块"
             },
@@ -33,7 +33,7 @@
                 {
                   "textRaw": "增加模块",
                   "name": "增加模块",
-                  "desc": "<p>以下 <code>date.js</code> 是项目本地模块示例，不要求修改 Monkey King：</p>\n<pre><code class=\"lang-js\">module.exports = function createDateModule() {\n    return {\n        toFullTimeString() {\n            const now = new Date();\n            const pad = value =&gt; String(value).padStart(2, &#39;0&#39;);\n            return [now.getHours(), now.getMinutes(), now.getSeconds()]\n                .map(pad)\n                .join(&#39;:&#39;);\n        },\n    };\n};\n</code></pre>\n<p>同目录脚本可直接加载：</p>\n<pre><code class=\"lang-js\">const date = require(&#39;./date&#39;);\nconsole.log(date.toFullTimeString());\n</code></pre>\n<p>若要把自定义资产模块编译进 APK，6.7.0 的 <code>assets/init.js</code> 支持返回模块名、模块名数组、用 <code>|</code> 分隔的字符串、名称映射对象，或接收 <code>(scriptRuntime, scope)</code> 的函数。它自 6.6.0 起默认不注册额外模块。</p>\n<pre><code class=\"lang-js\">function installCustomModule(scriptRuntime, scope) {\n    scope.date = require(&#39;date&#39;);\n    console.log(scriptRuntime.ownerId);\n}\n</code></pre>\n",
+                  "desc": "<p>以下 <code>date.js</code> 是项目本地模块示例，不要求修改 Monkey King：</p>\n<pre><code class=\"lang-js\">module.exports = function createDateModule() {\n    return {\n        toFullTimeString() {\n            const now = new Date();\n            const pad = value =&gt; String(value).padStart(2, &#39;0&#39;);\n            return [now.getHours(), now.getMinutes(), now.getSeconds()]\n                .map(pad)\n                .join(&#39;:&#39;);\n        },\n    };\n};\n</code></pre>\n<p>同目录脚本可直接加载：</p>\n<pre><code class=\"lang-js\">const date = require(&#39;./date&#39;);\nconsole.log(date.toFullTimeString());\n</code></pre>\n<p>若要把自定义资产模块编译进 APK，当前版本的 <code>assets/init.js</code> 支持返回模块名、模块名数组、用 <code>|</code> 分隔的字符串、名称映射对象，或接收 <code>(scriptRuntime, scope)</code> 的函数。它自 6.6.0 起默认不注册额外模块。</p>\n<pre><code class=\"lang-js\">function installCustomModule(scriptRuntime, scope) {\n    scope.date = require(&#39;date&#39;);\n    console.log(scriptRuntime.ownerId);\n}\n</code></pre>\n",
                   "type": "module",
                   "displayName": "增加模块"
                 }

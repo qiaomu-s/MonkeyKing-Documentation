@@ -7,9 +7,8 @@
 export const INTERNAL_API_MANIFEST_SCHEMA_VERSION = 1 as const
 export const INTERNAL_API_COVERAGE_SCHEMA_VERSION = 1 as const
 
-export const API_MANIFEST_SCHEMA_VERSION = 2 as const
-export const API_COVERAGE_SCHEMA_VERSION = 2 as const
-export const API_PRODUCT_VERSION = '6.7.0' as const
+export const API_MANIFEST_SCHEMA_VERSION = 3 as const
+export const API_COVERAGE_SCHEMA_VERSION = 3 as const
 
 export interface SourceLocation {
   readonly path: string
@@ -194,7 +193,6 @@ export interface PublicApiSymbol {
 
 export interface PublicApiManifest {
   readonly schemaVersion: typeof API_MANIFEST_SCHEMA_VERSION
-  readonly productVersion: typeof API_PRODUCT_VERSION
   readonly modules: readonly PublicApiModule[]
   readonly symbols: readonly PublicApiSymbol[]
 }
@@ -209,7 +207,6 @@ export interface PublicCoverageRule {
 
 export interface PublicApiCoverage {
   readonly schemaVersion: typeof API_COVERAGE_SCHEMA_VERSION
-  readonly productVersion: typeof API_PRODUCT_VERSION
   readonly rules: readonly PublicCoverageRule[]
 }
 

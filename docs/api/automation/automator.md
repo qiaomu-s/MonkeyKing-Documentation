@@ -1,6 +1,6 @@
 # 自动化 (Automator)
 
-本页覆盖三组运行时入口：`auto` 管理 Monkey King 无障碍服务，`automator` 执行控件、坐标、手势与系统全局动作，`RootAutomator` 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
+本页覆盖三组运行时入口：`auto` 管理 Monkey King 无障碍服务，`automator` 执行控件、坐标、手势与系统全局动作，`RootAutomator` 通过 root 或 Shizuku 直接写入触摸设备。本文按 Monkey King 当前公开 API 核对。
 
 <a id="api-symbol-bW9kdWxlOmF1dG8"></a>
 ## [@] auto
@@ -535,7 +535,6 @@ console.log(automator.isServiceRunning());
 <a id="api-symbol-YXV0b21hdG9yLnBlcmZvcm0"></a>
 ### [m] automator.perform(action[, options])
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.perform(...)`
 - **参数**：`action` 为动作对象；可选 `options` 指定 `frame`、`frameInfo` 和 `timeoutMs`
@@ -816,7 +815,6 @@ console.log(image.getWidth(), image.getHeight());
 <a id="api-symbol-YXV0b21hdG9yLmxvY2tTY3JlZW4"></a>
 ### [m] automator.lockScreen()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.lockScreen()`
 - **参数**：必须为 0 个
@@ -832,7 +830,6 @@ console.log(automator.lockScreen());
 <a id="api-symbol-YXV0b21hdG9yLnRha2VTY3JlZW5zaG90"></a>
 ### [m] automator.takeScreenshot()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.takeScreenshot()`
 - **参数**：必须为 0 个
@@ -848,7 +845,6 @@ if (!automator.takeScreenshot()) console.warn('系统未接受截图动作');
 <a id="api-symbol-YXV0b21hdG9yLmhlYWRzZXRob29r"></a>
 ### [m] automator.headsethook()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.headsethook()`
 - **参数**：必须为 0 个
@@ -864,7 +860,6 @@ console.log(automator.headsethook());
 <a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b24"></a>
 ### [m] automator.accessibilityButton()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.accessibilityButton()`
 - **参数**：必须为 0 个
@@ -880,7 +875,6 @@ console.log(automator.accessibilityButton());
 <a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlCdXR0b25DaG9vc2Vy"></a>
 ### [m] automator.accessibilityButtonChooser()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.accessibilityButtonChooser()`
 - **参数**：必须为 0 个
@@ -896,7 +890,6 @@ console.log(automator.accessibilityButtonChooser());
 <a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlTaG9ydGN1dA"></a>
 ### [m] automator.accessibilityShortcut()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.accessibilityShortcut()`
 - **参数**：必须为 0 个
@@ -912,7 +905,6 @@ console.log(automator.accessibilityShortcut());
 <a id="api-symbol-YXV0b21hdG9yLmFjY2Vzc2liaWxpdHlBbGxBcHBz"></a>
 ### [m] automator.accessibilityAllApps()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.accessibilityAllApps()`
 - **参数**：必须为 0 个
@@ -928,7 +920,6 @@ console.log(automator.accessibilityAllApps());
 <a id="api-symbol-YXV0b21hdG9yLmRpc21pc3NOb3RpZmljYXRpb25TaGFkZQ"></a>
 ### [m] automator.dismissNotificationShade()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.dismissNotificationShade()`
 - **参数**：必须为 0 个
@@ -944,7 +935,6 @@ console.log(automator.dismissNotificationShade());
 <a id="api-symbol-YXV0b21hdG9yLmJhY2s"></a>
 ### [m] automator.back()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.back()`、全局 `back()`
 - **参数**：必须为 0 个
@@ -959,7 +949,6 @@ console.log(back());
 <a id="api-symbol-YXV0b21hdG9yLmhvbWU"></a>
 ### [m] automator.home()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.home()`、全局 `home()`
 - **参数**：必须为 0 个
@@ -974,7 +963,6 @@ console.log(home());
 <a id="api-symbol-YXV0b21hdG9yLnBvd2VyRGlhbG9n"></a>
 ### [m] automator.powerDialog()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.powerDialog()`、全局 `powerDialog()`
 - **参数**：必须为 0 个
@@ -989,7 +977,6 @@ console.log(powerDialog());
 <a id="api-symbol-YXV0b21hdG9yLm5vdGlmaWNhdGlvbnM"></a>
 ### [m] automator.notifications()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.notifications()`、全局 `notifications()`
 - **参数**：必须为 0 个
@@ -1004,7 +991,6 @@ console.log(notifications());
 <a id="api-symbol-YXV0b21hdG9yLnF1aWNrU2V0dGluZ3M"></a>
 ### [m] automator.quickSettings()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.quickSettings()`、全局 `quickSettings()`
 - **参数**：必须为 0 个
@@ -1019,7 +1005,6 @@ console.log(quickSettings());
 <a id="api-symbol-YXV0b21hdG9yLnJlY2VudHM"></a>
 ### [m] automator.recents()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.recents()`、全局 `recents()`
 - **参数**：必须为 0 个
@@ -1034,7 +1019,6 @@ console.log(recents());
 <a id="api-symbol-YXV0b21hdG9yLnNwbGl0U2NyZWVu"></a>
 ### [m] automator.splitScreen()
 
-**`6.7.0`**
 
 - **入口 / 别名**：`automator.splitScreen()`、全局 `splitScreen()`
 - **参数**：必须为 0 个
@@ -1049,7 +1033,6 @@ console.log(splitScreen());
 <a id="api-symbol-bW9kdWxlOnJvb3RBdXRvbWF0b3I"></a>
 ## [@] RootAutomator
 
-**`6.7.0`**
 
 - **入口 / 别名**：全局构造器 `RootAutomator`
 - **参数**：模块本身通过构造器使用，详见 `new RootAutomator(...)`
@@ -1065,7 +1048,6 @@ console.log(typeof RootAutomator); // function
 <a id="api-symbol-Y29uc3RydWN0OnJvb3RBdXRvbWF0b3I"></a>
 ### [c] new RootAutomator(waitForReady?)
 
-**`6.7.0`**
 
 - **[ waitForReady = `false` ]** { [boolean](../types/data-types.md#boolean) | [number](../types/data-types.md#number) } - 布尔 true 最多等待 5000 ms 就绪，false 不等待；数字直接作为等待超时毫秒数，负数不等待
 - <ins>**returns**</ins> { `RootAutomator` } - 将核心输入设备对象包装成 Rhino 原生代理
@@ -1085,7 +1067,6 @@ try {
 <a id="api-symbol-ZHluYW1pYzpyb290QXV0b21hdG9yLmluc3RhbmNlLmZvcndhcmRlZC1tZXRob2Rz"></a>
 ### [dynamic] RootAutomator 实例转发方法
 
-**`6.7.0`**
 
 - **入口 / 别名**：`ra.<publicMethod>(...)`；方法来自核心 `RootAutomator` Java 对象
 - **参数**：依具体 public 方法而定；常用方法包括 `sendEvent`、`touch`、`setScreenMetrics`、`tap`、`swipe`、`press`、`longPress`、`touchDown`、`touchUp`、`touchMove`、`getDefaultId`、`setDefaultId` 与 `exit`
@@ -1106,8 +1087,8 @@ try {
 ```
 
 
-<!-- api-member-contract id="automator.perform" version="6.7.0" -->
-`automator.perform` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="automator.perform" -->
+`automator.perform` · Rhino 2.0 示例：
 ```js
 console.log(typeof automator.perform);
 ```

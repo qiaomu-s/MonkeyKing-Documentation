@@ -2,11 +2,9 @@
 
 Monkey King 官方产品文档。站点使用 VitePress 构建，面向授权用户提供使用指南、API 参考、兼容性说明和版本记录。
 
-文档版本：**6.7.0** · 内容更新时间：**2026-09-25**
 
-当前站点包含 122 个 canonical 页面和 134 个兼容 JSON 文件。Monkey King 6.7.0 的公开 API 基线包含 72 个模块、4,720 个公开符号，`dm` 已纳入正式 API 与兼容数据。
+当前站点包含 122 个 canonical 页面和 134 个兼容 JSON 文件，公开 API 基线包含 72 个模块、4,720 个公开符号，`dm` 已纳入正式 API 与兼容数据。
 
-站点入口：<https://docs.monkeyking.com>
 
 ## 本地预览
 
@@ -38,6 +36,8 @@ npm run docs:dev
 
 公开文档只发布面向使用者的 API 清单和兼容数据；内部校验不会改变文档使用方式。
 
+问题请通过应用内反馈入口或授权支持渠道提交。
+
 ## 兼容 JSON
 
 根目录 `json/` 是既有脚本消费者使用的兼容接口。修改 Markdown 后运行 `npm run json:build`，并确认工作区中的生成文件没有漂移。
@@ -48,10 +48,6 @@ npm run docs:dev
 
 ## 构建产物
 
-`npm run build:web` 生成 `dist/web/`，包含站点页面、静态资源、`CNAME` 和公开兼容 JSON。
+`npm run build:web` 生成 `dist/web/`，包含站点页面、静态资源和公开兼容 JSON。
 
 `npm run build:android` 生成 `dist/android/`，供 Monkey King Android 工程通过 `WebViewAssetLoader` 加载离线文档。
-
-## 反馈
-
-如需报告文档或 API 问题，请通过应用内反馈入口或授权支持渠道提交 Monkey King 版本、Android API 级别、设备信息、最小复现脚本和完整日志。

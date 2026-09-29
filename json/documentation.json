@@ -5,7 +5,7 @@
       "textRaw": "关于文档 (About)",
       "name": "关于文档 (About)",
       "type": "misc",
-      "desc": "<p>Monkey King 官方产品文档，包含模块 API 使用方法、参数约定和可运行示例。<br>\n本文档面向获授权的 Monkey King 6.7.0 使用环境。</p>\n<hr>\n",
+      "desc": "<p>Monkey King 官方产品文档，包含模块 API 使用方法、参数约定和可运行示例。<br>\n本文档面向 Monkey King 使用环境。</p>\n<hr>\n",
       "miscs": [
         {
           "textRaw": "文档阅读示例",
@@ -524,7 +524,7 @@
         {
           "textRaw": "声明",
           "name": "声明",
-          "desc": "<p>当前文档按 Monkey King 6.7.0 的公开行为合同维护；外部 Android、Java 和网络类型仅说明产品入口与差异。\n开发者会持续修订示例、参数和兼容性说明。发现问题时，请通过应用内反馈入口或授权支持渠道提交复现脚本和日志。</p>\n",
+          "desc": "<p>当前文档按 Monkey King 的公开行为合同维护；外部 Android、Java 和网络类型仅说明产品入口与差异。\n开发者会持续修订示例、参数和兼容性说明。</p>\n",
           "type": "misc",
           "displayName": "声明"
         }

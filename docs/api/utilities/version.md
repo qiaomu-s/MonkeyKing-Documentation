@@ -22,7 +22,7 @@ console.log(ver.isEqual('6.1.3')); // true
 console.log(ver.isAtLeast('6.1.1')); // true
 ```
 
-> 注: 此工具类提供版本解析与比较能力；具体可用方法以 Monkey King 6.7.0 为准。
+> 注: 此工具类提供版本解析与比较能力；具体可用方法以 Monkey King 为准。
 
 ---
 

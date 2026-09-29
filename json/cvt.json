@@ -4,7 +4,7 @@
     {
       "textRaw": "Converter / cvt",
       "name": "converter_/_cvt",
-      "desc": "<p><strong>自 v6.7.0 起提供。</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
+      "desc": "<p><strong>提供。</strong></p>\n<p>本页所有 <code>js</code> 代码块均为 Monkey King <strong>Rhino 2.0</strong> 示例。</p>\n",
       "modules": [
         {
           "textRaw": "converter",
@@ -20,49 +20,49 @@
             {
               "textRaw": "cvt",
               "name": "cvt",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>object</code></li>\n<li><strong>返回值</strong>：无；<code>cvt</code> 本身不可调用</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>全局转换器对象。<code>$cvt</code> 是同一对象的别名。</p>\n<pre><code class=\"lang-js\">console.log($cvt === cvt); // true\nconsole.log(typeof cvt.bytes); // &quot;function&quot;\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>类型</strong>：<code>object</code></li>\n<li><strong>返回值</strong>：无；<code>cvt</code> 本身不可调用</li>\n<li><strong>副作用</strong>：无</li>\n</ul>\n<p>全局转换器对象。<code>$cvt</code> 是同一对象的别名。</p>\n<pre><code class=\"lang-js\">console.log($cvt === cvt); // true\nconsole.log(typeof cvt.bytes); // &quot;function&quot;\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt"
             },
             {
               "textRaw": "cvt.bytes.UNITS",
               "name": "cvt.bytes.units",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;KMGTPEZYRQ&quot;</code></li>\n</ul>\n<p>按从小到大的顺序列出可用单位前缀，即 K、M、G、T、P、E、Z、Y、R、Q。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.UNITS); // KMGTPEZYRQ\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;KMGTPEZYRQ&quot;</code></li>\n</ul>\n<p>按从小到大的顺序列出可用单位前缀，即 K、M、G、T、P、E、Z、Y、R、Q。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.UNITS); // KMGTPEZYRQ\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.UNITS"
             },
             {
               "textRaw": "cvt.bytes.AUTO",
               "name": "cvt.bytes.auto",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;AUTO&quot;</code></li>\n</ul>\n<p>表示自动选择目标单位。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.AUTO); // AUTO\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>类型</strong>：<code>string</code></li>\n<li><strong>值</strong>：<code>&quot;AUTO&quot;</code></li>\n</ul>\n<p>表示自动选择目标单位。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.AUTO); // AUTO\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.AUTO"
             },
             {
               "textRaw": "cvt.bytes.IEC_DIV",
               "name": "cvt.bytes.iec_div",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1024</code></li>\n</ul>\n<p>IEC 二进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.IEC_DIV); // 1024\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1024</code></li>\n</ul>\n<p>IEC 二进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.IEC_DIV); // 1024\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.IEC_DIV"
             },
             {
               "textRaw": "cvt.bytes.SI_DIV",
               "name": "cvt.bytes.si_div",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1000</code></li>\n</ul>\n<p>SI 十进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.SI_DIV); // 1000\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>类型</strong>：<code>number</code></li>\n<li><strong>值</strong>：<code>1000</code></li>\n</ul>\n<p>SI 十进制单位的进位基数。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.SI_DIV); // 1000\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.SI_DIV"
             },
             {
               "textRaw": "cvt.bytes.strict(source, arg1?, arg2?, arg3?)",
               "name": "cvt.bytes.strict(source,_arg1?,_arg2?,_arg3?)",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用严格单位规则。<code>KB</code>、<code>MB</code> 等 SI 单位以 1000 为基数，<code>KiB</code>、<code>MiB</code> 等 IEC 单位以 1024 为基数。选项对象中不得再提供非空的 <code>strict</code>。</p>\n<p>可用形式为 <code>strict(source, options)</code>、<code>strict(source, toUnit, options)</code>、<code>strict(source, fromUnit, toUnit, options)</code>。实现合同的纯位置参数分支会把模式布尔值传入 <code>strict</code> 选项槽，继而触发空值校验；因此 <code>strict(source)</code> 或 <code>strict(source, fromUnit, toUnit)</code> 当前会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.strict(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1000\nconsole.log(cvt.bytes.strict(1, { fromUnit: &#39;KiB&#39;, toUnit: &#39;B&#39; })); // 1024\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用严格单位规则。<code>KB</code>、<code>MB</code> 等 SI 单位以 1000 为基数，<code>KiB</code>、<code>MiB</code> 等 IEC 单位以 1024 为基数。选项对象中不得再提供非空的 <code>strict</code>。</p>\n<p>可用形式为 <code>strict(source, options)</code>、<code>strict(source, toUnit, options)</code>、<code>strict(source, fromUnit, toUnit, options)</code>。实现合同的纯位置参数分支会把模式布尔值传入 <code>strict</code> 选项槽，继而触发空值校验；因此 <code>strict(source)</code> 或 <code>strict(source, fromUnit, toUnit)</code> 当前会抛出异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.strict(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1000\nconsole.log(cvt.bytes.strict(1, { fromUnit: &#39;KiB&#39;, toUnit: &#39;B&#39; })); // 1024\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.strict(source, arg1?, arg2?, arg3?)"
             },
             {
               "textRaw": "cvt.bytes.loose(source, arg1?, arg2?, arg3?)",
               "name": "cvt.bytes.loose(source,_arg1?,_arg2?,_arg3?)",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用宽松单位规则。单位不区分 SI 与 IEC 标识，<code>K</code>、<code>KB</code>、<code>KiB</code> 会统一按 1024 进位。选项对象中不得再提供非空的 <code>strict</code>。可用形式与 <code>strict</code> 相同；纯位置参数分支在当前实现合同中同样会触发空值校验异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.loose(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1024\nconsole.log(cvt.bytes.loose(&#39;2 MiB&#39;, { toUnit: &#39;KiB&#39; })); // 2048\n</code></pre>\n",
+              "desc": "<ul>\n<li><strong>参数</strong>：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> }</li>\n<li><strong>异常</strong>：除通用校验外，选项对象含非空 <code>strict</code> 时抛出异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>强制使用宽松单位规则。单位不区分 SI 与 IEC 标识，<code>K</code>、<code>KB</code>、<code>KiB</code> 会统一按 1024 进位。选项对象中不得再提供非空的 <code>strict</code>。可用形式与 <code>strict</code> 相同；纯位置参数分支在当前实现合同中同样会触发空值校验异常。</p>\n<pre><code class=\"lang-js\">console.log(cvt.bytes.loose(1, { fromUnit: &#39;KB&#39;, toUnit: &#39;B&#39; })); // 1024\nconsole.log(cvt.bytes.loose(&#39;2 MiB&#39;, { toUnit: &#39;KiB&#39; })); // 2048\n</code></pre>\n",
               "type": "module",
               "displayName": "cvt.bytes.loose(source, arg1?, arg2?, arg3?)"
             },
@@ -79,8 +79,37 @@
               "textRaw": "cvt.bytes(source, arg1?, arg2?, arg3?)",
               "type": "method",
               "name": "bytes",
-              "desc": "<p><strong>v6.7.0</strong></p>\n<ul>\n<li><strong>source</strong> { <code>number | string</code> } - 非负字节值。字符串可同时携带单位，例如 <code>&quot;1.5 MiB&quot;</code></li>\n<li><strong>arg1 / arg2 / arg3</strong> - 按下方重载表解释</li>\n<li><ins><strong>returns</strong></ins> { <code>number | java.math.BigDecimal</code> } - 换算结果；超出 JavaScript 安全整数范围时保留为高精度 Java 大数对象</li>\n<li><strong>异常</strong>：参数数量、数值、单位或选项不合法时抛出参数异常</li>\n<li><strong>副作用 / 生命周期</strong>：同步纯计算，不持有资源</li>\n</ul>\n<p>默认从 <code>B</code> 转换到 <code>AUTO</code>，保留 2 位小数，自动进位阈值为 1024，并使用宽松单位规则。</p>\n<p>可用调用形式：</p>\n<table>\n<thead>\n<tr>\n<th>调用形式</th>\n<th>含义</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>cvt.bytes(source)</code></td>\n<td>使用全部默认值</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, options)</code></td>\n<td>使用选项对象</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit)</code></td>\n<td>指定目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fractionDigits)</code></td>\n<td>指定小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit)</code></td>\n<td>指定源单位和目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, options)</code></td>\n<td>指定目标单位并补充选项</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, fractionDigits)</code></td>\n<td>指定目标单位和小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, options)</code></td>\n<td>完整选项形式</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, fractionDigits)</code></td>\n<td>完整数值形式</td>\n</tr>\n</tbody>\n</table>\n<p>为与 <code>fmt.bytes</code> 的位置参数保持兼容，第二、第三或第四参数位也接受布尔值；该布尔值不改变 <code>cvt.bytes</code> 的数值换算。需要选择严格模式时应使用 <code>strict</code> 选项或 <code>cvt.bytes.strict</code>。</p>\n<p>选项对象支持：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>类型</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>fromUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;B&quot;</code></td>\n<td>源单位；source 已携带单位时不可与其冲突</td>\n</tr>\n<tr>\n<td><code>toUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;AUTO&quot;</code></td>\n<td>目标单位，或 <code>cvt.bytes.AUTO</code></td>\n</tr>\n<tr>\n<td><code>fractionDigits</code></td>\n<td><code>number</code></td>\n<td><code>2</code></td>\n<td>转换并舍入为非负整数，表示结果保留的小数位数</td>\n</tr>\n<tr>\n<td><code>autoCarryThreshold</code></td>\n<td><code>number</code></td>\n<td><code>1024</code></td>\n<td>转换并舍入为正整数，作为自动提前进位阈值；仅能与 <code>AUTO</code> 同用</td>\n</tr>\n<tr>\n<td><code>strict</code></td>\n<td><code>boolean</code></td>\n<td><code>false</code></td>\n<td>是否区分 SI 与 IEC 单位</td>\n</tr>\n</tbody>\n</table>\n<pre><code class=\"lang-js\">console.log(cvt.bytes(1536)); // 1.5\nconsole.log(cvt.bytes(&#39;1.5 MiB&#39;, &#39;KiB&#39;)); // 1536\nconsole.log(cvt.bytes(1500, { toUnit: &#39;KB&#39;, fractionDigits: 3 })); // 1.465\n</code></pre>\n",
               "signatures": [
+                {
+                  "params": [
+                    {
+                      "textRaw": "**source** { `number | string` } - 非负字节值。字符串可同时携带单位，例如 `\"1.5 MiB\"` ",
+                      "name": "**source**",
+                      "type": " `number | string` ",
+                      "desc": "非负字节值。字符串可同时携带单位，例如 `\"1.5 MiB\"`"
+                    },
+                    {
+                      "textRaw": "**arg1 / arg2 / arg3** - 按下方重载表解释 ",
+                      "name": "**arg1",
+                      "desc": "/ arg2 / arg3** - 按下方重载表解释"
+                    },
+                    {
+                      "textRaw": "<ins>**returns**</ins> { `number | java.math.BigDecimal` } - 换算结果；超出 JavaScript 安全整数范围时保留为高精度 Java 大数对象 ",
+                      "name": "<ins>**returns**</ins>",
+                      "type": " `number | java.math.BigDecimal` ",
+                      "desc": "换算结果；超出 JavaScript 安全整数范围时保留为高精度 Java 大数对象"
+                    },
+                    {
+                      "textRaw": "**异常**：参数数量、数值、单位或选项不合法时抛出参数异常 ",
+                      "name": "**异常**：参数数量、数值、单位或选项不合法时抛出参数异常"
+                    },
+                    {
+                      "textRaw": "**副作用 / 生命周期**：同步纯计算，不持有资源 ",
+                      "name": "**副作用",
+                      "desc": "/ 生命周期**：同步纯计算，不持有资源"
+                    }
+                  ]
+                },
                 {
                   "params": [
                     {
@@ -97,7 +126,8 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "desc": "<p>默认从 <code>B</code> 转换到 <code>AUTO</code>，保留 2 位小数，自动进位阈值为 1024，并使用宽松单位规则。</p>\n<p>可用调用形式：</p>\n<table>\n<thead>\n<tr>\n<th>调用形式</th>\n<th>含义</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>cvt.bytes(source)</code></td>\n<td>使用全部默认值</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, options)</code></td>\n<td>使用选项对象</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit)</code></td>\n<td>指定目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fractionDigits)</code></td>\n<td>指定小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit)</code></td>\n<td>指定源单位和目标单位</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, options)</code></td>\n<td>指定目标单位并补充选项</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, toUnit, fractionDigits)</code></td>\n<td>指定目标单位和小数位数</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, options)</code></td>\n<td>完整选项形式</td>\n</tr>\n<tr>\n<td><code>cvt.bytes(source, fromUnit, toUnit, fractionDigits)</code></td>\n<td>完整数值形式</td>\n</tr>\n</tbody>\n</table>\n<p>为与 <code>fmt.bytes</code> 的位置参数保持兼容，第二、第三或第四参数位也接受布尔值；该布尔值不改变 <code>cvt.bytes</code> 的数值换算。需要选择严格模式时应使用 <code>strict</code> 选项或 <code>cvt.bytes.strict</code>。</p>\n<p>选项对象支持：</p>\n<table>\n<thead>\n<tr>\n<th>选项</th>\n<th>类型</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>fromUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;B&quot;</code></td>\n<td>源单位；source 已携带单位时不可与其冲突</td>\n</tr>\n<tr>\n<td><code>toUnit</code></td>\n<td><code>string</code></td>\n<td><code>&quot;AUTO&quot;</code></td>\n<td>目标单位，或 <code>cvt.bytes.AUTO</code></td>\n</tr>\n<tr>\n<td><code>fractionDigits</code></td>\n<td><code>number</code></td>\n<td><code>2</code></td>\n<td>转换并舍入为非负整数，表示结果保留的小数位数</td>\n</tr>\n<tr>\n<td><code>autoCarryThreshold</code></td>\n<td><code>number</code></td>\n<td><code>1024</code></td>\n<td>转换并舍入为正整数，作为自动提前进位阈值；仅能与 <code>AUTO</code> 同用</td>\n</tr>\n<tr>\n<td><code>strict</code></td>\n<td><code>boolean</code></td>\n<td><code>false</code></td>\n<td>是否区分 SI 与 IEC 单位</td>\n</tr>\n</tbody>\n</table>\n<pre><code class=\"lang-js\">console.log(cvt.bytes(1536)); // 1.5\nconsole.log(cvt.bytes(&#39;1.5 MiB&#39;, &#39;KiB&#39;)); // 1536\nconsole.log(cvt.bytes(1500, { toUnit: &#39;KB&#39;, fractionDigits: 3 })); // 1.465\n</code></pre>\n"
             }
           ],
           "type": "module",
@@ -106,7 +136,7 @@
         {
           "textRaw": "API 合同表",
           "name": "api_合同表",
-          "desc": "<p>下表覆盖本页在产品版本 <code>6.7.0</code> 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-Y2FsbDpjdnQuYnl0ZXM\"></a> <code>call:cvt.bytes</code></td>\n<td><code>cvt.bytes(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLkFVVE8\"></a> <code>cvt.bytes.AUTO</code></td>\n<td><code>cvt.bytes.AUTO</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.AUTO);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLklFQ19ESVY\"></a> <code>cvt.bytes.IEC_DIV</code></td>\n<td><code>cvt.bytes.IEC_DIV</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.IEC_DIV);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLmxvb3Nl\"></a> <code>cvt.bytes.loose</code></td>\n<td><code>cvt.bytes.loose(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes.loose);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLlNJX0RJVg\"></a> <code>cvt.bytes.SI_DIV</code></td>\n<td><code>cvt.bytes.SI_DIV</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.SI_DIV);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLnN0cmljdA\"></a> <code>cvt.bytes.strict</code></td>\n<td><code>cvt.bytes.strict(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes.strict);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLlVOSVRT\"></a> <code>cvt.bytes.UNITS</code></td>\n<td><code>cvt.bytes.UNITS</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.UNITS);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmN2dA\"></a> <code>module:cvt</code></td>\n<td><code>cvt</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmN2dC5ieXRlcw\"></a> <code>module:cvt.bytes</code></td>\n<td><code>bytes</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes);</code></td>\n</tr>\n</tbody>\n</table>\n",
+          "desc": "<p>下表覆盖本页在当前公开 API 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 <code>db</code>、<code>cursor</code>、<code>storage</code>）沿用本页正文中的创建方式。</p>\n<table>\n<thead>\n<tr>\n<th>API ID / 稳定锚点</th>\n<th>签名或入口</th>\n<th>参数、可选项与默认值</th>\n<th>返回值与异常</th>\n<th>权限与线程</th>\n<th>生命周期与副作用</th>\n<th>版本</th>\n<th>Rhino 2.0 示例</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a id=\"api-symbol-Y2FsbDpjdnQuYnl0ZXM\"></a> <code>call:cvt.bytes</code></td>\n<td><code>cvt.bytes(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLkFVVE8\"></a> <code>cvt.bytes.AUTO</code></td>\n<td><code>cvt.bytes.AUTO</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.AUTO);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLklFQ19ESVY\"></a> <code>cvt.bytes.IEC_DIV</code></td>\n<td><code>cvt.bytes.IEC_DIV</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.IEC_DIV);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLmxvb3Nl\"></a> <code>cvt.bytes.loose</code></td>\n<td><code>cvt.bytes.loose(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes.loose);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLlNJX0RJVg\"></a> <code>cvt.bytes.SI_DIV</code></td>\n<td><code>cvt.bytes.SI_DIV</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.SI_DIV);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLnN0cmljdA\"></a> <code>cvt.bytes.strict</code></td>\n<td><code>cvt.bytes.strict(...args)</code> · 实现合同</td>\n<td>参数：按实现合同声明与本页成员说明；可选项、默认值和合法值不得超出公开重载</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes.strict);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-Y3Z0LmJ5dGVzLlVOSVRT\"></a> <code>cvt.bytes.UNITS</code></td>\n<td><code>cvt.bytes.UNITS</code> · 实现合同</td>\n<td>属性访问；无调用参数</td>\n<td>返回：按实现合同声明；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(cvt.bytes.UNITS);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmN2dA\"></a> <code>module:cvt</code></td>\n<td><code>cvt</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；初始化或目标成员异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt);</code></td>\n</tr>\n<tr>\n<td><a id=\"api-symbol-bW9kdWxlOmN2dC5ieXRlcw\"></a> <code>module:cvt.bytes</code></td>\n<td><code>bytes</code> 模块入口 · 实现合同</td>\n<td>入口：全局或父模块属性；无构造参数</td>\n<td>返回：模块对象；参数校验、状态或底层异常原样传播</td>\n<td>权限：无需 Android 权限；线程：同步转换</td>\n<td>生命周期：无持久资源；副作用：无，仅返回转换结果</td>\n<td>≤ v6.6.4（旧文档未记录精确版本）</td>\n<td>Rhino 2.0：<code>console.log(typeof cvt.bytes);</code></td>\n</tr>\n</tbody>\n</table>\n",
           "modules": [
             {
               "textRaw": "Rhino 2.0 表格读取示例",

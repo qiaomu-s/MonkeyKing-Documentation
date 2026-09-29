@@ -1645,7 +1645,7 @@ Color('blue').setPaintColor(paint);
 
 ---
 
-## MonkeyKing 6.7.0 动态实例合同
+## MonkeyKing 动态实例合同
 
 <a id="api-symbol-Y29sb3IucmVzdWx0LnRvU3RyaW5nUmVhZGFibGU"></a>
 
@@ -1695,169 +1695,169 @@ console.log(color.toHslaString())
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="color.result.color" version="6.7.0" -->
-`color.result.color` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.color" -->
+`color.result.color` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.color);
 ```
 
-<!-- api-member-contract id="color.result.equals" version="6.7.0" -->
-`color.result.equals` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.equals" -->
+`color.result.equals` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.equals);
 ```
 
-<!-- api-member-contract id="color.result.removeAlpha" version="6.7.0" -->
-`color.result.removeAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.removeAlpha" -->
+`color.result.removeAlpha` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.removeAlpha);
 ```
 
-<!-- api-member-contract id="color.result.removeBlue" version="6.7.0" -->
-`color.result.removeBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.removeBlue" -->
+`color.result.removeBlue` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.removeBlue);
 ```
 
-<!-- api-member-contract id="color.result.removeGreen" version="6.7.0" -->
-`color.result.removeGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.removeGreen" -->
+`color.result.removeGreen` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.removeGreen);
 ```
 
-<!-- api-member-contract id="color.result.removeRed" version="6.7.0" -->
-`color.result.removeRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.removeRed" -->
+`color.result.removeRed` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.removeRed);
 ```
 
-<!-- api-member-contract id="color.result.setAlpha" version="6.7.0" -->
-`color.result.setAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setAlpha" -->
+`color.result.setAlpha` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setAlpha);
 ```
 
-<!-- api-member-contract id="color.result.setAlphaRelative" version="6.7.0" -->
-`color.result.setAlphaRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setAlphaRelative" -->
+`color.result.setAlphaRelative` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setAlphaRelative);
 ```
 
-<!-- api-member-contract id="color.result.setArgb" version="6.7.0" -->
-`color.result.setArgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setArgb" -->
+`color.result.setArgb` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setArgb);
 ```
 
-<!-- api-member-contract id="color.result.setBlue" version="6.7.0" -->
-`color.result.setBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setBlue" -->
+`color.result.setBlue` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setBlue);
 ```
 
-<!-- api-member-contract id="color.result.setBlueRelative" version="6.7.0" -->
-`color.result.setBlueRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setBlueRelative" -->
+`color.result.setBlueRelative` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setBlueRelative);
 ```
 
-<!-- api-member-contract id="color.result.setGreen" version="6.7.0" -->
-`color.result.setGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setGreen" -->
+`color.result.setGreen` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setGreen);
 ```
 
-<!-- api-member-contract id="color.result.setGreenRelative" version="6.7.0" -->
-`color.result.setGreenRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setGreenRelative" -->
+`color.result.setGreenRelative` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setGreenRelative);
 ```
 
-<!-- api-member-contract id="color.result.setHsl" version="6.7.0" -->
-`color.result.setHsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setHsl" -->
+`color.result.setHsl` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setHsl);
 ```
 
-<!-- api-member-contract id="color.result.setHsla" version="6.7.0" -->
-`color.result.setHsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setHsla" -->
+`color.result.setHsla` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setHsla);
 ```
 
-<!-- api-member-contract id="color.result.setHsv" version="6.7.0" -->
-`color.result.setHsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setHsv" -->
+`color.result.setHsv` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setHsv);
 ```
 
-<!-- api-member-contract id="color.result.setHsva" version="6.7.0" -->
-`color.result.setHsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setHsva" -->
+`color.result.setHsva` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setHsva);
 ```
 
-<!-- api-member-contract id="color.result.setPaintColor" version="6.7.0" -->
-`color.result.setPaintColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setPaintColor" -->
+`color.result.setPaintColor` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setPaintColor);
 ```
 
-<!-- api-member-contract id="color.result.setRed" version="6.7.0" -->
-`color.result.setRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setRed" -->
+`color.result.setRed` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setRed);
 ```
 
-<!-- api-member-contract id="color.result.setRedRelative" version="6.7.0" -->
-`color.result.setRedRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setRedRelative" -->
+`color.result.setRedRelative` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setRedRelative);
 ```
 
-<!-- api-member-contract id="color.result.setRgb" version="6.7.0" -->
-`color.result.setRgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setRgb" -->
+`color.result.setRgb` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setRgb);
 ```
 
-<!-- api-member-contract id="color.result.setRgba" version="6.7.0" -->
-`color.result.setRgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.setRgba" -->
+`color.result.setRgba` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.setRgba);
 ```
 
-<!-- api-member-contract id="color.result.toStringReadable" version="6.7.0" -->
-`color.result.toStringReadable` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="color.result.toStringReadable" -->
+`color.result.toStringReadable` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.toStringReadable);
 ```
 
-<!-- api-member-contract id="dynamic:color.result.forwarded-functions" version="6.7.0" -->
-`dynamic:color.result.forwarded-functions` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="dynamic:color.result.forwarded-functions" -->
+`dynamic:color.result.forwarded-functions` · Rhino 2.0 示例：
 ```js
 var result = color('red');
 console.log(result.forwardedFunctions);

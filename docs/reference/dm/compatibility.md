@@ -1,6 +1,6 @@
 # dm Android 兼容约定
 
-> 运行条件：本页适用于提供 `dm` 全局对象的 Monkey King 6.7.0 构建。
+> 运行条件：本页适用于提供 `dm` 全局对象的 Monkey King 构建。
 
 Monkey King 保留大漠风格的 PascalCase 兼容接口，同时提供 camelCase 便捷接口。兼容接口的输出参数在 Java 中使用 `IntRef`，Rhino 中使用 `{ value: -1 }`。
 

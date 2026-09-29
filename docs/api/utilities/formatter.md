@@ -1,6 +1,6 @@
 # Formatter / fmt
 
-**自 v6.7.0 起提供。**
+**提供。**
 
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
@@ -13,9 +13,6 @@ Formatter 是 Monkey King 的数据格式化模块。目前脚本 API 只暴露�
 ## fmt
 
 ### fmt
-
-**v6.7.0**
-
 - **类型**：`object`
 - **返回值**：无；`fmt` 本身不可调用
 - **副作用**：无
@@ -28,9 +25,6 @@ console.log(typeof fmt.bytes); // "function"
 ```
 
 ### fmt.bytes.UNITS
-
-**v6.7.0**
-
 - **类型**：`string`
 - **值**：`"KMGTPEZYRQ"`
 
@@ -41,9 +35,6 @@ console.log(fmt.bytes.UNITS); // KMGTPEZYRQ
 ```
 
 ### fmt.bytes.AUTO
-
-**v6.7.0**
-
 - **类型**：`string`
 - **值**：`"AUTO"`
 
@@ -54,9 +45,6 @@ console.log(fmt.bytes.AUTO); // AUTO
 ```
 
 ### fmt.bytes.IEC_DIV
-
-**v6.7.0**
-
 - **类型**：`number`
 - **值**：`1024`
 
@@ -67,9 +55,6 @@ console.log(fmt.bytes.IEC_DIV); // 1024
 ```
 
 ### fmt.bytes.SI_DIV
-
-**v6.7.0**
-
 - **类型**：`number`
 - **值**：`1000`
 
@@ -80,9 +65,6 @@ console.log(fmt.bytes.SI_DIV); // 1000
 ```
 
 ### fmt.bytes(source, arg1?, arg2?, arg3?)
-
-**v6.7.0**
-
 - **source** { `number | string` } - 非负字节值。字符串可同时携带单位，例如 `"1.5 MiB"`
 - **arg1 / arg2 / arg3** - 按下方重载表解释
 - <ins>**returns**</ins> { `string` } - 格式化后的数值与单位
@@ -131,9 +113,6 @@ console.log(fmt.bytes(1024, { toUnit: 'KB', useSpace: false })); // 1.00KB
 ```
 
 ### fmt.bytes.strict(source, arg1?, arg2?, arg3?)
-
-**v6.7.0**
-
 - **参数**：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载
 - <ins>**returns**</ins> { `string` }
 - **异常**：除通用校验外，选项对象含非空 `strict` 时抛出异常
@@ -151,9 +130,6 @@ console.log(fmt.bytes.strict(1024, { fromUnit: 'B', toUnit: 'KiB' })); // 1.00 K
 ```
 
 ### fmt.bytes.loose(source, arg1?, arg2?, arg3?)
-
-**v6.7.0**
-
 - **参数**：参数总数必须为 1 至 4；当前实现合同应使用以选项对象收尾的重载
 - <ins>**returns**</ins> { `string` }
 - **异常**：除通用校验外，选项对象含非空 `strict` 时抛出异常
@@ -179,7 +155,7 @@ console.log(fmt.bytes.loose(1024, { useIecIdentifier: true })); // 1.00 KiB
 
 ## API 合同表
 
-下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在当前公开 API 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |

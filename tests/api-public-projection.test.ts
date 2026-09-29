@@ -65,12 +65,11 @@ function internalManifest(): ApiManifest {
 }
 
 describe('public API projection', () => {
-  test('publishes only the v2 runtime contract', () => {
+  test('publishes only the v3 runtime contract', () => {
     const projected = projectApiManifest(internalManifest())
 
     expect(projected).toEqual({
-      schemaVersion: 2,
-      productVersion: '6.7.0',
+      schemaVersion: 3,
       modules: [
         {
           id: 'alpha',
@@ -112,8 +111,7 @@ describe('public API projection', () => {
     }
 
     expect(projectApiCoverage(coverage)).toEqual({
-      schemaVersion: 2,
-      productVersion: '6.7.0',
+      schemaVersion: 3,
       rules: coverage.rules,
     })
     expect(

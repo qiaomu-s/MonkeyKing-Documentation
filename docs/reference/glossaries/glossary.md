@@ -2,7 +2,7 @@
 
 本页解释 Monkey King 文档中反复出现、但不属于某一个 API 成员的术语。具体签名、参数和返回值仍以对应 API 页面为准。
 
-本文按 Monkey King 6.7.0 的公开行为核对。
+本文按 Monkey King 的公开行为核对。
 
 ## 内置模块
 
@@ -12,7 +12,7 @@ Monkey King 内置模块是随 APK 发布、在每个 Rhino runtime 初始化时
 
 ### 查看内置模块
 
-内置模块随 Monkey King 6.7.0 发布，并在 Rhino runtime 初始化时注册或加载。APK 是 ZIP 容器，
+内置模块随 Monkey King 发布，并在 Rhino runtime 初始化时注册或加载。APK 是 ZIP 容器，
 但普通脚本只需要通过模块名、`$` 前缀别名或全局入口调用公开能力。
 
 ### 修改或增加内置模块
@@ -50,7 +50,7 @@ const date = require('./date');
 console.log(date.toFullTimeString());
 ```
 
-若要把自定义资产模块编译进 APK，6.7.0 的 `assets/init.js` 支持返回模块名、模块名数组、用 `|` 分隔的字符串、名称映射对象，或接收 `(scriptRuntime, scope)` 的函数。它自 6.6.0 起默认不注册额外模块。
+若要把自定义资产模块编译进 APK，当前版本的 `assets/init.js` 支持返回模块名、模块名数组、用 `|` 分隔的字符串、名称映射对象，或接收 `(scriptRuntime, scope)` 的函数。它自 6.6.0 起默认不注册额外模块。
 
 ```js
 function installCustomModule(scriptRuntime, scope) {

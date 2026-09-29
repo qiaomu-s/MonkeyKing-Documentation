@@ -1,9 +1,6 @@
 # MIME - 媒体类型
 
 `mime` 用于解析 MIME 字符串、创建 OkHttp `MediaType`、按文件扩展名推断类型，并提供 IANA 媒体类型常量。运行时同时注册 `mime` 与 `$mime`，两者引用同一个模块对象。
-
-版本：**v6.7.0**
-
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
 参考：[IANA Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml)、[Android `MimeTypeMap`](https://developer.android.com/reference/android/webkit/MimeTypeMap)、[OkHttp `MediaType`](https://square.github.io/okhttp/5.x/okhttp/okhttp3/-media-type/) 以及运行时使用的 [mime-util 2.1.3 `MimeUtil2`](https://www.javadoc.io/doc/eu.medsea.mimeutil/mime-util/2.1.3/eu/medsea/mimeutil/MimeUtil2.html)。外部 Java 类型统一参阅 [Java SE 21 API](https://docs.oracle.com/en/java/javase/21/docs/api/)。
@@ -2789,7 +2786,7 @@ console.log(mime.VIDEO_MP4); // video/mp4
 
 ## API 合同表
 
-下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在当前公开 API 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |

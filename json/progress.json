@@ -4,28 +4,21 @@
     {
       "textRaw": "兼容性说明 (Compatibility)",
       "name": "兼容性说明_(compatibility)",
-      "desc": "<p>本文说明 Monkey King 6.7.0 文档与运行环境的兼容范围，面向脚本使用者和集成维护者。</p>\n",
+      "desc": "<p>本文说明 Monkey King 文档与运行环境的兼容范围，面向脚本使用者和集成维护者。</p>\n",
       "modules": [
         {
           "textRaw": "当前基线",
           "name": "当前基线",
-          "desc": "<table>\n<thead>\n<tr>\n<th>项目</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>产品版本</td>\n<td>Monkey King 6.7.0</td>\n</tr>\n<tr>\n<td>Android</td>\n<td>API 24 及以上</td>\n</tr>\n<tr>\n<td>JavaScript 引擎</td>\n<td>Rhino 2.0 语法环境</td>\n</tr>\n<tr>\n<td>文档页面</td>\n<td>122 个 canonical 页面</td>\n</tr>\n<tr>\n<td>兼容数据</td>\n<td>134 个 JSON 文件</td>\n</tr>\n<tr>\n<td>示例</td>\n<td>6.7.0 公开 API 基线中每个成员至少一个 Rhino 2.0 示例</td>\n</tr>\n</tbody>\n</table>\n<p><code>dm</code> 已纳入 Monkey King 6.7.0 的正式 API 基线，共包含 223 个公开符号（模块本身及 222 个成员）。使用前请确认运行环境提供 <code>dm</code> 全局对象及其对应的图像、字库或 OCR 资源。</p>\n",
+          "desc": "<table>\n<thead>\n<tr>\n<th>项目</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>产品版本</td>\n<td>Monkey King</td>\n</tr>\n<tr>\n<td>Android</td>\n<td>API 24 及以上</td>\n</tr>\n<tr>\n<td>JavaScript 引擎</td>\n<td>Rhino 2.0 语法环境</td>\n</tr>\n<tr>\n<td>文档页面</td>\n<td>122 个 canonical 页面</td>\n</tr>\n<tr>\n<td>兼容数据</td>\n<td>134 个 JSON 文件</td>\n</tr>\n<tr>\n<td>示例</td>\n<td>当前公开 API 基线中每个成员至少一个 Rhino 2.0 示例</td>\n</tr>\n</tbody>\n</table>\n<p><code>dm</code> 已纳入 Monkey King 的正式 API 基线，共包含 223 个公开符号（模块本身及 222 个成员）。使用前请确认运行环境提供 <code>dm</code> 全局对象及其对应的图像、字库或 OCR 资源。</p>\n",
           "type": "module",
           "displayName": "当前基线"
         },
         {
           "textRaw": "使用建议",
           "name": "使用建议",
-          "desc": "<ul>\n<li>需要 Android、Java、OkHttp 或 MediaInfo 类型时，先阅读对应的权限、线程和生命周期说明。</li>\n<li>需要在不同设备运行时，优先检查无障碍、Root、Shizuku、OCR、传感器和存储权限。</li>\n<li>需要兼容旧脚本时，可保留文档中明确标记的历史兼容值；新脚本应优先使用当前入口和当前包名。</li>\n<li>页面中的版本标签以 Monkey King 6.7.0 为准；旧版本行为只在影响迁移时保留说明。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>需要 Android、Java、OkHttp 或 MediaInfo 类型时，先阅读对应的权限、线程和生命周期说明。</li>\n<li>需要在不同设备运行时，优先检查无障碍、Root、Shizuku、OCR、传感器和存储权限。</li>\n<li>需要兼容旧脚本时，可保留文档中明确标记的历史兼容值；新脚本应优先使用当前入口和当前包名。</li>\n<li>页面中的版本标签以 Monkey King 为准；旧版本行为只在影响迁移时保留说明。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "问题反馈"
-        },
-        {
-          "textRaw": "问题反馈",
-          "name": "问题反馈",
-          "desc": "<p>请通过应用内反馈入口或授权支持渠道提交产品版本、Android API 级别、设备信息、最小复现脚本和完整错误日志。</p>\n",
-          "type": "module",
-          "displayName": "问题反馈"
+          "displayName": "使用建议"
         }
       ],
       "type": "module",

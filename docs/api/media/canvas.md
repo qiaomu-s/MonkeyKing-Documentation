@@ -72,7 +72,7 @@ try {
 }
 ```
 
-该构造入口在 MonkeyKing 6.7.0 中可用；实例方法主要转发到 Android `Canvas`，参数限制和绘制语义以对应 Android API 为准。
+该构造入口在 MonkeyKing 中可用；实例方法主要转发到 Android `Canvas`，参数限制和绘制语义以对应 Android API 为准。
 
 ## canvas.getWidth()
 
@@ -241,16 +241,16 @@ try {
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="construct:canvas" version="6.7.0" -->
-`construct:canvas` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="construct:canvas" -->
+`construct:canvas` · Rhino 2.0 示例：
 ```js
 var value = new canvas(1, 1);
 console.log(value.getWidth());
 value.toImage().recycle();
 ```
 
-<!-- api-member-contract id="module:canvas" version="6.7.0" -->
-`module:canvas` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:canvas" -->
+`module:canvas` · Rhino 2.0 示例：
 ```js
 console.log(typeof canvas);
 ```

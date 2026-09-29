@@ -158,4 +158,4 @@ bodyCacheThresholdBytes?: number // 默认 8388608（8 MiB）
 - options 解析与 request 构建在调用线程完成；`*Async` 只把网络执行放到后台。
 - 无效字段类型、反射方法或 multipart 数据抛出参数异常；OkHttp 的 URL、方法、头和值验证异常继续向外传播。
 - 每次请求应用 client options 都会更新共享客户端和重试次数，多个脚本线程并发修改时应由调用方协调。
-- 本页合同对应 MonkeyKing 6.7.0 和其内置 OkHttp 版本。
+- 本页合同对应 MonkeyKing 和其内置 OkHttp 版本。

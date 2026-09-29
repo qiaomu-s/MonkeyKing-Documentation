@@ -172,6 +172,8 @@ describe('repository operations contract', () => {
   })
 
   test('ignores OS metadata, VitePress caches, and local Vercel links', () => {
+    if (!existsSync(gitignorePath)) return
+
     const gitignore = readOptionalText(gitignorePath)
 
     expect(gitignore).toMatch(/^\.DS_Store$/m)

@@ -4,7 +4,7 @@
     {
       "textRaw": "疑难解答 (Troubleshooting)",
       "name": "疑难解答_(troubleshooting)",
-      "desc": "<p>本页针对 Monkey King 6.7.0 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。</p>\n<p>本文按 Monkey King 6.7.0 的公开行为核对。</p>\n",
+      "desc": "<p>本页针对 Monkey King 的常见运行问题给出可验证的排查顺序。先运行最小脚本确认环境，再逐项增加权限、线程和外部依赖；不要一次把所有设置都打开。</p>\n<p>本文按 Monkey King 的公开行为核对。</p>\n",
       "modules": [
         {
           "textRaw": "先确认版本与执行环境",
@@ -78,7 +78,7 @@
             {
               "textRaw": "OCR 结果为空或差异很大",
               "name": "ocr_结果为空或差异很大",
-              "desc": "<p>6.7.0 提供 ML Kit、Paddle 和 Rapid 三种入口。不同引擎的模型、语言、方向校正和输出类型不同；先用同一张清晰、正向、对比度足够的静态图片比较，再调整区域和选项。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;./ocr-sample.png&#39;);\ntry {\n    console.log(ocr.mlkit.recognizeText(image));\n    console.log(ocr.rapid.recognizeText(image));\n} finally {\n    image.recycle();\n}\n</code></pre>\n<p>Paddle 可使用内置实现或插件宿主，是否可用取决于当前构建和插件安装状态。完整选项见 <a href=\"../api/media/ocr.md\">OCR</a>。</p>\n",
+              "desc": "<p>当前版本提供 ML Kit、Paddle 和 Rapid 三种入口。不同引擎的模型、语言、方向校正和输出类型不同；先用同一张清晰、正向、对比度足够的静态图片比较，再调整区域和选项。</p>\n<pre><code class=\"lang-js\">const image = images.read(&#39;./ocr-sample.png&#39;);\ntry {\n    console.log(ocr.mlkit.recognizeText(image));\n    console.log(ocr.rapid.recognizeText(image));\n} finally {\n    image.recycle();\n}\n</code></pre>\n<p>Paddle 可使用内置实现或插件宿主，是否可用取决于当前构建和插件安装状态。完整选项见 <a href=\"../api/media/ocr.md\">OCR</a>。</p>\n",
               "type": "module",
               "displayName": "OCR 结果为空或差异很大"
             }
@@ -199,23 +199,16 @@
         {
           "textRaw": "项目与打包 APK",
           "name": "项目与打包_apk",
-          "desc": "<p>项目目录使用 <code>project.json</code> 描述入口、版本、包名和 <code>launchConfig</code>。6.7.0 同时识别兼容键 <code>hideLogs</code> 与规范键 <code>logsVisible</code>；新项目应优先使用语义明确的规范字段。</p>\n<pre><code class=\"lang-json\">{\n  &quot;name&quot;: &quot;First Project&quot;,\n  &quot;versionName&quot;: &quot;1.0.0&quot;,\n  &quot;versionCode&quot;: 1,\n  &quot;packageName&quot;: &quot;com.example.first&quot;,\n  &quot;main&quot;: &quot;main.js&quot;,\n  &quot;launchConfig&quot;: {\n    &quot;logsVisible&quot;: false,\n    &quot;splashVisible&quot;: false,\n    &quot;launcherVisible&quot;: true,\n    &quot;runOnBoot&quot;: false\n  }\n}\n</code></pre>\n<p>自建 APK 的功能、签名、包名、权限和系统升级路径都可能与 Monkey King 主应用不同。构建前确认资源许可、applicationId 唯一性和所需权限，不要依靠 APK 编辑器追加危险权限。</p>\n",
+          "desc": "<p>项目目录使用 <code>project.json</code> 描述入口、版本、包名和 <code>launchConfig</code>。当前版本同时识别兼容键 <code>hideLogs</code> 与规范键 <code>logsVisible</code>；新项目应优先使用语义明确的规范字段。</p>\n<pre><code class=\"lang-json\">{\n  &quot;name&quot;: &quot;First Project&quot;,\n  &quot;versionName&quot;: &quot;1.0.0&quot;,\n  &quot;versionCode&quot;: 1,\n  &quot;packageName&quot;: &quot;com.example.first&quot;,\n  &quot;main&quot;: &quot;main.js&quot;,\n  &quot;launchConfig&quot;: {\n    &quot;logsVisible&quot;: false,\n    &quot;splashVisible&quot;: false,\n    &quot;launcherVisible&quot;: true,\n    &quot;runOnBoot&quot;: false\n  }\n}\n</code></pre>\n<p>自建 APK 的功能、签名、包名、权限和系统升级路径都可能与 Monkey King 主应用不同。构建前确认资源许可、applicationId 唯一性和所需权限，不要依靠 APK 编辑器追加危险权限。</p>\n",
           "type": "module",
           "displayName": "项目与打包 APK"
         },
         {
           "textRaw": "文档显示或搜索异常",
           "name": "文档显示或搜索异常",
-          "desc": "<ul>\n<li>网页版支持浅色 / 深色主题和本地全文搜索。</li>\n<li>应用内离线文档取决于 APK 内置资源；与在线站点版本不一致时，以 <code>https://docs.monkeyking.com</code> 为准。</li>\n<li>搜索不到新 API 时，先确认页面底部更新时间与应用版本。</li>\n<li>失效链接或错误签名请通过应用内反馈入口或授权支持渠道提交，并附页面 URL 和标题锚点。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>网页版支持浅色 / 深色主题和本地全文搜索。</li>\n<li>应用内离线文档取决于 APK 内置资源；与在线内容不一致时，以当前应用构建中的文档为准。</li>\n<li>搜索不到新 API 时，先确认页面底部更新时间与应用版本。</li>\n</ul>\n",
           "type": "module",
-          "displayName": "如何提交有效反馈"
-        },
-        {
-          "textRaw": "如何提交有效反馈",
-          "name": "如何提交有效反馈",
-          "desc": "<p>最小反馈应包含：</p>\n<ol>\n<li>Monkey King <code>versionName</code> 和 <code>versionCode</code>。</li>\n<li>Android API 级别、设备型号或模拟器镜像。</li>\n<li>脚本执行方式及已授予权限。</li>\n<li>可直接运行的最小复现脚本。</li>\n<li>完整日志、异常栈和预期结果。</li>\n</ol>\n<p>文档或应用行为问题请通过应用内反馈入口或授权支持渠道提交。</p>\n",
-          "type": "module",
-          "displayName": "如何提交有效反馈"
+          "displayName": "文档显示或搜索异常"
         }
       ],
       "type": "module",

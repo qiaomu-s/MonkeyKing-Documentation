@@ -1,6 +1,6 @@
 # OcrOptions
 
-`OcrOptions` 是 [ocr](../media/ocr.md) 主模块及三个固定引擎入口共享的选项对象。`region` 和 `mode` 由通用分派器处理；其余选项只由 MonkeyKing 6.7.0 的 Paddle 实现消费。ML Kit 与 Rapid 会忽略这些 Paddle 专用字段。
+`OcrOptions` 是 [ocr](../media/ocr.md) 主模块及三个固定引擎入口共享的选项对象。`region` 和 `mode` 由通用分派器处理；其余选项只由 MonkeyKing 的 Paddle 实现消费。ML Kit 与 Rapid 会忽略这些 Paddle 专用字段。
 
 ```ts
 interface OcrOptions {
@@ -56,7 +56,7 @@ mode?: 'mlkit' | 'paddle' | 'rapid'
 
 ## Paddle 推理选项
 
-以下默认值来自 MonkeyKing 6.7.0 的运行时解析器。选项会传给插件或打包应用内置的 Paddle 引擎；实际支持范围仍取决于所选引擎实现。
+以下默认值来自 MonkeyKing 的运行时解析器。选项会传给插件或打包应用内置的 Paddle 引擎；实际支持范围仍取决于所选引擎实现。
 
 | 属性 | 类型 | 默认值 | 运行时合同 |
 | --- | --- | --- | --- |

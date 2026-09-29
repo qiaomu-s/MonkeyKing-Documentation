@@ -2,7 +2,7 @@
 
 ---
 
-本页前半部分保留布局与控件属性教程，后半部分给出按 Monkey King 6.7.0 产品版本 `6.7.0` 核对的运行时 API 合同。
+本页前半部分保留布局与控件属性教程，后半部分给出按 Monkey King 当前公开 API 核对的运行时 API 合同。
 
 ---
 
@@ -110,7 +110,7 @@ $ui.post(() => {
 }, 5000);
 ```
 
-**注意：**并不是所有属性都能在 JavaScript 代码中设置；布局专用属性或尚未支持的属性可能抛出异常，具体以 Monkey King 6.7.0 的运行结果为准。
+**注意：**并不是所有属性都能在 JavaScript 代码中设置；布局专用属性或尚未支持的属性可能抛出异常，具体以 Monkey King 的运行结果为准。
 
 ## attr(name)
 
@@ -1100,13 +1100,10 @@ ui.useAndroidLayout(true);
 
 # 运行时 API 参考
 
-以下合同描述 Monkey King 6.7.0 产品版本中的 Rhino 运行时对象。尺寸返回值均为像素；需要 Activity 的成员只能在 UI 脚本已创建界面后使用。
+以下合同描述 Monkey King 产品版本中的 Rhino 运行时对象。尺寸返回值均为像素；需要 Activity 的成员只能在 UI 脚本已创建界面后使用。
 
 <a id="api-symbol-bW9kdWxlOnVp"></a>
 ## [@] ui
-
-**`6.7.0`**
-
 - **入口 / 别名**：`ui`、`$ui`
 - <ins>**returns**</ins> { `UI` } - 绑定了布局、线程调度、窗口外观、控件查找及动态属性代理的对象
 - **权限**：模块本身不申请权限；具体 View、窗口或资源操作要求有效的 UI Activity
@@ -1120,9 +1117,6 @@ console.log(ui.getClassName()); // UI
 
 <a id="api-symbol-ZHluYW1pYzp1aS5wcm94eS1wcm9wZXJ0aWVz"></a>
 ### [dynamic] ui 动态代理属性
-
-**`6.7.0`**
-
 对任意脚本属性 `ui[key]` 赋非 nullish 值时，运行时把它保存到代理的 `mProperties`；赋 `null` 或 `undefined` 时删除该键。读取一个没有保存值的键时，如果 `ui.view` 已设置，运行时会把键当作布局 ID 调用 `ui.findById(key)`。因此可用键集合取决于脚本赋值和当前布局，而不是一张固定属性表。
 
 显式安装在 `ui` 上的方法与 getter 优先于代理查找。布局切换后，同一个键可能解析到不同 View；找不到 ID 时返回 nullish 值。
@@ -1143,9 +1137,6 @@ console.log(ui.title === ui.findById('title')); // true
 <a id="api-symbol-dWkucmVzb3VyY2VQYXJzZXI"></a>
 <a id="api-symbol-dWkubGF5b3V0SW5mbGF0ZXI"></a>
 ### [p] ui 核心状态属性
-
-**`6.7.0`**
-
 | 属性 | 类型 | 合同 |
 | --- | --- | --- |
 | `ui.isAndroidLayout` | `boolean \| null` | `true` 强制原生 Android XML，`false` 强制 Monkey King 简写语法，`null` 自动判断；通常通过 `useAndroidLayout()` 修改。 |
@@ -1168,9 +1159,6 @@ ui.bindingContext = { title: 'Monkey King' };
 <a id="api-symbol-dWkuZ2V0RGVmYXVsdFZhbHVl"></a>
 <a id="api-symbol-dWkuZ2V0V2l0aG91dFByb3h5"></a>
 ### [m] ui 底层 Rhino 对象方法
-
-**`6.7.0`**
-
 | 方法 | 返回值 | 合同 |
 | --- | --- | --- |
 | `ui.getClassName()` | `string` | 固定返回 `UI`。 |
@@ -1197,9 +1185,6 @@ console.log(ui.runtimeTag); // 经 get/proxy 读取
 <a id="api-symbol-dWkubmF2aWdhdGlvbkJhckhlaWdodA"></a>
 <a id="api-symbol-dWkudmlzaWJsZU5hdmlnYXRpb25CYXJIZWlnaHQ"></a>
 ### [p] ui 运行时 getter
-
-**`6.7.0`**
-
 | Getter | 类型 | 合同 |
 | --- | --- | --- |
 | `ui.R` | `Object` | 当前 Monkey King 运行时暴露的 Android 资源入口。 |
@@ -1221,9 +1206,6 @@ console.log(ui.navigationBarHeight, ui.visibleNavigationBarHeight);
 <a id="api-symbol-dWkuaXNVaVRocmVhZA"></a>
 <a id="api-symbol-dWkucG9zdA"></a>
 ### [m] UI 线程调度
-
-**`6.7.0`**
-
 | 方法 | 参数与返回值 | 合同 |
 | --- | --- | --- |
 | `ui.run(action)` | `Function -> any` | 必须传 1 个函数。已在 UI 线程时立即执行，否则投递到 UI Handler、阻塞当前线程并返回结果；回调异常会重新抛出。 |
@@ -1244,9 +1226,6 @@ ui.post(() => {
 <a id="api-symbol-dWkucmVnaXN0ZXJXaWRnZXQ"></a>
 <a id="api-symbol-dWkuc2V0Q29udGVudFZpZXc"></a>
 ### [m] 布局解析与内容 View
-
-**`6.7.0`**
-
 | 方法 | 返回值 | 合同 |
 | --- | --- | --- |
 | `ui.__inflate__(ctx, xml[, parent[, attach]])` | `android.view.View` | 内部入口，要求 2..4 个参数；`ctx` 必须为 `InflateContext`，`parent` 必须为 `ViewGroup` 或 null。 |
@@ -1272,9 +1251,6 @@ ui.setContentView(content);
 <a id="api-symbol-dWkubmF2aWdhdGlvbkJhckljb25MaWdodA"></a>
 <a id="api-symbol-dWkubmF2aWdhdGlvbkJhckljb25MaWdodEJ5"></a>
 ### [m] 窗口与系统栏外观
-
-**`6.7.0`**
-
 | 方法 | 参数 | 合同 |
 | --- | --- | --- |
 | `ui.statusBarColor(color)` | 1 个颜色值 | 在 UI 线程设置状态栏背景色。 |
@@ -1300,9 +1276,6 @@ ui.navigationBarIconLightBy('#202124');
 <a id="api-symbol-dWkuZmluaXNo"></a>
 <a id="api-symbol-dWkua2VlcFNjcmVlbk9u"></a>
 ### [m] View 查找与 Activity 生命周期
-
-**`6.7.0`**
-
 | 方法 | 返回值 | 合同 |
 | --- | --- | --- |
 | `ui.findById(id)` | `NativeView \| null` | 必须传 1 个 ID，在 `ui.view` 下按字符串 ID 查找；尚未设置内容或未找到时返回 null。 |
@@ -1323,9 +1296,6 @@ ui.keepScreenOn();
 <a id="api-symbol-dWkuZ2V0TmF2aWdhdGlvbkJhckhlaWdodA"></a>
 <a id="api-symbol-dWkuZ2V0VmlzaWJsZU5hdmlnYXRpb25CYXJIZWlnaHQ"></a>
 ### [m] 系统栏高度函数
-
-**`6.7.0`**
-
 四个函数均接受 0..1 个 options 对象并返回像素整数。`withComputed` 与 `withDimen` 默认 true；普通函数的 `ignoreVisibility` 默认 true，可见高度函数则固定为 false。
 
 | 方法 | 可见性规则 |
@@ -1353,9 +1323,6 @@ console.log(status, ui.getVisibleNavigationBarHeight());
 <a id="api-symbol-dWkuV2lkZ2V0Lm5vdGlmeVZpZXdDcmVhdGVk"></a>
 <a id="api-symbol-dWkuV2lkZ2V0Lm5vdGlmeUFmdGVySW5mbGF0aW9u"></a>
 ## ui.Widget 原型合同
-
-**`6.7.0`**
-
 `new ui.Widget()` 创建一个带独立 `__attrs__` 表和以下七个永久原型函数的对象。布局解析器在遇到已注册的自定义控件时调用这些函数；脚本通常覆写 `render`、`onViewCreated` 或 `onFinishInflation`，而不覆写内部通知函数。
 
 | 成员 | 合同 |

@@ -4,7 +4,7 @@
     {
       "textRaw": "Okhttp3Request",
       "name": "okhttp3request",
-      "desc": "<p><code>Okhttp3Request</code> 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 <code>okhttp3.Request</code>。<code>http.buildRequest</code> 直接返回该类型，<code>HttpResponse.request</code> 返回产生最终响应的请求。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-request/\"><code>okhttp3.Request</code></a>。</p>\n<pre><code class=\"lang-js\">const request = http.buildRequest(&#39;https://example.com/items&#39;, {\n  method: &#39;GET&#39;,\n  headers: { accept: &#39;application/json&#39; },\n})\n\nconsole.log(request.method())\nconsole.log(request.url())\nconsole.log(request.header(&#39;accept&#39;))\n</code></pre>\n",
+      "desc": "<p><code>Okhttp3Request</code> 是 MonkeyKing 内置 OkHttp 4.12.0 的 <code>okhttp3.Request</code>。<code>http.buildRequest</code> 直接返回该类型，<code>HttpResponse.request</code> 返回产生最终响应的请求。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-request/\"><code>okhttp3.Request</code></a>。</p>\n<pre><code class=\"lang-js\">const request = http.buildRequest(&#39;https://example.com/items&#39;, {\n  method: &#39;GET&#39;,\n  headers: { accept: &#39;application/json&#39; },\n})\n\nconsole.log(request.method())\nconsole.log(request.url())\nconsole.log(request.header(&#39;accept&#39;))\n</code></pre>\n",
       "modules": [
         {
           "textRaw": "常用方法",

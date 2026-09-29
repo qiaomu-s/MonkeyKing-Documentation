@@ -6,7 +6,7 @@
 
 - `新增` `dm` 模块及其 222 个 Rhino 可调用方法进入正式 API 清单、覆盖检查、站内搜索和兼容 JSON。
 - `新增` [dm 图色与文字识别 API](../api/media/dm.md)，保留 PascalCase 兼容入口并补充 camelCase 便捷入口、`DmMatch`、帧信息和缓冲区生命周期说明。
-- `明确` API 清单以 Monkey King 6.7.0 的 Rhino 实际暴露面为准；本次公开 manifest 为 72 个模块、4,720 个公开符号。旧清单中已不再暴露的四个截图别名未继续登记。
+- `明确` API 清单以 Monkey King 的 Rhino 实际暴露面为准；本次公开 manifest 为 72 个模块、4,720 个公开符号。旧清单中已不再暴露的四个截图别名未继续登记。
 - `明确` `SetPicPwd` 和 `SetDictPwd` 仅记录兼容状态，不支持加密资源解析、解密或密码设置。
 
 ## dm 参考与工具
@@ -17,14 +17,6 @@
 - `补充` VS Code 大漠字库编辑器和截图工作台制作、换图验证、代码生成教程。
 - `明确` 不提供加密、解密、密码设置或私有加密资源解析。
 
-## v6.7.0 文档版本说明
-
-<p style="font: bold 0.8em sans-serif; color: #888888">2026/09/11</p>
-
-- `新增` 完成 Monkey King 6.7.0 的公开 API 清单、覆盖映射和兼容数据整理。
-- `新增` `util`、`cvt`、`fmt`、`jsox`、`mime`、`zip`、`nanoid`、`pinyin`、`pinyin4j`、`sysprops`、`sqlite`、`mediainfo` 共 12 个 API 页面；Canonical Markdown 目录扩展到 113 页，兼容 JSON 扩展到 125 个文件。
-- `优化` 完成全局、模块、自动化、OCR、通知、媒体、网络、系统和工具 API 的行为整理；每个公开符号均包含版本、参数、返回值、异常/权限/线程/生命周期说明和 Rhino 2.0 示例。
-- `修复` 统一页面锚点、外部参考链接和兼容标识，清除正文中的未完成占位标记。
 
 ## v1.1.8
 

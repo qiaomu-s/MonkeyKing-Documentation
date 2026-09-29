@@ -1,7 +1,7 @@
 # InjectableWebView
 
 [android.webkit.WebView](https://developer.android.com/reference/android/webkit/WebView)
-的子类。Monkey King 6.7.0 为 Rhino 2.0 预设 JavaScript、DOM storage、宽视口和
+的子类。Monkey King 为 Rhino 2.0 预设 JavaScript、DOM storage、宽视口和
 缩放支持，并安装默认的 InjectableWebClient 与
 [WebChromeClient](https://developer.android.com/reference/android/webkit/WebChromeClient)。
 
@@ -22,7 +22,7 @@
 
 ### inject(script, callback?)
 
-**`6.7.0`** **`Overload [1-2]/2`**
+ **`Overload [1-2]/2`**
 
 - **script** { [string](data-types.md#string) } - 脚本
 - **[ callback ]** { [(](data-types.md#function)value: [string](data-types.md#string)[)](data-types.md#function) [=>](data-types.md#function) [void](data-types.md#void) } - 脚本

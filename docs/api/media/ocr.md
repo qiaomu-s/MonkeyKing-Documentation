@@ -1,6 +1,6 @@
 # 光学字符识别 (OCR)
 
-`ocr` 从图片或当前屏幕中识别文本。MonkeyKing 6.7.0 提供三种工作模式：`mlkit`（默认）、`paddle` 和 `rapid`。主模块根据 `ocr.mode` 或单次调用的 `options.mode` 分派；`ocr.mlkit`、`ocr.paddle`、`ocr.rapid` 则固定使用对应引擎。
+`ocr` 从图片或当前屏幕中识别文本。MonkeyKing 提供三种工作模式：`mlkit`（默认）、`paddle` 和 `rapid`。主模块根据 `ocr.mode` 或单次调用的 `options.mode` 分派；`ocr.mlkit`、`ocr.paddle`、`ocr.rapid` 则固定使用对应引擎。
 
 所有公开识别入口对 Rhino 脚本表现为同步调用：它们在返回前完成推理。省略图片时会捕获当前屏幕，必须先取得屏幕捕获权限；在 UI 线程或紧密循环中反复调用可能造成明显阻塞。
 
@@ -185,7 +185,7 @@ ocr.mlkit(image: OcrImage, options?: OcrOptions): string[]
 ocr.mlkit(image: OcrImage, region: OcrRegion): string[]
 ```
 
-`ocr.mlkit.recognizeText` 的快捷形式。除通用 `region` 外，6.7.0 的 ML Kit 实现不消费 Paddle 专用选项。
+`ocr.mlkit.recognizeText` 的快捷形式。除通用 `region` 外，当前版本的 ML Kit 实现不消费 Paddle 专用选项。
 
 <a id="api-symbol-b2NyLm1sa2l0LnJlY29nbml6ZVRleHQ"></a>
 
@@ -263,7 +263,7 @@ const results = ocr.paddle.detect('/sdcard/Download/document.jpg', {
 
 ## `ocr.rapid` 模块
 
-固定使用 Rapid OCR 本地引擎。6.7.0 的实现使用内置固定推理参数，除通用 `region` 外不消费 `OcrOptions`；无需 Paddle 插件。
+固定使用 Rapid OCR 本地引擎。当前版本的实现使用内置固定推理参数，除通用 `region` 外不消费 `OcrOptions`；无需 Paddle 插件。
 
 <a id="api-symbol-Y2FsbDpvY3IucmFwaWQ"></a>
 
@@ -309,129 +309,129 @@ results.forEach(result => console.log(result.text, result.bounds))
 - 引擎调用同步占用调用线程。批量识别时应在工作线程串行执行，并及时回收不再使用的图像。
 - ML Kit 识别器由运行时缓存并在退出时关闭；Paddle/Rapid 的库文件由引擎准备流程管理。
 - 使用区域时会产生临时裁剪图像；避免同时在其他线程回收原始图像。
-- 本页描述 MonkeyKing 6.7.0 的公开合同。底层模型、插件或设备能力差异可能改变识别质量，但不改变这里的返回形态。
+- 本页描述 MonkeyKing 的公开合同。底层模型、插件或设备能力差异可能改变识别质量，但不改变这里的返回形态。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="call:ocr" version="6.7.0" -->
-`call:ocr` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:ocr" -->
+`call:ocr` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr);
 ```
 
-<!-- api-member-contract id="call:ocr.mlkit" version="6.7.0" -->
-`call:ocr.mlkit` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:ocr.mlkit" -->
+`call:ocr.mlkit` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.mlkit);
 ```
 
-<!-- api-member-contract id="call:ocr.paddle" version="6.7.0" -->
-`call:ocr.paddle` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:ocr.paddle" -->
+`call:ocr.paddle` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.paddle);
 ```
 
-<!-- api-member-contract id="call:ocr.rapid" version="6.7.0" -->
-`call:ocr.rapid` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:ocr.rapid" -->
+`call:ocr.rapid` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.rapid);
 ```
 
-<!-- api-member-contract id="module:ocr" version="6.7.0" -->
-`module:ocr` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:ocr" -->
+`module:ocr` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr);
 ```
 
-<!-- api-member-contract id="module:ocr.mlkit" version="6.7.0" -->
-`module:ocr.mlkit` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:ocr.mlkit" -->
+`module:ocr.mlkit` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.mlkit);
 ```
 
-<!-- api-member-contract id="module:ocr.paddle" version="6.7.0" -->
-`module:ocr.paddle` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:ocr.paddle" -->
+`module:ocr.paddle` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.paddle);
 ```
 
-<!-- api-member-contract id="module:ocr.rapid" version="6.7.0" -->
-`module:ocr.rapid` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:ocr.rapid" -->
+`module:ocr.rapid` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.rapid);
 ```
 
-<!-- api-member-contract id="ocr.detect" version="6.7.0" -->
-`ocr.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.detect" -->
+`ocr.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.detect);
 ```
 
-<!-- api-member-contract id="ocr.mlkit.detect" version="6.7.0" -->
-`ocr.mlkit.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.mlkit.detect" -->
+`ocr.mlkit.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.mlkit.detect);
 ```
 
-<!-- api-member-contract id="ocr.mlkit.recognizeText" version="6.7.0" -->
-`ocr.mlkit.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.mlkit.recognizeText" -->
+`ocr.mlkit.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.mlkit.recognizeText);
 ```
 
-<!-- api-member-contract id="ocr.mode" version="6.7.0" -->
-`ocr.mode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.mode" -->
+`ocr.mode` · Rhino 2.0 示例：
 ```js
 console.log(ocr.mode);
 ```
 
-<!-- api-member-contract id="ocr.paddle.detect" version="6.7.0" -->
-`ocr.paddle.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.paddle.detect" -->
+`ocr.paddle.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.paddle.detect);
 ```
 
-<!-- api-member-contract id="ocr.paddle.recognizeText" version="6.7.0" -->
-`ocr.paddle.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.paddle.recognizeText" -->
+`ocr.paddle.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.paddle.recognizeText);
 ```
 
-<!-- api-member-contract id="ocr.rapid.detect" version="6.7.0" -->
-`ocr.rapid.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.rapid.detect" -->
+`ocr.rapid.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.rapid.detect);
 ```
 
-<!-- api-member-contract id="ocr.rapid.recognizeText" version="6.7.0" -->
-`ocr.rapid.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.rapid.recognizeText" -->
+`ocr.rapid.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.rapid.recognizeText);
 ```
 
-<!-- api-member-contract id="ocr.recognizeText" version="6.7.0" -->
-`ocr.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.recognizeText" -->
+`ocr.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.recognizeText);
 ```
 
-<!-- api-member-contract id="ocr.summary" version="6.7.0" -->
-`ocr.summary` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.summary" -->
+`ocr.summary` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.summary);
 ```
 
-<!-- api-member-contract id="ocr.tap" version="6.7.0" -->
-`ocr.tap` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.tap" -->
+`ocr.tap` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.tap);
 ```
 
-<!-- api-member-contract id="ocr.toString" version="6.7.0" -->
-`ocr.toString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="ocr.toString" -->
+`ocr.toString` · Rhino 2.0 示例：
 ```js
 console.log(typeof ocr.toString);
 ```

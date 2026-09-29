@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://docs.monkeyking.com/schemas/legacy-document.schema.json",
+  "$id": "legacy-document.schema.json",
   "title": "Legacy Monkey King JSON document",
   "type": "object",
   "required": ["source"],

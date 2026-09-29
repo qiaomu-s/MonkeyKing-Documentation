@@ -4,19 +4,19 @@
     {
       "textRaw": "WebSocket",
       "name": "websocket",
-      "desc": "<p>Monkey King 的 <code>WebSocket</code> 是对\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-web-socket/\">OkHttp WebSocket</a>\n的 Rhino 2.0 封装，并继承 <a href=\"../types/event-emitter.md\">EventEmitter</a> 的事件接口。\n构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。</p>\n<p>本页按 Monkey King 6.7.0 的实现合同描述公开行为。网络权限、DNS、TLS\n证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由\n<code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间\n阻塞操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\n\nsocket\n    .on(WebSocket.EVENT_OPEN, function () {\n        socket.send(&#39;Hello from Rhino 2.0&#39;);\n    })\n    .on(WebSocket.EVENT_TEXT, function (text) {\n        console.log(text);\n        socket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;done&#39;);\n    })\n    .on(WebSocket.EVENT_FAILURE, function (error) {\n        console.error(error);\n    });\n\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOndlYlNvY2tldA\"></a></p>\n",
+      "desc": "<p>Monkey King 的 <code>WebSocket</code> 是对\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-web-socket/\">OkHttp WebSocket</a>\n的 Rhino 2.0 封装，并继承 <a href=\"../types/event-emitter.md\">EventEmitter</a> 的事件接口。\n构造实例会立即创建连接；收发、关闭和失败结果通过事件回调交付。</p>\n<p>本页按 Monkey King 的实现合同描述公开行为。网络权限、DNS、TLS\n证书校验和服务端策略都可能令连接失败。监听器在运行时计时器线程可用时由\n<code>setImmediate</code> 调度，否则由脚本桥直接调用；不要在监听器中执行长时间\n阻塞操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\n\nsocket\n    .on(WebSocket.EVENT_OPEN, function () {\n        socket.send(&#39;Hello from Rhino 2.0&#39;);\n    })\n    .on(WebSocket.EVENT_TEXT, function (text) {\n        console.log(text);\n        socket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;done&#39;);\n    })\n    .on(WebSocket.EVENT_FAILURE, function (error) {\n        console.error(error);\n    });\n\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-bW9kdWxlOndlYlNvY2tldA\"></a></p>\n",
       "modules": [
         {
           "textRaw": "WebSocket 模块",
           "name": "websocket_模块",
-          "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>全局 <code>WebSocket</code> 同时是构造器和静态常量容器。也可通过\n<a href=\"web.md#newwebsocket-url\">web.newWebSocket</a> 使用默认 HTTP 客户端创建同类实例。</p>\n<p><a id=\"api-symbol-Y29uc3RydWN0OndlYlNvY2tldA\"></a></p>\n",
+          "desc": "<p>全局 <code>WebSocket</code> 同时是构造器和静态常量容器。也可通过\n<a href=\"web.md#newwebsocket-url\">web.newWebSocket</a> 使用默认 HTTP 客户端创建同类实例。</p>\n<p><a id=\"api-symbol-Y29uc3RydWN0OndlYlNvY2tldA\"></a></p>\n",
           "type": "module",
           "displayName": "WebSocket 模块"
         },
         {
           "textRaw": "new WebSocket(url) / new WebSocket(client, url)",
           "name": "new_websocket(url)_/_new_websocket(client,_url)",
-          "desc": "<p><strong>版本：6.7.0 · Global</strong></p>\n<ul>\n<li><code>url</code>：字符串，WebSocket 地址。</li>\n<li><code>client</code>：可选的 Monkey King 可变 OkHttp 客户端；其他类型会回退到\n<code>http.okhttp</code>。</li>\n<li>返回：新的 <code>WebSocket</code> 实例。</li>\n</ul>\n<p>一个参数时使用运行时默认客户端。两个参数时，首参数只有在属于运行时的\n<code>MutableOkHttp</code> 类型时才会采用。构造过程立即调用客户端的\n<code>newWebSocket</code>，因此连接事件可能很快到达。</p>\n<pre><code class=\"lang-js\">var defaultSocket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nvar configuredSocket = new WebSocket(http.okhttp, &#39;wss://echo.websocket.events&#39;);\n\ndefaultSocket.exitOnClose();\nconfiguredSocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0LmdldA\"></a></p>\n",
+          "desc": "<p><strong>Global</strong></p>\n<ul>\n<li><code>url</code>：字符串，WebSocket 地址。</li>\n<li><code>client</code>：可选的 Monkey King 可变 OkHttp 客户端；其他类型会回退到\n<code>http.okhttp</code>。</li>\n<li>返回：新的 <code>WebSocket</code> 实例。</li>\n</ul>\n<p>一个参数时使用运行时默认客户端。两个参数时，首参数只有在属于运行时的\n<code>MutableOkHttp</code> 类型时才会采用。构造过程立即调用客户端的\n<code>newWebSocket</code>，因此连接事件可能很快到达。</p>\n<pre><code class=\"lang-js\">var defaultSocket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nvar configuredSocket = new WebSocket(http.okhttp, &#39;wss://echo.websocket.events&#39;);\n\ndefaultSocket.exitOnClose();\nconfiguredSocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0LmdldA\"></a></p>\n",
           "type": "module",
           "displayName": "new WebSocket(url) / new WebSocket(client, url)"
         },
@@ -30,7 +30,7 @@
         {
           "textRaw": "逐符号版本与 Rhino 2.0 示例",
           "name": "逐符号版本与_rhino_2.0_示例",
-          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:webSocket</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nvalue.cancel();\n</code></pre>\n<p><code>module:webSocket</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof webSocket);\n</code></pre>\n<p><code>webSocket.CODE_BAD_GATEWAY</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_BAD_GATEWAY);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_ABNORMAL</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_ABNORMAL);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_GOING_AWAY</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_GOING_AWAY);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_NORMAL</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_NORMAL);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_PROTOCOL_ERROR</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_PROTOCOL_ERROR);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_TOO_LARGE</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_TOO_LARGE);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_UNSUPPORTED</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_UNSUPPORTED);\n</code></pre>\n<p><code>webSocket.CODE_CLOSED_NO_STATUS</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSED_NO_STATUS);\n</code></pre>\n<p><code>webSocket.CODE_MANDATORY_EXTENSION</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_MANDATORY_EXTENSION);\n</code></pre>\n<p><code>webSocket.CODE_POLICY_VIOLATION</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_POLICY_VIOLATION);\n</code></pre>\n<p><code>webSocket.CODE_SERVER_ERROR</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_SERVER_ERROR);\n</code></pre>\n<p><code>webSocket.CODE_SERVICE_RESTART</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_SERVICE_RESTART);\n</code></pre>\n<p><code>webSocket.CODE_TLS_HANDSHAKE_FAIL</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_TLS_HANDSHAKE_FAIL);\n</code></pre>\n<p><code>webSocket.CODE_TRY_AGAIN_LATER</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_TRY_AGAIN_LATER);\n</code></pre>\n<p><code>webSocket.CODE_UNSUPPORTED_PAYLOAD</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_UNSUPPORTED_PAYLOAD);\n</code></pre>\n<p><code>webSocket.EVENT_BYTES</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_BYTES);\n</code></pre>\n<p><code>webSocket.EVENT_CLOSED</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_CLOSED);\n</code></pre>\n<p><code>webSocket.EVENT_CLOSING</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_CLOSING);\n</code></pre>\n<p><code>webSocket.EVENT_FAILURE</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_FAILURE);\n</code></pre>\n<p><code>webSocket.EVENT_MAX_REBUILDS</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_MAX_REBUILDS);\n</code></pre>\n<p><code>webSocket.EVENT_MESSAGE</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_MESSAGE);\n</code></pre>\n<p><code>webSocket.EVENT_OPEN</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_OPEN);\n</code></pre>\n<p><code>webSocket.EVENT_TEXT</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_TEXT);\n</code></pre>\n<p><code>webSocket.get</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.get);\n</code></pre>\n<p><code>webSocket.instance.addListener</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.addListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.cancel</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.cancel);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.client</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.client);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.close</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.close);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.defaultMaxListeners</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.defaultMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.emit</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.emit);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.emitSticky</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.emitSticky);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.eventNames</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.eventNames);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.exitOnClose</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.exitOnClose);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.getMaxListeners</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.getMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.getTimer</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.getTimer);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.listenerCount</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.listenerCount);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.listeners</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.listeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.on</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.on);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.once</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.once);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.prependListener</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.prependListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.prependOnceListener</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.prependOnceListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.queueSize</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.queueSize);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.rebuild</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.rebuild);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.removeAllListeners</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.removeAllListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.removeListener</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.removeListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.request</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.request);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.send</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.send);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.setMaxListeners</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.setMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.url</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.url);\nsocket.cancel();\n</code></pre>\n",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:webSocket</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nvalue.cancel();\n</code></pre>\n<p><code>module:webSocket</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof webSocket);\n</code></pre>\n<p><code>webSocket.CODE_BAD_GATEWAY</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_BAD_GATEWAY);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_ABNORMAL</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_ABNORMAL);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_GOING_AWAY</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_GOING_AWAY);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_NORMAL</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_NORMAL);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_PROTOCOL_ERROR</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_PROTOCOL_ERROR);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_TOO_LARGE</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_TOO_LARGE);\n</code></pre>\n<p><code>webSocket.CODE_CLOSE_UNSUPPORTED</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSE_UNSUPPORTED);\n</code></pre>\n<p><code>webSocket.CODE_CLOSED_NO_STATUS</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_CLOSED_NO_STATUS);\n</code></pre>\n<p><code>webSocket.CODE_MANDATORY_EXTENSION</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_MANDATORY_EXTENSION);\n</code></pre>\n<p><code>webSocket.CODE_POLICY_VIOLATION</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_POLICY_VIOLATION);\n</code></pre>\n<p><code>webSocket.CODE_SERVER_ERROR</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_SERVER_ERROR);\n</code></pre>\n<p><code>webSocket.CODE_SERVICE_RESTART</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_SERVICE_RESTART);\n</code></pre>\n<p><code>webSocket.CODE_TLS_HANDSHAKE_FAIL</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_TLS_HANDSHAKE_FAIL);\n</code></pre>\n<p><code>webSocket.CODE_TRY_AGAIN_LATER</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_TRY_AGAIN_LATER);\n</code></pre>\n<p><code>webSocket.CODE_UNSUPPORTED_PAYLOAD</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.CODE_UNSUPPORTED_PAYLOAD);\n</code></pre>\n<p><code>webSocket.EVENT_BYTES</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_BYTES);\n</code></pre>\n<p><code>webSocket.EVENT_CLOSED</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_CLOSED);\n</code></pre>\n<p><code>webSocket.EVENT_CLOSING</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_CLOSING);\n</code></pre>\n<p><code>webSocket.EVENT_FAILURE</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_FAILURE);\n</code></pre>\n<p><code>webSocket.EVENT_MAX_REBUILDS</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_MAX_REBUILDS);\n</code></pre>\n<p><code>webSocket.EVENT_MESSAGE</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_MESSAGE);\n</code></pre>\n<p><code>webSocket.EVENT_OPEN</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_OPEN);\n</code></pre>\n<p><code>webSocket.EVENT_TEXT</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.EVENT_TEXT);\n</code></pre>\n<p><code>webSocket.get</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(WebSocket.get);\n</code></pre>\n<p><code>webSocket.instance.addListener</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.addListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.cancel</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.cancel);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.client</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.client);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.close</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.close);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.defaultMaxListeners</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.defaultMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.emit</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.emit);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.emitSticky</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.emitSticky);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.eventNames</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.eventNames);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.exitOnClose</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.exitOnClose);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.getMaxListeners</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.getMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.getTimer</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.getTimer);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.listenerCount</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.listenerCount);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.listeners</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.listeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.on</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.on);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.once</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.once);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.prependListener</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.prependListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.prependOnceListener</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.prependOnceListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.queueSize</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.queueSize);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.rebuild</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.rebuild);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.removeAllListeners</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.removeAllListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.removeListener</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.removeListener);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.request</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.request);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.send</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.send);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.setMaxListeners</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.setMaxListeners);\nsocket.cancel();\n</code></pre>\n<p><code>webSocket.instance.url</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nconsole.log(socket.url);\nsocket.cancel();\n</code></pre>\n",
           "type": "module",
           "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
@@ -40,7 +40,7 @@
           "textRaw": "WebSocket.get(scope, key)",
           "type": "method",
           "name": "get",
-          "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>静态字段代理。运行时用它从 <code>WebSocket</code> 伴生对象读取名为\n<code>key</code> 的公开常量；不存在或读取失败时返回 Rhino 的“属性不存在”值。\n脚本通常直接读取 <code>WebSocket.EVENT_OPEN</code> 等属性，无需手动调用本方法。</p>\n",
+          "desc": "<p>静态字段代理。运行时用它从 <code>WebSocket</code> 伴生对象读取名为\n<code>key</code> 的公开常量；不存在或读取失败时返回 Rhino 的“属性不存在”值。\n脚本通常直接读取 <code>WebSocket.EVENT_OPEN</code> 等属性，无需手动调用本方法。</p>\n",
           "modules": [
             {
               "textRaw": "事件常量",
@@ -50,42 +50,42 @@
                 {
                   "textRaw": "WebSocket.EVENT_OPEN",
                   "name": "EVENT_OPEN",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;open&quot;</code></strong></p>\n<p>连接建立后触发。监听器参数为 <code>(response, socket)</code>，其中\n<code>response</code> 是握手响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX01FU1NBR0U\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;open&quot;</code></strong></p>\n<p>连接建立后触发。监听器参数为 <code>(response, socket)</code>，其中\n<code>response</code> 是握手响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX01FU1NBR0U\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_MESSAGE",
                   "name": "EVENT_MESSAGE",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;message&quot;</code></strong></p>\n<p>收到任意消息时触发。监听器参数为 <code>(message, socket)</code>；\n<code>message</code> 是字符串或\n<a href=\"https://square.github.io/okio/3.x/okio/okio/okio/-byte-string/\">okio.ByteString</a>。\n同一消息随后还会触发 <code>EVENT_TEXT</code> 或 <code>EVENT_BYTES</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX1RFWFQ\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;message&quot;</code></strong></p>\n<p>收到任意消息时触发。监听器参数为 <code>(message, socket)</code>；\n<code>message</code> 是字符串或\n<a href=\"https://square.github.io/okio/3.x/okio/okio/okio/-byte-string/\">okio.ByteString</a>。\n同一消息随后还会触发 <code>EVENT_TEXT</code> 或 <code>EVENT_BYTES</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX1RFWFQ\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_TEXT",
                   "name": "EVENT_TEXT",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;text&quot;</code></strong></p>\n<p>收到文本消息时触发。监听器参数为 <code>(text, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0JZVEVT\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;text&quot;</code></strong></p>\n<p>收到文本消息时触发。监听器参数为 <code>(text, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0JZVEVT\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_BYTES",
                   "name": "EVENT_BYTES",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;bytes&quot;</code></strong></p>\n<p>收到二进制消息时触发。监听器参数为 <code>(bytes, socket)</code>，\n<code>bytes</code> 为 <code>okio.ByteString</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NJTkc\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;bytes&quot;</code></strong></p>\n<p>收到二进制消息时触发。监听器参数为 <code>(bytes, socket)</code>，\n<code>bytes</code> 为 <code>okio.ByteString</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NJTkc\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_CLOSING",
                   "name": "EVENT_CLOSING",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;closing&quot;</code></strong></p>\n<p>远端表示不会再发送消息时触发。监听器参数为\n<code>(code, reason, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NFRA\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;closing&quot;</code></strong></p>\n<p>远端表示不会再发送消息时触发。监听器参数为\n<code>(code, reason, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0NMT1NFRA\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_CLOSED",
                   "name": "EVENT_CLOSED",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;closed&quot;</code></strong></p>\n<p>双方完成关闭且连接资源已释放时触发。监听器参数为\n<code>(code, reason, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0ZBSUxVUkU\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;closed&quot;</code></strong></p>\n<p>双方完成关闭且连接资源已释放时触发。监听器参数为\n<code>(code, reason, socket)</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX0ZBSUxVUkU\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_FAILURE",
                   "name": "EVENT_FAILURE",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;failure&quot;</code></strong></p>\n<p>读写或握手失败时触发。监听器参数为\n<code>(error, response, socket)</code>；在尚无 HTTP 响应时\n<code>response</code> 为 <code>null</code>。失败前已排队或已接收的数据可能丢失。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX01BWF9SRUJVSUxEUw\"></a></p>\n"
+                  "desc": "<p><strong>值：<code>&quot;failure&quot;</code></strong></p>\n<p>读写或握手失败时触发。监听器参数为\n<code>(error, response, socket)</code>；在尚无 HTTP 响应时\n<code>response</code> 为 <code>null</code>。失败前已排队或已接收的数据可能丢失。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkVWRU5UX01BWF9SRUJVSUxEUw\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.EVENT_MAX_REBUILDS",
                   "name": "EVENT_MAX_REBUILDS",
-                  "desc": "<p><strong>版本：6.7.0 · 值：<code>&quot;max_rebuilds&quot;</code></strong></p>\n<p>调用 <code>rebuild</code> 时已达到允许的重建次数后触发。监听器参数为\n<code>(maxRebuildTimes, socket)</code>。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_MESSAGE, function (message) {\n    if (typeof message === &#39;string&#39;) {\n        console.log(&#39;text:&#39;, message);\n    } else {\n        console.log(&#39;bytes:&#39;, message.hex());\n    }\n});\nsocket.exitOnClose();\n</code></pre>\n"
+                  "desc": "<p><strong>值：<code>&quot;max_rebuilds&quot;</code></strong></p>\n<p>调用 <code>rebuild</code> 时已达到允许的重建次数后触发。监听器参数为\n<code>(maxRebuildTimes, socket)</code>。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_MESSAGE, function (message) {\n    if (typeof message === &#39;string&#39;) {\n        console.log(&#39;text:&#39;, message);\n    } else {\n        console.log(&#39;bytes:&#39;, message.hex());\n    }\n});\nsocket.exitOnClose();\n</code></pre>\n"
                 }
               ],
               "type": "module",
@@ -99,77 +99,77 @@
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_NORMAL",
                   "name": "CODE_CLOSE_NORMAL",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1000</strong></p>\n<p>正常完成或常规关闭。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfR09JTkdfQVdBWQ\"></a></p>\n"
+                  "desc": "<p><strong>值：1000</strong></p>\n<p>正常完成或常规关闭。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfR09JTkdfQVdBWQ\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_GOING_AWAY",
                   "name": "CODE_CLOSE_GOING_AWAY",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1001</strong></p>\n<p>端点即将离开或服务即将不可用。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfUFJPVE9DT0xfRVJST1I\"></a></p>\n"
+                  "desc": "<p><strong>值：1001</strong></p>\n<p>端点即将离开或服务即将不可用。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfUFJPVE9DT0xfRVJST1I\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_PROTOCOL_ERROR",
                   "name": "CODE_CLOSE_PROTOCOL_ERROR",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1002</strong></p>\n<p>协议错误或无效帧。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVU5TVVBQT1JURUQ\"></a></p>\n"
+                  "desc": "<p><strong>值：1002</strong></p>\n<p>协议错误或无效帧。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVU5TVVBQT1JURUQ\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_UNSUPPORTED",
                   "name": "CODE_CLOSE_UNSUPPORTED",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1003</strong></p>\n<p>收到端点不支持的数据帧类型。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VEX05PX1NUQVRVUw\"></a></p>\n"
+                  "desc": "<p><strong>值：1003</strong></p>\n<p>收到端点不支持的数据帧类型。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VEX05PX1NUQVRVUw\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSED_NO_STATUS",
                   "name": "CODE_CLOSED_NO_STATUS",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1005</strong></p>\n<p>连接已关闭，但未收到关闭状态码。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfQUJOT1JNQUw\"></a></p>\n"
+                  "desc": "<p><strong>值：1005</strong></p>\n<p>连接已关闭，但未收到关闭状态码。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfQUJOT1JNQUw\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_ABNORMAL",
                   "name": "CODE_CLOSE_ABNORMAL",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1006</strong></p>\n<p>未收到关闭帧的异常关闭。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVU5TVVBQT1JURURfUEFZTE9BRA\"></a></p>\n"
+                  "desc": "<p><strong>值：1006</strong></p>\n<p>未收到关闭帧的异常关闭。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVU5TVVBQT1JURURfUEFZTE9BRA\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_UNSUPPORTED_PAYLOAD",
                   "name": "CODE_UNSUPPORTED_PAYLOAD",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1007</strong></p>\n<p>消息内容与声明类型不一致，例如无效 UTF-8。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfUE9MSUNZX1ZJT0xBVElPTg\"></a></p>\n"
+                  "desc": "<p><strong>值：1007</strong></p>\n<p>消息内容与声明类型不一致，例如无效 UTF-8。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfUE9MSUNZX1ZJT0xBVElPTg\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_POLICY_VIOLATION",
                   "name": "CODE_POLICY_VIOLATION",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1008</strong></p>\n<p>消息违反端点策略，且没有更具体的状态码。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVE9PX0xBUkdF\"></a></p>\n"
+                  "desc": "<p><strong>值：1008</strong></p>\n<p>消息违反端点策略，且没有更具体的状态码。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQ0xPU0VfVE9PX0xBUkdF\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_CLOSE_TOO_LARGE",
                   "name": "CODE_CLOSE_TOO_LARGE",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1009</strong></p>\n<p>消息过大，端点无法处理。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfTUFOREFUT1JZX0VYVEVOU0lPTg\"></a></p>\n"
+                  "desc": "<p><strong>值：1009</strong></p>\n<p>消息过大，端点无法处理。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfTUFOREFUT1JZX0VYVEVOU0lPTg\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_MANDATORY_EXTENSION",
                   "name": "CODE_MANDATORY_EXTENSION",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1010</strong></p>\n<p>客户端要求的扩展没有由服务端协商。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfU0VSVkVSX0VSUk9S\"></a></p>\n"
+                  "desc": "<p><strong>值：1010</strong></p>\n<p>客户端要求的扩展没有由服务端协商。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfU0VSVkVSX0VSUk9S\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_SERVER_ERROR",
                   "name": "CODE_SERVER_ERROR",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1011</strong></p>\n<p>服务端处理请求时发生内部错误。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfU0VSVklDRV9SRVNUQVJU\"></a></p>\n"
+                  "desc": "<p><strong>值：1011</strong></p>\n<p>服务端处理请求时发生内部错误。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfU0VSVklDRV9SRVNUQVJU\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_SERVICE_RESTART",
                   "name": "CODE_SERVICE_RESTART",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1012</strong></p>\n<p>服务正在重启。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVFJZX0FHQUlOX0xBVEVS\"></a></p>\n"
+                  "desc": "<p><strong>值：1012</strong></p>\n<p>服务正在重启。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVFJZX0FHQUlOX0xBVEVS\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_TRY_AGAIN_LATER",
                   "name": "CODE_TRY_AGAIN_LATER",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1013</strong></p>\n<p>服务端暂时拒绝请求，可稍后重试。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQkFEX0dBVEVXQVk\"></a></p>\n"
+                  "desc": "<p><strong>值：1013</strong></p>\n<p>服务端暂时拒绝请求，可稍后重试。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfQkFEX0dBVEVXQVk\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_BAD_GATEWAY",
                   "name": "CODE_BAD_GATEWAY",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1014</strong></p>\n<p>网关从外部组件收到无效响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM\"></a></p>\n"
+                  "desc": "<p><strong>值：1014</strong></p>\n<p>网关从外部组件收到无效响应。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0LkNPREVfVExTX0hBTkRTSEFLRV9GQUlM\"></a></p>\n"
                 },
                 {
                   "textRaw": "WebSocket.CODE_TLS_HANDSHAKE_FAIL",
                   "name": "CODE_TLS_HANDSHAKE_FAIL",
-                  "desc": "<p><strong>版本：6.7.0 · 值：1015</strong></p>\n<p>TLS 握手失败，例如证书未通过验证。</p>\n"
+                  "desc": "<p><strong>值：1015</strong></p>\n<p>TLS 握手失败，例如证书未通过验证。</p>\n"
                 }
               ],
               "type": "module",
@@ -183,17 +183,17 @@
                 {
                   "textRaw": "socket.client",
                   "name": "client",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>创建连接所用的\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/\">okhttp3.OkHttpClient</a>\n只读引用。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnVybA\"></a></p>\n"
+                  "desc": "<p>创建连接所用的\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-ok-http-client/\">okhttp3.OkHttpClient</a>\n只读引用。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnVybA\"></a></p>\n"
                 },
                 {
                   "textRaw": "socket.url",
                   "name": "url",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>构造时提供的 URL 字符串。重建连接时继续使用该值。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmRlZmF1bHRNYXhMaXN0ZW5lcnM\"></a></p>\n"
+                  "desc": "<p>构造时提供的 URL 字符串。重建连接时继续使用该值。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmRlZmF1bHRNYXhMaXN0ZW5lcnM\"></a></p>\n"
                 },
                 {
                   "textRaw": "socket.defaultMaxListeners",
                   "name": "defaultMaxListeners",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>继承自 <code>EventEmitter</code> 的静态默认值，初始为 10。它只影响之后创建的\n发射器实例的初始上限；已有实例请用 <code>setMaxListeners</code> 修改。</p>\n"
+                  "desc": "<p>继承自 <code>EventEmitter</code> 的静态默认值，初始为 10。它只影响之后创建的\n发射器实例的初始上限；已有实例请用 <code>setMaxListeners</code> 修改。</p>\n"
                 }
               ],
               "type": "module",
@@ -207,21 +207,21 @@
                 {
                   "textRaw": "socket.send(text) / socket.send(bytes)",
                   "name": "socket.send(text)_/_socket.send(bytes)",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<ul>\n<li><code>text</code>：字符串，按 UTF-8 文本消息发送。</li>\n<li><code>bytes</code>：<code>okio.ByteString</code>，按二进制消息发送。</li>\n<li>返回：布尔值，消息成功进入发送队列时为 <code>true</code>。</li>\n</ul>\n<p>方法立即返回。连接正在关闭、已关闭、已取消，或队列超出 OkHttp 限制时返回\n<code>false</code>；队列溢出还会启动优雅关闭。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_OPEN, function () {\n    console.log(socket.send(&#39;text message&#39;));\n    var bytes = okio.ByteString.encodeUtf8(&#39;binary message&#39;);\n    console.log(socket.send(bytes));\n    socket.close();\n});\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNsb3Nl\"></a></p>\n",
+                  "desc": "<ul>\n<li><code>text</code>：字符串，按 UTF-8 文本消息发送。</li>\n<li><code>bytes</code>：<code>okio.ByteString</code>，按二进制消息发送。</li>\n<li>返回：布尔值，消息成功进入发送队列时为 <code>true</code>。</li>\n</ul>\n<p>方法立即返回。连接正在关闭、已关闭、已取消，或队列超出 OkHttp 限制时返回\n<code>false</code>；队列溢出还会启动优雅关闭。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_OPEN, function () {\n    console.log(socket.send(&#39;text message&#39;));\n    var bytes = okio.ByteString.encodeUtf8(&#39;binary message&#39;);\n    console.log(socket.send(bytes));\n    socket.close();\n});\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNsb3Nl\"></a></p>\n",
                   "type": "module",
                   "displayName": "socket.send(text) / socket.send(bytes)"
                 },
                 {
                   "textRaw": "socket.close(code?, reason?) / socket.close(reason)",
                   "name": "socket.close(code?,_reason?)_/_socket.close(reason)",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>启动优雅关闭，并让已排队消息有机会先发送。省略状态码时使用\n<code>CODE_CLOSE_NORMAL</code>；只传字符串时把它作为正常关闭原因。返回是否成功\n启动关闭流程。状态码或原因不符合 OkHttp 约束时会抛出参数异常。</p>\n<pre><code class=\"lang-js\">socket.close();\nsocket.close(WebSocket.CODE_CLOSE_NORMAL);\nsocket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;finished&#39;);\nsocket.close(&#39;finished&#39;);\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNhbmNlbA\"></a></p>\n",
+                  "desc": "<p>启动优雅关闭，并让已排队消息有机会先发送。省略状态码时使用\n<code>CODE_CLOSE_NORMAL</code>；只传字符串时把它作为正常关闭原因。返回是否成功\n启动关闭流程。状态码或原因不符合 OkHttp 约束时会抛出参数异常。</p>\n<pre><code class=\"lang-js\">socket.close();\nsocket.close(WebSocket.CODE_CLOSE_NORMAL);\nsocket.close(WebSocket.CODE_CLOSE_NORMAL, &#39;finished&#39;);\nsocket.close(&#39;finished&#39;);\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmNhbmNlbA\"></a></p>\n",
                   "type": "module",
                   "displayName": "socket.close(code?, reason?) / socket.close(reason)"
                 },
                 {
                   "textRaw": "socket.exitOnClose(enabled?) / socket.exitOnClose(timeout)",
                   "name": "socket.exitonclose(enabled?)_/_socket.exitonclose(timeout)",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>控制脚本退出时是否关闭连接。省略参数或传 <code>true</code> 会启用，传\n<code>false</code> 会禁用；传入毫秒数会启用并把关闭延迟设为不小于零的值。此设置\n不会令当前脚本立即退出，也不会等待远端完成关闭。</p>\n",
+                  "desc": "<p>控制脚本退出时是否关闭连接。省略参数或传 <code>true</code> 会启用，传\n<code>false</code> 会禁用；传入毫秒数会启用并把关闭延迟设为不小于零的值。此设置\n不会令当前脚本立即退出，也不会等待远端完成关闭。</p>\n",
                   "type": "module",
                   "displayName": "socket.exitOnClose(enabled?) / socket.exitOnClose(timeout)"
                 }
@@ -231,7 +231,7 @@
                   "textRaw": "socket.cancel()",
                   "type": "method",
                   "name": "cancel",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>立即取消连接并释放资源，尚未发送的队列内容会被丢弃。无返回值。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnF1ZXVlU2l6ZQ\"></a></p>\n",
+                  "desc": "<p>立即取消连接并释放资源，尚未发送的队列内容会被丢弃。无返回值。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnF1ZXVlU2l6ZQ\"></a></p>\n",
                   "signatures": [
                     {
                       "params": []
@@ -242,7 +242,7 @@
                   "textRaw": "socket.queueSize()",
                   "type": "method",
                   "name": "queueSize",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回等待发送的消息内容字节数，不含 WebSocket 帧、操作系统或中间网络缓冲。\n取消后仍可能返回非零值，表示这些已排队数据没有送达。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlcXVlc3Q\"></a></p>\n",
+                  "desc": "<p>返回等待发送的消息内容字节数，不含 WebSocket 帧、操作系统或中间网络缓冲。\n取消后仍可能返回非零值，表示这些已排队数据没有送达。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlcXVlc3Q\"></a></p>\n",
                   "signatures": [
                     {
                       "params": []
@@ -253,7 +253,7 @@
                   "textRaw": "socket.request()",
                   "type": "method",
                   "name": "request",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回发起本连接的原始\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-request/\">okhttp3.Request</a>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlYnVpbGQ\"></a></p>\n",
+                  "desc": "<p>返回发起本连接的原始\n<a href=\"https://square.github.io/okhttp/5.x/okhttp/okhttp3/-request/\">okhttp3.Request</a>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlYnVpbGQ\"></a></p>\n",
                   "signatures": [
                     {
                       "params": []
@@ -264,7 +264,7 @@
                   "textRaw": "socket.rebuild(maxRebuildTimes?)",
                   "type": "method",
                   "name": "rebuild",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>先取消当前连接，再用同一客户端和 URL 新建连接。传入\n<code>maxRebuildTimes</code> 时先更新上限；每次成功开始重建后计数加一。达到上限时\n不会新建连接，而会触发 <code>EVENT_MAX_REBUILDS</code>。省略上限时沿用当前值，\n初始上限为 <code>Int.MAX_VALUE</code>。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_FAILURE, function () {\n    socket.rebuild(3);\n});\nsocket.on(WebSocket.EVENT_MAX_REBUILDS, function (limit) {\n    console.error(&#39;rebuild limit:&#39;, limit);\n});\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV4aXRPbkNsb3Nl\"></a></p>\n",
+                  "desc": "<p>先取消当前连接，再用同一客户端和 URL 新建连接。传入\n<code>maxRebuildTimes</code> 时先更新上限；每次成功开始重建后计数加一。达到上限时\n不会新建连接，而会触发 <code>EVENT_MAX_REBUILDS</code>。省略上限时沿用当前值，\n初始上限为 <code>Int.MAX_VALUE</code>。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.on(WebSocket.EVENT_FAILURE, function () {\n    socket.rebuild(3);\n});\nsocket.on(WebSocket.EVENT_MAX_REBUILDS, function (limit) {\n    console.error(&#39;rebuild limit:&#39;, limit);\n});\nsocket.exitOnClose();\n</code></pre>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV4aXRPbkNsb3Nl\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -288,7 +288,7 @@
                   "textRaw": "socket.on(eventName, listener)",
                   "type": "method",
                   "name": "on",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>在事件列表末尾注册持久监听器并返回当前 socket，便于链式调用。如果该事件曾由\n<code>emitSticky</code> 发射，注册时会先把保存的参数交给监听器，然后仍保留监听器。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmFkZExpc3RlbmVy\"></a></p>\n",
+                  "desc": "<p>在事件列表末尾注册持久监听器并返回当前 socket，便于链式调用。如果该事件曾由\n<code>emitSticky</code> 发射，注册时会先把保存的参数交给监听器，然后仍保留监听器。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmFkZExpc3RlbmVy\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -306,7 +306,7 @@
                   "textRaw": "socket.addListener(eventName, listener)",
                   "type": "method",
                   "name": "addListener",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p><code>on</code> 的别名，返回当前 socket。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLm9uY2U\"></a></p>\n",
+                  "desc": "<p><code>on</code> 的别名，返回当前 socket。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLm9uY2U\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -324,7 +324,7 @@
                   "textRaw": "socket.once(eventName, listener)",
                   "type": "method",
                   "name": "once",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>注册只执行一次的监听器并返回当前 socket。若已有同名粘性事件，监听器会立即收到\n保存的参数，并且不会再加入监听列表。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRMaXN0ZW5lcg\"></a></p>\n",
+                  "desc": "<p>注册只执行一次的监听器并返回当前 socket。若已有同名粘性事件，监听器会立即收到\n保存的参数，并且不会再加入监听列表。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRMaXN0ZW5lcg\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -342,7 +342,7 @@
                   "textRaw": "socket.prependListener(eventName, listener)",
                   "type": "method",
                   "name": "prependListener",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>把持久监听器插入列表开头，并触发内部 <code>newListener</code> 事件。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRPbmNlTGlzdGVuZXI\"></a></p>\n",
+                  "desc": "<p>把持久监听器插入列表开头，并触发内部 <code>newListener</code> 事件。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnByZXBlbmRPbmNlTGlzdGVuZXI\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -360,7 +360,7 @@
                   "textRaw": "socket.prependOnceListener(eventName, listener)",
                   "type": "method",
                   "name": "prependOnceListener",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>把一次性监听器插入列表开头，并触发内部 <code>newListener</code> 事件。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUxpc3RlbmVy\"></a></p>\n",
+                  "desc": "<p>把一次性监听器插入列表开头，并触发内部 <code>newListener</code> 事件。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUxpc3RlbmVy\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -378,7 +378,7 @@
                   "textRaw": "socket.removeListener(eventName, listener)",
                   "type": "method",
                   "name": "removeListener",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>按函数对象身份移除第一个匹配监听器；成功移除时触发内部\n<code>removeListener</code> 事件。返回当前 socket。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUFsbExpc3RlbmVycw\"></a></p>\n",
+                  "desc": "<p>按函数对象身份移除第一个匹配监听器；成功移除时触发内部\n<code>removeListener</code> 事件。返回当前 socket。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnJlbW92ZUFsbExpc3RlbmVycw\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -396,7 +396,7 @@
                   "textRaw": "socket.removeAllListeners(eventName?)",
                   "type": "method",
                   "name": "removeAllListeners",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>移除指定事件或全部事件的监听器，并为每个被移除的监听器触发内部\n<code>removeListener</code> 事件。返回当前 socket。</p>\n<pre><code class=\"lang-js\">function onText(text) {\n    console.log(text);\n}\n\nsocket.prependOnceListener(WebSocket.EVENT_TEXT, onText);\nsocket.on(WebSocket.EVENT_TEXT, onText);\nconsole.log(socket.listenerCount(WebSocket.EVENT_TEXT));\nsocket.removeListener(WebSocket.EVENT_TEXT, onText);\n</code></pre>\n",
+                  "desc": "<p>移除指定事件或全部事件的监听器，并为每个被移除的监听器触发内部\n<code>removeListener</code> 事件。返回当前 socket。</p>\n<pre><code class=\"lang-js\">function onText(text) {\n    console.log(text);\n}\n\nsocket.prependOnceListener(WebSocket.EVENT_TEXT, onText);\nsocket.on(WebSocket.EVENT_TEXT, onText);\nconsole.log(socket.listenerCount(WebSocket.EVENT_TEXT));\nsocket.removeListener(WebSocket.EVENT_TEXT, onText);\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": [
@@ -420,7 +420,7 @@
                   "textRaw": "socket.emit(eventName, ...args)",
                   "type": "method",
                   "name": "emit",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>向当前已注册监听器发射事件。有监听器时返回 <code>true</code>，否则返回\n<code>false</code>。一次性监听器在本次发射后移除。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmVtaXRTdGlja3k\"></a></p>\n",
+                  "desc": "<p>向当前已注册监听器发射事件。有监听器时返回 <code>true</code>，否则返回\n<code>false</code>。一次性监听器在本次发射后移除。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmVtaXRTdGlja3k\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -438,7 +438,7 @@
                   "textRaw": "socket.emitSticky(eventName, ...args)",
                   "type": "method",
                   "name": "emitSticky",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>先执行普通 <code>emit</code>，再保存本次参数，供之后注册的\n<code>on</code>/<code>once</code> 监听器接收。返回普通发射是否命中监听器。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV2ZW50TmFtZXM\"></a></p>\n",
+                  "desc": "<p>先执行普通 <code>emit</code>，再保存本次参数，供之后注册的\n<code>on</code>/<code>once</code> 监听器接收。返回普通发射是否命中监听器。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmV2ZW50TmFtZXM\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -456,7 +456,7 @@
                   "textRaw": "socket.eventNames()",
                   "type": "method",
                   "name": "eventNames",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回监听器映射中已有的事件名称数组。移除单个监听器不会自动删除空的名称项。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVyQ291bnQ\"></a></p>\n",
+                  "desc": "<p>返回监听器映射中已有的事件名称数组。移除单个监听器不会自动删除空的名称项。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVyQ291bnQ\"></a></p>\n",
                   "signatures": [
                     {
                       "params": []
@@ -467,7 +467,7 @@
                   "textRaw": "socket.listenerCount(eventName)",
                   "type": "method",
                   "name": "listenerCount",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回指定事件当前注册的监听器数量；没有该事件时返回 0。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVycw\"></a></p>\n",
+                  "desc": "<p>返回指定事件当前注册的监听器数量；没有该事件时返回 0。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmxpc3RlbmVycw\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -482,7 +482,7 @@
                   "textRaw": "socket.listeners(eventName)",
                   "type": "method",
                   "name": "listeners",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回指定事件监听函数的快照数组。查询尚不存在的事件会为该名称创建空的监听器项。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldE1heExpc3RlbmVycw\"></a></p>\n",
+                  "desc": "<p>返回指定事件监听函数的快照数组。查询尚不存在的事件会为该名称创建空的监听器项。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldE1heExpc3RlbmVycw\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -497,7 +497,7 @@
                   "textRaw": "socket.getMaxListeners()",
                   "type": "method",
                   "name": "getMaxListeners",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回当前实例的监听器上限。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnNldE1heExpc3RlbmVycw\"></a></p>\n",
+                  "desc": "<p>返回当前实例的监听器上限。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLnNldE1heExpc3RlbmVycw\"></a></p>\n",
                   "signatures": [
                     {
                       "params": []
@@ -508,7 +508,7 @@
                   "textRaw": "socket.setMaxListeners(maxListeners)",
                   "type": "method",
                   "name": "setMaxListeners",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>设置每个事件名称允许的监听器数量并返回当前 socket。使用 0 表示不限制；使用正数\n表示有限上限。超过上限时，后续注册会抛出包装后的\n<code>TooManyListenersException</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldFRpbWVy\"></a></p>\n",
+                  "desc": "<p>设置每个事件名称允许的监听器数量并返回当前 socket。使用 0 表示不限制；使用正数\n表示有限上限。超过上限时，后续注册会抛出包装后的\n<code>TooManyListenersException</code>。</p>\n<p><a id=\"api-symbol-d2ViU29ja2V0Lmluc3RhbmNlLmdldFRpbWVy\"></a></p>\n",
                   "signatures": [
                     {
                       "params": [
@@ -523,7 +523,7 @@
                   "textRaw": "socket.getTimer()",
                   "type": "method",
                   "name": "getTimer",
-                  "desc": "<p><strong>版本：6.7.0</strong></p>\n<p>返回创建 <code>EventEmitter</code> 时绑定的运行时计时器；没有绑定时返回\n<code>null</code>。这是底层调度对象，通常无需直接操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.setMaxListeners(20);\nconsole.log(socket.getMaxListeners());\nconsole.log(socket.eventNames());\nsocket.cancel();\n</code></pre>\n",
+                  "desc": "<p>返回创建 <code>EventEmitter</code> 时绑定的运行时计时器；没有绑定时返回\n<code>null</code>。这是底层调度对象，通常无需直接操作。</p>\n<pre><code class=\"lang-js\">var socket = new WebSocket(&#39;wss://echo.websocket.events&#39;);\nsocket.setMaxListeners(20);\nconsole.log(socket.getMaxListeners());\nconsole.log(socket.eventNames());\nsocket.cancel();\n</code></pre>\n",
                   "signatures": [
                     {
                       "params": []

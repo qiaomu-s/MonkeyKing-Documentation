@@ -1,6 +1,6 @@
 # 对话框 (Dialogs)
 
-`dialogs` 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。
+`dialogs` 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 当前产品行为核对。
 
 <a id="api-symbol-bW9kdWxlOmRpYWxvZ3M"></a>
 ## [@] dialogs

@@ -4,7 +4,7 @@
     {
       "textRaw": "综述 (Overview)",
       "name": "综述_(overview)",
-      "desc": "<p>Monkey King 6.7.0 是运行在 Android 上的 JavaScript 自动化与应用开发环境。它使用 Rhino 解释脚本，并提供无障碍自动化、图像与 OCR、UI、文件、网络、任务调度、Shell、SQLite 和媒体分析等模块。</p>\n<p>本文档适用于 Monkey King 6.7.0。</p>\n",
+      "desc": "<p>Monkey King 是运行在 Android 上的 JavaScript 自动化与应用开发环境。它使用 Rhino 解释脚本，并提供无障碍自动化、图像与 OCR、UI、文件、网络、任务调度、Shell、SQLite 和媒体分析等模块。</p>\n<p>本文档适用于 Monkey King。</p>\n",
       "modules": [
         {
           "textRaw": "运行环境",
@@ -23,30 +23,23 @@
         {
           "textRaw": "文档站使用方式",
           "name": "文档站使用方式",
-          "desc": "<ul>\n<li>宽屏浏览器使用左侧目录和右侧本页目录。</li>\n<li>移动浏览器通过顶部菜单打开分类目录。</li>\n<li>点击导航栏“搜索文档”，或按 <code>/</code>、<code>Ctrl+K</code> / <code>Command+K</code> 打开本地全文搜索。</li>\n<li>每页底部可进入上一篇或下一篇；标题旁的链接可复制精确锚点。</li>\n<li>右上角外观按钮切换浅色、深色或跟随系统主题。\n关于文档阅读约定和 API 标记方式，请参阅<a href=\"../project/about.md\">关于文档</a>。</li>\n</ul>\n<p>Monkey King 应用内的离线文档由具体 APK 构建决定，界面入口可能随版本或构建变体变化。站点导航不再依赖旧版“索引 / 查看全部 / 长按文档标签”等交互；找不到应用内入口时可直接访问 <code>https://docs.monkeyking.com</code>。</p>\n",
+          "desc": "<ul>\n<li>宽屏浏览器使用左侧目录和右侧本页目录。</li>\n<li>移动浏览器通过顶部菜单打开分类目录。</li>\n<li>点击导航栏“搜索文档”，或按 <code>/</code>、<code>Ctrl+K</code> / <code>Command+K</code> 打开本地全文搜索。</li>\n<li>每页底部可进入上一篇或下一篇；标题旁的链接可复制精确锚点。</li>\n<li>右上角外观按钮切换浅色、深色或跟随系统主题。\n关于文档阅读约定和 API 标记方式，请参阅<a href=\"../project/about.md\">关于文档</a>。</li>\n</ul>\n<p>Monkey King 应用内的离线文档由具体 APK 构建决定，界面入口可能随版本或构建变体变化。站点导航不再依赖旧版“索引 / 查看全部 / 长按文档标签”等交互；找不到应用内入口时，请从应用内文档入口重新打开对应页面。</p>\n",
           "type": "module",
           "displayName": "文档站使用方式"
         },
         {
           "textRaw": "编写脚本",
           "name": "编写脚本",
-          "desc": "<p>Monkey King 自带编辑与运行能力，也可以在电脑上使用任意支持 JavaScript 的编辑器。桌面编辑器只负责文本与类型提示，实际行为仍应在 Android 设备或模拟器上的 Monkey King 6.7.0 验证。</p>\n<pre><code class=\"lang-js\">&#39;use strict&#39;;\n\nconst output = files.join(files.cwd(), &#39;hello.txt&#39;);\nfiles.write(output, &#39;Hello, Monkey King&#39;);\ntoastLog(output);\n</code></pre>\n<p>学习 JavaScript 可参考 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide\">MDN JavaScript 指南</a> 与 <a href=\"https://zh.javascript.info/\">JavaScript.info</a>。Rhino 的标准兼容性可参考 <a href=\"https://mozilla.github.io/rhino/compat/engines.html\">Rhino compatibility table</a>，但 Monkey King 还包含自身扩展与补丁。</p>\n",
+          "desc": "<p>Monkey King 自带编辑与运行能力，也可以在电脑上使用任意支持 JavaScript 的编辑器。桌面编辑器只负责文本与类型提示，实际行为仍应在 Android 设备或模拟器上的 Monkey King 验证。</p>\n<pre><code class=\"lang-js\">&#39;use strict&#39;;\n\nconst output = files.join(files.cwd(), &#39;hello.txt&#39;);\nfiles.write(output, &#39;Hello, Monkey King&#39;);\ntoastLog(output);\n</code></pre>\n<p>学习 JavaScript 可参考 <a href=\"https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide\">MDN JavaScript 指南</a> 与 <a href=\"https://zh.javascript.info/\">JavaScript.info</a>。Rhino 的标准兼容性可参考 <a href=\"https://mozilla.github.io/rhino/compat/engines.html\">Rhino compatibility table</a>，但 Monkey King 还包含自身扩展与补丁。</p>\n",
           "type": "module",
           "displayName": "编写脚本"
         },
         {
           "textRaw": "版本与可追溯性",
           "name": "版本与可追溯性",
-          "desc": "<p>API 页面中的版本标签表示该成员的已知引入或变更版本：</p>\n<ul>\n<li><code>v6.7.0</code>：可追溯到当前版本新增或公开的能力。</li>\n<li><code>≤ v6.6.4</code>：实现合同中存在，但当前仓库历史不足以精确定位更早引入版本。</li>\n<li><code>Deprecated</code>：仍可调用但不建议在新脚本中使用。</li>\n</ul>\n<p>Android、Java、OkHttp、OpenCV 等外部类型只说明 Monkey King 的入口与差异；完整成员以对应项目官方文档为准。</p>\n",
+          "desc": "<p>API 页面中的版本标签表示该成员的已知引入或变更版本：</p>\n<ul>\n<li><code>当前版本</code>：可追溯到当前版本新增或公开的能力。</li>\n<li><code>≤ v6.6.4</code>：实现合同中存在，但当前仓库历史不足以精确定位更早引入版本。</li>\n<li><code>Deprecated</code>：仍可调用但不建议在新脚本中使用。</li>\n</ul>\n<p>Android、Java、OkHttp、OpenCV 等外部类型只说明 Monkey King 的入口与差异；完整成员以对应项目官方文档为准。</p>\n",
           "type": "module",
           "displayName": "版本与可追溯性"
-        },
-        {
-          "textRaw": "反馈",
-          "name": "反馈",
-          "desc": "<p>如需报告问题，请通过应用内反馈入口或授权支持渠道提交 Monkey King 版本、Android API 级别、设备或模拟器信息、最小复现脚本和完整错误日志。</p>\n",
-          "type": "module",
-          "displayName": "反馈"
         }
       ],
       "type": "module",

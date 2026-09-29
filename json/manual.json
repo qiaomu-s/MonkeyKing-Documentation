@@ -4,7 +4,7 @@
     {
       "textRaw": "Monkey King 使用手册 (Manual)",
       "name": "monkey_king_使用手册_(manual)",
-      "desc": "<p>本页给出 Monkey King 6.7.0 的最小可运行工作流。API 细节以各分类页面为准；运行环境为 Android 上的 Rhino 2.0，而不是浏览器或 Node.js。</p>\n<p>示例于 2026-09-10 按产品版本 <code>6.7.0</code> 复核。</p>\n",
+      "desc": "<p>本页给出 Monkey King 的最小可运行工作流。API 细节以各分类页面为准；运行环境为 Android 上的 Rhino 2.0，而不是浏览器或 Node.js。</p>\n<p>示例于 2026-09-10 按当前公开 API 复核。</p>\n",
       "modules": [
         {
           "textRaw": "创建并运行脚本",

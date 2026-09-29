@@ -33,7 +33,6 @@ export interface ContentCheckReport {
   readonly imageCount: number
 }
 
-const expectedPublicCname = 'docs.monkeyking.com\n'
 const optionalPublishedMarkdown = new Set(['docs/index.md'])
 const optionalSiteShellFiles = new Set([
   'docs/index.md',
@@ -181,7 +180,6 @@ function inspectCanonicalLayout(
   const allowedCanonicalFiles = new Set([
     ...expectedSources,
     ...optionalSiteShellFiles,
-    'docs/public/CNAME',
     'docs/public/logo.png',
     ...migratedImageNames.map((name) => `docs/public/images/${name}`),
   ])
@@ -246,14 +244,6 @@ function inspectCanonicalLayout(
     if (missing.length > 0) {
       errors.push(`Missing migrated images: ${missing.join(', ')}`)
     }
-  }
-
-  const cnamePath = resolve(rootDirectory, 'docs/public/CNAME')
-  const cnameError = regularFileError(cnamePath, 'public CNAME')
-  if (cnameError) {
-    errors.push(cnameError)
-  } else if (readFileSync(cnamePath, 'utf8') !== expectedPublicCname) {
-    errors.push(`Invalid public CNAME bytes: ${cnamePath}`)
   }
 
   inspectExpectedLogo(

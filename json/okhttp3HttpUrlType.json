@@ -4,7 +4,7 @@
     {
       "textRaw": "Okhttp3HttpUrl",
       "name": "okhttp3httpurl",
-      "desc": "<p><code>Okhttp3HttpUrl</code> 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 <code>okhttp3.HttpUrl</code>。<code>HttpResponse.url</code> 和 <code>HttpResponse.request.url()</code> 返回该不可变对象；它已经完成 URL 解析和规范化，比重新拆分字符串更可靠。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/\"><code>okhttp3.HttpUrl</code></a>。</p>\n<pre><code class=\"lang-js\">const response = http.get(&#39;https://example.com:8443/a/b?q=monkey#top&#39;)\ntry {\n  const url = response.url\n  console.log(url.scheme())       // https\n  console.log(url.host())         // example.com\n  console.log(url.port())         // 8443\n  console.log(url.encodedPath())  // /a/b\n  console.log(url.query())        // q=monkey\n} finally {\n  response.body.close()\n}\n</code></pre>\n",
+      "desc": "<p><code>Okhttp3HttpUrl</code> 是 MonkeyKing 内置 OkHttp 4.12.0 的 <code>okhttp3.HttpUrl</code>。<code>HttpResponse.url</code> 和 <code>HttpResponse.request.url()</code> 返回该不可变对象；它已经完成 URL 解析和规范化，比重新拆分字符串更可靠。</p>\n<p>官方 API：<a href=\"https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/\"><code>okhttp3.HttpUrl</code></a>。</p>\n<pre><code class=\"lang-js\">const response = http.get(&#39;https://example.com:8443/a/b?q=monkey#top&#39;)\ntry {\n  const url = response.url\n  console.log(url.scheme())       // https\n  console.log(url.host())         // example.com\n  console.log(url.port())         // 8443\n  console.log(url.encodedPath())  // /a/b\n  console.log(url.query())        // q=monkey\n} finally {\n  response.body.close()\n}\n</code></pre>\n",
       "modules": [
         {
           "textRaw": "常用方法",

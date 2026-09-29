@@ -42,7 +42,6 @@ const fixturePath = resolve(
   process.cwd(),
   'tests/fixtures/content/link-cases.md',
 )
-const expectedPublicCname = 'docs.monkeyking.com\n'
 const expectedLogoSha256 =
   'a7bc5657e071e590708783a107a94f0f550f23d95769eab6b9ed4b633fd67e32'
 const allowedCompatibilityLines = [
@@ -955,7 +954,6 @@ describe('content migration orchestration', () => {
     writeFixture(root, second.legacySource, '# Second target\n')
     writeFixture(root, 'api/images/autojs6-notification-list.png', 'image-a')
     writeFixture(root, 'api/images/logo.png', 'image-b')
-    writeFixture(root, 'api/CNAME', 'docs.monkeyking.com\n')
     writeFixture(root, 'api/retired.md', 'retired\n')
     writeFixture(root, 'api/static/legacy.js', 'legacy\n')
     writeFixture(root, 'api/index.html', 'legacy\n')
@@ -1017,26 +1015,10 @@ describe('content migration orchestration', () => {
     )
   })
 
-  test('writes the exact public CNAME bytes instead of copying the legacy value', async () => {
+  test('removes legacy and public custom-domain declarations', async () => {
     const only = testEntry('only', 'docs/guide/only.md')
     writeFixture(root, only.legacySource, '# Only\n')
     writeFixture(root, 'api/CNAME', 'docs.autojs6.com')
-
-    await migrateContent({
-      rootDirectory: root,
-      entries: [only],
-      imageNames: [],
-      deletedSources: [],
-    })
-
-    expect(readFileSync(resolve(root, 'docs/public/CNAME'), 'utf8')).toBe(
-      expectedPublicCname,
-    )
-  })
-
-  test('repairs a drifted public CNAME during a canonical-only pass', async () => {
-    const only = testEntry('only', 'docs/guide/only.md')
-    writeFixture(root, only.source, '# Only\n')
     writeFixture(root, 'docs/public/CNAME', 'wrong.example\n')
 
     await migrateContent({
@@ -1046,9 +1028,8 @@ describe('content migration orchestration', () => {
       deletedSources: [],
     })
 
-    expect(readFileSync(resolve(root, 'docs/public/CNAME'), 'utf8')).toBe(
-      expectedPublicCname,
-    )
+    expect(existsSync(resolve(root, 'api/CNAME'))).toBe(false)
+    expect(existsSync(resolve(root, 'docs/public/CNAME'))).toBe(false)
   })
 
   test('preserves the planned VitePress site shell across repeated runs', async () => {

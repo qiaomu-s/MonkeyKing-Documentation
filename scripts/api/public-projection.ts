@@ -1,7 +1,6 @@
 import {
   API_COVERAGE_SCHEMA_VERSION,
   API_MANIFEST_SCHEMA_VERSION,
-  API_PRODUCT_VERSION,
   type ApiCoverage,
   type ApiManifest,
   type ApiSymbolKind,
@@ -77,7 +76,6 @@ export function projectApiManifest(manifest: ApiManifest): PublicApiManifest {
 
   return {
     schemaVersion: API_MANIFEST_SCHEMA_VERSION,
-    productVersion: API_PRODUCT_VERSION,
     modules,
     symbols,
   }
@@ -89,7 +87,6 @@ export function projectApiCoverage(
 ): PublicApiCoverage {
   return {
     schemaVersion: API_COVERAGE_SCHEMA_VERSION,
-    productVersion: API_PRODUCT_VERSION,
     rules: coverage.rules
       .map(projectRule)
       .sort((left, right) => compareText(left.id, right.id)),
@@ -118,7 +115,6 @@ export function isPublicApiManifest(value: unknown): value is PublicApiManifest 
   const candidate = value as Partial<PublicApiManifest>
   return (
     candidate.schemaVersion === API_MANIFEST_SCHEMA_VERSION &&
-    candidate.productVersion === API_PRODUCT_VERSION &&
     Array.isArray(candidate.modules) &&
     Array.isArray(candidate.symbols)
   )
@@ -129,7 +125,6 @@ export function isPublicApiCoverage(value: unknown): value is PublicApiCoverage 
   const candidate = value as Partial<PublicApiCoverage>
   return (
     candidate.schemaVersion === API_COVERAGE_SCHEMA_VERSION &&
-    candidate.productVersion === API_PRODUCT_VERSION &&
     Array.isArray(candidate.rules)
   )
 }

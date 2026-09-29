@@ -147,8 +147,8 @@ describe('automation and core app API contracts', () => {
         section = lines.slice(anchorLine, next?.line ?? lines.length).join('\n')
       }
 
-      expect(section, `${symbol.id} must state a version`).toMatch(
-        /\*\*`[^`\n]*\d+\.\d+\.\d+[^`\n]*`\*\*/,
+      expect(section, `${symbol.id} must not expose the removed product version`).not.toMatch(
+        /\bv?6\.7\.0\b/,
       )
       expect(section, `${symbol.id} must include a Rhino JavaScript example`).toMatch(
         /```(?:js|javascript)\s/,

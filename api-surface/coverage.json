@@ -1,5 +1,4 @@
 {
-  "productVersion": "6.7.0",
   "rules": [
     {
       "id": "coverage:alias:$app",
@@ -37627,5 +37626,5 @@
       "target": "docs/api/utilities/zip.md#api-symbol-emlwLnppcEZpbGVz"
     }
   ],
-  "schemaVersion": 2
+  "schemaVersion": 3
 }

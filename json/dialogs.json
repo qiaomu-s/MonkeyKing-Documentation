@@ -4,7 +4,7 @@
     {
       "textRaw": "对话框 (Dialogs)",
       "name": "对话框_(dialogs)",
-      "desc": "<p><code>dialogs</code> 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmRpYWxvZ3M\"></a></p>\n",
+      "desc": "<p><code>dialogs</code> 提供阻塞、回调及 UI 线程 Promise 三种交互路径。本文按 Monkey King 当前产品行为核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmRpYWxvZ3M\"></a></p>\n",
       "modules": [
         {
           "textRaw": "[@] dialogs",

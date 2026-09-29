@@ -58,14 +58,14 @@
         {
           "textRaw": "权限、线程与生命周期",
           "name": "权限、线程与生命周期",
-          "desc": "<ul>\n<li>文件路径会经 MonkeyKing 文件模块规范化；无效图片路径会抛出参数异常。</li>\n<li>省略图像时需要屏幕捕获授权。同步扫描不适合放在 UI 线程的紧密循环中。</li>\n<li>路径读取产生的临时图像由检测流程按一次性资源处理；调用方持有的普通 <code>ImageWrapper</code> 仍由调用方管理。</li>\n<li>API 在 MonkeyKing 6.7.0 中可用；底层识别能力由应用内置的 ML Kit 版本决定。</li>\n</ul>\n",
+          "desc": "<ul>\n<li>文件路径会经 MonkeyKing 文件模块规范化；无效图片路径会抛出参数异常。</li>\n<li>省略图像时需要屏幕捕获授权。同步扫描不适合放在 UI 线程的紧密循环中。</li>\n<li>路径读取产生的临时图像由检测流程按一次性资源处理；调用方持有的普通 <code>ImageWrapper</code> 仍由调用方管理。</li>\n<li>API 在 MonkeyKing 中可用；底层识别能力由应用内置的 ML Kit 版本决定。</li>\n</ul>\n",
           "type": "module",
           "displayName": "逐符号版本与 Rhino 2.0 示例"
         },
         {
           "textRaw": "逐符号版本与 Rhino 2.0 示例",
           "name": "逐符号版本与_rhino_2.0_示例",
-          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:qrcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>module:qrcode</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>qrcode.detect</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detect);\n</code></pre>\n<p><code>qrcode.detectAll</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detectAll);\n</code></pre>\n<p><code>qrcode.recognizeText</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeText);\n</code></pre>\n<p><code>qrcode.recognizeTexts</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeTexts);\n</code></pre>\n",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>call:qrcode</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>module:qrcode</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode);\n</code></pre>\n<p><code>qrcode.detect</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detect);\n</code></pre>\n<p><code>qrcode.detectAll</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.detectAll);\n</code></pre>\n<p><code>qrcode.recognizeText</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeText);\n</code></pre>\n<p><code>qrcode.recognizeTexts</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof qrcode.recognizeTexts);\n</code></pre>\n",
           "type": "module",
           "displayName": "逐符号版本与 Rhino 2.0 示例"
         }

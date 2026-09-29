@@ -1,6 +1,6 @@
 # Okhttp3HttpUrl
 
-`Okhttp3HttpUrl` 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 `okhttp3.HttpUrl`。`HttpResponse.url` 和 `HttpResponse.request.url()` 返回该不可变对象；它已经完成 URL 解析和规范化，比重新拆分字符串更可靠。
+`Okhttp3HttpUrl` 是 MonkeyKing 内置 OkHttp 4.12.0 的 `okhttp3.HttpUrl`。`HttpResponse.url` 和 `HttpResponse.request.url()` 返回该不可变对象；它已经完成 URL 解析和规范化，比重新拆分字符串更可靠。
 
 官方 API：[`okhttp3.HttpUrl`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-http-url/)。
 

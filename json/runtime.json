@@ -4,7 +4,7 @@
     {
       "textRaw": "运行时 (Runtime)",
       "name": "运行时_(runtime)",
-      "desc": "<p>每个 Monkey King JavaScript 引擎都拥有一个 <code>ScriptRuntime</code> 实例，并在执行用户脚本前把它注入为全局变量 <code>runtime</code>。它保存当前引擎的模块实现、线程与计时器、权限请求入口以及需要在脚本结束时释放的资源。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。除明确标注为 v6.7.0 的成员外，无法精确追溯的既有入口统一标记为 <code>≤ v6.6.4</code>。</p>\n",
+      "desc": "<p>每个 Monkey King JavaScript 引擎都拥有一个 <code>ScriptRuntime</code> 实例，并在执行用户脚本前把它注入为全局变量 <code>runtime</code>。它保存当前引擎的模块实现、线程与计时器、权限请求入口以及需要在脚本结束时释放的资源。</p>\n<p>本文于 2026-09-10 按 Monkey King 当前产品行为核对。除明确标注为 当前版本的成员外，无法精确追溯的既有入口统一标记为 <code>≤ v6.6.4</code>。</p>\n",
       "modules": [
         {
           "textRaw": "runtime",
@@ -390,9 +390,11 @@
               "desc": "<p><strong><code>≤ v6.6.4</code></strong></p>\n<ul>\n<li>{ <code>AbstractShell</code> } - 延迟创建并缓存的 Root shell</li>\n<li><strong>权限 / 副作用</strong>：首次读取会尝试建立 Root shell；脚本退出时关闭</li>\n</ul>\n<pre><code class=\"lang-js\">if (monkeyking.isRootAvailable()) {\n    runtime.rootShell.exec(&#39;id&#39;);\n    console.log(runtime.rootShell.isExecWithRoot()); // true\n}\n</code></pre>\n"
             },
             {
-              "textRaw": "runtime.mediaInfo",
+              "textRaw": "`mediaInfo` { [org.mediainfo.android.MediaInfo](https://mediaarea.net/en/MediaInfo/Support/SDK) } - runtime 持有的原生 MediaInfo 实例 ",
+              "type": " [org.mediainfo.android.MediaInfo](https://mediaarea.net/en/MediaInfo/Support/SDK) ",
               "name": "mediaInfo",
-              "desc": "<p><strong><code>v6.7.0</code></strong></p>\n<ul>\n<li>{ <a href=\"https://mediaarea.net/en/MediaInfo/Support/SDK\">org.mediainfo.android.MediaInfo</a> } - runtime 持有的原生 MediaInfo 实例</li>\n<li><strong>生命周期</strong>：由当前 runtime 管理；业务脚本优先使用 <a href=\"../../api/media/mediainfo.md\">mediainfo 模块</a></li>\n</ul>\n<pre><code class=\"lang-js\">console.log(runtime.mediaInfo.getClass().getName());\n</code></pre>\n"
+              "desc": "<pre><code class=\"lang-js\">console.log(runtime.mediaInfo.getClass().getName());\n</code></pre>\n",
+              "shortDesc": "runtime 持有的原生 MediaInfo 实例"
             }
           ],
           "type": "module",

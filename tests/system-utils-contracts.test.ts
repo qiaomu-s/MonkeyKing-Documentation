@@ -169,9 +169,9 @@ describe('Monkey King 6.7.0 system and utilities public contracts', () => {
 
   test('freezes the public remediation scope without provenance fields', () => {
     expect(manifest).toMatchObject({
-      schemaVersion: 2,
-      productVersion: '6.7.0',
+      schemaVersion: 3,
     })
+    expect(manifest).not.toHaveProperty('productVersion')
     expect(manifest).not.toHaveProperty('source')
     expect(manifest).not.toHaveProperty('repository')
     expect(manifest).not.toHaveProperty('commit')

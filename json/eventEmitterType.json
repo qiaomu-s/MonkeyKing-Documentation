@@ -4,7 +4,7 @@
     {
       "textRaw": "事件发射器 (EventEmitter)",
       "name": "事件发射器_(eventemitter)",
-      "desc": "<p>EventEmitter 是 Monkey King 多个模块共用的事件接口。<code>events</code>、传感器和 WebSocket 等对象会提供这些方法；业务脚本通常不直接构造 Java <code>EventEmitter</code>。</p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p>默认监听器上限是 10。带运行时计时器的发射器会把回调排入脚本事件循环；没有计时器时通过当前脚本桥接器调用。注册、移除与发送操作本身同步完成，但监听器是否立即执行取决于发射器的计时器配置。</p>\n<p>以下接口在可追溯历史中早于当前版本体系，产品版本中均已存在，因此以 <code>≤ 6.6.4</code> 标记。</p>\n<p>除“获取 EventEmitter 接口”一节外，后续示例均假设已执行：</p>\n<pre><code class=\"lang-js\">const emitter = events.__asEmitter__({});\n</code></pre>\n",
+      "desc": "<p>EventEmitter 是 Monkey King 多个模块共用的事件接口。<code>events</code>、传感器和 WebSocket 等对象会提供这些方法；业务脚本通常不直接构造 Java <code>EventEmitter</code>。</p>\n<p>本文于 2026-09-10 按 Monkey King 当前产品行为核对。</p>\n<p>默认监听器上限是 10。带运行时计时器的发射器会把回调排入脚本事件循环；没有计时器时通过当前脚本桥接器调用。注册、移除与发送操作本身同步完成，但监听器是否立即执行取决于发射器的计时器配置。</p>\n<p>以下接口在可追溯历史中早于当前版本体系，产品版本中均已存在，因此以 <code>≤ 6.6.4</code> 标记。</p>\n<p>除“获取 EventEmitter 接口”一节外，后续示例均假设已执行：</p>\n<pre><code class=\"lang-js\">const emitter = events.__asEmitter__({});\n</code></pre>\n",
       "modules": [
         {
           "textRaw": "[m#] EventEmitter#on",

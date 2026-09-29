@@ -119,9 +119,9 @@ describe('API coverage generator', () => {
     )
 
     expect(coverage).toMatchObject({
-      schemaVersion: 2,
-      productVersion: '6.7.0',
+      schemaVersion: 3,
     })
+    expect(coverage).not.toHaveProperty('productVersion')
     expect(coverage).not.toHaveProperty('sourceRef')
     expect(coverage.rules).toHaveLength(3)
     expect(

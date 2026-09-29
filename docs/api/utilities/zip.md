@@ -1,9 +1,6 @@
 # Zip - 压缩与解压
 
 `zip` 基于 [Zip4j 2.11.5](https://github.com/srikanth-lingala/zip4j) 同步创建、修改和解压 ZIP 文件。运行时同时注册 `zip` 与 `$zip`，两者引用同一个模块对象。外部类型参阅 Zip4j 官方 API：[`ZipFile`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/ZipFile.html)、[`FileHeader`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/FileHeader.html)、[`ZipParameters`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/ZipParameters.html) 和 [`UnzipParameters`](https://javadoc.io/doc/net.lingala.zip4j/zip4j/2.11.5/net/lingala/zip4j/model/UnzipParameters.html)。
-
-版本：**v6.7.0**
-
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
 ## zip
@@ -138,7 +135,7 @@ zip.unzip('./backup.zip', './restored', {
 
 ### 公共方法契约总表
 
-以下成员自 **v6.7.0** 起公开。所有方法都同步执行；参数数量不符、路径或选项非法以及 Zip4j 操作失败会立即抛出异常。修改或提取方法需要相应文件读写权限。
+以下成员自 **当前版本** 起公开。所有方法都同步执行；参数数量不符、路径或选项非法以及 Zip4j 操作失败会立即抛出异常。修改或提取方法需要相应文件读写权限。
 
 | 签名与参数数 | 参数、合法值与返回 | 生命周期与副作用 |
 | --- | --- | --- |
@@ -228,7 +225,7 @@ console.log(archive.isEncrypted());
 
 ## API 合同表
 
-下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在当前公开 API 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |

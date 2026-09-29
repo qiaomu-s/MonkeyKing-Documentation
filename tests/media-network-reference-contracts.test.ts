@@ -69,14 +69,14 @@ function markdown(path: string): string {
 
 interface MemberContract {
   readonly id: string
-  readonly version: string
+  readonly version?: string
   readonly example: string
   readonly source: string
 }
 
 interface MemberContractGroup {
   readonly ids: readonly string[]
-  readonly version: string
+  readonly version?: string
   readonly examples: Readonly<Record<string, string>>
   readonly source: string
 }
@@ -87,11 +87,11 @@ function extractMemberContracts(
 ): MemberContract[] {
   const contracts: MemberContract[] = []
   const pattern =
-    /<!-- api-member-contract id="([^"]+)" version="([^"]+)" -->\s*\n[^\n]*Rhino 2\.0 示例：[^\n]*\n\s*```js\s*\n([\s\S]*?)```/g
+    /<!-- api-member-contract id="([^"]+)"(?: version="([^"]+)")? -->\s*\n[^\n]*Rhino 2\.0 示例：[^\n]*\n\s*```js\s*\n([\s\S]*?)```/g
   for (const match of contents.matchAll(pattern)) {
     contracts.push({
       id: match[1],
-      version: match[2],
+      ...(match[2] ? { version: match[2] } : {}),
       example: match[3].trim(),
       source,
     })
@@ -105,11 +105,11 @@ function extractMemberContractGroups(
 ): MemberContractGroup[] {
   const groups: MemberContractGroup[] = []
   const pattern =
-    /<!-- api-member-contract-group ids="([^"]+)" version="([^"]+)" -->\s*\n\s*```json\s*\n([\s\S]*?)```/g
+    /<!-- api-member-contract-group ids="([^"]+)"(?: version="([^"]+)")? -->\s*\n\s*```json\s*\n([\s\S]*?)```/g
   for (const match of contents.matchAll(pattern)) {
     groups.push({
       ids: match[1].trim().split(/\s+/),
-      version: match[2],
+      ...(match[2] ? { version: match[2] } : {}),
       examples: JSON.parse(match[3]) as Readonly<Record<string, string>>,
       source,
     })
@@ -223,7 +223,7 @@ describe('media, network, and related type reference contracts', () => {
       const contract = contractsById.get(symbol.id)?.[0]
       expect(contract, symbol.id).toBeDefined()
       if (!contract) continue
-      expect(contract.version, `${contract.source}: ${symbol.id}`).toBe('6.7.0')
+      expect(contract.version, `${contract.source}: ${symbol.id}`).toBeUndefined()
       expect(contract.example, `${contract.source}: ${symbol.id}`).not.toBe('')
       expect(contract.example, `${contract.source}: ${symbol.id}`).not.toMatch(
         /(?:TODO|FIXME|PENDING|待补充|待完善|\.\.\.|xxx)/i,
@@ -238,7 +238,7 @@ describe('media, network, and related type reference contracts', () => {
   test('preserves source-faithful null, color-comparison, and WebView overload contracts', () => {
     const barcode = markdown('docs/api/media/barcode.md')
     expect(barcode).toContain(
-      'MonkeyKing 6.7.0 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围',
+      'MonkeyKing 会把 `FORMAT_ALL_FORMATS` 与用户提供的格式一起传给 ML Kit，因此 `format` 不能用于缩小扫描范围',
     )
     expect(barcode).toContain('按 `result.format` 自行过滤')
 
@@ -254,7 +254,7 @@ describe('media, network, and related type reference contracts', () => {
 
     const color = markdown('docs/api/media/color.md')
     expect(color).toContain('### isEqual(colorA, colorB, thresholdOrOptions?)')
-    expect(color).toContain('当前 6.7.0 实现使用与 `colors.isSimilar` 相同的颜色检测器')
+    expect(color).toContain('当前实现使用与 `colors.isSimilar` 相同的颜色检测器')
     expect(color).not.toContain('### isEqual(colorA, colorB, alphaMatters?)')
     expect(color).not.toContain('是否考虑 `A (alpha)` 分量')
 

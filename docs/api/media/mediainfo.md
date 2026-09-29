@@ -1,10 +1,8 @@
 # MediaInfo - 媒体信息
 
 `mediainfo` 同步读取本地媒体文件的容器、视频、音频、字幕等元数据。运行时同时注册 `mediainfo` 与 `$mediainfo`，两者引用同一个模块对象。
-
-版本：**v6.7.0**
-
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
+本文记录的成员统一按 `≤ v6.6.4` 标记。
 
 <a id="api-symbol-bW9kdWxlOm1lZGlhaW5mbw"></a>
 
@@ -52,13 +50,13 @@ console.log(String(info));
 
 #### info.path
 
-版本：**6.7.0**。读取时解析后的绝对路径，只读。
+。读取时解析后的绝对路径，只读。
 
 <a id="api-symbol-bWVkaWFpbmZvLnJlc3VsdC5pbmZvcm0"></a>
 
 #### info.inform
 
-版本：**6.7.0**。MediaInfo 生成的完整文本报告，只读。
+。MediaInfo 生成的完整文本报告，只读。
 
 <a id="api-symbol-ZHluYW1pYzptZWRpYWluZm8ucmVzdWx0Lm1ldGFkYXRh"></a>
 
@@ -126,104 +124,104 @@ console.log(info.audio('Channel(s)'));
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="call:mediainfo" version="6.7.0" -->
-`call:mediainfo` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:mediainfo" -->
+`call:mediainfo` · Rhino 2.0 示例：
 ```js
 console.log(typeof mediainfo);
 ```
 
-<!-- api-member-contract id="dynamic:mediainfo.result.metadata" version="6.7.0" -->
-`dynamic:mediainfo.result.metadata` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="dynamic:mediainfo.result.metadata" -->
+`dynamic:mediainfo.result.metadata` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.metadata);
 ```
 
-<!-- api-member-contract id="mediainfo.read" version="6.7.0" -->
-`mediainfo.read` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.read" -->
+`mediainfo.read` · Rhino 2.0 示例：
 ```js
 console.log(typeof mediainfo.read);
 ```
 
-<!-- api-member-contract id="mediainfo.result.audio" version="6.7.0" -->
-`mediainfo.result.audio` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.audio" -->
+`mediainfo.result.audio` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.audio);
 ```
 
-<!-- api-member-contract id="mediainfo.result.general" version="6.7.0" -->
-`mediainfo.result.general` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.general" -->
+`mediainfo.result.general` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.general);
 ```
 
-<!-- api-member-contract id="mediainfo.result.image" version="6.7.0" -->
-`mediainfo.result.image` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.image" -->
+`mediainfo.result.image` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.image);
 ```
 
-<!-- api-member-contract id="mediainfo.result.inform" version="6.7.0" -->
-`mediainfo.result.inform` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.inform" -->
+`mediainfo.result.inform` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.inform);
 ```
 
-<!-- api-member-contract id="mediainfo.result.max" version="6.7.0" -->
-`mediainfo.result.max` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.max" -->
+`mediainfo.result.max` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.max);
 ```
 
-<!-- api-member-contract id="mediainfo.result.menu" version="6.7.0" -->
-`mediainfo.result.menu` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.menu" -->
+`mediainfo.result.menu` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.menu);
 ```
 
-<!-- api-member-contract id="mediainfo.result.other" version="6.7.0" -->
-`mediainfo.result.other` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.other" -->
+`mediainfo.result.other` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.other);
 ```
 
-<!-- api-member-contract id="mediainfo.result.path" version="6.7.0" -->
-`mediainfo.result.path` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.path" -->
+`mediainfo.result.path` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.path);
 ```
 
-<!-- api-member-contract id="mediainfo.result.text" version="6.7.0" -->
-`mediainfo.result.text` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.text" -->
+`mediainfo.result.text` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.text);
 ```
 
-<!-- api-member-contract id="mediainfo.result.toString" version="6.7.0" -->
-`mediainfo.result.toString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.toString" -->
+`mediainfo.result.toString` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.toString);
 ```
 
-<!-- api-member-contract id="mediainfo.result.video" version="6.7.0" -->
-`mediainfo.result.video` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="mediainfo.result.video" -->
+`mediainfo.result.video` · Rhino 2.0 示例：
 ```js
 var info = mediainfo.read('/sdcard/demo.mp4');
 console.log(info.video);
 ```
 
-<!-- api-member-contract id="module:mediainfo" version="6.7.0" -->
-`module:mediainfo` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:mediainfo" -->
+`module:mediainfo` · Rhino 2.0 示例：
 ```js
 console.log(typeof mediainfo);
 ```

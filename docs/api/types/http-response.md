@@ -143,7 +143,7 @@ interface HttpSaveResult {
 readonly code: number
 ```
 
-`0` 表示成功，`-1` 表示通用失败。当前 6.7.0 只定义这两个结果码。
+`0` 表示成功，`-1` 表示通用失败。当前版本只定义这两个结果码。
 
 <a id="api-symbol-aHR0cC5zYXZlUmVzdWx0LnBhdGg"></a>
 
@@ -209,106 +209,106 @@ http.getAsync('https://example.com/archive.zip').then(response => {
 - response 对象在网络完成后构造；Promise 入口在 Rhino/UI 映射阶段创建包装对象。
 - header 对象和状态字段不持有额外流资源，body 持有。关闭 body 后仍可读取状态、请求、URL 和 headers。
 - `HttpSaveResult` 只描述一次复制结果，不会自动删除失败时留下的部分文件。
-- 本页合同对应 MonkeyKing 6.7.0 与其内置 OkHttp 版本。
+- 本页合同对应 MonkeyKing 与其内置 OkHttp 版本。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="dynamic:http.response.headers" version="6.7.0" -->
-`dynamic:http.response.headers` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="dynamic:http.response.headers" -->
+`dynamic:http.response.headers` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.headers);
 ```
 
-<!-- api-member-contract id="http.response.body" version="6.7.0" -->
-`http.response.body` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.body" -->
+`http.response.body` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.body);
 ```
 
-<!-- api-member-contract id="http.response.headers" version="6.7.0" -->
-`http.response.headers` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.headers" -->
+`http.response.headers` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.headers);
 ```
 
-<!-- api-member-contract id="http.response.method" version="6.7.0" -->
-`http.response.method` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.method" -->
+`http.response.method` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.method);
 ```
 
-<!-- api-member-contract id="http.response.request" version="6.7.0" -->
-`http.response.request` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.request" -->
+`http.response.request` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.request);
 ```
 
-<!-- api-member-contract id="http.response.statusCode" version="6.7.0" -->
-`http.response.statusCode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.statusCode" -->
+`http.response.statusCode` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.statusCode);
 ```
 
-<!-- api-member-contract id="http.response.statusMessage" version="6.7.0" -->
-`http.response.statusMessage` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.statusMessage" -->
+`http.response.statusMessage` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.statusMessage);
 ```
 
-<!-- api-member-contract id="http.response.url" version="6.7.0" -->
-`http.response.url` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.response.url" -->
+`http.response.url` · Rhino 2.0 示例：
 ```js
 var response = http.get('https://example.com');
 console.log(response.url);
 ```
 
-<!-- api-member-contract id="http.saveResult.bytesCopied" version="6.7.0" -->
-`http.saveResult.bytesCopied` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.bytesCopied" -->
+`http.saveResult.bytesCopied` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.bytesCopied);
 ```
 
-<!-- api-member-contract id="http.saveResult.code" version="6.7.0" -->
-`http.saveResult.code` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.code" -->
+`http.saveResult.code` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.code);
 ```
 
-<!-- api-member-contract id="http.saveResult.error" version="6.7.0" -->
-`http.saveResult.error` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.error" -->
+`http.saveResult.error` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.error);
 ```
 
-<!-- api-member-contract id="http.saveResult.isSuccess" version="6.7.0" -->
-`http.saveResult.isSuccess` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.isSuccess" -->
+`http.saveResult.isSuccess` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.isSuccess);
 ```
 
-<!-- api-member-contract id="http.saveResult.path" version="6.7.0" -->
-`http.saveResult.path` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.path" -->
+`http.saveResult.path` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.path);
 ```
 
-<!-- api-member-contract id="http.saveResult.success" version="6.7.0" -->
-`http.saveResult.success` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.saveResult.success" -->
+`http.saveResult.success` · Rhino 2.0 示例：
 ```js
 var saveResult = http.get('https://example.com').body.saveToFile('/sdcard/demo.bin');
 console.log(saveResult.success);

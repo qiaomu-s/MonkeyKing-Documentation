@@ -813,9 +813,9 @@ findColor, findImage返回的对象. 表示一个点（坐标）.
 
 ---
 
-## MonkeyKing 6.7.0 补充合同
+## MonkeyKing 补充合同
 
-以下入口由 6.7.0 Kotlin 运行时直接导出。图片参数除特别说明外可传 `ImageWrapper` 或路径；路径会严格读取为一次性图像，失败时抛出参数/读取异常，并在调用结束后自动回收。返回的新图像不随输入一起回收。
+以下入口由 当前 Kotlin 运行时直接导出。图片参数除特别说明外可传 `ImageWrapper` 或路径；路径会严格读取为一次性图像，失败时抛出参数/读取异常，并在调用结束后自动回收。返回的新图像不随输入一起回收。
 
 ### 读取、保存与屏幕捕获
 
@@ -959,7 +959,7 @@ images.pixel(image: ImageWrapper | string, x: number, y: number): ColorInt
 images.invert(image: ImageWrapper | string): ImageWrapper
 ```
 
-返回颜色反相的新图像。6.7.0 实现反转 BGR 颜色通道并保留原 alpha 通道；输入不会原地修改。
+返回颜色反相的新图像。当前版本实现反转 BGR 颜色通道并保留原 alpha 通道；输入不会原地修改。
 
 <a id="api-symbol-aW1hZ2VzLmlzR3JheXNjYWxl"></a>
 
@@ -1454,462 +1454,462 @@ console.log(score)
 - URL 加载需要网络访问；共享存储路径受 Android 存储策略约束。模块不会自动弹出存储授权界面。
 - OpenCV 变换、找色找图、特征和相似度调用均同步占用调用线程，并可能分配较大的临时矩阵。
 - 输入为一次性图像时，运行时在 `finally` 中触发回收；普通输入不会自动回收，返回的新资源始终由调用方管理。
-- 本节描述 MonkeyKing 6.7.0 的公开入口；底层编码格式和 OpenCV 参数限制以应用内置版本为准。
+- 本节描述 MonkeyKing 的公开入口；底层编码格式和 OpenCV 参数限制以应用内置版本为准。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="images.adaptiveThreshold" version="6.7.0" -->
-`images.adaptiveThreshold` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.adaptiveThreshold" -->
+`images.adaptiveThreshold` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.adaptiveThreshold);
 ```
 
-<!-- api-member-contract id="images.bilateralFilter" version="6.7.0" -->
-`images.bilateralFilter` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.bilateralFilter" -->
+`images.bilateralFilter` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.bilateralFilter);
 ```
 
-<!-- api-member-contract id="images.blur" version="6.7.0" -->
-`images.blur` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.blur" -->
+`images.blur` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.blur);
 ```
 
-<!-- api-member-contract id="images.buildRegion" version="6.7.0" -->
-`images.buildRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.buildRegion" -->
+`images.buildRegion` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.buildRegion);
 ```
 
-<!-- api-member-contract id="images.captureScreen" version="6.7.0" -->
-`images.captureScreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.captureScreen" -->
+`images.captureScreen` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.captureScreen);
 ```
 
-<!-- api-member-contract id="images.clip" version="6.7.0" -->
-`images.clip` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.clip" -->
+`images.clip` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.clip);
 ```
 
-<!-- api-member-contract id="images.compress" version="6.7.0" -->
-`images.compress` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.compress" -->
+`images.compress` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.compress);
 ```
 
-<!-- api-member-contract id="images.compressToBytes" version="6.7.0" -->
-`images.compressToBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.compressToBytes" -->
+`images.compressToBytes` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.compressToBytes);
 ```
 
-<!-- api-member-contract id="images.concat" version="6.7.0" -->
-`images.concat` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.concat" -->
+`images.concat` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.concat);
 ```
 
-<!-- api-member-contract id="images.copy" version="6.7.0" -->
-`images.copy` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.copy" -->
+`images.copy` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.copy);
 ```
 
-<!-- api-member-contract id="images.cvtColor" version="6.7.0" -->
-`images.cvtColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.cvtColor" -->
+`images.cvtColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.cvtColor);
 ```
 
-<!-- api-member-contract id="images.detectAndComputeFeatures" version="6.7.0" -->
-`images.detectAndComputeFeatures` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.detectAndComputeFeatures" -->
+`images.detectAndComputeFeatures` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.detectAndComputeFeatures);
 ```
 
-<!-- api-member-contract id="images.detectColor" version="6.7.0" -->
-`images.detectColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.detectColor" -->
+`images.detectColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.detectColor);
 ```
 
-<!-- api-member-contract id="images.detectMultiColors" version="6.7.0" -->
-`images.detectMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.detectMultiColors" -->
+`images.detectMultiColors` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.detectMultiColors);
 ```
 
-<!-- api-member-contract id="images.detectsColor" version="6.7.0" -->
-`images.detectsColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.detectsColor" -->
+`images.detectsColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.detectsColor);
 ```
 
-<!-- api-member-contract id="images.detectsMultiColors" version="6.7.0" -->
-`images.detectsMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.detectsMultiColors" -->
+`images.detectsMultiColors` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.detectsMultiColors);
 ```
 
-<!-- api-member-contract id="images.downsample" version="6.7.0" -->
-`images.downsample` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.downsample" -->
+`images.downsample` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.downsample);
 ```
 
-<!-- api-member-contract id="images.findAllPointsForColor" version="6.7.0" -->
-`images.findAllPointsForColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findAllPointsForColor" -->
+`images.findAllPointsForColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findAllPointsForColor);
 ```
 
-<!-- api-member-contract id="images.findCircles" version="6.7.0" -->
-`images.findCircles` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findCircles" -->
+`images.findCircles` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findCircles);
 ```
 
-<!-- api-member-contract id="images.findColor" version="6.7.0" -->
-`images.findColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findColor" -->
+`images.findColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findColor);
 ```
 
-<!-- api-member-contract id="images.findColorEquals" version="6.7.0" -->
-`images.findColorEquals` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findColorEquals" -->
+`images.findColorEquals` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findColorEquals);
 ```
 
-<!-- api-member-contract id="images.findColorInRegion" version="6.7.0" -->
-`images.findColorInRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findColorInRegion" -->
+`images.findColorInRegion` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findColorInRegion);
 ```
 
-<!-- api-member-contract id="images.findImage" version="6.7.0" -->
-`images.findImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findImage" -->
+`images.findImage` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findImage);
 ```
 
-<!-- api-member-contract id="images.findImageInRegion" version="6.7.0" -->
-`images.findImageInRegion` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findImageInRegion" -->
+`images.findImageInRegion` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findImageInRegion);
 ```
 
-<!-- api-member-contract id="images.findMultiColors" version="6.7.0" -->
-`images.findMultiColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findMultiColors" -->
+`images.findMultiColors` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findMultiColors);
 ```
 
-<!-- api-member-contract id="images.findPointByColor" version="6.7.0" -->
-`images.findPointByColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointByColor" -->
+`images.findPointByColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointByColor);
 ```
 
-<!-- api-member-contract id="images.findPointByColorExactly" version="6.7.0" -->
-`images.findPointByColorExactly` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointByColorExactly" -->
+`images.findPointByColorExactly` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointByColorExactly);
 ```
 
-<!-- api-member-contract id="images.findPointByColors" version="6.7.0" -->
-`images.findPointByColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointByColors" -->
+`images.findPointByColors` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointByColors);
 ```
 
-<!-- api-member-contract id="images.findPointByImage" version="6.7.0" -->
-`images.findPointByImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointByImage" -->
+`images.findPointByImage` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointByImage);
 ```
 
-<!-- api-member-contract id="images.findPointsByColor" version="6.7.0" -->
-`images.findPointsByColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointsByColor" -->
+`images.findPointsByColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointsByColor);
 ```
 
-<!-- api-member-contract id="images.findPointsByColors" version="6.7.0" -->
-`images.findPointsByColors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.findPointsByColors" -->
+`images.findPointsByColors` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.findPointsByColors);
 ```
 
-<!-- api-member-contract id="images.flip" version="6.7.0" -->
-`images.flip` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.flip" -->
+`images.flip` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.flip);
 ```
 
-<!-- api-member-contract id="images.fromBase64" version="6.7.0" -->
-`images.fromBase64` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.fromBase64" -->
+`images.fromBase64` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.fromBase64);
 ```
 
-<!-- api-member-contract id="images.fromBytes" version="6.7.0" -->
-`images.fromBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.fromBytes" -->
+`images.fromBytes` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.fromBytes);
 ```
 
-<!-- api-member-contract id="images.gaussianBlur" version="6.7.0" -->
-`images.gaussianBlur` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.gaussianBlur" -->
+`images.gaussianBlur` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.gaussianBlur);
 ```
 
-<!-- api-member-contract id="images.getHeight" version="6.7.0" -->
-`images.getHeight` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getHeight" -->
+`images.getHeight` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getHeight);
 ```
 
-<!-- api-member-contract id="images.getScreenCaptureOptions" version="6.7.0" -->
-`images.getScreenCaptureOptions` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getScreenCaptureOptions" -->
+`images.getScreenCaptureOptions` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getScreenCaptureOptions);
 ```
 
-<!-- api-member-contract id="images.getSimilarity" version="6.7.0" -->
-`images.getSimilarity` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getSimilarity" -->
+`images.getSimilarity` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getSimilarity);
 ```
 
-<!-- api-member-contract id="images.getSize" version="6.7.0" -->
-`images.getSize` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getSize" -->
+`images.getSize` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getSize);
 ```
 
-<!-- api-member-contract id="images.getWidth" version="6.7.0" -->
-`images.getWidth` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getWidth" -->
+`images.getWidth` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getWidth);
 ```
 
-<!-- api-member-contract id="images.grayscale" version="6.7.0" -->
-`images.grayscale` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.grayscale" -->
+`images.grayscale` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.grayscale);
 ```
 
-<!-- api-member-contract id="images.hist" version="6.7.0" -->
-`images.hist` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.hist" -->
+`images.hist` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.hist);
 ```
 
-<!-- api-member-contract id="images.imread" version="6.7.0" -->
-`images.imread` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.imread" -->
+`images.imread` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.imread);
 ```
 
-<!-- api-member-contract id="images.inRange" version="6.7.0" -->
-`images.inRange` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.inRange" -->
+`images.inRange` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.inRange);
 ```
 
-<!-- api-member-contract id="images.interval" version="6.7.0" -->
-`images.interval` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.interval" -->
+`images.interval` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.interval);
 ```
 
-<!-- api-member-contract id="images.invert" version="6.7.0" -->
-`images.invert` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.invert" -->
+`images.invert` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.invert);
 ```
 
-<!-- api-member-contract id="images.isEqual" version="6.7.0" -->
-`images.isEqual` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.isEqual" -->
+`images.isEqual` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.isEqual);
 ```
 
-<!-- api-member-contract id="images.isGrayscale" version="6.7.0" -->
-`images.isGrayscale` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.isGrayscale" -->
+`images.isGrayscale` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.isGrayscale);
 ```
 
-<!-- api-member-contract id="images.isRecycled" version="6.7.0" -->
-`images.isRecycled` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.isRecycled" -->
+`images.isRecycled` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.isRecycled);
 ```
 
-<!-- api-member-contract id="images.load" version="6.7.0" -->
-`images.load` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.load" -->
+`images.load` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.load);
 ```
 
-<!-- api-member-contract id="images.loadAsync" version="6.7.0" -->
-`images.loadAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.loadAsync" -->
+`images.loadAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.loadAsync);
 ```
 
-<!-- api-member-contract id="images.matchFeatures" version="6.7.0" -->
-`images.matchFeatures` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.matchFeatures" -->
+`images.matchFeatures` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.matchFeatures);
 ```
 
-<!-- api-member-contract id="images.matchTemplate" version="6.7.0" -->
-`images.matchTemplate` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.matchTemplate" -->
+`images.matchTemplate` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.matchTemplate);
 ```
 
-<!-- api-member-contract id="images.matToImage" version="6.7.0" -->
-`images.matToImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.matToImage" -->
+`images.matToImage` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.matToImage);
 ```
 
-<!-- api-member-contract id="images.medianBlur" version="6.7.0" -->
-`images.medianBlur` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.medianBlur" -->
+`images.medianBlur` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.medianBlur);
 ```
 
-<!-- api-member-contract id="images.mse" version="6.7.0" -->
-`images.mse` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.mse" -->
+`images.mse` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.mse);
 ```
 
-<!-- api-member-contract id="images.mssim" version="6.7.0" -->
-`images.mssim` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.mssim" -->
+`images.mssim` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.mssim);
 ```
 
-<!-- api-member-contract id="images.ncc" version="6.7.0" -->
-`images.ncc` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.ncc" -->
+`images.ncc` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.ncc);
 ```
 
-<!-- api-member-contract id="images.pixel" version="6.7.0" -->
-`images.pixel` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.pixel" -->
+`images.pixel` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.pixel);
 ```
 
-<!-- api-member-contract id="images.psnr" version="6.7.0" -->
-`images.psnr` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.psnr" -->
+`images.psnr` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.psnr);
 ```
 
-<!-- api-member-contract id="images.read" version="6.7.0" -->
-`images.read` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.read" -->
+`images.read` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.read);
 ```
 
-<!-- api-member-contract id="images.readPixels" version="6.7.0" -->
-`images.readPixels` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.readPixels" -->
+`images.readPixels` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.readPixels);
 ```
 
-<!-- api-member-contract id="images.recycle" version="6.7.0" -->
-`images.recycle` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.recycle" -->
+`images.recycle` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.recycle);
 ```
 
 
 
-<!-- api-member-contract id="images.resize" version="6.7.0" -->
-`images.resize` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.resize" -->
+`images.resize` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.resize);
 ```
 
-<!-- api-member-contract id="images.rotate" version="6.7.0" -->
-`images.rotate` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.rotate" -->
+`images.rotate` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.rotate);
 ```
 
-<!-- api-member-contract id="images.save" version="6.7.0" -->
-`images.save` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.save" -->
+`images.save` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.save);
 ```
 
-<!-- api-member-contract id="images.saveImage" version="6.7.0" -->
-`images.saveImage` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.saveImage" -->
+`images.saveImage` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.saveImage);
 ```
 
-<!-- api-member-contract id="images.scale" version="6.7.0" -->
-`images.scale` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.scale" -->
+`images.scale` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.scale);
 ```
 
-<!-- api-member-contract id="images.ssim" version="6.7.0" -->
-`images.ssim` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.ssim" -->
+`images.ssim` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.ssim);
 ```
 
-<!-- api-member-contract id="images.stopScreenCapture" version="6.7.0" -->
-`images.stopScreenCapture` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.stopScreenCapture" -->
+`images.stopScreenCapture` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.stopScreenCapture);
 ```
 
-<!-- api-member-contract id="images.threshold" version="6.7.0" -->
-`images.threshold` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.threshold" -->
+`images.threshold` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.threshold);
 ```
 
-<!-- api-member-contract id="images.toBase64" version="6.7.0" -->
-`images.toBase64` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.toBase64" -->
+`images.toBase64` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.toBase64);
 ```
 
-<!-- api-member-contract id="images.toBytes" version="6.7.0" -->
-`images.toBytes` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.toBytes" -->
+`images.toBytes` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.toBytes);
 ```
 
-<!-- api-member-contract id="module:images" version="6.7.0" -->
-`module:images` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:images" -->
+`module:images` · Rhino 2.0 示例：
 ```js
 console.log(typeof images);
 ```
 
 
-<!-- api-member-contract id="images.getScreenCaptureInfo" version="6.7.0" -->
-`images.getScreenCaptureInfo` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="images.getScreenCaptureInfo" -->
+`images.getScreenCaptureInfo` · Rhino 2.0 示例：
 ```js
 console.log(typeof images.getScreenCaptureInfo);
 ```

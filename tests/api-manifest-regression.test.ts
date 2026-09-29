@@ -7,12 +7,12 @@ describe('pinned MonkeyKing API manifest', () => {
       readFileSync(resolve(process.cwd(), 'api-surface/manifest.json'), 'utf8'),
     ) as {
       schemaVersion: number
-      productVersion: string
       symbols: Array<{ id: string }>
     }
     const symbolIds = new Set(manifest.symbols.map(({ id }) => id))
 
-    expect(manifest).toMatchObject({ schemaVersion: 2, productVersion: '6.7.0' })
+    expect(manifest).toMatchObject({ schemaVersion: 3 })
+    expect(manifest).not.toHaveProperty('productVersion')
     // The working-tree MonkeyKing source used for this release removes four
     // legacy screen-capture aliases and adds two current runtime methods.
     // Keep the assertion tied to the checked-in source-backed manifest.

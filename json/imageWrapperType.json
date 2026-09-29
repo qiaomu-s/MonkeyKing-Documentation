@@ -55,7 +55,7 @@
             {
               "textRaw": "`plane`",
               "name": "`plane`",
-              "desc": "<pre><code class=\"lang-ts\">readonly plane: android.media.Image.Plane | null\n</code></pre>\n<p>底层媒体图像平面（如果仍存在）。6.7.0 的屏幕媒体图像构造流程会立即复制像素并关闭原始 <code>Image</code>，因此常规截图包装器通常不再保留该引用。</p>\n",
+              "desc": "<pre><code class=\"lang-ts\">readonly plane: android.media.Image.Plane | null\n</code></pre>\n<p>底层媒体图像平面（如果仍存在）。当前版本的屏幕媒体图像构造流程会立即复制像素并关闭原始 <code>Image</code>，因此常规截图包装器通常不再保留该引用。</p>\n",
               "type": "module",
               "displayName": "`plane`"
             }
@@ -124,7 +124,7 @@
         {
           "textRaw": "所有权、线程与异常",
           "name": "所有权、线程与异常",
-          "desc": "<ul>\n<li><code>images.read</code>、<code>images.load</code>、<code>images.captureScreen</code> 和大多数变换返回的新包装器由调用方负责回收。</li>\n<li>路径参数被转换为当前脚本运行时路径；共享存储访问仍受 Android 权限和分区存储规则约束。</li>\n<li>包装器的 <code>recycle()</code> 有同步保护，但像素读取、位图/矩阵转换和其他属性访问并非并发事务；不要在一个线程回收的同时从另一个线程使用同一实例。</li>\n<li>调用图像 API 时，如果输入是路径，运行时通常创建一次性包装器并在操作后自动回收；这不影响方法返回的新图像。</li>\n<li>本页描述 MonkeyKing 6.7.0 的资源合同。</li>\n</ul>\n",
+          "desc": "<ul>\n<li><code>images.read</code>、<code>images.load</code>、<code>images.captureScreen</code> 和大多数变换返回的新包装器由调用方负责回收。</li>\n<li>路径参数被转换为当前脚本运行时路径；共享存储访问仍受 Android 权限和分区存储规则约束。</li>\n<li>包装器的 <code>recycle()</code> 有同步保护，但像素读取、位图/矩阵转换和其他属性访问并非并发事务；不要在一个线程回收的同时从另一个线程使用同一实例。</li>\n<li>调用图像 API 时，如果输入是路径，运行时通常创建一次性包装器并在操作后自动回收；这不影响方法返回的新图像。</li>\n<li>本页描述 MonkeyKing 的资源合同。</li>\n</ul>\n",
           "type": "module",
           "displayName": "所有权、线程与异常"
         }

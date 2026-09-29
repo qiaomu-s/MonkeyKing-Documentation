@@ -4,7 +4,7 @@
     {
       "textRaw": "国际化 (Internationalization)",
       "name": "国际化_(internationalization)",
-      "desc": "<p><strong>自 v6.2.0 起提供。</strong></p>\n<p>本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p>全局属性 <code>i18n</code> 在首次访问时延迟加载应用内置 <code>i18n.js</code>。实现基于固定打包的 <code>banana-i18n.js</code>，并增加本地 JSON 目录、自动加载和默认语言约定。</p>\n<p>每个脚本运行时持有自己的 i18n 实例。默认目录是当前脚本工作目录下的 <code>i18n/</code>；初始化时同步加载其中全部 <code>.json</code> 文件，并把 locale 设为 <code>default</code>。目录不可用时会尝试应用 assets 下的同名目录。</p>\n",
+      "desc": "<p><strong>自 v6.2.0 起提供。</strong></p>\n<p>本文于 2026-09-10 按 Monkey King 当前产品行为核对。</p>\n<p>全局属性 <code>i18n</code> 在首次访问时延迟加载应用内置 <code>i18n.js</code>。实现基于固定打包的 <code>banana-i18n.js</code>，并增加本地 JSON 目录、自动加载和默认语言约定。</p>\n<p>每个脚本运行时持有自己的 i18n 实例。默认目录是当前脚本工作目录下的 <code>i18n/</code>；初始化时同步加载其中全部 <code>.json</code> 文件，并把 locale 设为 <code>default</code>。目录不可用时会尝试应用 assets 下的同名目录。</p>\n",
       "modules": [
         {
           "textRaw": "[@] i18n",

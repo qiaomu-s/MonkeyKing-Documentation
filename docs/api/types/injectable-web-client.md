@@ -1,7 +1,7 @@
 # InjectableWebClient
 
 [android.webkit.WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient)
-的子类。Monkey King 6.7.0 在 Rhino 2.0 中用它把脚本排队到页面加载完成后执行。
+的子类。Monkey King 在 Rhino 2.0 中用它把脚本排队到页面加载完成后执行。
 
 常见相关方法或属性:
 
@@ -20,7 +20,7 @@
 
 ### inject(script, callback?)
 
-**`6.7.0`** **`Overload [1-2]/2`**
+ **`Overload [1-2]/2`**
 
 - **script** { [string](data-types.md#string) } - 脚本
 - **[ callback ]** { [(](data-types.md#function)value: [string](data-types.md#string)[)](data-types.md#function) [=>](data-types.md#function) [void](data-types.md#void) } - 脚本
@@ -42,9 +42,6 @@ activity.setContentView(webView);
 ## [m#] injectAndWait
 
 ### injectAndWait(script)
-
-**`6.7.0`**
-
 - **script** { [string](data-types.md#string) } - 脚本
 - <ins>**returns**</ins> { [string](data-types.md#string) } - 脚本执行结果
 

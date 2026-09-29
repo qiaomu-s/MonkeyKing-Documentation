@@ -83,10 +83,8 @@ describe('documentation build orchestration', () => {
     expect(androidHtml).toContain('src="/assets/docs/logo.png"')
   })
 
-  test('copies the custom-domain declaration into the Android artifact', () => {
-    expect(
-      readFileSync(resolve(process.cwd(), 'dist/android/CNAME'), 'utf8'),
-    ).toBe('docs.monkeyking.com\n')
+  test('does not publish a custom-domain declaration into the Android artifact', () => {
+    expect(existsSync(resolve(process.cwd(), 'dist/android/CNAME'))).toBe(false)
   })
 
   test('does not publish legacy JSON in the Android artifact', () => {

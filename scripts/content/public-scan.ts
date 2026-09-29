@@ -15,6 +15,8 @@ const root = resolve(process.cwd())
  * names, and ordinary third-party reference links are valid public content.
  */
 const hardPatterns: readonly [string, RegExp][] = [
+  ['removed product version', /\bv?6\.7\.0\b/i],
+  ['project site URL', /https?:\/\/(?:docs\.)?monkeyking\.com\b/i],
   [
     'private repository URL or name',
     /qiaomu-s\/(?:AutoJs6|MonkeyKing-Documentation|MonkeyKing)\b/i,

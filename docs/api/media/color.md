@@ -1687,7 +1687,7 @@ colors.isSimilar('#010101', '#020202', { similarity: 0.95 }); // true
 - **[ thresholdOrOptions ]** { [number](../types/data-types.md#number) | [object](../types/data-types.md#object) } - 与 `isSimilar` 相同的阈值或选项对象，可包含 `threshold`、`similarity`、`algorithm`
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) } - 两个颜色是否通过相似度检测
 
-当前 6.7.0 实现使用与 `colors.isSimilar` 相同的颜色检测器：省略第三个参数时阈值为 `4`、算法为 `diff`；传入数字时将其作为阈值，传入对象时可使用 `threshold`、`similarity` 和 `algorithm`。检测只比较 `R/G/B` 分量，`A (alpha)` 不参与比较。该入口名称虽为 `isEqual`，并不保证逐通道精确相等；需要精确比较时应使用 `Color(...).equals(...)` 或 `images.isEqual(...)`（按适用类型）。
+当前实现使用与 `colors.isSimilar` 相同的颜色检测器：省略第三个参数时阈值为 `4`、算法为 `diff`；传入数字时将其作为阈值，传入对象时可使用 `threshold`、`similarity` 和 `algorithm`。检测只比较 `R/G/B` 分量，`A (alpha)` 不参与比较。该入口名称虽为 `isEqual`，并不保证逐通道精确相等；需要精确比较时应使用 `Color(...).equals(...)` 或 `images.isEqual(...)`（按适用类型）。
 
 ```js
 /* Hex 代码. */
@@ -2115,9 +2115,9 @@ colors.toHex(colors.PURPLE_300); /* 材料紫色 (300 号). */
 
 ---
 
-## MonkeyKing 6.7.0 运行时入口补充
+## MonkeyKing 运行时入口补充
 
-本节记录由 6.7.0 Kotlin 运行时直接导出的入口。上文已有方法的详细颜色转换规则仍然适用；这里补齐模块、构造、动态颜色表和字符串格式化合同。
+本节记录由 当前 Kotlin 运行时直接导出的入口。上文已有方法的详细颜色转换规则仍然适用；这里补齐模块、构造、动态颜色表和字符串格式化合同。
 
 <a id="api-symbol-bW9kdWxlOmNvbG9ycw"></a>
 
@@ -2361,459 +2361,459 @@ console.log(a.toHex(), b.toHex())
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="call:color" version="6.7.0" -->
-`call:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:color" -->
+`call:color` · Rhino 2.0 示例：
 ```js
 console.log(typeof color);
 ```
 
-<!-- api-member-contract id="colors.all" version="6.7.0" -->
-`colors.all` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.all" -->
+`colors.all` · Rhino 2.0 示例：
 ```js
 console.log(colors.all);
 ```
 
-<!-- api-member-contract id="colors.alpha" version="6.7.0" -->
-`colors.alpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.alpha" -->
+`colors.alpha` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.alpha);
 ```
 
-<!-- api-member-contract id="colors.alphaDouble" version="6.7.0" -->
-`colors.alphaDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.alphaDouble" -->
+`colors.alphaDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.alphaDouble);
 ```
 
-<!-- api-member-contract id="colors.android" version="6.7.0" -->
-`colors.android` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.android" -->
+`colors.android` · Rhino 2.0 示例：
 ```js
 console.log(colors.android);
 ```
 
-<!-- api-member-contract id="colors.argb" version="6.7.0" -->
-`colors.argb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.argb" -->
+`colors.argb` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.argb);
 ```
 
-<!-- api-member-contract id="colors.blue" version="6.7.0" -->
-`colors.blue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.blue" -->
+`colors.blue` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.blue);
 ```
 
-<!-- api-member-contract id="colors.blueDouble" version="6.7.0" -->
-`colors.blueDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.blueDouble" -->
+`colors.blueDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.blueDouble);
 ```
 
-<!-- api-member-contract id="colors.build" version="6.7.0" -->
-`colors.build` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.build" -->
+`colors.build` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.build);
 ```
 
-<!-- api-member-contract id="colors.colorToHSV" version="6.7.0" -->
-`colors.colorToHSV` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.colorToHSV" -->
+`colors.colorToHSV` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.colorToHSV);
 ```
 
-<!-- api-member-contract id="colors.css" version="6.7.0" -->
-`colors.css` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.css" -->
+`colors.css` · Rhino 2.0 示例：
 ```js
 console.log(colors.css);
 ```
 
-<!-- api-member-contract id="colors.equals" version="6.7.0" -->
-`colors.equals` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.equals" -->
+`colors.equals` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.equals);
 ```
 
-<!-- api-member-contract id="colors.getAlpha" version="6.7.0" -->
-`colors.getAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getAlpha" -->
+`colors.getAlpha` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getAlpha);
 ```
 
-<!-- api-member-contract id="colors.getAlphaDouble" version="6.7.0" -->
-`colors.getAlphaDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getAlphaDouble" -->
+`colors.getAlphaDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getAlphaDouble);
 ```
 
-<!-- api-member-contract id="colors.getBlue" version="6.7.0" -->
-`colors.getBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getBlue" -->
+`colors.getBlue` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getBlue);
 ```
 
-<!-- api-member-contract id="colors.getBlueDouble" version="6.7.0" -->
-`colors.getBlueDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getBlueDouble" -->
+`colors.getBlueDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getBlueDouble);
 ```
 
-<!-- api-member-contract id="colors.getGreen" version="6.7.0" -->
-`colors.getGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getGreen" -->
+`colors.getGreen` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getGreen);
 ```
 
-<!-- api-member-contract id="colors.getGreenDouble" version="6.7.0" -->
-`colors.getGreenDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getGreenDouble" -->
+`colors.getGreenDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getGreenDouble);
 ```
 
-<!-- api-member-contract id="colors.getRed" version="6.7.0" -->
-`colors.getRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getRed" -->
+`colors.getRed` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getRed);
 ```
 
-<!-- api-member-contract id="colors.getRedDouble" version="6.7.0" -->
-`colors.getRedDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.getRedDouble" -->
+`colors.getRedDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.getRedDouble);
 ```
 
-<!-- api-member-contract id="colors.green" version="6.7.0" -->
-`colors.green` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.green" -->
+`colors.green` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.green);
 ```
 
-<!-- api-member-contract id="colors.greenDouble" version="6.7.0" -->
-`colors.greenDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.greenDouble" -->
+`colors.greenDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.greenDouble);
 ```
 
-<!-- api-member-contract id="colors.hsl" version="6.7.0" -->
-`colors.hsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.hsl" -->
+`colors.hsl` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.hsl);
 ```
 
-<!-- api-member-contract id="colors.hsla" version="6.7.0" -->
-`colors.hsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.hsla" -->
+`colors.hsla` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.hsla);
 ```
 
-<!-- api-member-contract id="colors.hsv" version="6.7.0" -->
-`colors.hsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.hsv" -->
+`colors.hsv` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.hsv);
 ```
 
-<!-- api-member-contract id="colors.hsva" version="6.7.0" -->
-`colors.hsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.hsva" -->
+`colors.hsva` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.hsva);
 ```
 
-<!-- api-member-contract id="colors.HSVToColor" version="6.7.0" -->
-`colors.HSVToColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.HSVToColor" -->
+`colors.HSVToColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.HSVToColor);
 ```
 
-<!-- api-member-contract id="colors.isEqual" version="6.7.0" -->
-`colors.isEqual` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.isEqual" -->
+`colors.isEqual` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.isEqual);
 ```
 
-<!-- api-member-contract id="colors.isSimilar" version="6.7.0" -->
-`colors.isSimilar` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.isSimilar" -->
+`colors.isSimilar` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.isSimilar);
 ```
 
-<!-- api-member-contract id="colors.luminance" version="6.7.0" -->
-`colors.luminance` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.luminance" -->
+`colors.luminance` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.luminance);
 ```
 
-<!-- api-member-contract id="colors.material" version="6.7.0" -->
-`colors.material` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.material" -->
+`colors.material` · Rhino 2.0 示例：
 ```js
 console.log(colors.material);
 ```
 
-<!-- api-member-contract id="colors.parseColor" version="6.7.0" -->
-`colors.parseColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.parseColor" -->
+`colors.parseColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.parseColor);
 ```
 
-<!-- api-member-contract id="colors.red" version="6.7.0" -->
-`colors.red` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.red" -->
+`colors.red` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.red);
 ```
 
-<!-- api-member-contract id="colors.redDouble" version="6.7.0" -->
-`colors.redDouble` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.redDouble" -->
+`colors.redDouble` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.redDouble);
 ```
 
-<!-- api-member-contract id="colors.removeAlpha" version="6.7.0" -->
-`colors.removeAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.removeAlpha" -->
+`colors.removeAlpha` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.removeAlpha);
 ```
 
-<!-- api-member-contract id="colors.removeBlue" version="6.7.0" -->
-`colors.removeBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.removeBlue" -->
+`colors.removeBlue` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.removeBlue);
 ```
 
-<!-- api-member-contract id="colors.removeGreen" version="6.7.0" -->
-`colors.removeGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.removeGreen" -->
+`colors.removeGreen` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.removeGreen);
 ```
 
-<!-- api-member-contract id="colors.removeRed" version="6.7.0" -->
-`colors.removeRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.removeRed" -->
+`colors.removeRed` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.removeRed);
 ```
 
-<!-- api-member-contract id="colors.rgb" version="6.7.0" -->
-`colors.rgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.rgb" -->
+`colors.rgb` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.rgb);
 ```
 
-<!-- api-member-contract id="colors.rgba" version="6.7.0" -->
-`colors.rgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.rgba" -->
+`colors.rgba` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.rgba);
 ```
 
-<!-- api-member-contract id="colors.RGBToHSV" version="6.7.0" -->
-`colors.RGBToHSV` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.RGBToHSV" -->
+`colors.RGBToHSV` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.RGBToHSV);
 ```
 
-<!-- api-member-contract id="colors.setAlpha" version="6.7.0" -->
-`colors.setAlpha` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setAlpha" -->
+`colors.setAlpha` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setAlpha);
 ```
 
-<!-- api-member-contract id="colors.setAlphaRelative" version="6.7.0" -->
-`colors.setAlphaRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setAlphaRelative" -->
+`colors.setAlphaRelative` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setAlphaRelative);
 ```
 
-<!-- api-member-contract id="colors.setBlue" version="6.7.0" -->
-`colors.setBlue` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setBlue" -->
+`colors.setBlue` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setBlue);
 ```
 
-<!-- api-member-contract id="colors.setBlueRelative" version="6.7.0" -->
-`colors.setBlueRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setBlueRelative" -->
+`colors.setBlueRelative` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setBlueRelative);
 ```
 
-<!-- api-member-contract id="colors.setGreen" version="6.7.0" -->
-`colors.setGreen` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setGreen" -->
+`colors.setGreen` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setGreen);
 ```
 
-<!-- api-member-contract id="colors.setGreenRelative" version="6.7.0" -->
-`colors.setGreenRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setGreenRelative" -->
+`colors.setGreenRelative` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setGreenRelative);
 ```
 
-<!-- api-member-contract id="colors.setPaintColor" version="6.7.0" -->
-`colors.setPaintColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setPaintColor" -->
+`colors.setPaintColor` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setPaintColor);
 ```
 
-<!-- api-member-contract id="colors.setRed" version="6.7.0" -->
-`colors.setRed` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setRed" -->
+`colors.setRed` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setRed);
 ```
 
-<!-- api-member-contract id="colors.setRedRelative" version="6.7.0" -->
-`colors.setRedRelative` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.setRedRelative" -->
+`colors.setRedRelative` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.setRedRelative);
 ```
 
-<!-- api-member-contract id="colors.summary" version="6.7.0" -->
-`colors.summary` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.summary" -->
+`colors.summary` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.summary);
 ```
 
-<!-- api-member-contract id="colors.themeColor" version="6.7.0" -->
-`colors.themeColor` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.themeColor" -->
+`colors.themeColor` · Rhino 2.0 示例：
 ```js
 console.log(colors.themeColor);
 ```
 
-<!-- api-member-contract id="colors.toArgb" version="6.7.0" -->
-`colors.toArgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toArgb" -->
+`colors.toArgb` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toArgb);
 ```
 
-<!-- api-member-contract id="colors.toArgbString" version="6.7.0" -->
-`colors.toArgbString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toArgbString" -->
+`colors.toArgbString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toArgbString);
 ```
 
-<!-- api-member-contract id="colors.toColorStateList" version="6.7.0" -->
-`colors.toColorStateList` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toColorStateList" -->
+`colors.toColorStateList` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toColorStateList);
 ```
 
-<!-- api-member-contract id="colors.toFullHex" version="6.7.0" -->
-`colors.toFullHex` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toFullHex" -->
+`colors.toFullHex` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toFullHex);
 ```
 
-<!-- api-member-contract id="colors.toHex" version="6.7.0" -->
-`colors.toHex` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHex" -->
+`colors.toHex` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHex);
 ```
 
-<!-- api-member-contract id="colors.toHsl" version="6.7.0" -->
-`colors.toHsl` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsl" -->
+`colors.toHsl` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsl);
 ```
 
-<!-- api-member-contract id="colors.toHsla" version="6.7.0" -->
-`colors.toHsla` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsla" -->
+`colors.toHsla` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsla);
 ```
 
-<!-- api-member-contract id="colors.toHslaString" version="6.7.0" -->
-`colors.toHslaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHslaString" -->
+`colors.toHslaString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHslaString);
 ```
 
-<!-- api-member-contract id="colors.toHslString" version="6.7.0" -->
-`colors.toHslString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHslString" -->
+`colors.toHslString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHslString);
 ```
 
-<!-- api-member-contract id="colors.toHsv" version="6.7.0" -->
-`colors.toHsv` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsv" -->
+`colors.toHsv` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsv);
 ```
 
-<!-- api-member-contract id="colors.toHsva" version="6.7.0" -->
-`colors.toHsva` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsva" -->
+`colors.toHsva` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsva);
 ```
 
-<!-- api-member-contract id="colors.toHsvaString" version="6.7.0" -->
-`colors.toHsvaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsvaString" -->
+`colors.toHsvaString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsvaString);
 ```
 
-<!-- api-member-contract id="colors.toHsvString" version="6.7.0" -->
-`colors.toHsvString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toHsvString" -->
+`colors.toHsvString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toHsvString);
 ```
 
-<!-- api-member-contract id="colors.toInt" version="6.7.0" -->
-`colors.toInt` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toInt" -->
+`colors.toInt` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toInt);
 ```
 
-<!-- api-member-contract id="colors.toRgb" version="6.7.0" -->
-`colors.toRgb` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toRgb" -->
+`colors.toRgb` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toRgb);
 ```
 
-<!-- api-member-contract id="colors.toRgba" version="6.7.0" -->
-`colors.toRgba` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toRgba" -->
+`colors.toRgba` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toRgba);
 ```
 
-<!-- api-member-contract id="colors.toRgbaString" version="6.7.0" -->
-`colors.toRgbaString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toRgbaString" -->
+`colors.toRgbaString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toRgbaString);
 ```
 
-<!-- api-member-contract id="colors.toRgbString" version="6.7.0" -->
-`colors.toRgbString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toRgbString" -->
+`colors.toRgbString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toRgbString);
 ```
 
-<!-- api-member-contract id="colors.toString" version="6.7.0" -->
-`colors.toString` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.toString" -->
+`colors.toString` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors.toString);
 ```
 
-<!-- api-member-contract id="colors.web" version="6.7.0" -->
-`colors.web` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="colors.web" -->
+`colors.web` · Rhino 2.0 示例：
 ```js
 console.log(colors.web);
 ```
 
-<!-- api-member-contract id="construct:color" version="6.7.0" -->
-`construct:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="construct:color" -->
+`construct:color` · Rhino 2.0 示例：
 ```js
 var value = new Color('red');
 console.log(value.toStringReadable());
 ```
 
-<!-- api-member-contract id="dynamic:colors.merged-table-entries" version="6.7.0" -->
-`dynamic:colors.merged-table-entries` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="dynamic:colors.merged-table-entries" -->
+`dynamic:colors.merged-table-entries` · Rhino 2.0 示例：
 ```js
 console.log(Object.keys(colors)); // mergedTableEntries
 ```
 
-<!-- api-member-contract id="module:color" version="6.7.0" -->
-`module:color` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:color" -->
+`module:color` · Rhino 2.0 示例：
 ```js
 console.log(typeof color);
 ```
 
-<!-- api-member-contract id="module:colors" version="6.7.0" -->
-`module:colors` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:colors" -->
+`module:colors` · Rhino 2.0 示例：
 ```js
 console.log(typeof colors);
 ```

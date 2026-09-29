@@ -166,87 +166,87 @@ try {
 - `playMusic` 的准备阶段和所有控制方法在调用它们的脚本线程执行；实际音频播放由 Android 媒体栈异步完成。
 - `MediaScannerConnection` 的两个回调由 Android 驱动，不能假设与调用 `scanFile` 的脚本线程相同。
 - 模块不主动申请存储权限；路径能否访问取决于 MonkeyKing 文件解析和 Android 存储策略。
-- 本页合同对应 MonkeyKing 6.7.0；具体可播放格式与设备的 Android 媒体组件有关。
+- 本页合同对应 MonkeyKing；具体可播放格式与设备的 Android 媒体组件有关。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="media.getMusicCurrentPosition" version="6.7.0" -->
-`media.getMusicCurrentPosition` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.getMusicCurrentPosition" -->
+`media.getMusicCurrentPosition` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.getMusicCurrentPosition);
 ```
 
-<!-- api-member-contract id="media.getMusicDuration" version="6.7.0" -->
-`media.getMusicDuration` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.getMusicDuration" -->
+`media.getMusicDuration` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.getMusicDuration);
 ```
 
-<!-- api-member-contract id="media.isMusicPlaying" version="6.7.0" -->
-`media.isMusicPlaying` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.isMusicPlaying" -->
+`media.isMusicPlaying` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.isMusicPlaying);
 ```
 
-<!-- api-member-contract id="media.musicSeekTo" version="6.7.0" -->
-`media.musicSeekTo` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.musicSeekTo" -->
+`media.musicSeekTo` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.musicSeekTo);
 ```
 
-<!-- api-member-contract id="media.onMediaScannerConnected" version="6.7.0" -->
-`media.onMediaScannerConnected` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.onMediaScannerConnected" -->
+`media.onMediaScannerConnected` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.onMediaScannerConnected);
 ```
 
-<!-- api-member-contract id="media.onScanCompleted" version="6.7.0" -->
-`media.onScanCompleted` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.onScanCompleted" -->
+`media.onScanCompleted` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.onScanCompleted);
 ```
 
-<!-- api-member-contract id="media.pauseMusic" version="6.7.0" -->
-`media.pauseMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.pauseMusic" -->
+`media.pauseMusic` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.pauseMusic);
 ```
 
-<!-- api-member-contract id="media.playMusic" version="6.7.0" -->
-`media.playMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.playMusic" -->
+`media.playMusic` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.playMusic);
 ```
 
-<!-- api-member-contract id="media.recycle" version="6.7.0" -->
-`media.recycle` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.recycle" -->
+`media.recycle` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.recycle);
 ```
 
-<!-- api-member-contract id="media.resumeMusic" version="6.7.0" -->
-`media.resumeMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.resumeMusic" -->
+`media.resumeMusic` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.resumeMusic);
 ```
 
-<!-- api-member-contract id="media.scanFile" version="6.7.0" -->
-`media.scanFile` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.scanFile" -->
+`media.scanFile` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.scanFile);
 ```
 
-<!-- api-member-contract id="media.stopMusic" version="6.7.0" -->
-`media.stopMusic` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="media.stopMusic" -->
+`media.stopMusic` · Rhino 2.0 示例：
 ```js
 console.log(typeof media.stopMusic);
 ```
 
-<!-- api-member-contract id="module:media" version="6.7.0" -->
-`module:media` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:media" -->
+`module:media` · Rhino 2.0 示例：
 ```js
 console.log(typeof media);
 ```

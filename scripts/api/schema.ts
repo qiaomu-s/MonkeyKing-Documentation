@@ -254,15 +254,14 @@ const publicSymbolKind = {
   ],
 } as const
 
-/** Public manifest schema (v2).  No source/provenance fields are permitted. */
+/** Public manifest schema (v3).  No source/provenance/version fields are permitted. */
 export const manifestSchema = {
-  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-manifest.schema.json',
+  $id: 'api-manifest.schema.json',
   type: 'object',
   additionalProperties: false,
-  required: ['schemaVersion', 'productVersion', 'modules', 'symbols'],
+  required: ['schemaVersion', 'modules', 'symbols'],
   properties: {
-    schemaVersion: { type: 'integer', const: 2 },
-    productVersion: { type: 'string', const: '6.7.0' },
+    schemaVersion: { type: 'integer', const: 3 },
     modules: {
       type: 'array',
       items: {
@@ -321,15 +320,14 @@ export const manifestSchema = {
   },
 } as const
 
-/** Public coverage schema (v2).  Rules intentionally have no source ref. */
+/** Public coverage schema (v3).  Rules intentionally have no source ref or product version. */
 export const coverageSchema = {
-  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-coverage.schema.json',
+  $id: 'api-coverage.schema.json',
   type: 'object',
   additionalProperties: false,
-  required: ['schemaVersion', 'productVersion', 'rules'],
+  required: ['schemaVersion', 'rules'],
   properties: {
-    schemaVersion: { type: 'integer', const: 2 },
-    productVersion: { type: 'string', const: '6.7.0' },
+    schemaVersion: { type: 'integer', const: 3 },
     rules: {
       type: 'array',
       items: {
@@ -379,7 +377,7 @@ export const coverageSchema = {
 } as const
 
 export const gapsSchema = {
-  $id: 'https://qiaomu-s.github.io/MonkeyKing-Documentation/api-gaps.schema.json',
+  $id: 'api-gaps.schema.json',
   type: 'object',
   additionalProperties: false,
   required: ['gaps'],

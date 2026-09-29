@@ -16,7 +16,7 @@
         {
           "textRaw": "`new canvas(source?)`",
           "name": "`new_canvas(source?)`",
-          "desc": "<pre><code class=\"lang-ts\">new canvas(): ScriptCanvas\nnew canvas(bitmap: android.graphics.Bitmap): ScriptCanvas\nnew canvas(image: ImageWrapper): ScriptCanvas\nnew canvas(width: number, height: number): ScriptCanvas\n</code></pre>\n<ul>\n<li>无参数形式创建一个尚未绑定 Android 画布的包装器，供宿主或 UI 之后通过 <code>setCanvas</code> 注入；在绑定前调用依赖画布的方法会失败。</li>\n<li><code>Bitmap</code> 形式直接在给定的可变位图上绘制。</li>\n<li><code>ImageWrapper</code> 形式先复制其位图，再在副本上绘制，因此不会改写原图。</li>\n<li>宽高形式会把数值转为整数，并创建 <code>ARGB_8888</code> 位图；非数字参数会抛出参数异常，Android 也会拒绝无效尺寸。</li>\n</ul>\n<p><code>toImage()</code> 返回当前内部位图的副本，调用方负责按 <code>ImageWrapper</code> 生命周期回收返回值。构造器最多接受两个参数，多余参数或不支持的单参数类型会抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<pre><code class=\"lang-js\">const board = new canvas(320, 180)\nconst paint = new android.graphics.Paint()\npaint.setARGB(255, 255, 64, 64)\nboard.drawRect(20, 20, 300, 160, paint)\n\nconst output = board.toImage()\ntry {\n  images.save(output, &#39;/sdcard/Download/canvas-demo.png&#39;)\n} finally {\n  output.recycle()\n}\n</code></pre>\n<p>该构造入口在 MonkeyKing 6.7.0 中可用；实例方法主要转发到 Android <code>Canvas</code>，参数限制和绘制语义以对应 Android API 为准。</p>\n",
+          "desc": "<pre><code class=\"lang-ts\">new canvas(): ScriptCanvas\nnew canvas(bitmap: android.graphics.Bitmap): ScriptCanvas\nnew canvas(image: ImageWrapper): ScriptCanvas\nnew canvas(width: number, height: number): ScriptCanvas\n</code></pre>\n<ul>\n<li>无参数形式创建一个尚未绑定 Android 画布的包装器，供宿主或 UI 之后通过 <code>setCanvas</code> 注入；在绑定前调用依赖画布的方法会失败。</li>\n<li><code>Bitmap</code> 形式直接在给定的可变位图上绘制。</li>\n<li><code>ImageWrapper</code> 形式先复制其位图，再在副本上绘制，因此不会改写原图。</li>\n<li>宽高形式会把数值转为整数，并创建 <code>ARGB_8888</code> 位图；非数字参数会抛出参数异常，Android 也会拒绝无效尺寸。</li>\n</ul>\n<p><code>toImage()</code> 返回当前内部位图的副本，调用方负责按 <code>ImageWrapper</code> 生命周期回收返回值。构造器最多接受两个参数，多余参数或不支持的单参数类型会抛出 <code>WrappedIllegalArgumentException</code>。</p>\n<pre><code class=\"lang-js\">const board = new canvas(320, 180)\nconst paint = new android.graphics.Paint()\npaint.setARGB(255, 255, 64, 64)\nboard.drawRect(20, 20, 300, 160, paint)\n\nconst output = board.toImage()\ntry {\n  images.save(output, &#39;/sdcard/Download/canvas-demo.png&#39;)\n} finally {\n  output.recycle()\n}\n</code></pre>\n<p>该构造入口在 MonkeyKing 中可用；实例方法主要转发到 Android <code>Canvas</code>，参数限制和绘制语义以对应 Android API 为准。</p>\n",
           "type": "module",
           "displayName": "`new canvas(source?)`"
         }
@@ -653,7 +653,7 @@
         {
           "textRaw": "逐符号版本与 Rhino 2.0 示例",
           "name": "逐符号版本与_rhino_2.0_示例",
-          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
           "type": "module",
           "displayName": "逐符号版本与 Rhino 2.0 示例"
         }
@@ -668,7 +668,7 @@
         {
           "textRaw": "逐符号版本与 Rhino 2.0 示例",
           "name": "逐符号版本与_rhino_2.0_示例",
-          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · 版本：<strong>6.7.0</strong> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
+          "desc": "<p>下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。</p>\n<p><code>construct:canvas</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">var value = new canvas(1, 1);\nconsole.log(value.getWidth());\nvalue.toImage().recycle();\n</code></pre>\n<p><code>module:canvas</code> · Rhino 2.0 示例：</p>\n<pre><code class=\"lang-js\">console.log(typeof canvas);\n</code></pre>\n",
           "type": "module",
           "displayName": "逐符号版本与 Rhino 2.0 示例"
         }

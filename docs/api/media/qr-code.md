@@ -114,45 +114,45 @@ console.log(values.join('\n'))
 - 文件路径会经 MonkeyKing 文件模块规范化；无效图片路径会抛出参数异常。
 - 省略图像时需要屏幕捕获授权。同步扫描不适合放在 UI 线程的紧密循环中。
 - 路径读取产生的临时图像由检测流程按一次性资源处理；调用方持有的普通 `ImageWrapper` 仍由调用方管理。
-- API 在 MonkeyKing 6.7.0 中可用；底层识别能力由应用内置的 ML Kit 版本决定。
+- API 在 MonkeyKing 中可用；底层识别能力由应用内置的 ML Kit 版本决定。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="call:qrcode" version="6.7.0" -->
-`call:qrcode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="call:qrcode" -->
+`call:qrcode` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode);
 ```
 
-<!-- api-member-contract id="module:qrcode" version="6.7.0" -->
-`module:qrcode` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:qrcode" -->
+`module:qrcode` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode);
 ```
 
-<!-- api-member-contract id="qrcode.detect" version="6.7.0" -->
-`qrcode.detect` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="qrcode.detect" -->
+`qrcode.detect` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode.detect);
 ```
 
-<!-- api-member-contract id="qrcode.detectAll" version="6.7.0" -->
-`qrcode.detectAll` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="qrcode.detectAll" -->
+`qrcode.detectAll` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode.detectAll);
 ```
 
-<!-- api-member-contract id="qrcode.recognizeText" version="6.7.0" -->
-`qrcode.recognizeText` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="qrcode.recognizeText" -->
+`qrcode.recognizeText` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode.recognizeText);
 ```
 
-<!-- api-member-contract id="qrcode.recognizeTexts" version="6.7.0" -->
-`qrcode.recognizeTexts` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="qrcode.recognizeTexts" -->
+`qrcode.recognizeTexts` · Rhino 2.0 示例：
 ```js
 console.log(typeof qrcode.recognizeTexts);
 ```

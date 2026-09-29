@@ -4,7 +4,7 @@
     {
       "textRaw": "悬浮窗 (Floaty)",
       "name": "悬浮窗_(floaty)",
-      "desc": "<p><code>floaty</code> 创建覆盖在其他应用之上的脚本窗口。窗口依赖“显示在其他应用上层”权限，并与当前脚本运行时绑定；脚本结束时运行时会关闭其窗口。本文按 Monkey King 6.7.0 产品版本 <code>6.7.0</code> 核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmZsb2F0eQ\"></a></p>\n",
+      "desc": "<p><code>floaty</code> 创建覆盖在其他应用之上的脚本窗口。窗口依赖“显示在其他应用上层”权限，并与当前脚本运行时绑定；脚本结束时运行时会关闭其窗口。本文按 Monkey King 当前产品行为核对。</p>\n<p><a id=\"api-symbol-bW9kdWxlOmZsb2F0eQ\"></a></p>\n",
       "modules": [
         {
           "textRaw": "[@] floaty",

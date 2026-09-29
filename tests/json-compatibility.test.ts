@@ -972,7 +972,7 @@ describe('legacy JSON compatibility', () => {
       }),
     ).toBe(true)
     expect(schema.$id).toBe(
-      'https://docs.monkeyking.com/schemas/legacy-document.schema.json',
+      'legacy-document.schema.json',
     )
   })
 })

@@ -1,9 +1,6 @@
 # SQLite - 数据库
 
 `sqlite` 打开 Android SQLite 数据库，并返回对 `SQLiteDatabase` 的脚本友好封装。运行时同时注册 `sqlite` 与 `$sqlite`，两者引用同一个模块对象。
-
-版本：**v6.7.0**
-
 本页所有 `js` 代码块均为 Monkey King **Rhino 2.0** 示例。
 
 相关 Android 类型：[SQLiteDatabase](https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase)、[SQLiteOpenHelper](https://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper)、[SQLiteStatement](https://developer.android.com/reference/android/database/sqlite/SQLiteStatement)、[SQLiteTransactionListener](https://developer.android.com/reference/android/database/sqlite/SQLiteTransactionListener)、[Cursor](https://developer.android.com/reference/android/database/Cursor)、[CancellationSignal](https://developer.android.com/reference/android/os/CancellationSignal) 和 [ContentValues](https://developer.android.com/reference/android/content/ContentValues)。
@@ -250,7 +247,7 @@ cursor.close();
 
 ## API 合同表
 
-下表覆盖本页在产品版本 `6.7.0` 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
+下表覆盖本页在当前公开 API 中的每个 canonical 公共成员。每行同时给出稳定锚点、实现合同、参数与返回合同、权限与线程、生命周期与副作用、版本，以及可独立执行的 Rhino 2.0 成员存在性或值读取示例。对象实例名（如 `db`、`cursor`、`storage`）沿用本页正文中的创建方式。
 
 | API ID / 稳定锚点 | 签名或入口 | 参数、可选项与默认值 | 返回值与异常 | 权限与线程 | 生命周期与副作用 | 版本 | Rhino 2.0 示例 |
 | --- | --- | --- | --- | --- | --- | --- | --- |

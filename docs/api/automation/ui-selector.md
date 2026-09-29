@@ -64,7 +64,7 @@ console.log(sel.click()); /* 执行控件行为的动作. */
 <a id="api-symbol-bW9kdWxlOnNlbGVjdG9y"></a>
 ## [@] selector
 
-**`6.7.0`** **`Global`**
+ **`Global`**
 
 `selector` 是创建空 [UiSelector](#uiselector) 的全局可调用入口。模块初始化时还会反射 `UiSelector` 的公开方法，并把可用的选择器构建方法安装为全局函数；每次调用全局构建方法都会从一个新的选择器开始，不会复用或污染上一次的条件。
 
@@ -78,7 +78,7 @@ console.log(text('确定').clickable(true) instanceof UiSelector); // true
 <a id="api-symbol-Y2FsbDpzZWxlY3Rvcg"></a>
 ### [f] selector()
 
-**`6.7.0`** **`Global`**
+ **`Global`**
 
 - **参数**：必须为 0 个
 - <ins>**returns**</ins> { [UiSelector](ui-selector.md) } - 新建且不包含筛选条件的选择器
@@ -4381,7 +4381,7 @@ pickup({ contentValid: true }, '@');
 
 ### contentInvalid(b?)
 
-**`6.7.0`** **`Overload [1-2]/2`** **`Global`**
+ **`Overload [1-2]/2`** **`Global`**
 
 - **[ b = true ]** { [boolean](../types/data-types.md#boolean) }
 - <ins>**returns**</ins> { [UiSelector](ui-selector.md) }
@@ -6352,7 +6352,7 @@ console.log(sel); // text("立即开始").minHeight(0.2).clickable(true).descMat
 
 ### detect(widget, compass?, resultType?, callback?)
 
-**`6.7.0`** **`Global`**
+ **`Global`**
 
 - `widget` { [UiObject](ui-object.md) } - 作为检测起点的控件
 - `compass` { [Detect.Compass](../types/data-types.md#detectcompass) } - 可选的控件罗盘方向
@@ -6376,7 +6376,7 @@ if (widget !== null) {
 
 ### existsAll(...selectors)
 
-**`6.7.0`** **`Global`**
+ **`Global`**
 
 - `selectors` { [...](../../project/about.md#可变参数)[PickupSelector](../types/data-types.md#pickupselector)[[]](../../project/about.md#可变参数) } - 一个或多个选择器或可被 `pickup` 接受的混合选择器
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }
@@ -6393,7 +6393,7 @@ console.log(existsAll(text('标题'), id('submit')));
 
 ### existsOne(...selectors)
 
-**`6.7.0`** **`Global`**
+ **`Global`**
 
 - `selectors` { [...](../../project/about.md#可变参数)[PickupSelector](../types/data-types.md#pickupselector)[[]](../../project/about.md#可变参数) } - 一个或多个选择器或可被 `pickup` 接受的混合选择器
 - <ins>**returns**</ins> { [boolean](../types/data-types.md#boolean) }

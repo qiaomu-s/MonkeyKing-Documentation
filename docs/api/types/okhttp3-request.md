@@ -1,6 +1,6 @@
 # Okhttp3Request
 
-`Okhttp3Request` 是 MonkeyKing 6.7.0 内置 OkHttp 4.12.0 的 `okhttp3.Request`。`http.buildRequest` 直接返回该类型，`HttpResponse.request` 返回产生最终响应的请求。
+`Okhttp3Request` 是 MonkeyKing 内置 OkHttp 4.12.0 的 `okhttp3.Request`。`http.buildRequest` 直接返回该类型，`HttpResponse.request` 返回产生最终响应的请求。
 
 官方 API：[`okhttp3.Request`](https://square.github.io/okhttp/4.x/okhttp/okhttp3/-request/)。
 

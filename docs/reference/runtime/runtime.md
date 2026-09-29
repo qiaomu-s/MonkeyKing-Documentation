@@ -2,7 +2,7 @@
 
 每个 Monkey King JavaScript 引擎都拥有一个 `ScriptRuntime` 实例，并在执行用户脚本前把它注入为全局变量 `runtime`。它保存当前引擎的模块实现、线程与计时器、权限请求入口以及需要在脚本结束时释放的资源。
 
-本文于 2026-09-10 按 Monkey King 6.7.0 产品版本 `6.7.0` 核对。除明确标注为 v6.7.0 的成员外，无法精确追溯的既有入口统一标记为 `≤ v6.6.4`。
+本文于 2026-09-10 按 Monkey King 当前产品行为核对。除明确标注为 当前版本的成员外，无法精确追溯的既有入口统一标记为 `≤ v6.6.4`。
 
 ## runtime
 
@@ -296,9 +296,6 @@ if (monkeyking.isRootAvailable()) {
 ```
 
 ### runtime.mediaInfo
-
-**`v6.7.0`**
-
 - { [org.mediainfo.android.MediaInfo](https://mediaarea.net/en/MediaInfo/Support/SDK) } - runtime 持有的原生 MediaInfo 实例
 - **生命周期**：由当前 runtime 管理；业务脚本优先使用 [mediainfo 模块](../../api/media/mediainfo.md)
 

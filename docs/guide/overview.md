@@ -1,8 +1,8 @@
 # 综述 (Overview)
 
-Monkey King 6.7.0 是运行在 Android 上的 JavaScript 自动化与应用开发环境。它使用 Rhino 解释脚本，并提供无障碍自动化、图像与 OCR、UI、文件、网络、任务调度、Shell、SQLite 和媒体分析等模块。
+Monkey King 是运行在 Android 上的 JavaScript 自动化与应用开发环境。它使用 Rhino 解释脚本，并提供无障碍自动化、图像与 OCR、UI、文件、网络、任务调度、Shell、SQLite 和媒体分析等模块。
 
-本文档适用于 Monkey King 6.7.0。
+本文档适用于 Monkey King。
 
 ## 运行环境
 
@@ -43,11 +43,11 @@ console.log({
 - 右上角外观按钮切换浅色、深色或跟随系统主题。
 关于文档阅读约定和 API 标记方式，请参阅[关于文档](../project/about.md)。
 
-Monkey King 应用内的离线文档由具体 APK 构建决定，界面入口可能随版本或构建变体变化。站点导航不再依赖旧版“索引 / 查看全部 / 长按文档标签”等交互；找不到应用内入口时可直接访问 `https://docs.monkeyking.com`。
+Monkey King 应用内的离线文档由具体 APK 构建决定，界面入口可能随版本或构建变体变化。站点导航不再依赖旧版“索引 / 查看全部 / 长按文档标签”等交互；找不到应用内入口时，请从应用内文档入口重新打开对应页面。
 
 ## 编写脚本
 
-Monkey King 自带编辑与运行能力，也可以在电脑上使用任意支持 JavaScript 的编辑器。桌面编辑器只负责文本与类型提示，实际行为仍应在 Android 设备或模拟器上的 Monkey King 6.7.0 验证。
+Monkey King 自带编辑与运行能力，也可以在电脑上使用任意支持 JavaScript 的编辑器。桌面编辑器只负责文本与类型提示，实际行为仍应在 Android 设备或模拟器上的 Monkey King 验证。
 
 ```js
 'use strict';
@@ -63,12 +63,8 @@ toastLog(output);
 
 API 页面中的版本标签表示该成员的已知引入或变更版本：
 
-- `v6.7.0`：可追溯到当前版本新增或公开的能力。
+- `当前版本`：可追溯到当前版本新增或公开的能力。
 - `≤ v6.6.4`：实现合同中存在，但当前仓库历史不足以精确定位更早引入版本。
 - `Deprecated`：仍可调用但不建议在新脚本中使用。
 
 Android、Java、OkHttp、OpenCV 等外部类型只说明 Monkey King 的入口与差异；完整成员以对应项目官方文档为准。
-
-## 反馈
-
-如需报告问题，请通过应用内反馈入口或授权支持渠道提交 Monkey King 版本、Android API 级别、设备或模拟器信息、最小复现脚本和完整错误日志。

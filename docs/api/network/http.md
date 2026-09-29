@@ -317,147 +317,147 @@ http.delAsync(url: string, data?: object, options?: HttpRequestBuilderOptions, c
 - `isInsecure`/`insecure` 会安装信任所有证书的 TrustManager 并跳过主机名校验，只能用于受控调试环境；它会破坏 TLS 身份验证，不应进入生产脚本。
 - 同步入口的异常直接抛出；回调入口以 `(null, error)` 报告 OkHttp I/O 失败；Promise 入口拒绝 Promise。
 - 完整读取 `string()`、`bytes()`、`json()` 或 `saveToFile()` 会自动关闭响应体；`stream()` 的流和未消费响应必须由调用方关闭。
-- 本页描述 MonkeyKing 6.7.0；OkHttp builder 可用方法与行为以应用内置 OkHttp 版本为准。
+- 本页描述 MonkeyKing；OkHttp builder 可用方法与行为以应用内置 OkHttp 版本为准。
 
 
 ## 逐符号版本与 Rhino 2.0 示例
 
 下列每个条目都对应一个公开 API 符号；示例按 Rhino 2.0 语法书写。需要文件、网络或 UI 资源的示例应在具备相应运行条件时执行。
 
-<!-- api-member-contract id="http.__okhttp__" version="6.7.0" -->
-`http.__okhttp__` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.__okhttp__" -->
+`http.__okhttp__` · Rhino 2.0 示例：
 ```js
 console.log(http.__okhttp__);
 ```
 
-<!-- api-member-contract id="http.buildRequest" version="6.7.0" -->
-`http.buildRequest` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.buildRequest" -->
+`http.buildRequest` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.buildRequest);
 ```
 
-<!-- api-member-contract id="http.client" version="6.7.0" -->
-`http.client` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.client" -->
+`http.client` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.client);
 ```
 
-<!-- api-member-contract id="http.del" version="6.7.0" -->
-`http.del` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.del" -->
+`http.del` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.del);
 ```
 
-<!-- api-member-contract id="http.delAsync" version="6.7.0" -->
-`http.delAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.delAsync" -->
+`http.delAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.delAsync);
 ```
 
-<!-- api-member-contract id="http.delete" version="6.7.0" -->
-`http.delete` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.delete" -->
+`http.delete` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.delete);
 ```
 
-<!-- api-member-contract id="http.deleteAsync" version="6.7.0" -->
-`http.deleteAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.deleteAsync" -->
+`http.deleteAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.deleteAsync);
 ```
 
-<!-- api-member-contract id="http.get" version="6.7.0" -->
-`http.get` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.get" -->
+`http.get` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.get);
 ```
 
-<!-- api-member-contract id="http.getAsync" version="6.7.0" -->
-`http.getAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.getAsync" -->
+`http.getAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.getAsync);
 ```
 
-<!-- api-member-contract id="http.head" version="6.7.0" -->
-`http.head` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.head" -->
+`http.head` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.head);
 ```
 
-<!-- api-member-contract id="http.headAsync" version="6.7.0" -->
-`http.headAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.headAsync" -->
+`http.headAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.headAsync);
 ```
 
-<!-- api-member-contract id="http.okhttp" version="6.7.0" -->
-`http.okhttp` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.okhttp" -->
+`http.okhttp` · Rhino 2.0 示例：
 ```js
 console.log(http.okhttp);
 ```
 
-<!-- api-member-contract id="http.post" version="6.7.0" -->
-`http.post` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.post" -->
+`http.post` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.post);
 ```
 
-<!-- api-member-contract id="http.postAsync" version="6.7.0" -->
-`http.postAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.postAsync" -->
+`http.postAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.postAsync);
 ```
 
-<!-- api-member-contract id="http.postJson" version="6.7.0" -->
-`http.postJson` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.postJson" -->
+`http.postJson` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.postJson);
 ```
 
-<!-- api-member-contract id="http.postJsonAsync" version="6.7.0" -->
-`http.postJsonAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.postJsonAsync" -->
+`http.postJsonAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.postJsonAsync);
 ```
 
-<!-- api-member-contract id="http.postMultipart" version="6.7.0" -->
-`http.postMultipart` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.postMultipart" -->
+`http.postMultipart` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.postMultipart);
 ```
 
-<!-- api-member-contract id="http.postMultipartAsync" version="6.7.0" -->
-`http.postMultipartAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.postMultipartAsync" -->
+`http.postMultipartAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.postMultipartAsync);
 ```
 
-<!-- api-member-contract id="http.put" version="6.7.0" -->
-`http.put` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.put" -->
+`http.put` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.put);
 ```
 
-<!-- api-member-contract id="http.putAsync" version="6.7.0" -->
-`http.putAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.putAsync" -->
+`http.putAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.putAsync);
 ```
 
-<!-- api-member-contract id="http.request" version="6.7.0" -->
-`http.request` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.request" -->
+`http.request` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.request);
 ```
 
-<!-- api-member-contract id="http.requestAsync" version="6.7.0" -->
-`http.requestAsync` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="http.requestAsync" -->
+`http.requestAsync` · Rhino 2.0 示例：
 ```js
 console.log(typeof http.requestAsync);
 ```
 
-<!-- api-member-contract id="module:http" version="6.7.0" -->
-`module:http` · 版本：**6.7.0** · Rhino 2.0 示例：
+<!-- api-member-contract id="module:http" -->
+`module:http` · Rhino 2.0 示例：
 ```js
 console.log(typeof http);
 ```
