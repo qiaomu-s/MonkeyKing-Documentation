@@ -7250,16 +7250,6 @@
     },
     {
       "annotations": [],
-      "id": "dm.setDictPwd",
-      "kind": "function",
-      "name": "setDictPwd",
-      "overloads": [],
-      "owner": "dm",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [],
       "id": "dm.setDisplayInput",
       "kind": "function",
       "name": "setDisplayInput",
@@ -7343,16 +7333,6 @@
       "id": "dm.setPath",
       "kind": "function",
       "name": "setPath",
-      "overloads": [],
-      "owner": "dm",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [],
-      "id": "dm.setPicPwd",
-      "kind": "function",
-      "name": "setPicPwd",
       "overloads": [],
       "owner": "dm",
       "public": true,

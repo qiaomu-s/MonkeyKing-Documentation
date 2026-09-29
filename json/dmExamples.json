@@ -7,18 +7,32 @@
       "desc": "<p>运行条件：本页适用于提供 <code>dm</code> 全局对象的 Monkey King 构建。</p>\n",
       "modules": [
         {
-          "textRaw": "Java",
-          "name": "java",
-          "desc": "<pre><code class=\"lang-java\">import android.content.Context;\nimport android.graphics.Bitmap;\nimport com.monkeyking.dm.Dm;\nimport com.monkeyking.dm.DmMatch;\n\npublic final class DmExamples {\n    private DmExamples() {}\n\n    public static DmMatch findLogin(\n            Context context,\n            Bitmap bitmap,\n            byte[] dictionaryBytes\n    ) {\n        try (Dm dm = new Dm(context.getCacheDir())) {\n            dm.setImage(bitmap);\n            dm.setDictMem(0, dictionaryBytes, dictionaryBytes.length);\n            dm.useDict(0);\n            return dm.findStr(\n                    0, 0, bitmap.getWidth() - 1, bitmap.getHeight() - 1,\n                    &quot;登录&quot;, &quot;ffffff&quot;, 0.9\n            );\n        }\n    }\n}\n</code></pre>\n",
+          "textRaw": "图色：偏色与多点找色",
+          "name": "图色：偏色与多点找色",
+          "desc": "<pre><code class=\"lang-js\">const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst color = &#39;123456-000000|aabbcc-030303|ddeeff-202020&#39;\nconst single = dm.findColor(x1, y1, x2, y2, color, 1.0, 0)\nif (single) console.log(single.x, single.y)\n\nconst multi = dm.findMultiColor(\n  x1, y1, x2, y2,\n  &#39;123456-000000&#39;,\n  &#39;8|0|aabbcc-030303,-4|3|ddeeff-202020&#39;,\n  1.0,\n  0,\n)\nif (multi) console.log(multi.x, multi.y)\ndm.close()\n</code></pre>\n",
           "type": "module",
-          "displayName": "Java"
+          "displayName": "图色：偏色与多点找色"
         },
         {
-          "textRaw": "Rhino / JavaScript",
-          "name": "rhino_/_javascript",
-          "desc": "<pre><code class=\"lang-js\">dm.setPath(&#39;./assets&#39;);\ndm.setDict(0, &#39;./dm/main.dm.txt&#39;);\ndm.useDict(0);\nconst one = dm.findStr(0, 0, 1079, 1919, &#39;登录&#39;, &#39;ffffff&#39;, 0.9);\nconst many = dm.findStrEx(0, 0, 1079, 1919, &#39;登录|确定&#39;, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p>兼容模式：</p>\n<pre><code class=\"lang-js\">const x = { value: -1 }, y = { value: -1 };\nconst ok = dm.findStrFast(0, 0, 1079, 1919, &#39;确定&#39;, &#39;ffffff&#39;, 0.9, x, y);\n</code></pre>\n",
+          "textRaw": "找图：文件模板和内存模板",
+          "name": "找图：文件模板和内存模板",
+          "desc": "<pre><code class=\"lang-js\">dm.setPath(&#39;./assets/dm&#39;)\ndm.loadPic(&#39;button.png&#39;)\nconst hit = dm.findPic(\n  0, 0, device.width - 1, device.height - 1,\n  &#39;button.png&#39;, &#39;202020&#39;, 0.9, 0,\n)\nconsole.log(hit || &#39;未找到按钮&#39;)\ndm.freePic(&#39;button.png&#39;)\ndm.close()\n</code></pre>\n<pre><code class=\"lang-js\">const template = dm.buffer(files.readBytes(&#39;./assets/dm/button.png&#39;))\ntry {\n  const hit = dm.findPicMem(\n    0, 0, device.width - 1, device.height - 1,\n    template, &#39;202020&#39;, 0.9, 0,\n  )\n  console.log(hit)\n} finally {\n  template.close()\n}\n</code></pre>\n",
           "type": "module",
-          "displayName": "Rhino / JavaScript"
+          "displayName": "找图：文件模板和内存模板"
+        },
+        {
+          "textRaw": "OCR、FindStr 和免字库识别",
+          "name": "ocr、findstr_和免字库识别",
+          "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst text = dm.ocr(\n  0, 0, device.width - 1, device.height - 1,\n  &#39;ffffff-202020,\\\\n&#39;,\n  0.9,\n)\nconsole.log(text || &#39;没有识别到文字&#39;)\n\nconst hit = dm.findStrFast(\n  0, 0, device.width - 1, device.height - 1,\n  &#39;确定|取消&#39;,\n  &#39;ffffff-202020&#39;,\n  0.9,\n)\nif (hit) console.log(hit.value, hit.x, hit.y)\n\nconst words = dm.getWordsNoDict(\n  0, 0, device.width - 1, device.height - 1,\n  &#39;ffffff-202020&#39;,\n)\nconsole.log(words)\ndm.close()\n</code></pre>\n",
+          "type": "module",
+          "displayName": "OCR、FindStr 和免字库识别"
+        },
+        {
+          "textRaw": "Java：DmBuffer 生命周期",
+          "name": "java：dmbuffer_生命周期",
+          "desc": "<pre><code class=\"lang-java\">import java.io.File;\nimport com.monkeyking.dm.Dm;\nimport com.monkeyking.dm.DmBuffer;\nimport com.monkeyking.dm.DmMatch;\n\npublic final class DmBufferExample {\n    private DmBufferExample() {}\n\n    public static DmMatch find(File workDir, int width, int height) {\n        try (Dm dm = new Dm(workDir)) {\n            DmBuffer frame = dm.getScreenDataBmp(0, 0, width - 1, height - 1);\n            try {\n                DmMatch hit = dm.findPicMem(\n                    0, 0, width - 1, height - 1,\n                    frame, &quot;202020&quot;, 0.9, 0\n                );\n                return hit;\n            } finally {\n                frame.close();\n            }\n        }\n    }\n}\n</code></pre>\n<p>Android 不使用 <code>intX/intY</code>、<code>IntRef</code>、<code>BufferRef</code> 或 <code>x.value/y.value</code>。旧 PC 示例应改为读取 <code>DmMatch.x</code>、<code>DmMatch.y</code>，或遍历 <code>DmMatch[]</code>。</p>\n",
+          "type": "module",
+          "displayName": "Java：DmBuffer 生命周期"
         }
       ],
       "type": "module",

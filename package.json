@@ -10,6 +10,7 @@
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:preview": "vitepress preview docs --outDir dist/web",
+    "dm:generate": "node scripts/generate-dm-docs.mjs",
     "migrate:content": "tsx scripts/migrate-content.ts",
     "json:build": "tsx scripts/json/build.ts",
     "api:extract": "tsx scripts/api/extract.ts",

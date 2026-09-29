@@ -4,14 +4,28 @@
     {
       "textRaw": "dm 图色与文字识别",
       "name": "dm_图色与文字识别",
-      "desc": "<p><code>dm</code> 已纳入 Monkey King 正式 API 清单。完整的模块、兼容接口和 camelCase 便捷接口请参阅 <a href=\"../../api/media/dm.md\">dm 图色与文字识别 API</a>；本组页面继续提供字库格式、制作流程、兼容约定和 VS Code 工具教程。</p>\n<p>Monkey King 的 <code>dm</code> 是独立的脚本级对象，提供大漠风格的图色、找图、公开明文字库和字库识别接口。每个脚本拥有自己的图片缓存、输入源、字库槽位和识别配置；脚本结束后由运行时释放。</p>\n",
+      "desc": "<p><code>dm</code> 是 Monkey King 的 Android 脚本级对象，提供取色、偏色、多点找色、找图、截图、点阵 OCR、免字库识别和通用 OCR。完整 API 请参阅 <a href=\"../../api/media/dm.md\">dm 图色与文字识别 API</a>。</p>\n<p>每个脚本实例独立维护输入源、图片缓存、冻结帧、字库槽位和识别参数。脚本结束或显式调用 <code>dm.close()</code> 后，相关资源才会释放。</p>\n",
       "modules": [
         {
-          "textRaw": "三层职责",
-          "name": "三层职责",
-          "desc": "<ul>\n<li><strong>字库工具</strong>：VS Code 字库编辑器和截图工作台负责取色、分割、点阵编辑和第二张图片验证。</li>\n<li><strong>字库文件</strong>：公开明文格式为 <code>HEX$文字$指标$高度</code>，由 <code>setDict</code>、<code>setDictMem</code>、<code>addDict</code>、<code>saveDict</code> 管理。</li>\n<li><strong>识别引擎</strong>：设备端执行二值化、点阵匹配和坐标排序；<code>ocr</code> 不会自动切换到通用 OCR。</li>\n</ul>\n<p>常用流程：</p>\n<pre><code class=\"lang-js\">dm.setDisplayInput(&#39;screen&#39;);\ndm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.useDict(0);\nconst text = dm.ocr(0, 0, device.width - 1, device.height - 1, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p>坐标属于输入图像。截图发生旋转、裁剪或缩放时，应使用快照中的变换元数据换算点击坐标，不能把编辑器显示坐标直接当作设备坐标。</p>\n<p>本模块不提供加密、解密、密码设置或私有加密图片/字库解析。无法解析的文件会报告格式错误。</p>\n",
+          "textRaw": "输入源",
+          "name": "输入源",
+          "desc": "<ul>\n<li><strong>屏幕</strong>：默认使用实时屏幕帧；<code>dm.useScreen()</code> 可恢复屏幕输入。</li>\n<li><strong>离线图片</strong>：使用 <code>dm.setDisplayInput(&#39;pic:文件名&#39;)</code> 或 <code>dm.ocrInFile()</code>。</li>\n<li><strong>冻结帧</strong>：<code>dm.keepScreen(true)</code> 后重复调用使用同一帧，完成后恢复 <code>false</code>。</li>\n<li><strong>内存数据</strong>：使用 <code>DmBuffer</code>、<code>byte[]</code> 或直接 ByteBuffer；不接受裸地址。</li>\n</ul>\n<p>坐标属于输入图像像素，矩形右下角为包含边界。屏幕发生旋转、裁剪或缩放时，应依据帧元数据换算坐标，不能直接使用编辑器显示坐标。</p>\n",
           "type": "module",
-          "displayName": "三层职责"
+          "displayName": "输入源"
+        },
+        {
+          "textRaw": "返回值",
+          "name": "返回值",
+          "desc": "<p>查找接口不再使用 PC 的 <code>intX/intY</code> 输出指针：</p>\n<ul>\n<li>单结果：<code>DmMatch | null</code>；</li>\n<li>多结果：<code>DmMatch[]</code>，未命中为空数组；</li>\n<li><code>DmMatch</code> 字段：<code>value</code>、<code>x</code>、<code>y</code>、<code>width</code>、<code>height</code>；</li>\n<li>OCR：<code>string</code> 或结构化 <code>DmMatch[]</code>；</li>\n<li><code>ocrAuto</code>：包含文字、置信度和四边形点的 block 数组。</li>\n</ul>\n",
+          "type": "module",
+          "displayName": "返回值"
+        },
+        {
+          "textRaw": "常用流程",
+          "name": "常用流程",
+          "desc": "<pre><code class=\"lang-js\">dm.setDisplayInput(&#39;screen&#39;)\ndm.setPath(&#39;./assets/dm&#39;)\ndm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\n\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst hit = dm.findColor(\n  x1, y1, x2, y2,\n  &#39;123456-000000|aabbcc-030303|ddeeff-202020&#39;,\n  1.0,\n  0,\n)\nif (hit) console.log(hit.x, hit.y)\ndm.close()\n</code></pre>\n<p>本模块不提供 PC 私有加密图片、加密字库、密码设置、窗口句柄、裸指针或输出指针接口。无法解析的资源应按错误信息处理，不能把密文当作明文资源继续使用。</p>\n",
+          "type": "module",
+          "displayName": "常用流程"
         }
       ],
       "type": "module",

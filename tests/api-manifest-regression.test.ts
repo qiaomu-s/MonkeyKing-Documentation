@@ -13,10 +13,10 @@ describe('pinned MonkeyKing API manifest', () => {
 
     expect(manifest).toMatchObject({ schemaVersion: 3 })
     expect(manifest).not.toHaveProperty('productVersion')
-    // The working-tree MonkeyKing source used for this release removes four
-    // legacy screen-capture aliases and adds two current runtime methods.
-    // Keep the assertion tied to the checked-in source-backed manifest.
-    expect(manifest.symbols).toHaveLength(4_614)
+    // The current Android DM surface no longer exposes the two PC-only
+    // password entry points; keep the assertion tied to the checked-in
+    // source-backed manifest.
+    expect(manifest.symbols).toHaveLength(4_612)
     expect(manifest).not.toHaveProperty('source')
     expect(symbolIds.has('global:__engine__')).toBe(false)
     for (const id of [

@@ -1,14 +1,10 @@
 # dm 图色与文字识别 API
 
-Monkey King 提供脚本级全局对象 `dm`。公开入口统一使用 camelCase；底层大漠命令名仅作为实现映射，不是可调用的脚本 API。找色、找图和文字识别结果使用自然返回值：单结果为 `DmMatch | null`，多结果为 `DmMatch[]`，文字识别为字符串或结构化结果。
+Monkey King 的 `dm` 是 Android 脚本级对象，公开入口统一使用 camelCase。底层大漠命令名只用于兼容分发，不是脚本可调用名称。查找接口使用自然返回值：单个结果为 `DmMatch | null`，多结果为 `DmMatch[]`；OCR 和文件 OCR 返回字符串或结构化结果。
+
+Android 不支持 PC 私有加密图片、加密字库、裸地址和输出指针。请使用 `DmBuffer`、字节数组或直接 ByteBuffer；缓冲区使用完必须调用 `close()`。
 
 <a id="api-symbol-bW9kdWxlOmRt"></a>
-
-加密图片和加密字库不在支持范围内；`setPicPwd` 与 `setDictPwd` 仅保留入口并对非空密码返回“不支持加密资源”。
-
-## 输入与资源生命周期
-
-输入可以来自屏幕、离线图片、`DmBuffer` 或冻结帧。坐标使用输入图像坐标，矩形右下角包含在扫描区域内。一次截图多次识别时可调用 `dm.keepScreen(true)`，使用 `dm.close()` 或 `DmBuffer.close()` 释放资源。
 
 ## 图色导航
 
@@ -22,28 +18,45 @@ Monkey King 提供脚本级全局对象 `dm`。公开入口统一使用 camelCas
 dm.appendPicAddr(buffers, data, length)
 ```
 
+#### 实现与兼容
+
+原始命令：`AppendPicAddr`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.appendpicaddr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `buffers` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `buffers` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
+| `data` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
+| `length` | `int` | 是 | — | 按 `int` 传入；不能传入 Java 内部输出指针类型。 |
 
 #### 返回值
 
-`DmBuffer`；调用方负责 `close()`。
+`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。
 
 #### 示例
 
 ```js
-const result = dm.appendPicAddr(buffers, data, length)
-console.log(result)
+const source = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const buffers = dm.appendPicAddr([], source, source.size())
+  try {
+    console.log(buffers.length)
+  } finally {
+    buffers.forEach(buffer => buffer.close())
+  }
+} finally {
+  source.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.bgr2rgb
 
@@ -55,26 +68,34 @@ console.log(result)
 dm.bgr2rgb(color)
 ```
 
+#### 实现与兼容
+
+原始命令：`BGR2RGB`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.bgr2rgb/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.bgr2rgb(color)
+const result = dm.bgr2rgb('ffffff-202020')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.capture
 
@@ -86,15 +107,19 @@ console.log(result)
 dm.capture(x1, y1, x2, y2, file)
 ```
 
+#### 实现与兼容
+
+原始命令：`Capture`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.capture/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -103,13 +128,19 @@ dm.capture(x1, y1, x2, y2, file)
 #### 示例
 
 ```js
-const result = dm.capture(x1, y1, x2, y2, file)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.capture(x1, y1, x2, y2, './assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.captureGif
 
@@ -121,17 +152,21 @@ console.log(result)
 dm.captureGif(x1, y1, x2, y2, file, delay, duration)
 ```
 
+#### 实现与兼容
+
+原始命令：`CaptureGif`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.capturegif/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delay` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `duration` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
+| `delay` | `int` | 是 | — | 非负毫秒数。 |
+| `duration` | `int` | 是 | — | 非负毫秒数。 |
 
 #### 返回值
 
@@ -140,13 +175,21 @@ dm.captureGif(x1, y1, x2, y2, file, delay, duration)
 #### 示例
 
 ```js
-const result = dm.captureGif(x1, y1, x2, y2, file, delay, duration)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.captureGif(x1, y1, x2, y2, './assets/dm/output.bin', 100, 1000)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+屏幕输入逐帧采集；`setImage` 或冻结帧会生成静态帧 GIF。
 
 ### dm.captureJpg
 
@@ -158,16 +201,20 @@ console.log(result)
 dm.captureJpg(x1, y1, x2, y2, file, quality)
 ```
 
+#### 实现与兼容
+
+原始命令：`CaptureJpg`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.capturejpg/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `quality` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
+| `quality` | `int` | 是 | — | JPEG 质量，范围 `0–100`。 |
 
 #### 返回值
 
@@ -176,13 +223,19 @@ dm.captureJpg(x1, y1, x2, y2, file, quality)
 #### 示例
 
 ```js
-const result = dm.captureJpg(x1, y1, x2, y2, file, quality)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.captureJpg(x1, y1, x2, y2, './assets/dm/output.bin', 90)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.capturePng
 
@@ -194,15 +247,19 @@ console.log(result)
 dm.capturePng(x1, y1, x2, y2, file)
 ```
 
+#### 实现与兼容
+
+原始命令：`CapturePng`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.capturepng/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -211,13 +268,19 @@ dm.capturePng(x1, y1, x2, y2, file)
 #### 示例
 
 ```js
-const result = dm.capturePng(x1, y1, x2, y2, file)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.capturePng(x1, y1, x2, y2, './assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.capturePre
 
@@ -229,11 +292,15 @@ console.log(result)
 dm.capturePre(file)
 ```
 
+#### 实现与兼容
+
+原始命令：`CapturePre`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.capturepre/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -242,13 +309,17 @@ dm.capturePre(file)
 #### 示例
 
 ```js
-const result = dm.capturePre(file)
+const result = dm.capturePre('./assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.cmpColor
 
@@ -260,14 +331,18 @@ console.log(result)
 dm.cmpColor(x, y, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`CmpColor`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.cmpcolor/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### 返回值
 
@@ -276,13 +351,19 @@ dm.cmpColor(x, y, color, similarity)
 #### 示例
 
 ```js
-const result = dm.cmpColor(x, y, color, similarity)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.cmpColor(x, y, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.enableDisplayDebug
 
@@ -294,11 +375,15 @@ console.log(result)
 dm.enableDisplayDebug(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`EnableDisplayDebug`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.enabledisplaydebug/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
 
 #### 返回值
 
@@ -307,13 +392,17 @@ dm.enableDisplayDebug(enabled)
 #### 示例
 
 ```js
-const result = dm.enableDisplayDebug(enabled)
+const result = dm.enableDisplayDebug(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.enableFindPicMultithread
 
@@ -325,11 +414,15 @@ console.log(result)
 dm.enableFindPicMultithread(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`EnableFindPicMultithread`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.enablefindpicmultithread/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
 
 #### 返回值
 
@@ -338,13 +431,17 @@ dm.enableFindPicMultithread(enabled)
 #### 示例
 
 ```js
-const result = dm.enableFindPicMultithread(enabled)
+const result = dm.enableFindPicMultithread(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.enableGetColorByCapture
 
@@ -356,11 +453,15 @@ console.log(result)
 dm.enableGetColorByCapture(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`EnableGetColorByCapture`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.enablegetcoloryycapture/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
 
 #### 返回值
 
@@ -369,13 +470,17 @@ dm.enableGetColorByCapture(enabled)
 #### 示例
 
 ```js
-const result = dm.enableGetColorByCapture(enabled)
+const result = dm.enableGetColorByCapture(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findColor
 
@@ -387,21 +492,23 @@ console.log(result)
 dm.findColor(x1, y1, x2, y2, color, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindColor`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findcolor/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 颜色表达式，格式和反色规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -415,11 +522,11 @@ dm.findColor(x1, y1, x2, y2, color, similarity, direction)
 | `7` | 从下到上，从左到右 |
 | `8` | 从下到上，从右到左 |
 
-#### FindColor 颜色格式与相似度
+#### 颜色、偏色与反色
 
-`color` 使用 `RRGGBB-DRDGDB` 格式，例如 `123456-000000|aabbcc-030303`。多个条件使用 `|` 分隔；在整个表达式前加 `@` 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 `@123456-000000|aabbcc-030303`。该参数只支持 RGB 颜色。
+`color` 使用 `RRGGBB-DRDGDB`，例如 `123456-000000|aabbcc-030303|ddeeff-202020`。竖线分隔多个候选颜色；整个表达式前加 `@` 启用反色模式，表示匹配指定颜色之外的颜色，例如 `@123456-000000|333333-101010`。该格式使用 RGB 顺序，不是按键精灵的 BGR 顺序。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`similarity` 范围为 `0.1–1.0`。偏色是单点颜色容差，多颜色是候选条件集合；两者可以同时使用。
 
 #### 返回值
 
@@ -428,13 +535,19 @@ dm.findColor(x1, y1, x2, y2, color, similarity, direction)
 #### 示例
 
 ```js
-const match = dm.findColor(0, 0, device.width - 1, device.height - 1, '@123456-000000|aabbcc-030303', 1.0, 0)
-if (match) console.log(match.x, match.y)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const match = dm.findColor(x1, y1, x2, y2, '123456-000000|aabbcc-030303|ddeeff-202020', 1.0, 0)
+if (match) console.log(`找到: ${match.x}, ${match.y}`)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findColorBlock
 
@@ -446,19 +559,27 @@ if (match) console.log(match.x, match.y)
 dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindColorBlock`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findcolorblock/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `width` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `width` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 颜色块参数
+
+`count` 是要求满足的颜色像素数量，`width` 和 `height` 是连通块/密度判断使用的尺寸约束，三者都必须是非负整数。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
 
 #### 返回值
 
@@ -467,13 +588,19 @@ dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
 #### 示例
 
 ```js
-const result = dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findColorBlock(x1, y1, x2, y2, 'ffffff-202020', 0.9, 4, 64, 64)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findColorBlockEx
 
@@ -485,34 +612,48 @@ console.log(result)
 dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindColorBlockEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findcolorblockex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `width` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `width` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 颜色块参数
+
+`count` 是要求满足的颜色像素数量，`width` 和 `height` 是连通块/密度判断使用的尺寸约束，三者都必须是非负整数。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findColorBlockEx(x1, y1, x2, y2, 'ffffff-202020', 0.9, 4, 64, 64)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findColorE
 
@@ -524,21 +665,23 @@ console.log(result)
 dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindColorE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findcolore/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 颜色表达式，格式和反色规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -552,11 +695,11 @@ dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
 | `7` | 从下到上，从左到右 |
 | `8` | 从下到上，从右到左 |
 
-#### FindColor 颜色格式与相似度
+#### 颜色、偏色与反色
 
-`color` 使用 `RRGGBB-DRDGDB` 格式，例如 `123456-000000|aabbcc-030303`。多个条件使用 `|` 分隔；在整个表达式前加 `@` 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 `@123456-000000|aabbcc-030303`。该参数只支持 RGB 颜色。
+`color` 使用 `RRGGBB-DRDGDB`，例如 `123456-000000|aabbcc-030303|ddeeff-202020`。竖线分隔多个候选颜色；整个表达式前加 `@` 启用反色模式，表示匹配指定颜色之外的颜色，例如 `@123456-000000|333333-101010`。该格式使用 RGB 顺序，不是按键精灵的 BGR 顺序。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`similarity` 范围为 `0.1–1.0`。偏色是单点颜色容差，多颜色是候选条件集合；两者可以同时使用。
 
 #### 返回值
 
@@ -565,13 +708,19 @@ dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findColorE(x1, y1, x2, y2, 'ffffff-202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findColorEx
 
@@ -583,21 +732,23 @@ console.log(result)
 dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindColorEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findcolorex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 颜色表达式，格式和反色规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -610,26 +761,32 @@ dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
 | `7` | 从下到上，从左到右 |
 | `8` | 从下到上，从右到左 |
 
-#### FindColor 颜色格式与相似度
+#### 颜色、偏色与反色
 
-`color` 使用 `RRGGBB-DRDGDB` 格式，例如 `123456-000000|aabbcc-030303`。多个条件使用 `|` 分隔；在整个表达式前加 `@` 可启用反色模式，匹配不属于指定颜色条件的颜色，例如 `@123456-000000|aabbcc-030303`。该参数只支持 RGB 颜色。
+`color` 使用 `RRGGBB-DRDGDB`，例如 `123456-000000|aabbcc-030303|ddeeff-202020`。竖线分隔多个候选颜色；整个表达式前加 `@` 启用反色模式，表示匹配指定颜色之外的颜色，例如 `@123456-000000|333333-101010`。该格式使用 RGB 顺序，不是按键精灵的 BGR 顺序。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`similarity` 范围为 `0.1–1.0`。偏色是单点颜色容差，多颜色是候选条件集合；两者可以同时使用。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findColorEx(x1, y1, x2, y2, 'ffffff-202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findMulColor
 
@@ -641,16 +798,20 @@ console.log(result)
 dm.findMulColor(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindMulColor`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findmulcolor/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### 返回值
 
@@ -659,13 +820,19 @@ dm.findMulColor(x1, y1, x2, y2, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findMulColor(x1, y1, x2, y2, color, similarity)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findMulColor(x1, y1, x2, y2, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findMultiColor
 
@@ -677,22 +844,24 @@ console.log(result)
 dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindMultiColor`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findmulticolor/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 首点颜色表达式，格式见下方多点找色说明。 |
-| `offsets` | `String` | 是 | — | 多点偏移，使用 `x|y|颜色` 格式，多个点以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -701,11 +870,11 @@ dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindMultiColor 颜色与偏移格式
+#### 多点颜色与偏移
 
-首点 `color` 使用 RGB 颜色表达式；`offsets` 使用 `x|y|颜色` 格式，例如 `-1|0|000000,2|1|-ffffff`。多个偏移点以逗号分隔；偏移颜色前加 `-` 表示反色匹配。
+首点 `color` 使用 `RRGGBB-DRDGDB`；`offsets` 使用 `x|y|颜色`，多个偏移点用逗号分隔。例如 `8|0|aabbcc-030303,-4|3|ddeeff-202020`。偏移点颜色支持多颜色条件，颜色前加 `-` 表示反色匹配。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+多点找色要求首点和每个偏移点同时满足；这与普通找色中的多颜色候选不是同一概念。
 
 #### 返回值
 
@@ -714,13 +883,19 @@ dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const match = dm.findMultiColor(x1, y1, x2, y2, '123456-000000', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 1.0, 0)
+if (match) console.log(`基准点: ${match.x}, ${match.y}`)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findMultiColorE
 
@@ -732,22 +907,24 @@ console.log(result)
 dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindMultiColorE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findmulticolore/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 首点颜色表达式，格式见下方多点找色说明。 |
-| `offsets` | `String` | 是 | — | 多点偏移，使用 `x|y|颜色` 格式，多个点以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -756,11 +933,11 @@ dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindMultiColor 颜色与偏移格式
+#### 多点颜色与偏移
 
-首点 `color` 使用 RGB 颜色表达式；`offsets` 使用 `x|y|颜色` 格式，例如 `-1|0|000000,2|1|-ffffff`。多个偏移点以逗号分隔；偏移颜色前加 `-` 表示反色匹配。
+首点 `color` 使用 `RRGGBB-DRDGDB`；`offsets` 使用 `x|y|颜色`，多个偏移点用逗号分隔。例如 `8|0|aabbcc-030303,-4|3|ddeeff-202020`。偏移点颜色支持多颜色条件，颜色前加 `-` 表示反色匹配。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+多点找色要求首点和每个偏移点同时满足；这与普通找色中的多颜色候选不是同一概念。
 
 #### 返回值
 
@@ -769,13 +946,19 @@ dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findMultiColorE(x1, y1, x2, y2, 'ffffff-202020', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findMultiColorEx
 
@@ -787,22 +970,24 @@ console.log(result)
 dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindMultiColorEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findmulticolorex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 首点颜色表达式，格式见下方多点找色说明。 |
-| `offsets` | `String` | 是 | — | 多点偏移，使用 `x|y|颜色` 格式，多个点以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -811,26 +996,32 @@ dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindMultiColor 颜色与偏移格式
+#### 多点颜色与偏移
 
-首点 `color` 使用 RGB 颜色表达式；`offsets` 使用 `x|y|颜色` 格式，例如 `-1|0|000000,2|1|-ffffff`。多个偏移点以逗号分隔；偏移颜色前加 `-` 表示反色匹配。
+首点 `color` 使用 `RRGGBB-DRDGDB`；`offsets` 使用 `x|y|颜色`，多个偏移点用逗号分隔。例如 `8|0|aabbcc-030303,-4|3|ddeeff-202020`。偏移点颜色支持多颜色条件，颜色前加 `-` 表示反色匹配。
 
-`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+多点找色要求首点和每个偏移点同时满足；这与普通找色中的多颜色候选不是同一概念。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findMultiColorEx(x1, y1, x2, y2, 'ffffff-202020', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findPic
 
@@ -842,22 +1033,24 @@ console.log(result)
 dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPic`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpic/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -866,9 +1059,9 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -877,13 +1070,23 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+dm.loadPic('button.png')
+const match = dm.findPic(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
+if (match) console.log(match.x, match.y)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicE
 
@@ -895,22 +1098,24 @@ console.log(result)
 dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpice/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -919,9 +1124,9 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -930,13 +1135,22 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicE(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicEx
 
@@ -948,22 +1162,24 @@ console.log(result)
 dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -972,24 +1188,33 @@ dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicEx(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicExS
 
@@ -1001,22 +1226,24 @@ console.log(result)
 dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicExS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicexs/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1025,24 +1252,33 @@ dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicExS(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicMem
 
@@ -1054,22 +1290,24 @@ console.log(result)
 dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicMem`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicmem/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1078,9 +1316,9 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1089,13 +1327,26 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const match = dm.findPicMem(x1, y1, x2, y2, template, '202020', 0.9, 0)
+  console.log(match)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicMemE
 
@@ -1107,22 +1358,24 @@ console.log(result)
 dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicMemE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicmeme/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1131,9 +1384,9 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1142,13 +1395,26 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const result = dm.findPicMemE(x1, y1, x2, y2, template, '202020', 0.9, 0)
+  console.log(result)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicMemEx
 
@@ -1160,22 +1426,24 @@ console.log(result)
 dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicMemEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicmemex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1184,24 +1452,37 @@ dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const result = dm.findPicMemEx(x1, y1, x2, y2, template, '202020', 0.9, 0)
+  console.log(result)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicS
 
@@ -1213,22 +1494,24 @@ console.log(result)
 dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpics/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1237,9 +1520,9 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 取值范围为 `0.1` 到 `1.0`；值越高，匹配越严格。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1248,13 +1531,22 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicS(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSim
 
@@ -1266,22 +1558,24 @@ console.log(result)
 dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSim`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsim/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1290,9 +1584,9 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1301,13 +1595,22 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicSim(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSimE
 
@@ -1319,22 +1622,24 @@ console.log(result)
 dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSimE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsime/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1343,9 +1648,9 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1354,13 +1659,22 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicSimE(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSimEx
 
@@ -1372,22 +1686,24 @@ console.log(result)
 dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSimEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsimex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1396,24 +1712,33 @@ dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+dm.setPath('./assets/dm')
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findPicSimEx(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSimMem
 
@@ -1425,22 +1750,24 @@ console.log(result)
 dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSimMem`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsimmem/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1449,9 +1776,9 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1460,13 +1787,26 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const result = dm.findPicSimMem(x1, y1, x2, y2, template, '202020', 90, 0)
+  console.log(result)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSimMemE
 
@@ -1478,22 +1818,24 @@ console.log(result)
 dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSimMemE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsimmeme/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1502,9 +1844,9 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
@@ -1513,13 +1855,26 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const result = dm.findPicSimMemE(x1, y1, x2, y2, template, '202020', 90, 0)
+  console.log(result)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findPicSimMemEx
 
@@ -1531,22 +1886,24 @@ console.log(result)
 dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindPicSimMemEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findpicsimmemex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `delta` | `String` | 是 | — | 图片偏色；普通找图支持六位 RGB 偏色或两位灰度偏色。 |
-| `similarity` | `int` | 是 | — | 相似率整数，取值范围为 `0` 到 `100`。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
+| `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1555,24 +1912,37 @@ dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindPic 图片偏色与相似度
+#### 图片偏色与变体
 
-`delta` 支持六位 RGB 偏色，例如 `202020`；也支持两位十六进制灰度偏色，例如 `20`。`similarity` 是相似率整数，取值范围为 `0` 到 `100`。
+`delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+try {
+  const result = dm.findPicSimMemEx(x1, y1, x2, y2, template, '202020', 90, 0)
+  console.log(result)
+} finally {
+  template.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
 
 ### dm.findShape
 
@@ -1584,21 +1954,23 @@ console.log(result)
 dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindShape`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findshape/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `shape` | `String` | 是 | — | 形状关系，使用 `x|y|e` 格式，多个关系以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1607,9 +1979,9 @@ dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindShape 形状格式
+#### 形状关系
 
-`shape` 使用 `x|y|e` 格式，多个关系以逗号分隔；`e` 为 `0` 或 `1`，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 `RRGGBB-DRDGDB` 格式。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
 
 #### 返回值
 
@@ -1618,13 +1990,19 @@ dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findShape(x1, y1, x2, y2, '1|0|1', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findShapeE
 
@@ -1636,21 +2014,23 @@ console.log(result)
 dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindShapeE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findshapee/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `shape` | `String` | 是 | — | 形状关系，使用 `x|y|e` 格式，多个关系以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1659,9 +2039,9 @@ dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindShape 形状格式
+#### 形状关系
 
-`shape` 使用 `x|y|e` 格式，多个关系以逗号分隔；`e` 为 `0` 或 `1`，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 `RRGGBB-DRDGDB` 格式。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
 
 #### 返回值
 
@@ -1670,13 +2050,19 @@ dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 #### 示例
 
 ```js
-const result = dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findShapeE(x1, y1, x2, y2, '1|0|1', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findShapeEx
 
@@ -1688,21 +2074,23 @@ console.log(result)
 dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindShapeEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findshapeex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `shape` | `String` | 是 | — | 形状关系，使用 `x|y|e` 格式，多个关系以逗号分隔。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `direction` | `int` | 是 | — | 扫描方向编号；可用值见下方该函数的官方方向表。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
 #### 扫描方向
-
-`direction` 使用以下扫描顺序；未列出的编号不属于该函数的官方参数合同：
 
 | 值 | 扫描顺序 |
 | --- | --- |
@@ -1711,24 +2099,30 @@ dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
 | `2` | 从右到左，从上到下 |
 | `3` | 从右到左，从下到上 |
 
-#### FindShape 形状格式
+#### 形状关系
 
-`shape` 使用 `x|y|e` 格式，多个关系以逗号分隔；`e` 为 `0` 或 `1`，表示偏移点与基准点颜色关系。该参数不是颜色表达式，不使用 `RRGGBB-DRDGDB` 格式。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findShapeEx(x1, y1, x2, y2, '1|0|1', 0.9, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.freePic
 
@@ -1740,11 +2134,15 @@ console.log(result)
 dm.freePic(pictures)
 ```
 
+#### 实现与兼容
+
+原始命令：`FreePic`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.freepic/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -1753,13 +2151,18 @@ dm.freePic(pictures)
 #### 示例
 
 ```js
-const result = dm.freePic(pictures)
+dm.setPath('./assets/dm')
+const result = dm.freePic('button.png')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getAveHSV
 
@@ -1771,29 +2174,39 @@ console.log(result)
 dm.getAveHSV(x1, y1, x2, y2)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetAveHSV`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getavehsv/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
 const result = dm.getAveHSV(x1, y1, x2, y2)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getAveRGB
 
@@ -1805,29 +2218,39 @@ console.log(result)
 dm.getAveRGB(x1, y1, x2, y2)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetAveRGB`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getavergb/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
 const result = dm.getAveRGB(x1, y1, x2, y2)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getColor
 
@@ -1839,27 +2262,37 @@ console.log(result)
 dm.getColor(x, y)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetColor`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getcolor/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
 const result = dm.getColor(x, y)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getColorBGR
 
@@ -1871,27 +2304,37 @@ console.log(result)
 dm.getColorBGR(x, y)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetColorBGR`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getcolorbgr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
 const result = dm.getColorBGR(x, y)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getColorHSV
 
@@ -1903,27 +2346,37 @@ console.log(result)
 dm.getColorHSV(x, y)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetColorHSV`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getcolorhsv/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
 const result = dm.getColorHSV(x, y)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getColorNum
 
@@ -1935,16 +2388,20 @@ console.log(result)
 dm.getColorNum(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetColorNum`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getcolornum/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### 返回值
 
@@ -1953,13 +2410,19 @@ dm.getColorNum(x1, y1, x2, y2, color, similarity)
 #### 示例
 
 ```js
-const result = dm.getColorNum(x1, y1, x2, y2, color, similarity)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.getColorNum(x1, y1, x2, y2, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getPicSize
 
@@ -1971,26 +2434,35 @@ console.log(result)
 dm.getPicSize(pictures)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetPicSize`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getpicsize/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.getPicSize(pictures)
+dm.setPath('./assets/dm')
+const result = dm.getPicSize('button.png')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getScreenData
 
@@ -2002,29 +2474,43 @@ console.log(result)
 dm.getScreenData(x1, y1, x2, y2)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetScreenData`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getscreendata/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`DmBuffer`；调用方负责 `close()`。
+`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。
 
 #### 示例
 
 ```js
-const result = dm.getScreenData(x1, y1, x2, y2)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const frame = dm.getScreenData(x1, y1, x2, y2)
+try {
+  console.log(frame.size())
+} finally {
+  frame.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getScreenDataBmp
 
@@ -2036,29 +2522,43 @@ console.log(result)
 dm.getScreenDataBmp(x1, y1, x2, y2)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetScreenDataBmp`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getscreendatabmp/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 
 #### 返回值
 
-`DmBuffer`；调用方负责 `close()`。
+`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。
 
 #### 示例
 
 ```js
-const result = dm.getScreenDataBmp(x1, y1, x2, y2)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const frame = dm.getScreenDataBmp(x1, y1, x2, y2)
+try {
+  console.log(frame.size())
+} finally {
+  frame.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.imageToBmp
 
@@ -2070,12 +2570,16 @@ console.log(result)
 dm.imageToBmp(input, output)
 ```
 
+#### 实现与兼容
+
+原始命令：`ImageToBmp`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.imagetobmp/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `input` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `output` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `input` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
+| `output` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -2084,13 +2588,17 @@ dm.imageToBmp(input, output)
 #### 示例
 
 ```js
-const result = dm.imageToBmp(input, output)
+const result = dm.imageToBmp('./assets/dm/output.bin', './assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.isDisplayDead
 
@@ -2102,15 +2610,19 @@ console.log(result)
 dm.isDisplayDead(x1, y1, x2, y2, timeout)
 ```
 
+#### 实现与兼容
+
+原始命令：`IsDisplayDead`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.isdisplaydead/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `timeout` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `timeout` | `int` | 是 | — | 非负毫秒数。 |
 
 #### 返回值
 
@@ -2119,13 +2631,19 @@ dm.isDisplayDead(x1, y1, x2, y2, timeout)
 #### 示例
 
 ```js
-const result = dm.isDisplayDead(x1, y1, x2, y2, timeout)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.isDisplayDead(x1, y1, x2, y2, 1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.loadPic
 
@@ -2137,11 +2655,15 @@ console.log(result)
 dm.loadPic(pictures)
 ```
 
+#### 实现与兼容
+
+原始命令：`LoadPic`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.loadpic/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -2150,13 +2672,18 @@ dm.loadPic(pictures)
 #### 示例
 
 ```js
-const result = dm.loadPic(pictures)
+dm.setPath('./assets/dm')
+const result = dm.loadPic('button.png')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.loadPicByte
 
@@ -2168,13 +2695,17 @@ console.log(result)
 dm.loadPicByte(data, length, pictures)
 ```
 
+#### 实现与兼容
+
+原始命令：`LoadPicByte`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.loadpicbyte/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `data` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
+| `length` | `int` | 是 | — | 按 `int` 传入；不能传入 Java 内部输出指针类型。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -2183,13 +2714,17 @@ dm.loadPicByte(data, length, pictures)
 #### 示例
 
 ```js
-const result = dm.loadPicByte(data, length, pictures)
-console.log(result)
+const data = files.readBytes('./assets/dm/button.png')
+console.log(dm.loadPicByte(data, data.length, 'button.png'))
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.matchPicName
 
@@ -2201,26 +2736,35 @@ console.log(result)
 dm.matchPicName(pictures)
 ```
 
+#### 实现与兼容
+
+原始命令：`MatchPicName`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.matchpicname/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.matchPicName(pictures)
+dm.setPath('./assets/dm')
+const result = dm.matchPicName('button.png')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.rgb2bgr
 
@@ -2232,26 +2776,34 @@ console.log(result)
 dm.rgb2bgr(color)
 ```
 
+#### 实现与兼容
+
+原始命令：`RGB2BGR`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.rgb2bgr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.rgb2bgr(color)
+const result = dm.rgb2bgr('ffffff-202020')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setExcludeRegion
 
@@ -2263,12 +2815,16 @@ console.log(result)
 dm.setExcludeRegion(mode, code)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetExcludeRegion`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setexcluderegion/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `mode` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `code` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `mode` | `int` | 是 | — | 排除区域模式编号；使用当前实现支持的模式。 |
+| `code` | `String` | 是 | — | 排除区域描述字符串；为空表示清除对应配置。 |
 
 #### 返回值
 
@@ -2277,13 +2833,17 @@ dm.setExcludeRegion(mode, code)
 #### 示例
 
 ```js
-const result = dm.setExcludeRegion(mode, code)
+const result = dm.setExcludeRegion(0, '')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setFindPicMultithreadCount
 
@@ -2295,11 +2855,15 @@ console.log(result)
 dm.setFindPicMultithreadCount(count)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetFindPicMultithreadCount`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setfindpicmultithreadcount/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
 
 #### 返回值
 
@@ -2308,13 +2872,17 @@ dm.setFindPicMultithreadCount(count)
 #### 示例
 
 ```js
-const result = dm.setFindPicMultithreadCount(count)
+const result = dm.setFindPicMultithreadCount(4)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setFindPicMultithreadLimit
 
@@ -2326,11 +2894,15 @@ console.log(result)
 dm.setFindPicMultithreadLimit(count)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetFindPicMultithreadLimit`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setfindpicmultithreadlimit/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
 
 #### 返回值
 
@@ -2339,44 +2911,17 @@ dm.setFindPicMultithreadLimit(count)
 #### 示例
 
 ```js
-const result = dm.setFindPicMultithreadLimit(count)
+const result = dm.setFindPicMultithreadLimit(4)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
 
-### dm.setPicPwd
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
-<a id="api-symbol-ZG0uc2V0UGljUHdk"></a>
-
-#### 签名
-
-```js
-dm.setPicPwd(password)
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| `password` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-
-#### 返回值
-
-`number`；成功通常为 `1`，失败为 `0`。
-
-#### 示例
-
-```js
-const result = dm.setPicPwd(password)
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setPath
 
@@ -2388,11 +2933,15 @@ console.log(result)
 dm.setPath(path)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetPath`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `path` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `path` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -2401,13 +2950,17 @@ dm.setPath(path)
 #### 示例
 
 ```js
-const result = dm.setPath(path)
+const result = dm.setPath('./assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setDisplayInput
 
@@ -2419,11 +2972,15 @@ console.log(result)
 dm.setDisplayInput(source)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetDisplayInput`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `source` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `source` | `String` | 是 | — | 输入源：`screen` 或 `pic:相对路径`。 |
 
 #### 返回值
 
@@ -2432,13 +2989,17 @@ dm.setDisplayInput(source)
 #### 示例
 
 ```js
-const result = dm.setDisplayInput(source)
+const result = dm.setDisplayInput('screen')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.enablePicCache
 
@@ -2450,11 +3011,15 @@ console.log(result)
 dm.enablePicCache(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`EnablePicCache`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
 
 #### 返回值
 
@@ -2463,13 +3028,17 @@ dm.enablePicCache(enabled)
 #### 示例
 
 ```js
-const result = dm.enablePicCache(enabled)
+const result = dm.enablePicCache(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.buffer
 
@@ -2481,26 +3050,190 @@ console.log(result)
 dm.buffer(bytes)
 ```
 
+#### 实现与兼容
+
+原始命令：`buffer`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `bytes` | `byte[]` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `bytes` | `byte[]` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
 
 #### 返回值
 
-`DmBuffer`；调用方负责 `close()`。
+`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。
 
 #### 示例
 
 ```js
-const result = dm.buffer(bytes)
-console.log(result)
+const bytes = dm.buffer(files.readBytes('./assets/dm/input.bin'))
+try {
+  console.log(bytes.size())
+} finally {
+  bytes.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+### dm.cancel
+
+<a id="api-symbol-ZG0uY2FuY2Vs"></a>
+
+#### 签名
+
+```js
+dm.cancel()
+```
+
+#### 实现与兼容
+
+原始命令：`cancel`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
+
+#### 返回值
+
+`undefined`。
+
+#### 示例
+
+```js
+dm.cancel()
+```
+
+#### 注意事项
+
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+### dm.close
+
+<a id="api-symbol-ZG0uY2xvc2U"></a>
+
+#### 签名
+
+```js
+dm.close()
+```
+
+#### 实现与兼容
+
+原始命令：`close`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
+
+#### 返回值
+
+`undefined`。
+
+#### 示例
+
+```js
+dm.close()
+```
+
+#### 注意事项
+
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+### dm.getFrameInfo
+
+<a id="api-symbol-ZG0uZ2V0RnJhbWVJbmZv"></a>
+
+#### 签名
+
+```js
+dm.getFrameInfo()
+```
+
+#### 实现与兼容
+
+原始命令：`getFrameInfo`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
+
+#### 返回值
+
+`Bundle`；失败值遵循 MonkeyKing Android 实现约定。
+
+#### 示例
+
+```js
+console.log(dm.getFrameInfo())
+```
+
+#### 注意事项
+
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+### dm.getLastFindTimings
+
+<a id="api-symbol-ZG0uZ2V0TGFzdEZpbmRUaW1pbmdz"></a>
+
+#### 签名
+
+```js
+dm.getLastFindTimings()
+```
+
+#### 实现与兼容
+
+原始命令：`getLastFindTimings`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
+
+#### 返回值
+
+`Map`；失败值遵循 MonkeyKing Android 实现约定。
+
+#### 示例
+
+```js
+console.log(dm.getLastFindTimings())
+```
+
+#### 注意事项
+
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.keepScreen
 
@@ -2512,26 +3245,38 @@ console.log(result)
 dm.keepScreen(keep)
 ```
 
+#### 实现与兼容
+
+原始命令：`keepScreen`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `keep` | `boolean` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `keep` | `boolean` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
 
 #### 返回值
 
-`void`；具体失败值遵循底层命令约定。
+`undefined`。
 
 #### 示例
 
 ```js
-const result = dm.keepScreen(keep)
-console.log(result)
+dm.keepScreen(true)
+try {
+  console.log(dm.getFrameInfo())
+} finally {
+  dm.keepScreen(false)
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setImage
 
@@ -2543,26 +3288,77 @@ console.log(result)
 dm.setImage(image)
 ```
 
+#### 实现与兼容
+
+原始命令：`setImage`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `image` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `image` | `Object` | 是 | — | ImageWrapper、Bitmap 或 `DmBuffer` 输入。 |
 
 #### 返回值
 
-`void`；具体失败值遵循底层命令约定。
+`undefined`。
 
 #### 示例
 
 ```js
-const result = dm.setImage(image)
-console.log(result)
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  console.log(dm.getFrameInfo())
+} finally {
+  frame.recycle()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+### dm.setSimdEnabled
+
+<a id="api-symbol-ZG0uc2V0U2ltZEVuYWJsZWQ"></a>
+
+#### 签名
+
+```js
+dm.setSimdEnabled(enabled)
+```
+
+#### 实现与兼容
+
+原始命令：`setSimdEnabled`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `boolean` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+
+#### 返回值
+
+`undefined`。
+
+#### 示例
+
+```js
+dm.setSimdEnabled(true)
+```
+
+#### 注意事项
+
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.useScreen
 
@@ -2574,6 +3370,10 @@ console.log(result)
 dm.useScreen()
 ```
 
+#### 实现与兼容
+
+原始命令：`useScreen`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
@@ -2582,18 +3382,22 @@ dm.useScreen()
 
 #### 返回值
 
-`void`；具体失败值遵循底层命令约定。
+`undefined`。
 
 #### 示例
 
 ```js
-const result = dm.useScreen()
-console.log(result)
+dm.useScreen()
+console.log(dm.getFrameInfo())
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 
 ## 文字识别导航
@@ -2608,12 +3412,20 @@ console.log(result)
 dm.addDict(index, entry)
 ```
 
+#### 实现与兼容
+
+原始命令：`AddDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.adddict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
-| `entry` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `entry` | `String` | 是 | — | 明文字库条目，格式为 `HEX$文字$指标$高度`。 |
+
+#### 字库格式
+
+字库使用 UTF-8 或 GB18030 明文条目 `HEX$文字$指标$高度`；Android 不支持加密字库和裸地址。
 
 #### 返回值
 
@@ -2622,13 +3434,17 @@ dm.addDict(index, entry)
 #### 示例
 
 ```js
-const result = dm.addDict(index, entry)
+const result = dm.addDict(0, '414243$确$0$16')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.clearDict
 
@@ -2640,11 +3456,15 @@ console.log(result)
 dm.clearDict(index)
 ```
 
+#### 实现与兼容
+
+原始命令：`ClearDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.cleardict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
 
 #### 返回值
 
@@ -2653,13 +3473,17 @@ dm.clearDict(index)
 #### 示例
 
 ```js
-const result = dm.clearDict(index)
+const result = dm.clearDict(0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.enableShareDict
 
@@ -2671,11 +3495,19 @@ console.log(result)
 dm.enableShareDict(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`EnableShareDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.enablesharedict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -2684,13 +3516,17 @@ dm.enableShareDict(enabled)
 #### 示例
 
 ```js
-const result = dm.enableShareDict(enabled)
+const result = dm.enableShareDict(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.fetchWord
 
@@ -2702,31 +3538,44 @@ console.log(result)
 dm.fetchWord(x1, y1, x2, y2, color, text)
 ```
 
+#### 实现与兼容
+
+原始命令：`FetchWord`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.fetchword/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 六位十六进制 RGB 颜色或设备支持的颜色表达式。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.fetchWord(x1, y1, x2, y2, color, text)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const glyph = dm.fetchWord(x1, y1, x2, y2, 'ffffff-202020', '确')
+if (glyph) {
+  dm.addDict(0, glyph)
+  dm.useDict(0)
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.findStr
 
@@ -2738,23 +3587,28 @@ console.log(result)
 dm.findStr(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStr`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -2763,13 +3617,23 @@ dm.findStr(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStr(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStr(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrE
 
@@ -2781,23 +3645,28 @@ console.log(result)
 dm.findStrE(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstre/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -2806,13 +3675,23 @@ dm.findStrE(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStrE(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrEx
 
@@ -2824,38 +3703,53 @@ console.log(result)
 dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrExS
 
@@ -2867,38 +3761,53 @@ console.log(result)
 dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrExS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrexs/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrExS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrFast
 
@@ -2910,23 +3819,28 @@ console.log(result)
 dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrFast`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrfast/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -2935,13 +3849,23 @@ dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
-console.log(result)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const hit = dm.findStrFast(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
+if (hit) console.log(hit.value, hit.x, hit.y)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrFastE
 
@@ -2953,23 +3877,28 @@ console.log(result)
 dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrFastE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrfaste/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -2978,13 +3907,23 @@ dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrFastE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrFastEx
 
@@ -2996,38 +3935,53 @@ console.log(result)
 dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrFastEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrfastex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrFastEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrFastExS
 
@@ -3039,38 +3993,53 @@ console.log(result)
 dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrFastExS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.FindStrFastExS/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrFastExS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrFastS
 
@@ -3082,23 +4051,28 @@ console.log(result)
 dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrFastS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrfasts/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -3107,13 +4081,23 @@ dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrFastS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrS
 
@@ -3125,23 +4109,28 @@ console.log(result)
 dm.findStrS(x1, y1, x2, y2, text, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrS`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrs/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -3150,13 +4139,23 @@ dm.findStrS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-const result = dm.findStrS(x1, y1, x2, y2, text, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrWithFont
 
@@ -3168,26 +4167,31 @@ console.log(result)
 dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrWithFont`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrwithfont/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
+| `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
+| `style` | `int` | 是 | — | 字体样式位：`1` 粗体、`2` 斜体、`4` 下划线、`8` 删除线，可组合。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -3196,13 +4200,23 @@ dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 #### 示例
 
 ```js
-const result = dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrWithFont(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrWithFontE
 
@@ -3214,26 +4228,31 @@ console.log(result)
 dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrWithFontE`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrwithfonte/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
+| `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
+| `style` | `int` | 是 | — | 字体样式位：`1` 粗体、`2` 斜体、`4` 下划线、`8` 删除线，可组合。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
@@ -3242,13 +4261,23 @@ dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 #### 示例
 
 ```js
-const result = dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrWithFontE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.findStrWithFontEx
 
@@ -3260,41 +4289,56 @@ console.log(result)
 dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
 
+#### 实现与兼容
+
+原始命令：`FindStrWithFontEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.findstrwithfontex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
-| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
+| `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
+| `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
+| `style` | `int` | 是 | — | 字体样式位：`1` 粗体、`2` 斜体、`4` 下划线、`8` 删除线，可组合。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### FindStr 返回语义
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
 
 #### 返回值
 
-`DmMatch[]`；未命中时为空数组。
+`DmMatch[]`；未命中或没有记录时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.findStrWithFontEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.getDict
 
@@ -3306,27 +4350,35 @@ console.log(result)
 dm.getDict(index, entry)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getdict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
-| `entry` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `entry` | `int` | 是 | — | 明文字库条目，格式为 `HEX$文字$指标$高度`。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.getDict(index, entry)
+const result = dm.getDict(0, '414243$确$0$16')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getDictCount
 
@@ -3338,11 +4390,15 @@ console.log(result)
 dm.getDictCount(index)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetDictCount`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getdictcount/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
 
 #### 返回值
 
@@ -3351,13 +4407,17 @@ dm.getDictCount(index)
 #### 示例
 
 ```js
-const result = dm.getDictCount(index)
+const result = dm.getDictCount(0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getDictInfo
 
@@ -3369,29 +4429,37 @@ console.log(result)
 dm.getDictInfo(text, font, size, style)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetDictInfo`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getdictinfo/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
-| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
+| `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
+| `style` | `int` | 是 | — | 字体样式位：`1` 粗体、`2` 斜体、`4` 下划线、`8` 删除线，可组合。 |
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.getDictInfo(text, font, size, style)
+const result = dm.getDictInfo('确定|取消', 'sans-serif', 24, 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getNowDict
 
@@ -3402,6 +4470,10 @@ console.log(result)
 ```js
 dm.getNowDict()
 ```
+
+#### 实现与兼容
+
+原始命令：`GetNowDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getnowdict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
 
 #### 参数
 
@@ -3422,7 +4494,11 @@ console.log(result)
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getResultCount
 
@@ -3434,11 +4510,19 @@ console.log(result)
 dm.getResultCount(results)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetResultCount`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getresultcount/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
+
+#### 兼容结果解析
+
+仅对底层兼容结果字符串进行解析；索引从 `0` 开始，越界返回空值或 `null`，不会改变新 API 的自然返回值。
 
 #### 返回值
 
@@ -3447,13 +4531,17 @@ dm.getResultCount(results)
 #### 示例
 
 ```js
-const result = dm.getResultCount(results)
+const result = dm.getResultCount('确定$10$20|取消$30$20')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getResultPos
 
@@ -3465,27 +4553,39 @@ console.log(result)
 dm.getResultPos(results, index)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetResultPos`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getresultpos/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+
+#### 兼容结果解析
+
+仅对底层兼容结果字符串进行解析；索引从 `0` 开始，越界返回空值或 `null`，不会改变新 API 的自然返回值。
 
 #### 返回值
 
-`DmMatch`；未命中时为 `null`。
+`DmMatch`；索引越界时返回 `null`。
 
 #### 示例
 
 ```js
-const result = dm.getResultPos(results, index)
+const result = dm.getResultPos('确定$10$20|取消$30$20', 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getWordResultCount
 
@@ -3497,11 +4597,19 @@ console.log(result)
 dm.getWordResultCount(results)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetWordResultCount`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getWordresultcount/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
+
+#### 兼容结果解析
+
+仅对底层兼容结果字符串进行解析；索引从 `0` 开始，越界返回空值或 `null`，不会改变新 API 的自然返回值。
 
 #### 返回值
 
@@ -3510,13 +4618,17 @@ dm.getWordResultCount(results)
 #### 示例
 
 ```js
-const result = dm.getWordResultCount(results)
+const result = dm.getWordResultCount('确定$10$20|取消$30$20')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getWordResultPos
 
@@ -3528,27 +4640,39 @@ console.log(result)
 dm.getWordResultPos(results, index)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetWordResultPos`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getwordresultpos/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+
+#### 兼容结果解析
+
+仅对底层兼容结果字符串进行解析；索引从 `0` 开始，越界返回空值或 `null`，不会改变新 API 的自然返回值。
 
 #### 返回值
 
-`DmMatch`；未命中时为 `null`。
+`DmMatch`；索引越界时返回 `null`。
 
 #### 示例
 
 ```js
-const result = dm.getWordResultPos(results, index)
+const result = dm.getWordResultPos('确定$10$20|取消$30$20', 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getWordResultStr
 
@@ -3560,27 +4684,39 @@ console.log(result)
 dm.getWordResultStr(results, index)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetWordResultStr`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getwordresultstr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+
+#### 兼容结果解析
+
+仅对底层兼容结果字符串进行解析；索引从 `0` 开始，越界返回空值或 `null`，不会改变新 API 的自然返回值。
 
 #### 返回值
 
-`String`；具体失败值遵循底层命令约定。
+`String`；失败值遵循 MonkeyKing Android 实现约定。
 
 #### 示例
 
 ```js
-const result = dm.getWordResultStr(results, index)
+const result = dm.getWordResultStr('确定$10$20|取消$30$20', 0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.getWords
 
@@ -3592,37 +4728,52 @@ console.log(result)
 dm.getWords(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetWords`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getwords/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### 有字库与免字库
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+该接口使用当前字库把字符分组为词组。 返回数组中的每个元素包含 `value`、`x`、`y`、`width` 和 `height`；没有结果时为空数组。
 
 #### 返回值
 
-`DmMatch[]`；无结果时为空数组。
+`DmMatch[]`；没有结果时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.getWords(x1, y1, x2, y2, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.getWordsNoDict
 
@@ -3634,36 +4785,49 @@ console.log(result)
 dm.getWordsNoDict(x1, y1, x2, y2, color)
 ```
 
+#### 实现与兼容
+
+原始命令：`GetWordsNoDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.getwordsnodict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### 有字库与免字库
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+该接口不读取点阵字库，直接按图像连通区域返回词组。 返回数组中的每个元素包含 `value`、`x`、`y`、`width` 和 `height`；没有结果时为空数组。
 
 #### 返回值
 
-`DmMatch[]`；无结果时为空数组。
+`DmMatch[]`；没有结果时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.getWordsNoDict(x1, y1, x2, y2, color)
-console.log(result)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+console.log(words.length ? words : '未识别到词组')
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.ocr
 
@@ -3675,39 +4839,52 @@ console.log(result)
 dm.ocr(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`Ocr`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.ocr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### OCR 颜色和分隔符
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+支持 RGB、HSV、灰度和 `b@` 背景色模式；颜色条件用 `|` 分隔。颜色表达式后可以追加分隔符，例如 `ffffff-202020,\\n`，返回值是拼接后的完整字符串；未识别到文字时返回空字符串。
 
 #### 返回值
 
-`string`；未识别到文字时为空字符串。
+`string`；没有识别到文字时为空字符串。
 
 #### 示例
 
 ```js
 dm.setDict(0, './assets/dm/main.dm.txt')
 dm.useDict(0)
-const text = dm.ocr(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9)
-console.log(text)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const text = dm.ocr(x1, y1, x2, y2, 'ffffff-202020,\\n', 0.9)
+console.log(text || '未识别到文字')
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.ocrEx
 
@@ -3719,37 +4896,52 @@ console.log(text)
 dm.ocrEx(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`OcrEx`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.ocrex/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### OCR 结构化结果
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是文字，`x/y/width/height` 是输入图像坐标。无结果返回空数组。
 
 #### 返回值
 
-`DmMatch[]`；无结果时为空数组。
+`DmMatch[]`；没有结果时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.ocrEx(x1, y1, x2, y2, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.ocrEx(x1, y1, x2, y2, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.ocrExOne
 
@@ -3761,37 +4953,52 @@ console.log(result)
 dm.ocrExOne(x1, y1, x2, y2, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`OcrExOne`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.ocrexone/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### OCR 结构化结果
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是文字，`x/y/width/height` 是输入图像坐标。无结果返回空数组。
 
 #### 返回值
 
-`DmMatch[]`；无结果时为空数组。
+`DmMatch[]`；没有结果时为空数组。
 
 #### 示例
 
 ```js
-const result = dm.ocrExOne(x1, y1, x2, y2, color, similarity)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const x = 0, y = 0
+const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
+const result = dm.ocrExOne(x1, y1, x2, y2, 'ffffff-202020', 0.9)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
 
 ### dm.ocrInFile
 
@@ -3803,38 +5010,54 @@ console.log(result)
 dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
 ```
 
+#### 实现与兼容
+
+原始命令：`OcrInFile`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.ocrinfile/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
-| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
-| `color` | `String` | 是 | — | 文字颜色表达式，支持 RGB、HSV 和灰度格式；详细规则见下方说明。 |
-| `similarity` | `double` | 是 | — | 相似度，取值范围为 `0.1` 到 `1.0`；值越高越严格。 |
+| `x1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
-#### OCR 颜色格式与返回串
+#### OCR 颜色格式
 
-颜色表达式支持 RGB、HSV 和灰度格式：RGB 使用 `RRGGBB-DRDGDB`，HSV 使用 `H.S.V-DH.DS.DV`，灰度使用带 `#` 的两位十六进制值及可选偏差，例如 `#40-0`。多个颜色条件使用 `|` 分隔；`Ocr` 的颜色表达式后的逗号内容作为识别结果的换行分隔符，例如 `ffffff,\\n`。也支持在最前面使用 `b@` 表示按背景色匹配。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+#### 文件输入
 
-官方兼容返回格式为：`OcrEx` 返回 `字符$x$y|字符$x$y`，`OcrExOne` 返回 `文字|x,y|x,y`。MonkeyKing 的 camelCase facade 将这两种结果适配为 `DmMatch[]`，底层兼容入口仍保留原始返回串。
+该接口直接读取图片文件，不会复用屏幕帧；文件路径基于 `setPath()`。
 
 #### 返回值
 
-`string`；无结果时为空字符串。
+`string`；没有识别到文字时为空字符串。
 
 #### 示例
 
 ```js
-const result = dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
-console.log(result)
+dm.setPath('./assets/dm')
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const text = dm.ocrInFile(0, 0, 1079, 1919, 'screen.png', 'ffffff-202020', 0.9)
+console.log(text || '文件中没有文字')
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+文字识别依赖当前字库或免字库模式；空结果不是异常。
+
+文件 OCR 不复用屏幕帧，文件路径必须可读。
 
 ### dm.saveDict
 
@@ -3846,12 +5069,16 @@ console.log(result)
 dm.saveDict(index, file)
 ```
 
+#### 实现与兼容
+
+原始命令：`SaveDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.savedict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
 
 #### 返回值
 
@@ -3860,13 +5087,17 @@ dm.saveDict(index, file)
 #### 示例
 
 ```js
-const result = dm.saveDict(index, file)
+const result = dm.saveDict(0, './assets/dm/output.bin')
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setColGapNoDict
 
@@ -3878,11 +5109,19 @@ console.log(result)
 dm.setColGapNoDict(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetColGapNoDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setcolgapnodict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -3891,13 +5130,17 @@ dm.setColGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setColGapNoDict(gap)
+const result = dm.setColGapNoDict(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setDict
 
@@ -3909,12 +5152,20 @@ console.log(result)
 dm.setDict(index, file)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setdict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
-| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `file` | `String` | 是 | — | 文件或目录路径；相对路径基于 `setPath()` 或当前工作目录。 |
+
+#### 字库格式
+
+字库使用 UTF-8 或 GB18030 明文条目 `HEX$文字$指标$高度`；Android 不支持加密字库和裸地址。
 
 #### 返回值
 
@@ -3923,13 +5174,18 @@ dm.setDict(index, file)
 #### 示例
 
 ```js
-const result = dm.setDict(index, file)
-console.log(result)
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+console.log(dm.getDictCount(0))
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setDictMem
 
@@ -3941,13 +5197,21 @@ console.log(result)
 dm.setDictMem(index, data, length)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetDictMem`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setdictmem/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
-| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `data` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
+| `length` | `int` | 是 | — | 按 `int` 传入；不能传入 Java 内部输出指针类型。 |
+
+#### 字库格式
+
+字库使用 UTF-8 或 GB18030 明文条目 `HEX$文字$指标$高度`；Android 不支持加密字库和裸地址。
 
 #### 返回值
 
@@ -3956,44 +5220,22 @@ dm.setDictMem(index, data, length)
 #### 示例
 
 ```js
-const result = dm.setDictMem(index, data, length)
-console.log(result)
+const bytes = files.readBytes('./assets/dm/main.dm.txt')
+const dict = dm.buffer(bytes)
+try {
+  console.log(dm.setDictMem(0, dict, bytes.length))
+} finally {
+  dict.close()
+}
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
 
-### dm.setDictPwd
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
-<a id="api-symbol-ZG0uc2V0RGljdFB3ZA"></a>
-
-#### 签名
-
-```js
-dm.setDictPwd(password)
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| `password` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-
-#### 返回值
-
-`number`；成功通常为 `1`，失败为 `0`。
-
-#### 示例
-
-```js
-const result = dm.setDictPwd(password)
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setExactOcr
 
@@ -4005,11 +5247,19 @@ console.log(result)
 dm.setExactOcr(enabled)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetExactOcr`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setexactocr/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4018,13 +5268,17 @@ dm.setExactOcr(enabled)
 #### 示例
 
 ```js
-const result = dm.setExactOcr(enabled)
+const result = dm.setExactOcr(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setMinColGap
 
@@ -4036,11 +5290,19 @@ console.log(result)
 dm.setMinColGap(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetMinColGap`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setmincolgap/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4049,13 +5311,17 @@ dm.setMinColGap(gap)
 #### 示例
 
 ```js
-const result = dm.setMinColGap(gap)
+const result = dm.setMinColGap(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setMinRowGap
 
@@ -4067,11 +5333,19 @@ console.log(result)
 dm.setMinRowGap(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetMinRowGap`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setminrowgap/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4080,13 +5354,17 @@ dm.setMinRowGap(gap)
 #### 示例
 
 ```js
-const result = dm.setMinRowGap(gap)
+const result = dm.setMinRowGap(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setRowGapNoDict
 
@@ -4098,11 +5376,19 @@ console.log(result)
 dm.setRowGapNoDict(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetRowGapNoDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setrowgapnodict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4111,13 +5397,17 @@ dm.setRowGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setRowGapNoDict(gap)
+const result = dm.setRowGapNoDict(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setWordGap
 
@@ -4129,11 +5419,19 @@ console.log(result)
 dm.setWordGap(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetWordGap`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setwordgap/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4142,13 +5440,17 @@ dm.setWordGap(gap)
 #### 示例
 
 ```js
-const result = dm.setWordGap(gap)
+const result = dm.setWordGap(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setWordGapNoDict
 
@@ -4160,11 +5462,19 @@ console.log(result)
 dm.setWordGapNoDict(gap)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetWordGapNoDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setwordgapnodict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `gap` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4173,13 +5483,17 @@ dm.setWordGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setWordGapNoDict(gap)
+const result = dm.setWordGapNoDict(1)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setWordLineHeight
 
@@ -4191,11 +5505,19 @@ console.log(result)
 dm.setWordLineHeight(height)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetWordLineHeight`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setwordlineheight/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4204,13 +5526,17 @@ dm.setWordLineHeight(height)
 #### 示例
 
 ```js
-const result = dm.setWordLineHeight(height)
+const result = dm.setWordLineHeight(64)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.setWordLineHeightNoDict
 
@@ -4222,11 +5548,19 @@ console.log(result)
 dm.setWordLineHeightNoDict(height)
 ```
 
+#### 实现与兼容
+
+原始命令：`SetWordLineHeightNoDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.setwordlineheightnodict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+
+#### 识别参数
+
+该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -4235,13 +5569,17 @@ dm.setWordLineHeightNoDict(height)
 #### 示例
 
 ```js
-const result = dm.setWordLineHeightNoDict(height)
+const result = dm.setWordLineHeightNoDict(64)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.useDict
 
@@ -4253,11 +5591,15 @@ console.log(result)
 dm.useDict(index)
 ```
 
+#### 实现与兼容
+
+原始命令：`UseDict`；参数语义参考[原始分类页](https://zimaoxy.com/docs/qscript/dm.usedict/)，返回值和 Android 行为以 MonkeyKing 实现为准。
+
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
 
 #### 返回值
 
@@ -4266,137 +5608,17 @@ dm.useDict(index)
 #### 示例
 
 ```js
-const result = dm.useDict(index)
+const result = dm.useDict(0)
 console.log(result)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
 
-### dm.cancel
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
-<a id="api-symbol-ZG0uY2FuY2Vs"></a>
-
-#### 签名
-
-```js
-dm.cancel()
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| — | — | — | — | 无参数。 |
-
-#### 返回值
-
-`void`；具体失败值遵循底层命令约定。
-
-#### 示例
-
-```js
-const result = dm.cancel()
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
-
-### dm.close
-
-<a id="api-symbol-ZG0uY2xvc2U"></a>
-
-#### 签名
-
-```js
-dm.close()
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| — | — | — | — | 无参数。 |
-
-#### 返回值
-
-`void`；具体失败值遵循底层命令约定。
-
-#### 示例
-
-```js
-const result = dm.close()
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
-
-### dm.getFrameInfo
-
-<a id="api-symbol-ZG0uZ2V0RnJhbWVJbmZv"></a>
-
-#### 签名
-
-```js
-dm.getFrameInfo()
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| — | — | — | — | 无参数。 |
-
-#### 返回值
-
-`Bundle`；具体失败值遵循底层命令约定。
-
-#### 示例
-
-```js
-const result = dm.getFrameInfo()
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
-
-### dm.getLastFindTimings
-
-<a id="api-symbol-ZG0uZ2V0TGFzdEZpbmRUaW1pbmdz"></a>
-
-#### 签名
-
-```js
-dm.getLastFindTimings()
-```
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| — | — | — | — | 无参数。 |
-
-#### 返回值
-
-`Map`；具体失败值遵循底层命令约定。
-
-#### 示例
-
-```js
-const result = dm.getLastFindTimings()
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 ### dm.ocrAuto
 
@@ -4408,54 +5630,35 @@ console.log(result)
 dm.ocrAuto(options)
 ```
 
-#### 参数
+#### 实现与兼容
 
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| `options` | `Map` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
-
-#### 返回值
-
-`string`；无结果时为空字符串。
-
-#### 示例
-
-```js
-const result = dm.ocrAuto(options)
-console.log(result)
-```
-
-#### 注意事项
-
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
-
-### dm.setSimdEnabled
-
-<a id="api-symbol-ZG0uc2V0U2ltZEVuYWJsZWQ"></a>
-
-#### 签名
-
-```js
-dm.setSimdEnabled(enabled)
-```
+原始命令：`ocrAuto`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
 
 #### 参数
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `boolean` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+| `options` | `Map` | 是 | — | 通用 OCR 选项对象，例如 `{ maxSideLen: 128, doAngle: false }`。 |
+
+#### 通用 OCR
+
+该扩展使用 MonkeyKing 内置 OCR 模型，不依赖 DM 点阵字库；模型不可用或输入无效时抛出错误。
 
 #### 返回值
 
-`void`；具体失败值遵循底层命令约定。
+`Object[]`；每个 block 包含 `text`、`confidence`、`detectionConfidence` 和 `points`。
 
 #### 示例
 
 ```js
-const result = dm.setSimdEnabled(enabled)
-console.log(result)
+const blocks = dm.ocrAuto({ maxSideLen: 128, doAngle: false })
+for (const block of blocks) console.log(block.text, block.confidence)
 ```
 
 #### 注意事项
 
-坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+
+坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
+
+未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。

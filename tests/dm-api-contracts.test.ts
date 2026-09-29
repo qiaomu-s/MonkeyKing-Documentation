@@ -62,6 +62,13 @@ function readManifest(): Manifest {
   return JSON.parse(readText('api-surface/manifest.json')) as Manifest
 }
 
+function sectionFor(page: string, name: string): string {
+  const start = page.indexOf(`### dm.${name}`)
+  expect(start, name).toBeGreaterThanOrEqual(0)
+  const next = page.indexOf('\n### ', start + 1)
+  return page.slice(start, next < 0 ? page.length : next)
+}
+
 describe('formal dm API surface', () => {
   test('matches the reviewed Rhino surface and excludes Java implementation types', () => {
     const manifest = readManifest()
@@ -101,11 +108,36 @@ describe('formal dm API surface', () => {
       expect(page, symbol.id).toContain(`id="${apiSymbolAnchorId(symbol.id)}"`)
     }
 
-    expect(page).toContain('setPicPwd')
-    expect(page).toContain('setDictPwd')
-    expect(page).toMatch(/不支持加密资源|不支持加密/)
+    expect(page).not.toMatch(/dm\.(?:setPicPwd|setDictPwd|sortPosDistance|writeIniPwd)\b/)
+    expect(page).toMatch(/不支持 PC 私有加密图片|不支持 PC 私有加密字库/)
     expect(page).not.toMatch(/dm\.[A-Z][A-Za-z0-9]*\s*\(/)
     expect(page).not.toMatch(/dm\.(?:invoke|modernFind|modernText)\b/)
+    expect(page).not.toMatch(/\b(?:IntRef|BufferRef)\b/)
+    expect(page).not.toMatch(/\b(?:x|y)\.value\b/)
+  })
+
+  test('gives every public method a complete generated section and concrete example', () => {
+    const manifest = readManifest()
+    const page = readText('docs/api/media/dm.md')
+    const dmSymbols = manifest.symbols.filter(
+      (symbol) => symbol.public && symbol.owner === 'dm' && !symbol.canonicalId && symbol.kind !== 'module',
+    )
+
+    expect(dmSymbols).toHaveLength(114)
+    for (const symbol of dmSymbols) {
+      const section = sectionFor(page, symbol.name)
+      expect(section, symbol.id).toContain('#### 签名')
+      expect(section, symbol.id).toContain('#### 参数')
+      expect(section, symbol.id).toContain('#### 返回值')
+      expect(section, symbol.id).toContain('#### 示例')
+      expect(section, symbol.id).toContain('#### 注意事项')
+    }
+    expect(page).toContain("'123456-000000|aabbcc-030303|ddeeff-202020'")
+    expect(page).toContain("'8|0|aabbcc-030303,-4|3|ddeeff-202020'")
+    expect(page).toContain('template.close()')
+    expect(page).toContain('const x = 0, y = 0')
+    expect(page).toContain("files.readBytes('./assets/dm/button.png')")
+    expect(page).not.toContain('new Uint8Array(')
   })
 
   test('documents every direction value for every direction-based dm function', () => {
@@ -124,7 +156,7 @@ describe('formal dm API surface', () => {
       const anchor = `id="${apiSymbolAnchorId(symbol.id)}"`
       const start = page.indexOf(anchor)
       expect(start, symbol.id).toBeGreaterThanOrEqual(0)
-      const section = page.slice(start, page.indexOf('\n### ', start + 1))
+      const section = sectionFor(page, symbol.name)
       expect(section, symbol.id).toContain('#### 扫描方向')
       for (const [value, description] of directionContracts[symbol.name]) {
         expect(section, `${symbol.id}: direction ${value}`).toContain(
@@ -146,7 +178,7 @@ describe('formal dm API surface', () => {
     for (const name of ['findColor', 'findColorE', 'findColorEx']) {
       const start = page.indexOf(`### dm.${name}`)
       expect(start, name).toBeGreaterThanOrEqual(0)
-      const section = page.slice(start, page.indexOf('\n### ', start + 1))
+      const section = sectionFor(page, name)
       expect(section, name).toContain('RRGGBB-DRDGDB')
       expect(section, name).toContain('反色模式')
       expect(section, name).toContain('0.1')
@@ -156,7 +188,7 @@ describe('formal dm API surface', () => {
       const start = page.indexOf(`### dm.${name}`)
       const section = page.slice(start, page.indexOf('\n### ', start + 1))
       expect(section, name).toContain('x|y|颜色')
-      expect(section, name).toContain('偏移颜色前加 `-`')
+      expect(section, name).toContain('颜色前加 `-`')
       expect(section, name).toContain('0.1')
       expect(section, name).toContain('1.0')
       expect(section, name).not.toContain('从中心向外')
@@ -165,17 +197,32 @@ describe('formal dm API surface', () => {
       const start = page.indexOf(`### dm.${name}`)
       const section = page.slice(start, page.indexOf('\n### ', start + 1))
       expect(section, name).toContain('六位 RGB 偏色')
-      expect(section, name).toContain('两位十六进制灰度偏色')
+      expect(section, name).toContain('两位十六进制表示灰度偏色')
     }
-    const picSim = page.slice(page.indexOf('### dm.findPicSim'), page.indexOf('\n### ', page.indexOf('### dm.findPicSim') + 1))
-    expect(picSim).toContain('0` 到 `100')
-    const shape = page.slice(page.indexOf('### dm.findShape'), page.indexOf('\n### ', page.indexOf('### dm.findShape') + 1))
+    const picSim = sectionFor(page, 'findPicSim')
+    expect(picSim).toContain('范围 `0–100`')
+    const shape = sectionFor(page, 'findShape')
     expect(shape).toContain('x|y|e')
     expect(shape).not.toContain('#### FindColor 颜色格式与相似度')
-    expect(page).toContain('支持 RGB、HSV 和灰度格式')
+    expect(page).toContain('支持 RGB `RRGGBB-DRDGDB`、HSV')
     expect(page).toContain('`#40-0`')
     expect(page).toContain('`b@` 表示按背景色匹配')
-    expect(page).toContain('OcrEx` 返回 `字符$x$y|字符$x$y')
-    expect(page).toContain('OcrExOne` 返回 `文字|x,y|x,y')
+    expect(page).toContain('DmMatch[]')
+  })
+
+  test('keeps all DM reference pages free of removed PC-only calls', () => {
+    const paths = [
+      'docs/api/media/dm.md',
+      'docs/reference/dm/overview.md',
+      'docs/reference/dm/compatibility.md',
+      'docs/reference/dm/dictionary.md',
+      'docs/reference/dm/examples.md',
+      'docs/reference/dm/image.md',
+      'docs/reference/dm/text.md',
+    ]
+    const contents = paths.map(readText).join('\n')
+    expect(contents).not.toMatch(/dm\.(?:setPicPwd|setDictPwd|sortPosDistance|writeIniPwd)\b/)
+    expect(contents).not.toMatch(/dm\.(?:Find|Ocr|Set|Get|Capture)[A-Z]\w*\s*\(/)
+    expect(contents).not.toContain('dm.invoke(')
   })
 })
