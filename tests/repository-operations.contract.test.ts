@@ -31,13 +31,13 @@ function expectInOrder(source: string, values: readonly string[]): void {
 }
 
 describe('repository operations contract', () => {
-  test('runs the complete Node 22.23.2 quality gate for trusted master runs', () => {
+  test('keeps the complete Node 22.23.2 quality gate manual-only', () => {
     const workflow = readOptionalText(workflowPath)
 
     expect(existsSync(workflowPath), 'quality workflow must exist').toBe(true)
     expect(existsSync(obsoletePagesWorkflowPath)).toBe(false)
-    expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
     expect(workflow).toContain('workflow_dispatch:')
+    expect(workflow).not.toMatch(/^\s+push:/m)
     expect(workflow).not.toContain('pull_request:')
     expect(workflow).not.toContain('MONKEYKING_SOURCE_TOKEN')
     expect(workflow).not.toContain('AutoJs6')
@@ -101,12 +101,12 @@ describe('repository operations contract', () => {
     expect(JSON.stringify(config)).not.toMatch(/MONKEYKING_SOURCE_TOKEN|\.source\/monkeyking|AutoJs6/)
   })
 
-  test('keeps protected API auditing separate from public quality builds', () => {
+  test('keeps protected API auditing separate and manual-only', () => {
     const workflow = readOptionalText(internalAuditWorkflowPath)
 
     expect(existsSync(internalAuditWorkflowPath)).toBe(true)
-    expect(workflow).toMatch(/push:\s*\n\s+branches:\s*\n\s+- master/)
     expect(workflow).toContain('workflow_dispatch:')
+    expect(workflow).not.toMatch(/^\s+push:/m)
     expect(workflow).not.toContain('pull_request:')
     expect(workflow).toContain('permissions:\n  contents: read')
     expect(workflow).toContain('persist-credentials: false')

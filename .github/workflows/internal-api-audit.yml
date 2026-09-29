@@ -1,9 +1,6 @@
 name: Internal API audit
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 # This workflow is intentionally limited to trusted master runs. The protected
