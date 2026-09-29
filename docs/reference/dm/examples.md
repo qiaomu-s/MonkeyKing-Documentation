@@ -20,8 +20,8 @@ public final class DmExamples {
     ) {
         try (Dm dm = new Dm(context.getCacheDir())) {
             dm.setImage(bitmap);
-            dm.SetDictMem(0, dictionaryBytes, dictionaryBytes.length);
-            dm.UseDict(0);
+            dm.setDictMem(0, dictionaryBytes, dictionaryBytes.length);
+            dm.useDict(0);
             return dm.findStr(
                     0, 0, bitmap.getWidth() - 1, bitmap.getHeight() - 1,
                     "登录", "ffffff", 0.9
@@ -34,9 +34,9 @@ public final class DmExamples {
 ## Rhino / JavaScript
 
 ```js
-dm.SetPath('./assets');
-dm.SetDict(0, './dm/main.dm.txt');
-dm.UseDict(0);
+dm.setPath('./assets');
+dm.setDict(0, './dm/main.dm.txt');
+dm.useDict(0);
 const one = dm.findStr(0, 0, 1079, 1919, '登录', 'ffffff', 0.9);
 const many = dm.findStrEx(0, 0, 1079, 1919, '登录|确定', 'ffffff', 0.9);
 ```
@@ -45,5 +45,5 @@ const many = dm.findStrEx(0, 0, 1079, 1919, '登录|确定', 'ffffff', 0.9);
 
 ```js
 const x = { value: -1 }, y = { value: -1 };
-const ok = dm.FindStrFast(0, 0, 1079, 1919, '确定', 'ffffff', 0.9, x, y);
+const ok = dm.findStrFast(0, 0, 1079, 1919, '确定', 'ffffff', 0.9, x, y);
 ```

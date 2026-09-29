@@ -2,11 +2,2701 @@
   "source": "..\\docs\\reference\\dm\\image.md",
   "modules": [
     {
-      "textRaw": "dm 图色与找图",
-      "name": "dm_图色与找图",
-      "desc": "<p>运行条件：本页适用于提供 <code>dm</code> 全局对象的 Monkey King 构建。</p>\n<p>图色接口在输入图像上工作。输入可以是屏幕、离线图片或冻结帧：</p>\n<pre><code class=\"lang-js\">dm.SetDisplayInput(&#39;pic:./assets/images/login.png&#39;);\ndm.EnablePicCache(1);\nconst point = dm.findColor(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9, 0);\nif (point) console.log(point.x, point.y);\n</code></pre>\n<p>兼容接口保留 PascalCase、返回值和输出参数：</p>\n<pre><code class=\"lang-js\">const x = { value: -1 };\nconst y = { value: -1 };\nconst found = dm.FindColor(0, 0, 1079, 1919, &#39;ffffff&#39;, 0.9, 0, x, y);\n</code></pre>\n<p><code>findColor</code>、<code>findMultiColor</code>、颜色块检测和找图都遵守区域边界与扫描方向。<code>Sim</code> 使用百分比相似度；默认保留完整像素检查，避免用抽样换取速度。透明模板会使用透明掩码，多结果按所选扫描方向返回。</p>\n<p>一次截图多次识别时可使用 <code>keepScreen(true)</code>，结束后调用 <code>keepScreen(false)</code>。图片缓存由 <code>EnablePicCache</code> 控制，资源生命周期由 <code>DmBuffer.close()</code> 管理。</p>\n",
+      "textRaw": "dm 图色导航",
+      "name": "dm_图色导航",
+      "desc": "<p>本页覆盖取色、颜色比较、颜色块、多点找色、找图、截图、图片缓存、图片尺寸、资源释放、屏幕输入和帧控制。所有示例均使用 camelCase。</p>\n",
+      "properties": [
+        {
+          "textRaw": "dm.appendPicAddr",
+          "name": "appendPicAddr",
+          "desc": "<p><a id=\"api-symbol-ZG0uYXBwZW5kUGljQWRkcg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.appendPicAddr(buffers, data, length)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>buffers</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>data</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>length</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmBuffer</code>；调用方负责 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.appendPicAddr(buffers, data, length)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.bgr2rgb",
+          "name": "bgr2rgb",
+          "desc": "<p><a id=\"api-symbol-ZG0uYmdyMnJnYg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.bgr2rgb(color)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.bgr2rgb(color)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.capture",
+          "name": "capture",
+          "desc": "<p><a id=\"api-symbol-ZG0uY2FwdHVyZQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.capture(x1, y1, x2, y2, file)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>file</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.capture(x1, y1, x2, y2, file)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.captureGif",
+          "name": "captureGif",
+          "desc": "<p><a id=\"api-symbol-ZG0uY2FwdHVyZUdpZg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.captureGif(x1, y1, x2, y2, file, delay, duration)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>file</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delay</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>duration</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.captureGif(x1, y1, x2, y2, file, delay, duration)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.captureJpg",
+          "name": "captureJpg",
+          "desc": "<p><a id=\"api-symbol-ZG0uY2FwdHVyZUpwZw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.captureJpg(x1, y1, x2, y2, file, quality)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>file</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>quality</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>功能开关或质量参数；取值范围见设备实现。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.captureJpg(x1, y1, x2, y2, file, quality)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.capturePng",
+          "name": "capturePng",
+          "desc": "<p><a id=\"api-symbol-ZG0uY2FwdHVyZVBuZw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.capturePng(x1, y1, x2, y2, file)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>file</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.capturePng(x1, y1, x2, y2, file)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.capturePre",
+          "name": "capturePre",
+          "desc": "<p><a id=\"api-symbol-ZG0uY2FwdHVyZVByZQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.capturePre(file)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>file</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.capturePre(file)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.cmpColor",
+          "name": "cmpColor",
+          "desc": "<p><a id=\"api-symbol-ZG0uY21wQ29sb3I\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.cmpColor(x, y, color, similarity)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.cmpColor(x, y, color, similarity)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.enableDisplayDebug",
+          "name": "enableDisplayDebug",
+          "desc": "<p><a id=\"api-symbol-ZG0uZW5hYmxlRGlzcGxheURlYnVn\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.enableDisplayDebug(enabled)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>功能开关或质量参数；取值范围见设备实现。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.enableDisplayDebug(enabled)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.enableFindPicMultithread",
+          "name": "enableFindPicMultithread",
+          "desc": "<p><a id=\"api-symbol-ZG0uZW5hYmxlRmluZFBpY011bHRpdGhyZWFk\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.enableFindPicMultithread(enabled)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>功能开关或质量参数；取值范围见设备实现。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.enableFindPicMultithread(enabled)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.enableGetColorByCapture",
+          "name": "enableGetColorByCapture",
+          "desc": "<p><a id=\"api-symbol-ZG0uZW5hYmxlR2V0Q29sb3JCeUNhcHR1cmU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.enableGetColorByCapture(enabled)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>功能开关或质量参数；取值范围见设备实现。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.enableGetColorByCapture(enabled)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findColor",
+          "name": "findColor",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZENvbG9y\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findColor(x1, y1, x2, y2, color, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const match = dm.findColor(0, 0, device.width - 1, device.height - 1, &#39;ffffff&#39;, 0.9, 0)\nif (match) console.log(match.x, match.y)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findColorBlock",
+          "name": "findColorBlock",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZENvbG9yQmxvY2s\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findColorBlockEx",
+          "name": "findColorBlockEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZENvbG9yQmxvY2tFeA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>width</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findColorE",
+          "name": "findColorE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZENvbG9yRQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findColorE(x1, y1, x2, y2, color, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findColorE(x1, y1, x2, y2, color, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findColorEx",
+          "name": "findColorEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZENvbG9yRXg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findMulColor",
+          "name": "findMulColor",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZE11bENvbG9y\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findMulColor(x1, y1, x2, y2, color, similarity)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findMulColor(x1, y1, x2, y2, color, similarity)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findMultiColor",
+          "name": "findMultiColor",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZE11bHRpQ29sb3I\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findMultiColorE",
+          "name": "findMultiColorE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZE11bHRpQ29sb3JF\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findMultiColorEx",
+          "name": "findMultiColorEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZE11bHRpQ29sb3JFeA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>offsets</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPic",
+          "name": "findPic",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpYw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicE",
+          "name": "findPicE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY0U\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicEx",
+          "name": "findPicEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY0V4\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicExS",
+          "name": "findPicExS",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY0V4Uw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicMem",
+          "name": "findPicMem",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY01lbQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicMemE",
+          "name": "findPicMemE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY01lbUU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicMemEx",
+          "name": "findPicMemEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY01lbUV4\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicS",
+          "name": "findPicS",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1M\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSim",
+          "name": "findPicSim",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSimE",
+          "name": "findPicSimE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbUU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSimEx",
+          "name": "findPicSimEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbUV4\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSimMem",
+          "name": "findPicSimMem",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbU1lbQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSimMemE",
+          "name": "findPicSimMemE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbU1lbUU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findPicSimMemEx",
+          "name": "findPicSimMemEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFBpY1NpbU1lbUV4\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n<tr>\n<td><code>delta</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findShape",
+          "name": "findShape",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFNoYXBl\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findShape(x1, y1, x2, y2, shape, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findShape(x1, y1, x2, y2, shape, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findShapeE",
+          "name": "findShapeE",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFNoYXBlRQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch</code>；未命中时为 <code>null</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.findShapeEx",
+          "name": "findShapeEx",
+          "desc": "<p><a id=\"api-symbol-ZG0uZmluZFNoYXBlRXg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>shape</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n<tr>\n<td><code>direction</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>扫描方向编号；保持与设备端和示例一致。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmMatch[]</code>；未命中时为空数组。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.freePic",
+          "name": "freePic",
+          "desc": "<p><a id=\"api-symbol-ZG0uZnJlZVBpYw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.freePic(pictures)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.freePic(pictures)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getAveHSV",
+          "name": "getAveHSV",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0QXZlSFNW\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getAveHSV(x1, y1, x2, y2)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getAveHSV(x1, y1, x2, y2)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getAveRGB",
+          "name": "getAveRGB",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0QXZlUkdC\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getAveRGB(x1, y1, x2, y2)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getAveRGB(x1, y1, x2, y2)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getColor",
+          "name": "getColor",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0Q29sb3I\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getColor(x, y)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getColor(x, y)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getColorBGR",
+          "name": "getColorBGR",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0Q29sb3JCR1I\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getColorBGR(x, y)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getColorBGR(x, y)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getColorHSV",
+          "name": "getColorHSV",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0Q29sb3JIU1Y\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getColorHSV(x, y)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getColorHSV(x, y)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getColorNum",
+          "name": "getColorNum",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0Q29sb3JOdW0\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getColorNum(x1, y1, x2, y2, color, similarity)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，通常为 <code>0.0</code> 到 <code>1.0</code>；值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getColorNum(x1, y1, x2, y2, color, similarity)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getPicSize",
+          "name": "getPicSize",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0UGljU2l6ZQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getPicSize(pictures)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getPicSize(pictures)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getScreenData",
+          "name": "getScreenData",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0U2NyZWVuRGF0YQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getScreenData(x1, y1, x2, y2)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmBuffer</code>；调用方负责 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getScreenData(x1, y1, x2, y2)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.getScreenDataBmp",
+          "name": "getScreenDataBmp",
+          "desc": "<p><a id=\"api-symbol-ZG0uZ2V0U2NyZWVuRGF0YUJtcA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.getScreenDataBmp(x1, y1, x2, y2)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmBuffer</code>；调用方负责 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.getScreenDataBmp(x1, y1, x2, y2)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.imageToBmp",
+          "name": "imageToBmp",
+          "desc": "<p><a id=\"api-symbol-ZG0uaW1hZ2VUb0JtcA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.imageToBmp(input, output)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>input</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>output</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.imageToBmp(input, output)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.isDisplayDead",
+          "name": "isDisplayDead",
+          "desc": "<p><a id=\"api-symbol-ZG0uaXNEaXNwbGF5RGVhZA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.isDisplayDead(x1, y1, x2, y2, timeout)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像中的像素坐标；右下边界包含在区域内。</td>\n</tr>\n<tr>\n<td><code>timeout</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.isDisplayDead(x1, y1, x2, y2, timeout)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.loadPic",
+          "name": "loadPic",
+          "desc": "<p><a id=\"api-symbol-ZG0ubG9hZFBpYw\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.loadPic(pictures)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.loadPic(pictures)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.loadPicByte",
+          "name": "loadPicByte",
+          "desc": "<p><a id=\"api-symbol-ZG0ubG9hZFBpY0J5dGU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.loadPicByte(data, length, pictures)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>data</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>length</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.loadPicByte(data, length, pictures)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.matchPicName",
+          "name": "matchPicName",
+          "desc": "<p><a id=\"api-symbol-ZG0ubWF0Y2hQaWNOYW1l\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.matchPicName(pictures)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>资源文件名或相对路径；先设置资源根目录。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.matchPicName(pictures)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.rgb2bgr",
+          "name": "rgb2bgr",
+          "desc": "<p><a id=\"api-symbol-ZG0ucmdiMmJncg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.rgb2bgr(color)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位十六进制颜色；多颜色条件按接口格式传入。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>String</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.rgb2bgr(color)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setExcludeRegion",
+          "name": "setExcludeRegion",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0RXhjbHVkZVJlZ2lvbg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setExcludeRegion(mode, code)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>mode</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n<tr>\n<td><code>code</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setExcludeRegion(mode, code)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setFindPicMultithreadCount",
+          "name": "setFindPicMultithreadCount",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkQ291bnQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setFindPicMultithreadCount(count)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setFindPicMultithreadCount(count)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setFindPicMultithreadLimit",
+          "name": "setFindPicMultithreadLimit",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkTGltaXQ\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setFindPicMultithreadLimit(count)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>count</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setFindPicMultithreadLimit(count)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setPicPwd",
+          "name": "setPicPwd",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0UGljUHdk\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setPicPwd(password)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>password</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setPicPwd(password)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setPath",
+          "name": "setPath",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0UGF0aA\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setPath(path)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>path</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setPath(path)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setDisplayInput",
+          "name": "setDisplayInput",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0RGlzcGxheUlucHV0\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setDisplayInput(source)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>source</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setDisplayInput(source)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.enablePicCache",
+          "name": "enablePicCache",
+          "desc": "<p><a id=\"api-symbol-ZG0uZW5hYmxlUGljQ2FjaGU\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.enablePicCache(enabled)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>功能开关或质量参数；取值范围见设备实现。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.enablePicCache(enabled)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.buffer",
+          "name": "buffer",
+          "desc": "<p><a id=\"api-symbol-ZG0uYnVmZmVy\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.buffer(bytes)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>bytes</code></td>\n<td><code>byte[]</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>DmBuffer</code>；调用方负责 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.buffer(bytes)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.keepScreen",
+          "name": "keepScreen",
+          "desc": "<p><a id=\"api-symbol-ZG0ua2VlcFNjcmVlbg\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.keepScreen(keep)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>keep</code></td>\n<td><code>boolean</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>void</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.keepScreen(keep)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.setImage",
+          "name": "setImage",
+          "desc": "<p><a id=\"api-symbol-ZG0uc2V0SW1hZ2U\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.setImage(image)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>image</code></td>\n<td><code>Object</code></td>\n<td>是</td>\n<td>—</td>\n<td>按接口类型传入；不可传入 Java 内部对象。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>void</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.setImage(image)\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        },
+        {
+          "textRaw": "dm.useScreen",
+          "name": "useScreen",
+          "desc": "<p><a id=\"api-symbol-ZG0udXNlU2NyZWVu\"></a></p>\n",
+          "modules": [
+            {
+              "textRaw": "签名",
+              "name": "签名",
+              "desc": "<pre><code class=\"lang-js\">dm.useScreen()\n</code></pre>\n",
+              "type": "module",
+              "displayName": "签名"
+            },
+            {
+              "textRaw": "参数",
+              "name": "参数",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>—</td>\n<td>无参数。</td>\n</tr>\n</tbody>\n</table>\n",
+              "type": "module",
+              "displayName": "参数"
+            },
+            {
+              "textRaw": "返回值",
+              "name": "返回值",
+              "desc": "<p><code>void</code>；具体失败值遵循底层命令约定。</p>\n",
+              "type": "module",
+              "displayName": "返回值"
+            },
+            {
+              "textRaw": "示例",
+              "name": "示例",
+              "desc": "<pre><code class=\"lang-js\">const result = dm.useScreen()\nconsole.log(result)\n</code></pre>\n",
+              "type": "module",
+              "displayName": "示例"
+            },
+            {
+              "textRaw": "注意事项",
+              "name": "注意事项",
+              "desc": "<p>坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 <code>#</code> 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 <code>dm.keepScreen(true)</code> 复用同一帧。涉及图片或字库的资源在任务结束后释放，<code>DmBuffer</code> 使用完必须调用 <code>close()</code>。</p>\n",
+              "type": "module",
+              "displayName": "注意事项"
+            }
+          ]
+        }
+      ],
       "type": "module",
-      "displayName": "dm 图色与找图"
+      "displayName": "dm 图色导航"
     }
   ]
 }

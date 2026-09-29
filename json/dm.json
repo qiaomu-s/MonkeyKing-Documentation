@@ -9,7 +9,7 @@
         {
           "textRaw": "三层职责",
           "name": "三层职责",
-          "desc": "<ul>\n<li><strong>字库工具</strong>：VS Code 字库编辑器和截图工作台负责取色、分割、点阵编辑和第二张图片验证。</li>\n<li><strong>字库文件</strong>：公开明文格式为 <code>HEX$文字$指标$高度</code>，由 <code>SetDict</code>、<code>SetDictMem</code>、<code>AddDict</code>、<code>SaveDict</code> 管理。</li>\n<li><strong>识别引擎</strong>：设备端执行二值化、点阵匹配和坐标排序；<code>Ocr</code> 不会自动切换到通用 OCR。</li>\n</ul>\n<p>常用流程：</p>\n<pre><code class=\"lang-js\">dm.SetDisplayInput(&#39;screen&#39;);\ndm.SetDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.UseDict(0);\nconst text = dm.Ocr(0, 0, device.width - 1, device.height - 1, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p>坐标属于输入图像。截图发生旋转、裁剪或缩放时，应使用快照中的变换元数据换算点击坐标，不能把编辑器显示坐标直接当作设备坐标。</p>\n<p>本模块不提供加密、解密、密码设置或私有加密图片/字库解析。无法解析的文件会报告格式错误。</p>\n",
+          "desc": "<ul>\n<li><strong>字库工具</strong>：VS Code 字库编辑器和截图工作台负责取色、分割、点阵编辑和第二张图片验证。</li>\n<li><strong>字库文件</strong>：公开明文格式为 <code>HEX$文字$指标$高度</code>，由 <code>setDict</code>、<code>setDictMem</code>、<code>addDict</code>、<code>saveDict</code> 管理。</li>\n<li><strong>识别引擎</strong>：设备端执行二值化、点阵匹配和坐标排序；<code>ocr</code> 不会自动切换到通用 OCR。</li>\n</ul>\n<p>常用流程：</p>\n<pre><code class=\"lang-js\">dm.setDisplayInput(&#39;screen&#39;);\ndm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;);\ndm.useDict(0);\nconst text = dm.ocr(0, 0, device.width - 1, device.height - 1, &#39;ffffff&#39;, 0.9);\n</code></pre>\n<p>坐标属于输入图像。截图发生旋转、裁剪或缩放时，应使用快照中的变换元数据换算点击坐标，不能把编辑器显示坐标直接当作设备坐标。</p>\n<p>本模块不提供加密、解密、密码设置或私有加密图片/字库解析。无法解析的文件会报告格式错误。</p>\n",
           "type": "module",
           "displayName": "三层职责"
         }

@@ -7,16 +7,16 @@ Monkey King 的 `dm` 是独立的脚本级对象，提供大漠风格的图色�
 ## 三层职责
 
 - **字库工具**：VS Code 字库编辑器和截图工作台负责取色、分割、点阵编辑和第二张图片验证。
-- **字库文件**：公开明文格式为 `HEX$文字$指标$高度`，由 `SetDict`、`SetDictMem`、`AddDict`、`SaveDict` 管理。
-- **识别引擎**：设备端执行二值化、点阵匹配和坐标排序；`Ocr` 不会自动切换到通用 OCR。
+- **字库文件**：公开明文格式为 `HEX$文字$指标$高度`，由 `setDict`、`setDictMem`、`addDict`、`saveDict` 管理。
+- **识别引擎**：设备端执行二值化、点阵匹配和坐标排序；`ocr` 不会自动切换到通用 OCR。
 
 常用流程：
 
 ```js
-dm.SetDisplayInput('screen');
-dm.SetDict(0, './assets/dm/main.dm.txt');
-dm.UseDict(0);
-const text = dm.Ocr(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9);
+dm.setDisplayInput('screen');
+dm.setDict(0, './assets/dm/main.dm.txt');
+dm.useDict(0);
+const text = dm.ocr(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9);
 ```
 
 坐标属于输入图像。截图发生旋转、裁剪或缩放时，应使用快照中的变换元数据换算点击坐标，不能把编辑器显示坐标直接当作设备坐标。

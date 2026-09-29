@@ -13,14 +13,14 @@ HEX$文字$指标$高度
 ## 制作和加载
 
 ```js
-const glyph = dm.FetchWord(10, 20, 80, 60, 'ffffff', '确');
-dm.AddDict(0, glyph);
-dm.SaveDict(0, './assets/dm/main.dm.txt');
+const glyph = dm.fetchWord(10, 20, 80, 60, 'ffffff', '确');
+dm.addDict(0, glyph);
+dm.saveDict(0, './assets/dm/main.dm.txt');
 
-dm.SetDict(0, './assets/dm/main.dm.txt');
-dm.UseDict(0);
+dm.setDict(0, './assets/dm/main.dm.txt');
+dm.useDict(0);
 ```
 
-`SetDictMem` 接收 `byte[]` 或已关闭前会保持有效的 `DmBuffer`，不接受裸地址。`GetDictCount`、`GetDict` 可用于检查加载结果，重复文字不会自动去重，多个字形变体可以同时存在。
+`setDictMem` 接收 `byte[]` 或已关闭前会保持有效的 `DmBuffer`，不接受裸地址。`getDictCount`、`getDict` 可用于检查加载结果，重复文字不会自动去重，多个字形变体可以同时存在。
 
 损坏行应保留并显示行号；编辑器不会静默删除或改写。加密字库不在兼容范围内。

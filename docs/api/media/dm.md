@@ -1,3147 +1,3976 @@
 # dm 图色与文字识别 API
 
-Monkey King 当前运行时提供脚本级全局对象 `dm`。本页是正式 API 清单；图色算法、明文字库格式、坐标变换和 VS Code 制作流程见 [大漠参考总览](../../reference/dm/overview.md)。
-每个脚本拥有独立的 `dm`、图片缓存、输入帧、字库槽位和识别配置。脚本退出或显式调用 `dm.close()` 时释放资源。坐标属于输入图像，屏幕旋转和截图裁剪信息通过 `dm.getFrameInfo()` 获取。
-
-## JS 返回对象
-
-`Find*`、`find*`、`FindStr*` 和 `findStr*` 的便捷结果包含 `value`、`x`、`y`、`width`、`height`。兼容接口的输出参数使用普通 JavaScript 对象，例如 `{ value: -1 }`；`IntRef`、`BufferRef` 和其他 Java 类不作为 JS 构造函数暴露。
-
-```js
-const x = { value: -1 }
-const y = { value: -1 }
-const ok = dm.FindColor(0, 0, 100, 100, "ffffff", 0.9, 0, x, y)
-const match = dm.findColor(0, 0, 100, 100, "ffffff", 0.9, 0)
-```
-
-## 加密资源兼容边界
-
-`SetPicPwd`、`setPicPwd`、`SetDictPwd` 和 `setDictPwd` 保留兼容入口，但当前实现不解析私有加密图片或字库，也不提供加密、解密或密码设置能力。当前不支持加密资源，仅接受空密码或对私有加密资源返回不支持；无法解析的文件报告格式错误。
-
-## dm 模块
+Monkey King 提供脚本级全局对象 `dm`。公开入口统一使用 camelCase；底层大漠命令名仅作为实现映射，不是可调用的脚本 API。找色、找图和文字识别结果使用自然返回值：单结果为 `DmMatch | null`，多结果为 `DmMatch[]`，文字识别为字符串或结构化结果。
 
 <a id="api-symbol-bW9kdWxlOmRt"></a>
-`dm` 是运行时自动提供的全局对象，不需要导入。PascalCase 方法保留兼容语义，camelCase 方法提供便捷返回值。
 
-## 图色、取色和统计
+加密图片和加密字库不在支持范围内；`setPicPwd` 与 `setDictPwd` 仅保留入口并对非空密码返回“不支持加密资源”。
 
-<a id="api-symbol-ZG0uQkdSMlJHQg"></a>
-## `dm.BGR2RGB(...)`
-```js
-dm.BGR2RGB(color)
-```
+## 输入与资源生命周期
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+输入可以来自屏幕、离线图片、`DmBuffer` 或冻结帧。坐标使用输入图像坐标，矩形右下角包含在扫描区域内。一次截图多次识别时可调用 `dm.keepScreen(true)`，使用 `dm.close()` 或 `DmBuffer.close()` 释放资源。
 
-<a id="api-symbol-ZG0uYmdyMnJnYg"></a>
-## `dm.bgr2rgb(...)`
-```js
-dm.bgr2rgb(color)
-```
+## 图色导航
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uQ21wQ29sb3I"></a>
-## `dm.CmpColor(...)`
-```js
-dm.CmpColor(x, y, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uY21wQ29sb3I"></a>
-## `dm.cmpColor(...)`
-```js
-dm.cmpColor(x, y, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZENvbG9y"></a>
-## `dm.FindColor(...)`
-```js
-dm.FindColor(x1, y1, x2, y2, color, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZENvbG9y"></a>
-## `dm.findColor(...)`
-```js
-dm.findColor(x1, y1, x2, y2, color, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZENvbG9yQmxvY2s"></a>
-## `dm.FindColorBlock(...)`
-```js
-dm.FindColorBlock(x1, y1, x2, y2, color, similarity, count, width, height, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZENvbG9yQmxvY2s"></a>
-## `dm.findColorBlock(...)`
-```js
-dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZENvbG9yQmxvY2tFeA"></a>
-## `dm.FindColorBlockEx(...)`
-```js
-dm.FindColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZENvbG9yQmxvY2tFeA"></a>
-## `dm.findColorBlockEx(...)`
-```js
-dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZENvbG9yRQ"></a>
-## `dm.FindColorE(...)`
-```js
-dm.FindColorE(x1, y1, x2, y2, color, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZENvbG9yRQ"></a>
-## `dm.findColorE(...)`
-```js
-dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZENvbG9yRXg"></a>
-## `dm.FindColorEx(...)`
-```js
-dm.FindColorEx(x1, y1, x2, y2, color, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZENvbG9yRXg"></a>
-## `dm.findColorEx(...)`
-```js
-dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZE11bENvbG9y"></a>
-## `dm.FindMulColor(...)`
-```js
-dm.FindMulColor(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZE11bENvbG9y"></a>
-## `dm.findMulColor(...)`
-```js
-dm.findMulColor(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZE11bHRpQ29sb3I"></a>
-## `dm.FindMultiColor(...)`
-```js
-dm.FindMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3I"></a>
-## `dm.findMultiColor(...)`
-```js
-dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZE11bHRpQ29sb3JF"></a>
-## `dm.FindMultiColorE(...)`
-```js
-dm.FindMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3JF"></a>
-## `dm.findMultiColorE(...)`
-```js
-dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZE11bHRpQ29sb3JFeA"></a>
-## `dm.FindMultiColorEx(...)`
-```js
-dm.FindMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3JFeA"></a>
-## `dm.findMultiColorEx(...)`
-```js
-dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFNoYXBl"></a>
-## `dm.FindShape(...)`
-```js
-dm.FindShape(x1, y1, x2, y2, shape, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFNoYXBl"></a>
-## `dm.findShape(...)`
-```js
-dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFNoYXBlRQ"></a>
-## `dm.FindShapeE(...)`
-```js
-dm.FindShapeE(x1, y1, x2, y2, shape, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFNoYXBlRQ"></a>
-## `dm.findShapeE(...)`
-```js
-dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFNoYXBlRXg"></a>
-## `dm.FindShapeEx(...)`
-```js
-dm.FindShapeEx(x1, y1, x2, y2, shape, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFNoYXBlRXg"></a>
-## `dm.findShapeEx(...)`
-```js
-dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0QXZlSFNW"></a>
-## `dm.GetAveHSV(...)`
-```js
-dm.GetAveHSV(x1, y1, x2, y2)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0QXZlSFNW"></a>
-## `dm.getAveHSV(...)`
-```js
-dm.getAveHSV(x1, y1, x2, y2)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0QXZlUkdC"></a>
-## `dm.GetAveRGB(...)`
-```js
-dm.GetAveRGB(x1, y1, x2, y2)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0QXZlUkdC"></a>
-## `dm.getAveRGB(...)`
-```js
-dm.getAveRGB(x1, y1, x2, y2)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0Q29sb3I"></a>
-## `dm.GetColor(...)`
-```js
-dm.GetColor(x, y)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0Q29sb3I"></a>
-## `dm.getColor(...)`
-```js
-dm.getColor(x, y)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0Q29sb3JCR1I"></a>
-## `dm.GetColorBGR(...)`
-```js
-dm.GetColorBGR(x, y)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0Q29sb3JCR1I"></a>
-## `dm.getColorBGR(...)`
-```js
-dm.getColorBGR(x, y)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0Q29sb3JIU1Y"></a>
-## `dm.GetColorHSV(...)`
-```js
-dm.GetColorHSV(x, y)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0Q29sb3JIU1Y"></a>
-## `dm.getColorHSV(...)`
-```js
-dm.getColorHSV(x, y)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0Q29sb3JOdW0"></a>
-## `dm.GetColorNum(...)`
-```js
-dm.GetColorNum(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0Q29sb3JOdW0"></a>
-## `dm.getColorNum(...)`
-```js
-dm.getColorNum(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uUkdCMkJHUg"></a>
-## `dm.RGB2BGR(...)`
-```js
-dm.RGB2BGR(color)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ucmdiMmJncg"></a>
-## `dm.rgb2bgr(...)`
-```js
-dm.rgb2bgr(color)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-## 找图、缓存和截图
-
-<a id="api-symbol-ZG0uQXBwZW5kUGljQWRkcg"></a>
-## `dm.AppendPicAddr(...)`
-```js
-dm.AppendPicAddr(buffers, data, length)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+### dm.appendPicAddr
 
 <a id="api-symbol-ZG0uYXBwZW5kUGljQWRkcg"></a>
-## `dm.appendPicAddr(...)`
+
+#### 签名
+
 ```js
 dm.appendPicAddr(buffers, data, length)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uQ2FwdHVyZQ"></a>
-## `dm.Capture(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `buffers` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`DmBuffer`；调用方负责 `close()`。
+
+#### 示例
+
 ```js
-dm.Capture(x1, y1, x2, y2, file)
+const result = dm.appendPicAddr(buffers, data, length)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.bgr2rgb
+
+<a id="api-symbol-ZG0uYmdyMnJnYg"></a>
+
+#### 签名
+
+```js
+dm.bgr2rgb(color)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.bgr2rgb(color)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.capture
 
 <a id="api-symbol-ZG0uY2FwdHVyZQ"></a>
-## `dm.capture(...)`
+
+#### 签名
+
 ```js
 dm.capture(x1, y1, x2, y2, file)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uQ2FwdHVyZUdpZg"></a>
-## `dm.CaptureGif(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.CaptureGif(x1, y1, x2, y2, file, delay, duration)
+const result = dm.capture(x1, y1, x2, y2, file)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.captureGif
 
 <a id="api-symbol-ZG0uY2FwdHVyZUdpZg"></a>
-## `dm.captureGif(...)`
+
+#### 签名
+
 ```js
 dm.captureGif(x1, y1, x2, y2, file, delay, duration)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uQ2FwdHVyZUpwZw"></a>
-## `dm.CaptureJpg(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delay` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `duration` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.CaptureJpg(x1, y1, x2, y2, file, quality)
+const result = dm.captureGif(x1, y1, x2, y2, file, delay, duration)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.captureJpg
 
 <a id="api-symbol-ZG0uY2FwdHVyZUpwZw"></a>
-## `dm.captureJpg(...)`
+
+#### 签名
+
 ```js
 dm.captureJpg(x1, y1, x2, y2, file, quality)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uQ2FwdHVyZVBuZw"></a>
-## `dm.CapturePng(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `quality` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.CapturePng(x1, y1, x2, y2, file)
+const result = dm.captureJpg(x1, y1, x2, y2, file, quality)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.capturePng
 
 <a id="api-symbol-ZG0uY2FwdHVyZVBuZw"></a>
-## `dm.capturePng(...)`
+
+#### 签名
+
 ```js
 dm.capturePng(x1, y1, x2, y2, file)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uQ2FwdHVyZVByZQ"></a>
-## `dm.CapturePre(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.CapturePre(file)
+const result = dm.capturePng(x1, y1, x2, y2, file)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.capturePre
 
 <a id="api-symbol-ZG0uY2FwdHVyZVByZQ"></a>
-## `dm.capturePre(...)`
+
+#### 签名
+
 ```js
 dm.capturePre(file)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uRmluZFBpYw"></a>
-## `dm.FindPic(...)`
-```js
-dm.FindPic(x1, y1, x2, y2, pictures, delta, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpYw"></a>
-## `dm.findPic(...)`
-```js
-dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY0U"></a>
-## `dm.FindPicE(...)`
-```js
-dm.FindPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY0U"></a>
-## `dm.findPicE(...)`
-```js
-dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY0V4"></a>
-## `dm.FindPicEx(...)`
-```js
-dm.FindPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY0V4"></a>
-## `dm.findPicEx(...)`
-```js
-dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY0V4Uw"></a>
-## `dm.FindPicExS(...)`
-```js
-dm.FindPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY0V4Uw"></a>
-## `dm.findPicExS(...)`
-```js
-dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY01lbQ"></a>
-## `dm.FindPicMem(...)`
-```js
-dm.FindPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY01lbQ"></a>
-## `dm.findPicMem(...)`
-```js
-dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY01lbUU"></a>
-## `dm.FindPicMemE(...)`
-```js
-dm.FindPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY01lbUU"></a>
-## `dm.findPicMemE(...)`
-```js
-dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY01lbUV4"></a>
-## `dm.FindPicMemEx(...)`
-```js
-dm.FindPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY01lbUV4"></a>
-## `dm.findPicMemEx(...)`
-```js
-dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1M"></a>
-## `dm.FindPicS(...)`
-```js
-dm.FindPicS(x1, y1, x2, y2, pictures, delta, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1M"></a>
-## `dm.findPicS(...)`
-```js
-dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbQ"></a>
-## `dm.FindPicSim(...)`
-```js
-dm.FindPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbQ"></a>
-## `dm.findPicSim(...)`
-```js
-dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbUU"></a>
-## `dm.FindPicSimE(...)`
-```js
-dm.FindPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbUU"></a>
-## `dm.findPicSimE(...)`
-```js
-dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbUV4"></a>
-## `dm.FindPicSimEx(...)`
-```js
-dm.FindPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbUV4"></a>
-## `dm.findPicSimEx(...)`
-```js
-dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbU1lbQ"></a>
-## `dm.FindPicSimMem(...)`
-```js
-dm.FindPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbQ"></a>
-## `dm.findPicSimMem(...)`
-```js
-dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbU1lbUU"></a>
-## `dm.FindPicSimMemE(...)`
-```js
-dm.FindPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbUU"></a>
-## `dm.findPicSimMemE(...)`
-```js
-dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFBpY1NpbU1lbUV4"></a>
-## `dm.FindPicSimMemEx(...)`
-```js
-dm.FindPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbUV4"></a>
-## `dm.findPicSimMemEx(...)`
-```js
-dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRnJlZVBpYw"></a>
-## `dm.FreePic(...)`
-```js
-dm.FreePic(pictures)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZnJlZVBpYw"></a>
-## `dm.freePic(...)`
-```js
-dm.freePic(pictures)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0UGljU2l6ZQ"></a>
-## `dm.GetPicSize(...)`
-```js
-dm.GetPicSize(pictures)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0UGljU2l6ZQ"></a>
-## `dm.getPicSize(...)`
-```js
-dm.getPicSize(pictures)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0U2NyZWVuRGF0YQ"></a>
-## `dm.GetScreenData(...)`
-```js
-dm.GetScreenData(x1, y1, x2, y2)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0U2NyZWVuRGF0YQ"></a>
-## `dm.getScreenData(...)`
-```js
-dm.getScreenData(x1, y1, x2, y2)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0U2NyZWVuRGF0YUJtcA"></a>
-## `dm.GetScreenDataBmp(...)`
-```js
-dm.GetScreenDataBmp(x1, y1, x2, y2, outBUFFER, outLENGTH)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0U2NyZWVuRGF0YUJtcA"></a>
-## `dm.getScreenDataBmp(...)`
-```js
-dm.getScreenDataBmp(x1, y1, x2, y2)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uSW1hZ2VUb0JtcA"></a>
-## `dm.ImageToBmp(...)`
-```js
-dm.ImageToBmp(input, output)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uaW1hZ2VUb0JtcA"></a>
-## `dm.imageToBmp(...)`
-```js
-dm.imageToBmp(input, output)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uSXNEaXNwbGF5RGVhZA"></a>
-## `dm.IsDisplayDead(...)`
-```js
-dm.IsDisplayDead(x1, y1, x2, y2, timeout)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uaXNEaXNwbGF5RGVhZA"></a>
-## `dm.isDisplayDead(...)`
-```js
-dm.isDisplayDead(x1, y1, x2, y2, timeout)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uTG9hZFBpYw"></a>
-## `dm.LoadPic(...)`
-```js
-dm.LoadPic(pictures)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ubG9hZFBpYw"></a>
-## `dm.loadPic(...)`
-```js
-dm.loadPic(pictures)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uTG9hZFBpY0J5dGU"></a>
-## `dm.LoadPicByte(...)`
-```js
-dm.LoadPicByte(data, length, pictures)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ubG9hZFBpY0J5dGU"></a>
-## `dm.loadPicByte(...)`
-```js
-dm.loadPicByte(data, length, pictures)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uTWF0Y2hQaWNOYW1l"></a>
-## `dm.MatchPicName(...)`
-```js
-dm.MatchPicName(pictures)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ubWF0Y2hQaWNOYW1l"></a>
-## `dm.matchPicName(...)`
-```js
-dm.matchPicName(pictures)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-## 字库和文字识别
-
-<a id="api-symbol-ZG0uQWRkRGljdA"></a>
-## `dm.AddDict(...)`
-```js
-dm.AddDict(index, entry)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uYWRkRGljdA"></a>
-## `dm.addDict(...)`
-```js
-dm.addDict(index, entry)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uQ2xlYXJEaWN0"></a>
-## `dm.ClearDict(...)`
-```js
-dm.ClearDict(index)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uY2xlYXJEaWN0"></a>
-## `dm.clearDict(...)`
-```js
-dm.clearDict(index)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRW5hYmxlU2hhcmVEaWN0"></a>
-## `dm.EnableShareDict(...)`
-```js
-dm.EnableShareDict(enabled)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZW5hYmxlU2hhcmVEaWN0"></a>
-## `dm.enableShareDict(...)`
-```js
-dm.enableShareDict(enabled)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmV0Y2hXb3Jk"></a>
-## `dm.FetchWord(...)`
-```js
-dm.FetchWord(x1, y1, x2, y2, color, text)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmV0Y2hXb3Jk"></a>
-## `dm.fetchWord(...)`
-```js
-dm.fetchWord(x1, y1, x2, y2, color, text)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0cg"></a>
-## `dm.FindStr(...)`
-```js
-dm.FindStr(x1, y1, x2, y2, text, color, similarity, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
 
-<a id="api-symbol-ZG0uZmluZFN0cg"></a>
-## `dm.findStr(...)`
-```js
-dm.findStr(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckU"></a>
-## `dm.FindStrE(...)`
-```js
-dm.FindStrE(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckU"></a>
-## `dm.findStrE(...)`
-```js
-dm.findStrE(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckV4"></a>
-## `dm.FindStrEx(...)`
-```js
-dm.FindStrEx(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckV4"></a>
-## `dm.findStrEx(...)`
-```js
-dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckV4Uw"></a>
-## `dm.FindStrExS(...)`
-```js
-dm.FindStrExS(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckV4Uw"></a>
-## `dm.findStrExS(...)`
-```js
-dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckZhc3Q"></a>
-## `dm.FindStrFast(...)`
-```js
-dm.FindStrFast(x1, y1, x2, y2, text, color, similarity, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckZhc3Q"></a>
-## `dm.findStrFast(...)`
-```js
-dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckZhc3RF"></a>
-## `dm.FindStrFastE(...)`
-```js
-dm.FindStrFastE(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckZhc3RF"></a>
-## `dm.findStrFastE(...)`
-```js
-dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckZhc3RFeA"></a>
-## `dm.FindStrFastEx(...)`
-```js
-dm.FindStrFastEx(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckZhc3RFeA"></a>
-## `dm.findStrFastEx(...)`
-```js
-dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckZhc3RFeFM"></a>
-## `dm.FindStrFastExS(...)`
-```js
-dm.FindStrFastExS(x1, y1, x2, y2, text, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckZhc3RFeFM"></a>
-## `dm.findStrFastExS(...)`
-```js
-dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0ckZhc3RT"></a>
-## `dm.FindStrFastS(...)`
-```js
-dm.FindStrFastS(x1, y1, x2, y2, text, color, similarity, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0ckZhc3RT"></a>
-## `dm.findStrFastS(...)`
-```js
-dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0clM"></a>
-## `dm.FindStrS(...)`
-```js
-dm.FindStrS(x1, y1, x2, y2, text, color, similarity, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0clM"></a>
-## `dm.findStrS(...)`
-```js
-dm.findStrS(x1, y1, x2, y2, text, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0cldpdGhGb250"></a>
-## `dm.FindStrWithFont(...)`
-```js
-dm.FindStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250"></a>
-## `dm.findStrWithFont(...)`
-```js
-dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0cldpdGhGb250RQ"></a>
-## `dm.FindStrWithFontE(...)`
-```js
-dm.FindStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250RQ"></a>
-## `dm.findStrWithFontE(...)`
-```js
-dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uRmluZFN0cldpdGhGb250RXg"></a>
-## `dm.FindStrWithFontEx(...)`
-```js
-dm.FindStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250RXg"></a>
-## `dm.findStrWithFontEx(...)`
-```js
-dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0RGljdA"></a>
-## `dm.GetDict(...)`
-```js
-dm.GetDict(index, entry)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0RGljdA"></a>
-## `dm.getDict(...)`
-```js
-dm.getDict(index, entry)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0RGljdENvdW50"></a>
-## `dm.GetDictCount(...)`
-```js
-dm.GetDictCount(index)
-```
+#### 返回值
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+`number`；成功通常为 `1`，失败为 `0`。
 
-<a id="api-symbol-ZG0uZ2V0RGljdENvdW50"></a>
-## `dm.getDictCount(...)`
-```js
-dm.getDictCount(index)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0RGljdEluZm8"></a>
-## `dm.GetDictInfo(...)`
-```js
-dm.GetDictInfo(text, font, size, style)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0RGljdEluZm8"></a>
-## `dm.getDictInfo(...)`
-```js
-dm.getDictInfo(text, font, size, style)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0Tm93RGljdA"></a>
-## `dm.GetNowDict(...)`
-```js
-dm.GetNowDict()
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0Tm93RGljdA"></a>
-## `dm.getNowDict(...)`
-```js
-dm.getNowDict()
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0UmVzdWx0Q291bnQ"></a>
-## `dm.GetResultCount(...)`
-```js
-dm.GetResultCount(results)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0UmVzdWx0Q291bnQ"></a>
-## `dm.getResultCount(...)`
-```js
-dm.getResultCount(results)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0UmVzdWx0UG9z"></a>
-## `dm.GetResultPos(...)`
-```js
-dm.GetResultPos(results, index, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0UmVzdWx0UG9z"></a>
-## `dm.getResultPos(...)`
-```js
-dm.getResultPos(results, index)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0V29yZFJlc3VsdENvdW50"></a>
-## `dm.GetWordResultCount(...)`
-```js
-dm.GetWordResultCount(results)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdENvdW50"></a>
-## `dm.getWordResultCount(...)`
-```js
-dm.getWordResultCount(results)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0V29yZFJlc3VsdFBvcw"></a>
-## `dm.GetWordResultPos(...)`
-```js
-dm.GetWordResultPos(results, index, outX, outY)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdFBvcw"></a>
-## `dm.getWordResultPos(...)`
-```js
-dm.getWordResultPos(results, index)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0V29yZFJlc3VsdFN0cg"></a>
-## `dm.GetWordResultStr(...)`
-```js
-dm.GetWordResultStr(results, index)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 示例
 
-<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdFN0cg"></a>
-## `dm.getWordResultStr(...)`
 ```js
-dm.getWordResultStr(results, index)
+const result = dm.capturePre(file)
+console.log(result)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 注意事项
 
-<a id="api-symbol-ZG0uR2V0V29yZHM"></a>
-## `dm.GetWords(...)`
-```js
-dm.GetWords(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0V29yZHM"></a>
-## `dm.getWords(...)`
-```js
-dm.getWords(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uR2V0V29yZHNOb0RpY3Q"></a>
-## `dm.GetWordsNoDict(...)`
-```js
-dm.GetWordsNoDict(x1, y1, x2, y2, color)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uZ2V0V29yZHNOb0RpY3Q"></a>
-## `dm.getWordsNoDict(...)`
-```js
-dm.getWordsNoDict(x1, y1, x2, y2, color)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uT2Ny"></a>
-## `dm.Ocr(...)`
-```js
-dm.Ocr(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ub2Ny"></a>
-## `dm.ocr(...)`
-```js
-dm.ocr(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uT2NyRXg"></a>
-## `dm.OcrEx(...)`
-```js
-dm.OcrEx(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<a id="api-symbol-ZG0ub2NyRXg"></a>
-## `dm.ocrEx(...)`
-```js
-dm.ocrEx(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uT2NyRXhPbmU"></a>
-## `dm.OcrExOne(...)`
-```js
-dm.OcrExOne(x1, y1, x2, y2, color, similarity)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0ub2NyRXhPbmU"></a>
-## `dm.ocrExOne(...)`
-```js
-dm.ocrExOne(x1, y1, x2, y2, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uT2NySW5GaWxl"></a>
-## `dm.OcrInFile(...)`
-```js
-dm.OcrInFile(x1, y1, x2, y2, pictures, color, similarity)
-```
+### dm.cmpColor
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+<a id="api-symbol-ZG0uY21wQ29sb3I"></a>
 
-<a id="api-symbol-ZG0ub2NySW5GaWxl"></a>
-## `dm.ocrInFile(...)`
-```js
-dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2F2ZURpY3Q"></a>
-## `dm.SaveDict(...)`
-```js
-dm.SaveDict(index, file)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 签名
 
-<a id="api-symbol-ZG0uc2F2ZURpY3Q"></a>
-## `dm.saveDict(...)`
 ```js
-dm.saveDict(index, file)
+dm.cmpColor(x, y, color, similarity)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uVXNlRGljdA"></a>
-## `dm.UseDict(...)`
-```js
-dm.UseDict(index)
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 返回值
 
-<a id="api-symbol-ZG0udXNlRGljdA"></a>
-## `dm.useDict(...)`
-```js
-dm.useDict(index)
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 示例
 
-<a id="api-symbol-ZG0ub2NyQXV0bw"></a>
-## `dm.ocrAuto(...)`
 ```js
-dm.ocrAuto(options?)
+const result = dm.cmpColor(x, y, color, similarity)
+console.log(result)
 ```
-
-调用已安装的 RapidOCR 原生引擎；它与公开字库 `Ocr` 使用不同的识别路径。
 
-## 输入源、配置和扩展
+#### 注意事项
 
-<a id="api-symbol-ZG0uRW5hYmxlRGlzcGxheURlYnVn"></a>
-## `dm.EnableDisplayDebug(...)`
-```js
-dm.EnableDisplayDebug(enabled)
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+### dm.enableDisplayDebug
 
 <a id="api-symbol-ZG0uZW5hYmxlRGlzcGxheURlYnVn"></a>
-## `dm.enableDisplayDebug(...)`
+
+#### 签名
+
 ```js
 dm.enableDisplayDebug(enabled)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uRW5hYmxlRmluZFBpY011bHRpdGhyZWFk"></a>
-## `dm.EnableFindPicMultithread(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.EnableFindPicMultithread(enabled)
+const result = dm.enableDisplayDebug(enabled)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.enableFindPicMultithread
 
 <a id="api-symbol-ZG0uZW5hYmxlRmluZFBpY011bHRpdGhyZWFk"></a>
-## `dm.enableFindPicMultithread(...)`
+
+#### 签名
+
 ```js
 dm.enableFindPicMultithread(enabled)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uRW5hYmxlR2V0Q29sb3JCeUNhcHR1cmU"></a>
-## `dm.EnableGetColorByCapture(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.EnableGetColorByCapture(enabled)
+const result = dm.enableFindPicMultithread(enabled)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.enableGetColorByCapture
 
 <a id="api-symbol-ZG0uZW5hYmxlR2V0Q29sb3JCeUNhcHR1cmU"></a>
-## `dm.enableGetColorByCapture(...)`
+
+#### 签名
+
 ```js
 dm.enableGetColorByCapture(enabled)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0RXhjbHVkZVJlZ2lvbg"></a>
-## `dm.SetExcludeRegion(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetExcludeRegion(mode, code)
+const result = dm.enableGetColorByCapture(enabled)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findColor
+
+<a id="api-symbol-ZG0uZmluZENvbG9y"></a>
+
+#### 签名
+
+```js
+dm.findColor(x1, y1, x2, y2, color, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const match = dm.findColor(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9, 0)
+if (match) console.log(match.x, match.y)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findColorBlock
+
+<a id="api-symbol-ZG0uZmluZENvbG9yQmxvY2s"></a>
+
+#### 签名
+
+```js
+dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `width` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findColorBlockEx
+
+<a id="api-symbol-ZG0uZmluZENvbG9yQmxvY2tFeA"></a>
+
+#### 签名
+
+```js
+dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `width` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findColorE
+
+<a id="api-symbol-ZG0uZmluZENvbG9yRQ"></a>
+
+#### 签名
+
+```js
+dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findColorEx
+
+<a id="api-symbol-ZG0uZmluZENvbG9yRXg"></a>
+
+#### 签名
+
+```js
+dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findMulColor
+
+<a id="api-symbol-ZG0uZmluZE11bENvbG9y"></a>
+
+#### 签名
+
+```js
+dm.findMulColor(x1, y1, x2, y2, color, similarity)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findMulColor(x1, y1, x2, y2, color, similarity)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findMultiColor
+
+<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3I"></a>
+
+#### 签名
+
+```js
+dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `offsets` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findMultiColorE
+
+<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3JF"></a>
+
+#### 签名
+
+```js
+dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `offsets` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findMultiColorEx
+
+<a id="api-symbol-ZG0uZmluZE11bHRpQ29sb3JFeA"></a>
+
+#### 签名
+
+```js
+dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `offsets` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPic
+
+<a id="api-symbol-ZG0uZmluZFBpYw"></a>
+
+#### 签名
+
+```js
+dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicE
+
+<a id="api-symbol-ZG0uZmluZFBpY0U"></a>
+
+#### 签名
+
+```js
+dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicEx
+
+<a id="api-symbol-ZG0uZmluZFBpY0V4"></a>
+
+#### 签名
+
+```js
+dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicExS
+
+<a id="api-symbol-ZG0uZmluZFBpY0V4Uw"></a>
+
+#### 签名
+
+```js
+dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicMem
+
+<a id="api-symbol-ZG0uZmluZFBpY01lbQ"></a>
+
+#### 签名
+
+```js
+dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicMemE
+
+<a id="api-symbol-ZG0uZmluZFBpY01lbUU"></a>
+
+#### 签名
+
+```js
+dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicMemEx
+
+<a id="api-symbol-ZG0uZmluZFBpY01lbUV4"></a>
+
+#### 签名
+
+```js
+dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicS
+
+<a id="api-symbol-ZG0uZmluZFBpY1M"></a>
+
+#### 签名
+
+```js
+dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSim
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbQ"></a>
+
+#### 签名
+
+```js
+dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSimE
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbUU"></a>
+
+#### 签名
+
+```js
+dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSimEx
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbUV4"></a>
+
+#### 签名
+
+```js
+dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSimMem
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbQ"></a>
+
+#### 签名
+
+```js
+dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSimMemE
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbUU"></a>
+
+#### 签名
+
+```js
+dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findPicSimMemEx
+
+<a id="api-symbol-ZG0uZmluZFBpY1NpbU1lbUV4"></a>
+
+#### 签名
+
+```js
+dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `Object` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `delta` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `int` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findShape
+
+<a id="api-symbol-ZG0uZmluZFNoYXBl"></a>
+
+#### 签名
+
+```js
+dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `shape` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findShapeE
+
+<a id="api-symbol-ZG0uZmluZFNoYXBlRQ"></a>
+
+#### 签名
+
+```js
+dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `shape` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
+```js
+const result = dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findShapeEx
+
+<a id="api-symbol-ZG0uZmluZFNoYXBlRXg"></a>
+
+#### 签名
+
+```js
+dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `shape` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `direction` | `int` | 是 | — | 扫描方向编号；保持与设备端和示例一致。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
+```js
+const result = dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.freePic
+
+<a id="api-symbol-ZG0uZnJlZVBpYw"></a>
+
+#### 签名
+
+```js
+dm.freePic(pictures)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.freePic(pictures)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getAveHSV
+
+<a id="api-symbol-ZG0uZ2V0QXZlSFNW"></a>
+
+#### 签名
+
+```js
+dm.getAveHSV(x1, y1, x2, y2)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getAveHSV(x1, y1, x2, y2)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getAveRGB
+
+<a id="api-symbol-ZG0uZ2V0QXZlUkdC"></a>
+
+#### 签名
+
+```js
+dm.getAveRGB(x1, y1, x2, y2)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getAveRGB(x1, y1, x2, y2)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getColor
+
+<a id="api-symbol-ZG0uZ2V0Q29sb3I"></a>
+
+#### 签名
+
+```js
+dm.getColor(x, y)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getColor(x, y)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getColorBGR
+
+<a id="api-symbol-ZG0uZ2V0Q29sb3JCR1I"></a>
+
+#### 签名
+
+```js
+dm.getColorBGR(x, y)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getColorBGR(x, y)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getColorHSV
+
+<a id="api-symbol-ZG0uZ2V0Q29sb3JIU1Y"></a>
+
+#### 签名
+
+```js
+dm.getColorHSV(x, y)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getColorHSV(x, y)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getColorNum
+
+<a id="api-symbol-ZG0uZ2V0Q29sb3JOdW0"></a>
+
+#### 签名
+
+```js
+dm.getColorNum(x1, y1, x2, y2, color, similarity)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.getColorNum(x1, y1, x2, y2, color, similarity)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getPicSize
+
+<a id="api-symbol-ZG0uZ2V0UGljU2l6ZQ"></a>
+
+#### 签名
+
+```js
+dm.getPicSize(pictures)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.getPicSize(pictures)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getScreenData
+
+<a id="api-symbol-ZG0uZ2V0U2NyZWVuRGF0YQ"></a>
+
+#### 签名
+
+```js
+dm.getScreenData(x1, y1, x2, y2)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`DmBuffer`；调用方负责 `close()`。
+
+#### 示例
+
+```js
+const result = dm.getScreenData(x1, y1, x2, y2)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getScreenDataBmp
+
+<a id="api-symbol-ZG0uZ2V0U2NyZWVuRGF0YUJtcA"></a>
+
+#### 签名
+
+```js
+dm.getScreenDataBmp(x1, y1, x2, y2)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+
+#### 返回值
+
+`DmBuffer`；调用方负责 `close()`。
+
+#### 示例
+
+```js
+const result = dm.getScreenDataBmp(x1, y1, x2, y2)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.imageToBmp
+
+<a id="api-symbol-ZG0uaW1hZ2VUb0JtcA"></a>
+
+#### 签名
+
+```js
+dm.imageToBmp(input, output)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `input` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `output` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.imageToBmp(input, output)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.isDisplayDead
+
+<a id="api-symbol-ZG0uaXNEaXNwbGF5RGVhZA"></a>
+
+#### 签名
+
+```js
+dm.isDisplayDead(x1, y1, x2, y2, timeout)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `timeout` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.isDisplayDead(x1, y1, x2, y2, timeout)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.loadPic
+
+<a id="api-symbol-ZG0ubG9hZFBpYw"></a>
+
+#### 签名
+
+```js
+dm.loadPic(pictures)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.loadPic(pictures)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.loadPicByte
+
+<a id="api-symbol-ZG0ubG9hZFBpY0J5dGU"></a>
+
+#### 签名
+
+```js
+dm.loadPicByte(data, length, pictures)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.loadPicByte(data, length, pictures)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.matchPicName
+
+<a id="api-symbol-ZG0ubWF0Y2hQaWNOYW1l"></a>
+
+#### 签名
+
+```js
+dm.matchPicName(pictures)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.matchPicName(pictures)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.rgb2bgr
+
+<a id="api-symbol-ZG0ucmdiMmJncg"></a>
+
+#### 签名
+
+```js
+dm.rgb2bgr(color)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.rgb2bgr(color)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setExcludeRegion
 
 <a id="api-symbol-ZG0uc2V0RXhjbHVkZVJlZ2lvbg"></a>
-## `dm.setExcludeRegion(...)`
+
+#### 签名
+
 ```js
 dm.setExcludeRegion(mode, code)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0RmluZFBpY011bHRpdGhyZWFkQ291bnQ"></a>
-## `dm.SetFindPicMultithreadCount(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `mode` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `code` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetFindPicMultithreadCount(count)
+const result = dm.setExcludeRegion(mode, code)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setFindPicMultithreadCount
 
 <a id="api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkQ291bnQ"></a>
-## `dm.setFindPicMultithreadCount(...)`
+
+#### 签名
+
 ```js
 dm.setFindPicMultithreadCount(count)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0RmluZFBpY011bHRpdGhyZWFkTGltaXQ"></a>
-## `dm.SetFindPicMultithreadLimit(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetFindPicMultithreadLimit(count)
+const result = dm.setFindPicMultithreadCount(count)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setFindPicMultithreadLimit
 
 <a id="api-symbol-ZG0uc2V0RmluZFBpY011bHRpdGhyZWFkTGltaXQ"></a>
-## `dm.setFindPicMultithreadLimit(...)`
+
+#### 签名
+
 ```js
 dm.setFindPicMultithreadLimit(count)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0UGljUHdk"></a>
-## `dm.SetPicPwd(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `count` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetPicPwd(password)
+const result = dm.setFindPicMultithreadLimit(count)
+console.log(result)
 ```
 
-保留兼容入口，但当前不解析加密图片、加密字库或密码资源；传入非空密码会报告不支持。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setPicPwd
 
 <a id="api-symbol-ZG0uc2V0UGljUHdk"></a>
-## `dm.setPicPwd(...)`
+
+#### 签名
+
 ```js
 dm.setPicPwd(password)
 ```
 
-保留兼容入口，但当前不解析加密图片、加密字库或密码资源；传入非空密码会报告不支持。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0Q29sR2FwTm9EaWN0"></a>
-## `dm.SetColGapNoDict(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `password` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetColGapNoDict(gap)
+const result = dm.setPicPwd(password)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
 
-<a id="api-symbol-ZG0uc2V0Q29sR2FwTm9EaWN0"></a>
-## `dm.setColGapNoDict(...)`
-```js
-dm.setColGapNoDict(gap)
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0RGljdA"></a>
-## `dm.SetDict(...)`
-```js
-dm.SetDict(index, file)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0RGljdA"></a>
-## `dm.setDict(...)`
-```js
-dm.setDict(index, file)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0RGljdE1lbQ"></a>
-## `dm.SetDictMem(...)`
-```js
-dm.SetDictMem(index, data, length)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0RGljdE1lbQ"></a>
-## `dm.setDictMem(...)`
-```js
-dm.setDictMem(index, data, length)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0RGljdFB3ZA"></a>
-## `dm.SetDictPwd(...)`
-```js
-dm.SetDictPwd(password)
-```
-
-保留兼容入口，但当前不解析加密图片、加密字库或密码资源；传入非空密码会报告不支持。
-
-<a id="api-symbol-ZG0uc2V0RGljdFB3ZA"></a>
-## `dm.setDictPwd(...)`
-```js
-dm.setDictPwd(password)
-```
-
-保留兼容入口，但当前不解析加密图片、加密字库或密码资源；传入非空密码会报告不支持。
-
-<a id="api-symbol-ZG0uU2V0RXhhY3RPY3I"></a>
-## `dm.SetExactOcr(...)`
-```js
-dm.SetExactOcr(enabled)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0RXhhY3RPY3I"></a>
-## `dm.setExactOcr(...)`
-```js
-dm.setExactOcr(enabled)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0TWluQ29sR2Fw"></a>
-## `dm.SetMinColGap(...)`
-```js
-dm.SetMinColGap(gap)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0TWluQ29sR2Fw"></a>
-## `dm.setMinColGap(...)`
-```js
-dm.setMinColGap(gap)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0TWluUm93R2Fw"></a>
-## `dm.SetMinRowGap(...)`
-```js
-dm.SetMinRowGap(gap)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0TWluUm93R2Fw"></a>
-## `dm.setMinRowGap(...)`
-```js
-dm.setMinRowGap(gap)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0Um93R2FwTm9EaWN0"></a>
-## `dm.SetRowGapNoDict(...)`
-```js
-dm.SetRowGapNoDict(gap)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0Um93R2FwTm9EaWN0"></a>
-## `dm.setRowGapNoDict(...)`
-```js
-dm.setRowGapNoDict(gap)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0V29yZEdhcA"></a>
-## `dm.SetWordGap(...)`
-```js
-dm.SetWordGap(gap)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0V29yZEdhcA"></a>
-## `dm.setWordGap(...)`
-```js
-dm.setWordGap(gap)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0V29yZEdhcE5vRGljdA"></a>
-## `dm.SetWordGapNoDict(...)`
-```js
-dm.SetWordGapNoDict(gap)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0V29yZEdhcE5vRGljdA"></a>
-## `dm.setWordGapNoDict(...)`
-```js
-dm.setWordGapNoDict(gap)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0V29yZExpbmVIZWlnaHQ"></a>
-## `dm.SetWordLineHeight(...)`
-```js
-dm.SetWordLineHeight(height)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHQ"></a>
-## `dm.setWordLineHeight(...)`
-```js
-dm.setWordLineHeight(height)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0V29yZExpbmVIZWlnaHROb0RpY3Q"></a>
-## `dm.SetWordLineHeightNoDict(...)`
-```js
-dm.SetWordLineHeightNoDict(height)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
-
-<a id="api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHROb0RpY3Q"></a>
-## `dm.setWordLineHeightNoDict(...)`
-```js
-dm.setWordLineHeightNoDict(height)
-```
-
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uU2V0UGF0aA"></a>
-## `dm.SetPath(...)`
-```js
-dm.SetPath(path)
-```
-
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+### dm.setPath
 
 <a id="api-symbol-ZG0uc2V0UGF0aA"></a>
-## `dm.setPath(...)`
+
+#### 签名
+
 ```js
 dm.setPath(path)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uU2V0RGlzcGxheUlucHV0"></a>
-## `dm.SetDisplayInput(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `path` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.SetDisplayInput(source)
+const result = dm.setPath(path)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setDisplayInput
 
 <a id="api-symbol-ZG0uc2V0RGlzcGxheUlucHV0"></a>
-## `dm.setDisplayInput(...)`
+
+#### 签名
+
 ```js
 dm.setDisplayInput(source)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uRW5hYmxlUGljQ2FjaGU"></a>
-## `dm.EnablePicCache(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `source` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.EnablePicCache(enabled)
+const result = dm.setDisplayInput(source)
+console.log(result)
 ```
 
-PascalCase 兼容入口，保留大漠原始返回值和 E、Ex、S 结果约定。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.enablePicCache
 
 <a id="api-symbol-ZG0uZW5hYmxlUGljQ2FjaGU"></a>
-## `dm.enablePicCache(...)`
+
+#### 签名
+
 ```js
 dm.enablePicCache(enabled)
 ```
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
+#### 参数
 
-<a id="api-symbol-ZG0uY2FuY2Vs"></a>
-## `dm.cancel(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-dm.cancel()
+const result = dm.enablePicCache(enabled)
+console.log(result)
 ```
 
-取消当前长时间识别或匹配任务。
+#### 注意事项
 
-<a id="api-symbol-ZG0uY2xvc2U"></a>
-## `dm.close(...)`
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.buffer
+
+<a id="api-symbol-ZG0uYnVmZmVy"></a>
+
+#### 签名
+
 ```js
-dm.close()
+dm.buffer(bytes)
 ```
 
-释放当前脚本的图片、字库、缓冲区和 native 资源。
+#### 参数
 
-<a id="api-symbol-ZG0udXNlU2NyZWVu"></a>
-## `dm.useScreen(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `bytes` | `byte[]` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`DmBuffer`；调用方负责 `close()`。
+
+#### 示例
+
 ```js
-dm.useScreen()
+const result = dm.buffer(bytes)
+console.log(result)
 ```
 
-切换回现有截图授权作为输入源。
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.keepScreen
 
 <a id="api-symbol-ZG0ua2VlcFNjcmVlbg"></a>
-## `dm.keepScreen(...)`
+
+#### 签名
+
 ```js
 dm.keepScreen(keep)
 ```
 
-冻结或解除当前输入帧，适合在一次截图上执行多次识别。
+#### 参数
 
-<a id="api-symbol-ZG0uZ2V0RnJhbWVJbmZv"></a>
-## `dm.getFrameInfo(...)`
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `keep` | `boolean` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`void`；具体失败值遵循底层命令约定。
+
+#### 示例
+
 ```js
-dm.getFrameInfo()
+const result = dm.keepScreen(keep)
+console.log(result)
 ```
 
-返回输入帧的旋转、裁剪和截图变换元数据。
+#### 注意事项
 
-<a id="api-symbol-ZG0uc2V0U2ltZEVuYWJsZWQ"></a>
-## `dm.setSimdEnabled(...)`
-```js
-dm.setSimdEnabled(enabled)
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-camelCase 便捷入口，使用自然返回类型；单结果未匹配时返回 `null`，多结果接口返回数组。
-
-<a id="api-symbol-ZG0uYnVmZmVy"></a>
-## `dm.buffer(...)`
-```js
-dm.buffer(bytesOrDirectByteBuffer)
-```
-
-创建受 `Dm` 生命周期管理的缓冲区，替代裸地址；关闭后不能继续访问。
-
-<a id="api-symbol-ZG0uZ2V0TGFzdEZpbmRUaW1pbmdz"></a>
-## `dm.getLastFindTimings(...)`
-```js
-dm.getLastFindTimings()
-```
-
-返回最近一次找色、找图或找形状操作的截图、JNI 和 native 核心耗时。
+### dm.setImage
 
 <a id="api-symbol-ZG0uc2V0SW1hZ2U"></a>
-## `dm.setImage(...)`
+
+#### 签名
+
 ```js
 dm.setImage(image)
 ```
 
-将 `ImageWrapper`、Android `Bitmap` 或 `DmBuffer` 设为当前离线输入图像；显示缩放不会改变取样坐标。
+#### 参数
 
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `image` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.addDict" -->
-`dm.addDict` · Rhino 2.0 示例：
+#### 返回值
+
+`void`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.setImage(image)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.useScreen
+
+<a id="api-symbol-ZG0udXNlU2NyZWVu"></a>
+
+#### 签名
+
+```js
+dm.useScreen()
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
+
+#### 返回值
+
+`void`；具体失败值遵循底层命令约定。
+
+#### 示例
+
+```js
+const result = dm.useScreen()
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+
+## 文字识别导航
+
+### dm.addDict
+
+<a id="api-symbol-ZG0uYWRkRGljdA"></a>
+
+#### 签名
+
+```js
+dm.addDict(index, entry)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `entry` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.addDict(index, entry)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.clearDict
+
+<a id="api-symbol-ZG0uY2xlYXJEaWN0"></a>
+
+#### 签名
+
+```js
+dm.clearDict(index)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.clearDict(index)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.enableShareDict
+
+<a id="api-symbol-ZG0uZW5hYmxlU2hhcmVEaWN0"></a>
+
+#### 签名
+
+```js
+dm.enableShareDict(enabled)
+```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
+```js
+const result = dm.enableShareDict(enabled)
+console.log(result)
+```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.fetchWord
+
+<a id="api-symbol-ZG0uZmV0Y2hXb3Jk"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["addDict"]);
+dm.fetchWord(x1, y1, x2, y2, color, text)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
 
-<!-- api-member-contract id="dm.AddDict" -->
-`dm.AddDict` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["AddDict"]);
+const result = dm.fetchWord(x1, y1, x2, y2, color, text)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStr
+
+<a id="api-symbol-ZG0uZmluZFN0cg"></a>
+
+#### 签名
 
-<!-- api-member-contract id="dm.appendPicAddr" -->
-`dm.appendPicAddr` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["appendPicAddr"]);
+dm.findStr(x1, y1, x2, y2, text, color, similarity)
 ```
 
-<!-- api-member-contract id="dm.AppendPicAddr" -->
-`dm.AppendPicAddr` · Rhino 2.0 示例：
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["AppendPicAddr"]);
+const result = dm.findStr(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.bgr2rgb" -->
-`dm.bgr2rgb` · Rhino 2.0 示例：
+### dm.findStrE
+
+<a id="api-symbol-ZG0uZmluZFN0ckU"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["bgr2rgb"]);
+dm.findStrE(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
 
-<!-- api-member-contract id="dm.BGR2RGB" -->
-`dm.BGR2RGB` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["BGR2RGB"]);
+const result = dm.findStrE(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.buffer" -->
-`dm.buffer` · Rhino 2.0 示例：
+### dm.findStrEx
+
+<a id="api-symbol-ZG0uZmluZFN0ckV4"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["buffer"]);
+dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.cancel" -->
-`dm.cancel` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["cancel"]);
+const result = dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.capture" -->
-`dm.capture` · Rhino 2.0 示例：
+### dm.findStrExS
+
+<a id="api-symbol-ZG0uZmluZFN0ckV4Uw"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["capture"]);
+dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
 
-<!-- api-member-contract id="dm.Capture" -->
-`dm.Capture` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["Capture"]);
+const result = dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.captureGif" -->
-`dm.captureGif` · Rhino 2.0 示例：
+### dm.findStrFast
+
+<a id="api-symbol-ZG0uZmluZFN0ckZhc3Q"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["captureGif"]);
+dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.CaptureGif" -->
-`dm.CaptureGif` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["CaptureGif"]);
+const result = dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrFastE
 
-<!-- api-member-contract id="dm.captureJpg" -->
-`dm.captureJpg` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uZmluZFN0ckZhc3RF"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["captureJpg"]);
+dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
 
-<!-- api-member-contract id="dm.CaptureJpg" -->
-`dm.CaptureJpg` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["CaptureJpg"]);
+const result = dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.capturePng" -->
-`dm.capturePng` · Rhino 2.0 示例：
+### dm.findStrFastEx
+
+<a id="api-symbol-ZG0uZmluZFN0ckZhc3RFeA"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["capturePng"]);
+dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.CapturePng" -->
-`dm.CapturePng` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["CapturePng"]);
+const result = dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrFastExS
 
-<!-- api-member-contract id="dm.capturePre" -->
-`dm.capturePre` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uZmluZFN0ckZhc3RFeFM"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["capturePre"]);
+dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
 
-<!-- api-member-contract id="dm.CapturePre" -->
-`dm.CapturePre` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["CapturePre"]);
+const result = dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.clearDict" -->
-`dm.clearDict` · Rhino 2.0 示例：
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrFastS
+
+<a id="api-symbol-ZG0uZmluZFN0ckZhc3RT"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["clearDict"]);
+dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.ClearDict" -->
-`dm.ClearDict` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["ClearDict"]);
+const result = dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrS
 
-<!-- api-member-contract id="dm.close" -->
-`dm.close` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uZmluZFN0clM"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["close"]);
+dm.findStrS(x1, y1, x2, y2, text, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
 
-<!-- api-member-contract id="dm.cmpColor" -->
-`dm.cmpColor` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["cmpColor"]);
+const result = dm.findStrS(x1, y1, x2, y2, text, color, similarity)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.CmpColor" -->
-`dm.CmpColor` · Rhino 2.0 示例：
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrWithFont
+
+<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["CmpColor"]);
+dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.enableDisplayDebug" -->
-`dm.enableDisplayDebug` · Rhino 2.0 示例：
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["enableDisplayDebug"]);
+const result = dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrWithFontE
 
-<!-- api-member-contract id="dm.EnableDisplayDebug" -->
-`dm.EnableDisplayDebug` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250RQ"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["EnableDisplayDebug"]);
+dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
 
-<!-- api-member-contract id="dm.enableFindPicMultithread" -->
-`dm.enableFindPicMultithread` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["enableFindPicMultithread"]);
+const result = dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.EnableFindPicMultithread" -->
-`dm.EnableFindPicMultithread` · Rhino 2.0 示例：
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.findStrWithFontEx
+
+<a id="api-symbol-ZG0uZmluZFN0cldpdGhGb250RXg"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["EnableFindPicMultithread"]);
+dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.enableGetColorByCapture" -->
-`dm.enableGetColorByCapture` · Rhino 2.0 示例：
+#### 返回值
+
+`DmMatch[]`；未命中时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["enableGetColorByCapture"]);
+const result = dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getDict
+
+<a id="api-symbol-ZG0uZ2V0RGljdA"></a>
 
-<!-- api-member-contract id="dm.EnableGetColorByCapture" -->
-`dm.EnableGetColorByCapture` · Rhino 2.0 示例：
+#### 签名
+
 ```js
-console.log(typeof dm["EnableGetColorByCapture"]);
+dm.getDict(index, entry)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `entry` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
 
-<!-- api-member-contract id="dm.enablePicCache" -->
-`dm.enablePicCache` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["enablePicCache"]);
+const result = dm.getDict(index, entry)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.EnablePicCache" -->
-`dm.EnablePicCache` · Rhino 2.0 示例：
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getDictCount
+
+<a id="api-symbol-ZG0uZ2V0RGljdENvdW50"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["EnablePicCache"]);
+dm.getDictCount(index)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
 
-<!-- api-member-contract id="dm.enableShareDict" -->
-`dm.enableShareDict` · Rhino 2.0 示例：
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["enableShareDict"]);
+const result = dm.getDictCount(index)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getDictInfo
+
+<a id="api-symbol-ZG0uZ2V0RGljdEluZm8"></a>
 
-<!-- api-member-contract id="dm.EnableShareDict" -->
-`dm.EnableShareDict` · Rhino 2.0 示例：
+#### 签名
+
 ```js
-console.log(typeof dm["EnableShareDict"]);
+dm.getDictInfo(text, font, size, style)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `text` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `font` | `String` | 是 | — | 待识别文字、字体名或字典文本。 |
+| `size` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `style` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.fetchWord" -->
-`dm.fetchWord` · Rhino 2.0 示例：
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
 ```js
-console.log(typeof dm["fetchWord"]);
+const result = dm.getDictInfo(text, font, size, style)
+console.log(result)
 ```
+
+#### 注意事项
 
-<!-- api-member-contract id="dm.FetchWord" -->
-`dm.FetchWord` · Rhino 2.0 示例：
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getNowDict
+
+<a id="api-symbol-ZG0uZ2V0Tm93RGljdA"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FetchWord"]);
+dm.getNowDict()
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
 
-<!-- api-member-contract id="dm.findColor" -->
-`dm.findColor` · Rhino 2.0 示例：
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findColor"]);
+const result = dm.getNowDict()
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getResultCount
+
+<a id="api-symbol-ZG0uZ2V0UmVzdWx0Q291bnQ"></a>
 
-<!-- api-member-contract id="dm.FindColor" -->
-`dm.FindColor` · Rhino 2.0 示例：
+#### 签名
+
 ```js
-console.log(typeof dm["FindColor"]);
+dm.getResultCount(results)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.findColorBlock" -->
-`dm.findColorBlock` · Rhino 2.0 示例：
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findColorBlock"]);
+const result = dm.getResultCount(results)
+console.log(result)
 ```
+
+#### 注意事项
 
-<!-- api-member-contract id="dm.FindColorBlock" -->
-`dm.FindColorBlock` · Rhino 2.0 示例：
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getResultPos
+
+<a id="api-symbol-ZG0uZ2V0UmVzdWx0UG9z"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindColorBlock"]);
+dm.getResultPos(results, index)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+
+#### 返回值
 
-<!-- api-member-contract id="dm.findColorBlockEx" -->
-`dm.findColorBlockEx` · Rhino 2.0 示例：
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findColorBlockEx"]);
+const result = dm.getResultPos(results, index)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getWordResultCount
+
+<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdENvdW50"></a>
 
-<!-- api-member-contract id="dm.FindColorBlockEx" -->
-`dm.FindColorBlockEx` · Rhino 2.0 示例：
+#### 签名
+
 ```js
-console.log(typeof dm["FindColorBlockEx"]);
+dm.getWordResultCount(results)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.findColorE" -->
-`dm.findColorE` · Rhino 2.0 示例：
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findColorE"]);
+const result = dm.getWordResultCount(results)
+console.log(result)
 ```
+
+#### 注意事项
 
-<!-- api-member-contract id="dm.FindColorE" -->
-`dm.FindColorE` · Rhino 2.0 示例：
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getWordResultPos
+
+<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdFBvcw"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindColorE"]);
+dm.getWordResultPos(results, index)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+
+#### 返回值
 
-<!-- api-member-contract id="dm.findColorEx" -->
-`dm.findColorEx` · Rhino 2.0 示例：
+`DmMatch`；未命中时为 `null`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findColorEx"]);
+const result = dm.getWordResultPos(results, index)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getWordResultStr
+
+<a id="api-symbol-ZG0uZ2V0V29yZFJlc3VsdFN0cg"></a>
+
+#### 签名
 
-<!-- api-member-contract id="dm.FindColorEx" -->
-`dm.FindColorEx` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["FindColorEx"]);
+dm.getWordResultStr(results, index)
 ```
 
-<!-- api-member-contract id="dm.findMulColor" -->
-`dm.findMulColor` · Rhino 2.0 示例：
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `results` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+
+#### 返回值
+
+`String`；具体失败值遵循底层命令约定。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findMulColor"]);
+const result = dm.getWordResultStr(results, index)
+console.log(result)
 ```
+
+#### 注意事项
 
-<!-- api-member-contract id="dm.FindMulColor" -->
-`dm.FindMulColor` · Rhino 2.0 示例：
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getWords
+
+<a id="api-symbol-ZG0uZ2V0V29yZHM"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindMulColor"]);
+dm.getWords(x1, y1, x2, y2, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
 
-<!-- api-member-contract id="dm.findMultiColor" -->
-`dm.findMultiColor` · Rhino 2.0 示例：
+`DmMatch[]`；无结果时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findMultiColor"]);
+const result = dm.getWords(x1, y1, x2, y2, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.getWordsNoDict
+
+<a id="api-symbol-ZG0uZ2V0V29yZHNOb0RpY3Q"></a>
+
+#### 签名
 
-<!-- api-member-contract id="dm.FindMultiColor" -->
-`dm.FindMultiColor` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["FindMultiColor"]);
+dm.getWordsNoDict(x1, y1, x2, y2, color)
 ```
 
-<!-- api-member-contract id="dm.findMultiColorE" -->
-`dm.findMultiColorE` · Rhino 2.0 示例：
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+
+#### 返回值
+
+`DmMatch[]`；无结果时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findMultiColorE"]);
+const result = dm.getWordsNoDict(x1, y1, x2, y2, color)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindMultiColorE" -->
-`dm.FindMultiColorE` · Rhino 2.0 示例：
+### dm.ocr
+
+<a id="api-symbol-ZG0ub2Ny"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindMultiColorE"]);
+dm.ocr(x1, y1, x2, y2, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
 
-<!-- api-member-contract id="dm.findMultiColorEx" -->
-`dm.findMultiColorEx` · Rhino 2.0 示例：
+`string`；未识别到文字时为空字符串。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findMultiColorEx"]);
+dm.setDict(0, './assets/dm/main.dm.txt')
+dm.useDict(0)
+const text = dm.ocr(0, 0, device.width - 1, device.height - 1, 'ffffff', 0.9)
+console.log(text)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.ocrEx
+
+<a id="api-symbol-ZG0ub2NyRXg"></a>
+
+#### 签名
 
-<!-- api-member-contract id="dm.FindMultiColorEx" -->
-`dm.FindMultiColorEx` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["FindMultiColorEx"]);
+dm.ocrEx(x1, y1, x2, y2, color, similarity)
 ```
 
-<!-- api-member-contract id="dm.findPic" -->
-`dm.findPic` · Rhino 2.0 示例：
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；无结果时为空数组。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findPic"]);
+const result = dm.ocrEx(x1, y1, x2, y2, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPic" -->
-`dm.FindPic` · Rhino 2.0 示例：
+### dm.ocrExOne
+
+<a id="api-symbol-ZG0ub2NyRXhPbmU"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPic"]);
+dm.ocrExOne(x1, y1, x2, y2, color, similarity)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`DmMatch[]`；无结果时为空数组。
 
-<!-- api-member-contract id="dm.findPicE" -->
-`dm.findPicE` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["findPicE"]);
+const result = dm.ocrExOne(x1, y1, x2, y2, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.ocrInFile
+
+<a id="api-symbol-ZG0ub2NySW5GaWxl"></a>
+
+#### 签名
 
-<!-- api-member-contract id="dm.FindPicE" -->
-`dm.FindPicE` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["FindPicE"]);
+dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
 ```
 
-<!-- api-member-contract id="dm.findPicEx" -->
-`dm.findPicEx` · Rhino 2.0 示例：
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y1` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `x2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `y2` | `int` | 是 | — | 输入图像中的像素坐标；右下边界包含在区域内。 |
+| `pictures` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+| `color` | `String` | 是 | — | 六位十六进制颜色；多颜色条件按接口格式传入。 |
+| `similarity` | `double` | 是 | — | 相似度，通常为 `0.0` 到 `1.0`；值越高越严格。 |
+
+#### 返回值
+
+`string`；无结果时为空字符串。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findPicEx"]);
+const result = dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicEx" -->
-`dm.FindPicEx` · Rhino 2.0 示例：
+### dm.saveDict
+
+<a id="api-symbol-ZG0uc2F2ZURpY3Q"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicEx"]);
+dm.saveDict(index, file)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.findPicExS" -->
-`dm.findPicExS` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["findPicExS"]);
+const result = dm.saveDict(index, file)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicExS" -->
-`dm.FindPicExS` · Rhino 2.0 示例：
+### dm.setColGapNoDict
+
+<a id="api-symbol-ZG0uc2V0Q29sR2FwTm9EaWN0"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicExS"]);
+dm.setColGapNoDict(gap)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.findPicMem" -->
-`dm.findPicMem` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findPicMem"]);
+const result = dm.setColGapNoDict(gap)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicMem" -->
-`dm.FindPicMem` · Rhino 2.0 示例：
+### dm.setDict
+
+<a id="api-symbol-ZG0uc2V0RGljdA"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicMem"]);
+dm.setDict(index, file)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `file` | `String` | 是 | — | 资源文件名或相对路径；先设置资源根目录。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.findPicMemE" -->
-`dm.findPicMemE` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["findPicMemE"]);
+const result = dm.setDict(index, file)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicMemE" -->
-`dm.FindPicMemE` · Rhino 2.0 示例：
+### dm.setDictMem
+
+<a id="api-symbol-ZG0uc2V0RGljdE1lbQ"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicMemE"]);
+dm.setDictMem(index, data, length)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.findPicMemEx" -->
-`dm.findPicMemEx` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
+| `data` | `Object` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+| `length` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findPicMemEx"]);
+const result = dm.setDictMem(index, data, length)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setDictPwd
 
-<!-- api-member-contract id="dm.FindPicMemEx" -->
-`dm.FindPicMemEx` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uc2V0RGljdFB3ZA"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicMemEx"]);
+dm.setDictPwd(password)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `password` | `String` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.findPicS" -->
-`dm.findPicS` · Rhino 2.0 示例：
+#### 示例
+
 ```js
-console.log(typeof dm["findPicS"]);
+const result = dm.setDictPwd(password)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicS" -->
-`dm.FindPicS` · Rhino 2.0 示例：
+### dm.setExactOcr
+
+<a id="api-symbol-ZG0uc2V0RXhhY3RPY3I"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicS"]);
+dm.setExactOcr(enabled)
 ```
+
+#### 参数
 
-<!-- api-member-contract id="dm.findPicSim" -->
-`dm.findPicSim` · Rhino 2.0 示例：
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `int` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
+
 ```js
-console.log(typeof dm["findPicSim"]);
+const result = dm.setExactOcr(enabled)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
+
+### dm.setMinColGap
 
-<!-- api-member-contract id="dm.FindPicSim" -->
-`dm.FindPicSim` · Rhino 2.0 示例：
+<a id="api-symbol-ZG0uc2V0TWluQ29sR2Fw"></a>
+
+#### 签名
+
 ```js
-console.log(typeof dm["FindPicSim"]);
+dm.setMinColGap(gap)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
+
+#### 返回值
+
+`number`；成功通常为 `1`，失败为 `0`。
+
+#### 示例
 
-<!-- api-member-contract id="dm.findPicSimE" -->
-`dm.findPicSimE` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findPicSimE"]);
+const result = dm.setMinColGap(gap)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.FindPicSimE" -->
-`dm.FindPicSimE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindPicSimE"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.findPicSimEx" -->
-`dm.findPicSimEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findPicSimEx"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindPicSimEx" -->
-`dm.FindPicSimEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindPicSimEx"]);
-```
+### dm.setMinRowGap
 
-<!-- api-member-contract id="dm.findPicSimMem" -->
-`dm.findPicSimMem` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findPicSimMem"]);
-```
+<a id="api-symbol-ZG0uc2V0TWluUm93R2Fw"></a>
 
-<!-- api-member-contract id="dm.FindPicSimMem" -->
-`dm.FindPicSimMem` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindPicSimMem"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.findPicSimMemE" -->
-`dm.findPicSimMemE` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findPicSimMemE"]);
+dm.setMinRowGap(gap)
 ```
 
-<!-- api-member-contract id="dm.FindPicSimMemE" -->
-`dm.FindPicSimMemE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindPicSimMemE"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.findPicSimMemEx" -->
-`dm.findPicSimMemEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findPicSimMemEx"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.FindPicSimMemEx" -->
-`dm.FindPicSimMemEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindPicSimMemEx"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.findShape" -->
-`dm.findShape` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findShape"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.FindShape" -->
-`dm.FindShape` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindShape"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.findShapeE" -->
-`dm.findShapeE` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findShapeE"]);
+const result = dm.setMinRowGap(gap)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.FindShapeE" -->
-`dm.FindShapeE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindShapeE"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.findShapeEx" -->
-`dm.findShapeEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findShapeEx"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindShapeEx" -->
-`dm.FindShapeEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindShapeEx"]);
-```
+### dm.setRowGapNoDict
 
-<!-- api-member-contract id="dm.findStr" -->
-`dm.findStr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStr"]);
-```
+<a id="api-symbol-ZG0uc2V0Um93R2FwTm9EaWN0"></a>
 
-<!-- api-member-contract id="dm.FindStr" -->
-`dm.FindStr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStr"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.findStrE" -->
-`dm.findStrE` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findStrE"]);
+dm.setRowGapNoDict(gap)
 ```
 
-<!-- api-member-contract id="dm.FindStrE" -->
-`dm.FindStrE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrE"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.findStrEx" -->
-`dm.findStrEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrEx"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.FindStrEx" -->
-`dm.FindStrEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrEx"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.findStrExS" -->
-`dm.findStrExS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrExS"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.FindStrExS" -->
-`dm.FindStrExS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrExS"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.findStrFast" -->
-`dm.findStrFast` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findStrFast"]);
+const result = dm.setRowGapNoDict(gap)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.FindStrFast" -->
-`dm.FindStrFast` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrFast"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.findStrFastE" -->
-`dm.findStrFastE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrFastE"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindStrFastE" -->
-`dm.FindStrFastE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrFastE"]);
-```
+### dm.setWordGap
 
-<!-- api-member-contract id="dm.findStrFastEx" -->
-`dm.findStrFastEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrFastEx"]);
-```
+<a id="api-symbol-ZG0uc2V0V29yZEdhcA"></a>
 
-<!-- api-member-contract id="dm.FindStrFastEx" -->
-`dm.FindStrFastEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrFastEx"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.findStrFastExS" -->
-`dm.findStrFastExS` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findStrFastExS"]);
+dm.setWordGap(gap)
 ```
 
-<!-- api-member-contract id="dm.FindStrFastExS" -->
-`dm.FindStrFastExS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrFastExS"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.findStrFastS" -->
-`dm.findStrFastS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrFastS"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.FindStrFastS" -->
-`dm.FindStrFastS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrFastS"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.findStrS" -->
-`dm.findStrS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrS"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.FindStrS" -->
-`dm.FindStrS` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrS"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.findStrWithFont" -->
-`dm.findStrWithFont` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["findStrWithFont"]);
+const result = dm.setWordGap(gap)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.FindStrWithFont" -->
-`dm.FindStrWithFont` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrWithFont"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.findStrWithFontE" -->
-`dm.findStrWithFontE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrWithFontE"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.FindStrWithFontE" -->
-`dm.FindStrWithFontE` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrWithFontE"]);
-```
+### dm.setWordGapNoDict
 
-<!-- api-member-contract id="dm.findStrWithFontEx" -->
-`dm.findStrWithFontEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["findStrWithFontEx"]);
-```
+<a id="api-symbol-ZG0uc2V0V29yZEdhcE5vRGljdA"></a>
 
-<!-- api-member-contract id="dm.FindStrWithFontEx" -->
-`dm.FindStrWithFontEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FindStrWithFontEx"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.freePic" -->
-`dm.freePic` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["freePic"]);
+dm.setWordGapNoDict(gap)
 ```
 
-<!-- api-member-contract id="dm.FreePic" -->
-`dm.FreePic` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["FreePic"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.getAveHSV" -->
-`dm.getAveHSV` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getAveHSV"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `gap` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.GetAveHSV" -->
-`dm.GetAveHSV` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetAveHSV"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.getAveRGB" -->
-`dm.getAveRGB` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getAveRGB"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.GetAveRGB" -->
-`dm.GetAveRGB` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetAveRGB"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.getColor" -->
-`dm.getColor` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getColor"]);
+const result = dm.setWordGapNoDict(gap)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.GetColor" -->
-`dm.GetColor` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetColor"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.getColorBGR" -->
-`dm.getColorBGR` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getColorBGR"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.GetColorBGR" -->
-`dm.GetColorBGR` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetColorBGR"]);
-```
+### dm.setWordLineHeight
 
-<!-- api-member-contract id="dm.getColorHSV" -->
-`dm.getColorHSV` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getColorHSV"]);
-```
+<a id="api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHQ"></a>
 
-<!-- api-member-contract id="dm.GetColorHSV" -->
-`dm.GetColorHSV` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetColorHSV"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.getColorNum" -->
-`dm.getColorNum` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getColorNum"]);
+dm.setWordLineHeight(height)
 ```
 
-<!-- api-member-contract id="dm.GetColorNum" -->
-`dm.GetColorNum` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetColorNum"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.getDict" -->
-`dm.getDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getDict"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.GetDict" -->
-`dm.GetDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetDict"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.getDictCount" -->
-`dm.getDictCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getDictCount"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.GetDictCount" -->
-`dm.GetDictCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetDictCount"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.getDictInfo" -->
-`dm.getDictInfo` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getDictInfo"]);
+const result = dm.setWordLineHeight(height)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.GetDictInfo" -->
-`dm.GetDictInfo` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetDictInfo"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.getFrameInfo" -->
-`dm.getFrameInfo` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getFrameInfo"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.getLastFindTimings" -->
-`dm.getLastFindTimings` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getLastFindTimings"]);
-```
+### dm.setWordLineHeightNoDict
 
-<!-- api-member-contract id="dm.getNowDict" -->
-`dm.getNowDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getNowDict"]);
-```
+<a id="api-symbol-ZG0uc2V0V29yZExpbmVIZWlnaHROb0RpY3Q"></a>
 
-<!-- api-member-contract id="dm.GetNowDict" -->
-`dm.GetNowDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetNowDict"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.getPicSize" -->
-`dm.getPicSize` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getPicSize"]);
+dm.setWordLineHeightNoDict(height)
 ```
 
-<!-- api-member-contract id="dm.GetPicSize" -->
-`dm.GetPicSize` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetPicSize"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.getResultCount" -->
-`dm.getResultCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getResultCount"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `height` | `int` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.GetResultCount" -->
-`dm.GetResultCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetResultCount"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.getResultPos" -->
-`dm.getResultPos` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getResultPos"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.GetResultPos" -->
-`dm.GetResultPos` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetResultPos"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.getScreenData" -->
-`dm.getScreenData` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getScreenData"]);
+const result = dm.setWordLineHeightNoDict(height)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.GetScreenData" -->
-`dm.GetScreenData` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetScreenData"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.getScreenDataBmp" -->
-`dm.getScreenDataBmp` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getScreenDataBmp"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.GetScreenDataBmp" -->
-`dm.GetScreenDataBmp` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetScreenDataBmp"]);
-```
+### dm.useDict
 
-<!-- api-member-contract id="dm.getWordResultCount" -->
-`dm.getWordResultCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getWordResultCount"]);
-```
+<a id="api-symbol-ZG0udXNlRGljdA"></a>
 
-<!-- api-member-contract id="dm.GetWordResultCount" -->
-`dm.GetWordResultCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetWordResultCount"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.getWordResultPos" -->
-`dm.getWordResultPos` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getWordResultPos"]);
+dm.useDict(index)
 ```
 
-<!-- api-member-contract id="dm.GetWordResultPos" -->
-`dm.GetWordResultPos` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetWordResultPos"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.getWordResultStr" -->
-`dm.getWordResultStr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getWordResultStr"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `index` | `int` | 是 | — | 字库槽位或结果索引，必须是非负整数。 |
 
-<!-- api-member-contract id="dm.GetWordResultStr" -->
-`dm.GetWordResultStr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetWordResultStr"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.getWords" -->
-`dm.getWords` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["getWords"]);
-```
+`number`；成功通常为 `1`，失败为 `0`。
 
-<!-- api-member-contract id="dm.GetWords" -->
-`dm.GetWords` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetWords"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.getWordsNoDict" -->
-`dm.getWordsNoDict` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["getWordsNoDict"]);
+const result = dm.useDict(index)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.GetWordsNoDict" -->
-`dm.GetWordsNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["GetWordsNoDict"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.imageToBmp" -->
-`dm.imageToBmp` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["imageToBmp"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.ImageToBmp" -->
-`dm.ImageToBmp` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["ImageToBmp"]);
-```
+### dm.cancel
 
-<!-- api-member-contract id="dm.isDisplayDead" -->
-`dm.isDisplayDead` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["isDisplayDead"]);
-```
+<a id="api-symbol-ZG0uY2FuY2Vs"></a>
 
-<!-- api-member-contract id="dm.IsDisplayDead" -->
-`dm.IsDisplayDead` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["IsDisplayDead"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.keepScreen" -->
-`dm.keepScreen` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["keepScreen"]);
+dm.cancel()
 ```
 
-<!-- api-member-contract id="dm.loadPic" -->
-`dm.loadPic` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["loadPic"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.LoadPic" -->
-`dm.LoadPic` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["LoadPic"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
 
-<!-- api-member-contract id="dm.loadPicByte" -->
-`dm.loadPicByte` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["loadPicByte"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.LoadPicByte" -->
-`dm.LoadPicByte` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["LoadPicByte"]);
-```
+`void`；具体失败值遵循底层命令约定。
 
-<!-- api-member-contract id="dm.matchPicName" -->
-`dm.matchPicName` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["matchPicName"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.MatchPicName" -->
-`dm.MatchPicName` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["MatchPicName"]);
+const result = dm.cancel()
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.ocr" -->
-`dm.ocr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["ocr"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.Ocr" -->
-`dm.Ocr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["Ocr"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.ocrAuto" -->
-`dm.ocrAuto` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["ocrAuto"]);
-```
+### dm.close
 
-<!-- api-member-contract id="dm.ocrEx" -->
-`dm.ocrEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["ocrEx"]);
-```
+<a id="api-symbol-ZG0uY2xvc2U"></a>
 
-<!-- api-member-contract id="dm.OcrEx" -->
-`dm.OcrEx` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["OcrEx"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.ocrExOne" -->
-`dm.ocrExOne` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["ocrExOne"]);
+dm.close()
 ```
 
-<!-- api-member-contract id="dm.OcrExOne" -->
-`dm.OcrExOne` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["OcrExOne"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.ocrInFile" -->
-`dm.ocrInFile` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["ocrInFile"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
 
-<!-- api-member-contract id="dm.OcrInFile" -->
-`dm.OcrInFile` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["OcrInFile"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.rgb2bgr" -->
-`dm.rgb2bgr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["rgb2bgr"]);
-```
+`void`；具体失败值遵循底层命令约定。
 
-<!-- api-member-contract id="dm.RGB2BGR" -->
-`dm.RGB2BGR` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["RGB2BGR"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.saveDict" -->
-`dm.saveDict` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["saveDict"]);
+const result = dm.close()
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.SaveDict" -->
-`dm.SaveDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SaveDict"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.setColGapNoDict" -->
-`dm.setColGapNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setColGapNoDict"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.SetColGapNoDict" -->
-`dm.SetColGapNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetColGapNoDict"]);
-```
+### dm.getFrameInfo
 
-<!-- api-member-contract id="dm.setDict" -->
-`dm.setDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setDict"]);
-```
+<a id="api-symbol-ZG0uZ2V0RnJhbWVJbmZv"></a>
 
-<!-- api-member-contract id="dm.SetDict" -->
-`dm.SetDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetDict"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.setDictMem" -->
-`dm.setDictMem` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["setDictMem"]);
+dm.getFrameInfo()
 ```
 
-<!-- api-member-contract id="dm.SetDictMem" -->
-`dm.SetDictMem` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetDictMem"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.setDictPwd" -->
-`dm.setDictPwd` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setDictPwd"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
 
-<!-- api-member-contract id="dm.SetDictPwd" -->
-`dm.SetDictPwd` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetDictPwd"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.setDisplayInput" -->
-`dm.setDisplayInput` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setDisplayInput"]);
-```
+`Bundle`；具体失败值遵循底层命令约定。
 
-<!-- api-member-contract id="dm.SetDisplayInput" -->
-`dm.SetDisplayInput` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetDisplayInput"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.setExactOcr" -->
-`dm.setExactOcr` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["setExactOcr"]);
+const result = dm.getFrameInfo()
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.SetExactOcr" -->
-`dm.SetExactOcr` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetExactOcr"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.setExcludeRegion" -->
-`dm.setExcludeRegion` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setExcludeRegion"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.SetExcludeRegion" -->
-`dm.SetExcludeRegion` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetExcludeRegion"]);
-```
+### dm.getLastFindTimings
 
-<!-- api-member-contract id="dm.setFindPicMultithreadCount" -->
-`dm.setFindPicMultithreadCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setFindPicMultithreadCount"]);
-```
+<a id="api-symbol-ZG0uZ2V0TGFzdEZpbmRUaW1pbmdz"></a>
 
-<!-- api-member-contract id="dm.SetFindPicMultithreadCount" -->
-`dm.SetFindPicMultithreadCount` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetFindPicMultithreadCount"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.setFindPicMultithreadLimit" -->
-`dm.setFindPicMultithreadLimit` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["setFindPicMultithreadLimit"]);
+dm.getLastFindTimings()
 ```
 
-<!-- api-member-contract id="dm.SetFindPicMultithreadLimit" -->
-`dm.SetFindPicMultithreadLimit` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetFindPicMultithreadLimit"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.setImage" -->
-`dm.setImage` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setImage"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| — | — | — | — | 无参数。 |
 
-<!-- api-member-contract id="dm.setMinColGap" -->
-`dm.setMinColGap` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setMinColGap"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.SetMinColGap" -->
-`dm.SetMinColGap` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetMinColGap"]);
-```
+`Map`；具体失败值遵循底层命令约定。
 
-<!-- api-member-contract id="dm.setMinRowGap" -->
-`dm.setMinRowGap` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setMinRowGap"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.SetMinRowGap" -->
-`dm.SetMinRowGap` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["SetMinRowGap"]);
+const result = dm.getLastFindTimings()
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.setPath" -->
-`dm.setPath` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setPath"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.SetPath" -->
-`dm.SetPath` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetPath"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.setPicPwd" -->
-`dm.setPicPwd` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setPicPwd"]);
-```
+### dm.ocrAuto
 
-<!-- api-member-contract id="dm.SetPicPwd" -->
-`dm.SetPicPwd` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetPicPwd"]);
-```
+<a id="api-symbol-ZG0ub2NyQXV0bw"></a>
 
-<!-- api-member-contract id="dm.setRowGapNoDict" -->
-`dm.setRowGapNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setRowGapNoDict"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.SetRowGapNoDict" -->
-`dm.SetRowGapNoDict` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["SetRowGapNoDict"]);
+dm.ocrAuto(options)
 ```
 
-<!-- api-member-contract id="dm.setSimdEnabled" -->
-`dm.setSimdEnabled` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setSimdEnabled"]);
-```
+#### 参数
 
-<!-- api-member-contract id="dm.setWordGap" -->
-`dm.setWordGap` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setWordGap"]);
-```
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `options` | `Map` | 是 | — | 按接口类型传入；不可传入 Java 内部对象。 |
 
-<!-- api-member-contract id="dm.SetWordGap" -->
-`dm.SetWordGap` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetWordGap"]);
-```
+#### 返回值
 
-<!-- api-member-contract id="dm.setWordGapNoDict" -->
-`dm.setWordGapNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setWordGapNoDict"]);
-```
+`string`；无结果时为空字符串。
 
-<!-- api-member-contract id="dm.SetWordGapNoDict" -->
-`dm.SetWordGapNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetWordGapNoDict"]);
-```
+#### 示例
 
-<!-- api-member-contract id="dm.setWordLineHeight" -->
-`dm.setWordLineHeight` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["setWordLineHeight"]);
+const result = dm.ocrAuto(options)
+console.log(result)
 ```
 
-<!-- api-member-contract id="dm.SetWordLineHeight" -->
-`dm.SetWordLineHeight` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetWordLineHeight"]);
-```
+#### 注意事项
 
-<!-- api-member-contract id="dm.setWordLineHeightNoDict" -->
-`dm.setWordLineHeightNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["setWordLineHeightNoDict"]);
-```
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
 
-<!-- api-member-contract id="dm.SetWordLineHeightNoDict" -->
-`dm.SetWordLineHeightNoDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["SetWordLineHeightNoDict"]);
-```
+### dm.setSimdEnabled
 
-<!-- api-member-contract id="dm.useDict" -->
-`dm.useDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["useDict"]);
-```
+<a id="api-symbol-ZG0uc2V0U2ltZEVuYWJsZWQ"></a>
 
-<!-- api-member-contract id="dm.UseDict" -->
-`dm.UseDict` · Rhino 2.0 示例：
-```js
-console.log(typeof dm["UseDict"]);
-```
+#### 签名
 
-<!-- api-member-contract id="dm.useScreen" -->
-`dm.useScreen` · Rhino 2.0 示例：
 ```js
-console.log(typeof dm["useScreen"]);
+dm.setSimdEnabled(enabled)
 ```
+
+#### 参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `enabled` | `boolean` | 是 | — | 功能开关或质量参数；取值范围见设备实现。 |
 
-<!-- api-member-contract id="module:dm" -->
-`module:dm` · Rhino 2.0 示例：
+#### 返回值
+
+`void`；具体失败值遵循底层命令约定。
+
+#### 示例
+
 ```js
-console.log(typeof dm);
+const result = dm.setSimdEnabled(enabled)
+console.log(result)
 ```
+
+#### 注意事项
+
+坐标必须落在当前屏幕、文件或冻结帧范围内；颜色使用不带 `#` 的 RGB 十六进制字符串。识别或找图前确认输入帧已设置，重复调用时可配合 `dm.keepScreen(true)` 复用同一帧。涉及图片或字库的资源在任务结束后释放，`DmBuffer` 使用完必须调用 `close()`。
