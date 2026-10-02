@@ -26,33 +26,39 @@ dm.appendPicAddr(buffers, data, length)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `buffers` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
+| `buffers` | `Object` | 是 | — | 已有托管模板数组；首次使用空数组 `[]`，后续传入上次 appendPicAddr 返回的数组。 |
 | `data` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
 | `length` | `int` | 是 | — | 按 `int` 传入；不能传入 Java 内部输出指针类型。 |
 
 #### 返回值
 
-`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。
+`DmBuffer[]`；调用方负责释放返回的缓冲区。
 
 #### 示例
 
 ```js
-const source = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 准备三张模板；每次 append 都要保留返回的新集合。
+let buffers = []
 try {
-  const buffers = dm.appendPicAddr([], source, source.size())
-  try {
-    console.log(buffers.length)
-  } finally {
-    buffers.forEach(buffer => buffer.close())
+  for (const file of ['button.png', 'cancel.png', 'confirm.png']) {
+    const source = dm.buffer(files.readBytes('./assets/dm/' + file))
+    try {
+      buffers = dm.appendPicAddr(buffers, source, source.size())
+    } finally {
+      source.close() // 新增元素是数据副本，不依赖 source 继续存活。
+    }
   }
+  console.log('模板数', buffers.length)
+  // buffers 可直接传给 findPicMem 系列。
 } finally {
-  source.close()
+  // 后一次结果沿用此前元素，因此只统一释放最终集合，不能逐次释放旧集合。
+  for (const buffer of buffers) buffer.close()
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -85,13 +91,14 @@ dm.bgr2rgb(color)
 #### 示例
 
 ```js
-const result = dm.bgr2rgb('ffffff-202020')
-console.log(result)
+const input = '123456'
+const converted = dm.bgr2rgb(input)
+console.log(converted) // 563412；只交换红蓝通道，不带偏色或 # 前缀。
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -128,15 +135,28 @@ dm.capture(x1, y1, x2, y2, file)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.capture(x1, y1, x2, y2, './assets/dm/output.bin')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const output = files.path('./output/capture.bmp')
+  files.ensureDir(output)
+  const saved = dm.capture(x1, y1, x2, y2, output)
+  console.log(saved === 1 ? output : '截图保存失败')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -175,15 +195,24 @@ dm.captureGif(x1, y1, x2, y2, file, delay, duration)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.captureGif(x1, y1, x2, y2, './assets/dm/output.bin', 100, 1000)
-console.log(result)
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+dm.useScreen()
+// 只读取尺寸，不冻结输入；测试期间不要旋转屏幕。
+const frame = images.captureScreen()
+const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+frame.recycle()
+const output = files.path('./output/animation.gif')
+files.ensureDir(output)
+// 每 100ms 采一帧，持续 2000ms；setImage/keepScreen 会导致静态帧。
+console.log(dm.captureGif(x1, y1, x2, y2, output, 100, 2000))
+// 两个时间参数均为 0 时保存单帧 GIF。
+const single = files.path('./output/single.gif')
+console.log(dm.captureGif(x1, y1, x2, y2, single, 0, 0))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -223,15 +252,28 @@ dm.captureJpg(x1, y1, x2, y2, file, quality)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.captureJpg(x1, y1, x2, y2, './assets/dm/output.bin', 90)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const output = files.path('./output/capture.jpg')
+  files.ensureDir(output)
+  const saved = dm.captureJpg(x1, y1, x2, y2, output, 85)
+  console.log(saved === 1 ? output : '截图保存失败')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -268,15 +310,28 @@ dm.capturePng(x1, y1, x2, y2, file)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.capturePng(x1, y1, x2, y2, './assets/dm/output.bin')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const output = files.path('./output/capture.png')
+  files.ensureDir(output)
+  const saved = dm.capturePng(x1, y1, x2, y2, output)
+  console.log(saved === 1 ? output : '截图保存失败')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -309,13 +364,34 @@ dm.capturePre(file)
 #### 示例
 
 ```js
-const result = dm.capturePre('./assets/dm/output.bin')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 必须先执行图像操作；保存刚刚识别使用的区域，而不是重新截图。
+  dm.enableDisplayDebug(1)
+  try {
+    dm.findColor(x1, y1, x2, y2, 'ff0000-101010', 1.0, 0)
+    const output = files.path('./output/last-search.bmp')
+    files.ensureDir(output)
+    console.log(dm.capturePre(output))
+  } finally {
+    dm.enableDisplayDebug(0)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -346,20 +422,32 @@ dm.cmpColor(x, y, color, similarity)
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；颜色匹配时为 `0`，不匹配时为 `1`。
 
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.cmpColor(x, y, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const x = Math.floor(x2 / 2), y = Math.floor(y2 / 2)
+  const result = dm.cmpColor(x, y, 'ffffff-000000|eeeeee-202020', 1.0)
+  console.log(result === 0 ? '颜色匹配' : '颜色不匹配') // 注意：0 才是匹配。
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -383,7 +471,7 @@ dm.enableDisplayDebug(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 返回值
 
@@ -392,13 +480,33 @@ dm.enableDisplayDebug(enabled)
 #### 示例
 
 ```js
-const result = dm.enableDisplayDebug(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  dm.enableDisplayDebug(1)
+  try {
+    console.log(dm.findColor(x1, y1, x2, y2, 'ff0000-101010', 1.0, 0))
+    const output = files.path('./output/debug-find.bmp')
+    files.ensureDir(output)
+    console.log(dm.capturePre(output))
+  } finally {
+    dm.enableDisplayDebug(0)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -422,7 +530,7 @@ dm.enableFindPicMultithread(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 返回值
 
@@ -431,13 +539,42 @@ dm.enableFindPicMultithread(enabled)
 #### 示例
 
 ```js
-const result = dm.enableFindPicMultithread(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  dm.setFindPicMultithreadCount(2) // 至少两个模板时尝试并行
+  dm.setFindPicMultithreadLimit(2) // 线程数量上限
+  try {
+    dm.enableFindPicMultithread(0)
+    const serial = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    console.log('关闭多线程时的命中数', serial.length)
+    dm.enableFindPicMultithread(1)
+    const matches = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+  } finally {
+    dm.freePic('button.png|cancel.png')
+    dm.enableFindPicMultithread(0)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -461,7 +598,7 @@ dm.enableGetColorByCapture(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 返回值
 
@@ -470,13 +607,26 @@ dm.enableGetColorByCapture(enabled)
 #### 示例
 
 ```js
-const result = dm.enableGetColorByCapture(1)
-console.log(result)
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+dm.useScreen()
+// 只读取尺寸，不冻结输入；测试期间不要旋转屏幕。
+const frame = images.captureScreen()
+const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+frame.recycle()
+dm.enableGetColorByCapture(1)
+console.log('重新采集', dm.getColor(0, 0))
+try {
+  dm.enableGetColorByCapture(0)
+  console.log('复用最近帧', dm.getColor(0, 0))
+} finally {
+  dm.enableGetColorByCapture(1)
+}
+console.log('再次采集', dm.getColor(0, 0))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -504,7 +654,7 @@ dm.findColor(x1, y1, x2, y2, color, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`\|` 多颜色和 `@` 反色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -535,15 +685,36 @@ dm.findColor(x1, y1, x2, y2, color, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const match = dm.findColor(x1, y1, x2, y2, '123456-000000|aabbcc-030303|ddeeff-202020', 1.0, 0)
-if (match) console.log(`找到: ${match.x}, ${match.y}`)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // RGB 顺序；每个候选可有独立偏色。
+  const color = '123456-000000|aabbcc-030303|ddeeff-202020'
+  const match = dm.findColor(x1, y1, x2, y2, color, 1.0, 0)
+  if (match !== null) {
+    console.log('结果值', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+  // 反色是排除整个候选集合，不是逐通道取补色。
+  // 反色可能命中几乎所有像素，因此这里只搜索最多 64×64 的小区域。
+  const inverse = dm.findColor(x1, y1, Math.min(x2, 63), Math.min(y2, 63), '@123456-000000|333333-101010', 1.0, 0)
+  console.log(inverse === null ? '没有反色命中' : inverse)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -573,13 +744,13 @@ dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
-| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
-| `width` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
-| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `count` | `int` | 是 | — | 块内匹配像素数的下限，范围 `0–width*height`。 |
+| `width` | `int` | 是 | — | 滑动矩形块的像素尺寸；必须为正整数。 |
+| `height` | `int` | 是 | — | 滑动矩形块的像素尺寸；必须为正整数。 |
 
 #### 颜色块参数
 
-`count` 是要求满足的颜色像素数量，`width` 和 `height` 是连通块/密度判断使用的尺寸约束，三者都必须是非负整数。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
+`count` 是滑动矩形块内要求匹配的颜色像素数量下限；`width` 和 `height` 是正整数尺寸，`count` 必须位于 `0–width*height`。这不是连通区域检测。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
 
 #### 返回值
 
@@ -588,15 +759,33 @@ dm.findColorBlock(x1, y1, x2, y2, color, similarity, count, width, height)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findColorBlock(x1, y1, x2, y2, 'ffffff-202020', 0.9, 4, 64, 64)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 查找指定颜色的密集区域；数量和块尺寸应按实际图像调整。
+  const color = 'ffffff-101010|eeeeee-080808'
+  const count = 30, width = 10, height = 8
+  const match = dm.findColorBlock(x1, y1, x2, y2, color, 1.0, count, width, height)
+  if (match !== null) {
+    console.log('颜色块', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -626,13 +815,13 @@ dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
-| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
-| `width` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
-| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `count` | `int` | 是 | — | 块内匹配像素数的下限，范围 `0–width*height`。 |
+| `width` | `int` | 是 | — | 滑动矩形块的像素尺寸；必须为正整数。 |
+| `height` | `int` | 是 | — | 滑动矩形块的像素尺寸；必须为正整数。 |
 
 #### 颜色块参数
 
-`count` 是要求满足的颜色像素数量，`width` 和 `height` 是连通块/密度判断使用的尺寸约束，三者都必须是非负整数。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
+`count` 是滑动矩形块内要求匹配的颜色像素数量下限；`width` 和 `height` 是正整数尺寸，`count` 必须位于 `0–width*height`。这不是连通区域检测。普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`；颜色表达式仍支持 RGB 偏色和 `|` 多颜色条件。
 
 #### 返回值
 
@@ -641,15 +830,32 @@ dm.findColorBlockEx(x1, y1, x2, y2, color, similarity, count, width, height)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findColorBlockEx(x1, y1, x2, y2, 'ffffff-202020', 0.9, 4, 64, 64)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 查找指定颜色的密集区域；数量和块尺寸应按实际图像调整。
+  const color = 'ffffff-101010|eeeeee-080808'
+  const count = 30, width = 10, height = 8
+  const matches = dm.findColorBlockEx(x1, y1, x2, y2, color, 1.0, count, width, height)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('颜色块', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -677,7 +883,7 @@ dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`\|` 多颜色和 `@` 反色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -708,15 +914,36 @@ dm.findColorE(x1, y1, x2, y2, color, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findColorE(x1, y1, x2, y2, 'ffffff-202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // RGB 顺序；每个候选可有独立偏色。
+  const color = '123456-000000|aabbcc-030303|ddeeff-202020'
+  const match = dm.findColorE(x1, y1, x2, y2, color, 1.0, 0)
+  if (match !== null) {
+    console.log('结果值', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+  // 反色是排除整个候选集合，不是逐通道取补色。
+  // 反色可能命中几乎所有像素，因此这里只搜索最多 64×64 的小区域。
+  const inverse = dm.findColorE(x1, y1, Math.min(x2, 63), Math.min(y2, 63), '@123456-000000|333333-101010', 1.0, 0)
+  console.log(inverse === null ? '没有反色命中' : inverse)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -744,7 +971,7 @@ dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`|` 多颜色和 `@` 反色。 |
+| `color` | `String` | 是 | — | RGB 颜色表达式，支持 `RRGGBB-DRDGDB`、`\|` 多颜色和 `@` 反色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -774,15 +1001,35 @@ dm.findColorEx(x1, y1, x2, y2, color, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findColorEx(x1, y1, x2, y2, 'ffffff-202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // RGB 顺序；每个候选可有独立偏色。
+  const color = '123456-000000|aabbcc-030303|ddeeff-202020'
+  const matches = dm.findColorEx(x1, y1, x2, y2, color, 1.0, 0)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('结果值', match.value, '坐标', match.x, match.y)
+  }
+  // 反色是排除整个候选集合，不是逐通道取补色。
+  // 反色可能命中几乎所有像素，因此这里只搜索最多 64×64 的小区域。
+  const inverse = dm.findColorEx(x1, y1, Math.min(x2, 63), Math.min(y2, 63), '@123456-000000|333333-101010', 1.0, 0)
+  console.log('反色命中数', inverse.length)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -815,20 +1062,32 @@ dm.findMulColor(x1, y1, x2, y2, color, similarity)
 
 #### 返回值
 
-`DmMatch`；未命中时为 `null`。
+`number`；全部候选颜色均存在时为 `1`，否则为 `0`；不返回坐标。
 
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findMulColor(x1, y1, x2, y2, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 检查每一种候选颜色是否都在区域内出现，不返回坐标。
+  const found = dm.findMulColor(x1, y1, x2, y2, 'ff0000-101010|00ff00-101010|0000ff-101010', 1.0)
+  console.log(found === 1 ? '全部颜色均存在' : '至少一种颜色不存在')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -857,7 +1116,7 @@ dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
-| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x\|y\|颜色`，多个偏移点用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -883,15 +1142,33 @@ dm.findMultiColor(x1, y1, x2, y2, color, offsets, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const match = dm.findMultiColor(x1, y1, x2, y2, '123456-000000', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 1.0, 0)
-if (match) console.log(`基准点: ${match.x}, ${match.y}`)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const color = 'cc805b-020202|606060-010101'
+  // 正负偏移、多候选和偏移反色可以组合；所有点都必须满足。
+  const offsets = '9|2|-00ff00|-ff0000,15|2|2dff1c-010101,-6|11|a0d962|aabbcc,11|-4|-ffffff'
+  const match = dm.findMultiColor(x1, y1, x2, y2, color, offsets, 1.0, 1)
+  if (match !== null) {
+    console.log('首点', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -920,7 +1197,7 @@ dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
-| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x\|y\|颜色`，多个偏移点用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -946,15 +1223,33 @@ dm.findMultiColorE(x1, y1, x2, y2, color, offsets, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findMultiColorE(x1, y1, x2, y2, 'ffffff-202020', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const color = 'cc805b-020202|606060-010101'
+  // 正负偏移、多候选和偏移反色可以组合；所有点都必须满足。
+  const offsets = '9|2|-00ff00|-ff0000,15|2|2dff1c-010101,-6|11|a0d962|aabbcc,11|-4|-ffffff'
+  const match = dm.findMultiColorE(x1, y1, x2, y2, color, offsets, 1.0, 1)
+  if (match !== null) {
+    console.log('首点', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -983,7 +1278,7 @@ dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `color` | `String` | 是 | — | 首点颜色表达式；支持 RGB 偏色和多颜色条件。 |
-| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x|y|颜色`，多个偏移点用逗号分隔。 |
+| `offsets` | `String` | 是 | — | 多点偏移，格式为 `x\|y\|颜色`，多个偏移点用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -1009,15 +1304,32 @@ dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findMultiColorEx(x1, y1, x2, y2, 'ffffff-202020', '8|0|aabbcc-030303,-4|3|ddeeff-202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const color = 'cc805b-020202|606060-010101'
+  // 正负偏移、多候选和偏移反色可以组合；所有点都必须满足。
+  const offsets = '9|2|-00ff00|-ff0000,15|2|2dff1c-010101,-6|11|a0d962|aabbcc,11|-4|-ffffff'
+  const matches = dm.findMultiColorEx(x1, y1, x2, y2, color, offsets, 1.0, 1)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('首点', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -1045,7 +1357,7 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1063,6 +1375,7 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1070,23 +1383,50 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-dm.loadPic('button.png')
-const match = dm.findPic(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
-if (match) console.log(match.x, match.y)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const match = dm.findPic(x1, y1, x2, y2, pictures, delta, 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicE
 
@@ -1110,7 +1450,7 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1128,6 +1468,7 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1135,22 +1476,50 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicE(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const match = dm.findPicE(x1, y1, x2, y2, pictures, delta, 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicEx
 
@@ -1174,7 +1543,7 @@ dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1192,6 +1561,7 @@ dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch[]`；未命中或没有记录时为空数组。
@@ -1199,22 +1569,49 @@ dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicEx(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const matches = dm.findPicEx(x1, y1, x2, y2, pictures, delta, 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicExS
 
@@ -1238,7 +1635,7 @@ dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1256,6 +1653,7 @@ dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch[]`；未命中或没有记录时为空数组。
@@ -1263,22 +1661,49 @@ dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicExS(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const matches = dm.findPicExS(x1, y1, x2, y2, pictures, delta, 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板名', match.value, '坐标', match.x, match.y)
+    }
+    // S 变体的 value 直接为模板名。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicMem
 
@@ -1302,7 +1727,7 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1320,6 +1745,7 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1327,26 +1753,50 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const match = dm.findPicMem(x1, y1, x2, y2, template, '202020', 0.9, 0)
-  console.log(match)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const match = dm.findPicMem(x1, y1, x2, y2, templates, delta, 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicMemE
 
@@ -1370,7 +1820,7 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1388,6 +1838,7 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1395,26 +1846,50 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const result = dm.findPicMemE(x1, y1, x2, y2, template, '202020', 0.9, 0)
-  console.log(result)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const match = dm.findPicMemE(x1, y1, x2, y2, templates, delta, 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicMemEx
 
@@ -1438,7 +1913,7 @@ dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1456,6 +1931,7 @@ dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch[]`；未命中或没有记录时为空数组。
@@ -1463,26 +1939,49 @@ dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const result = dm.findPicMemEx(x1, y1, x2, y2, template, '202020', 0.9, 0)
-  console.log(result)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const matches = dm.findPicMemEx(x1, y1, x2, y2, templates, delta, 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicS
 
@@ -1506,7 +2005,7 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1524,6 +2023,7 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1531,22 +2031,50 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicS(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 普通相似度范围 0.1–1.0。
+    const match = dm.findPicS(x1, y1, x2, y2, pictures, delta, 0.9, 0)
+    if (match !== null) {
+      console.log('模板名', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // S 变体的 value 直接为模板名。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSim
 
@@ -1570,7 +2098,7 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1588,6 +2116,9 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1595,22 +2126,50 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicSim(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const match = dm.findPicSim(x1, y1, x2, y2, pictures, delta, 80, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSimE
 
@@ -1634,7 +2193,7 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1652,6 +2211,9 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1659,22 +2221,50 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicSimE(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const match = dm.findPicSimE(x1, y1, x2, y2, pictures, delta, 80, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSimEx
 
@@ -1698,7 +2288,7 @@ dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1716,6 +2306,9 @@ dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch[]`；未命中或没有记录时为空数组。
@@ -1723,22 +2316,49 @@ dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findPicSimEx(x1, y1, x2, y2, 'button.png', '202020', 90, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  const pictures = 'button.png|cancel.png'
+  try {
+    dm.loadPic(pictures)
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const matches = dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, 80, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSimMem
 
@@ -1762,7 +2382,7 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1780,6 +2400,9 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1787,26 +2410,50 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const result = dm.findPicSimMem(x1, y1, x2, y2, template, '202020', 90, 0)
-  console.log(result)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const match = dm.findPicSimMem(x1, y1, x2, y2, templates, delta, 80, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSimMemE
 
@@ -1830,7 +2477,7 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1848,6 +2495,9 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch`；未命中时为 `null`。
@@ -1855,26 +2505,50 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const result = dm.findPicSimMemE(x1, y1, x2, y2, template, '202020', 90, 0)
-  console.log(result)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const match = dm.findPicSimMemE(x1, y1, x2, y2, templates, delta, 80, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findPicSimMemEx
 
@@ -1898,7 +2572,7 @@ dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `Object` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `Object` | 是 | — | 编码图片的 `DmBuffer` 或字节数组；多个模板使用数组，不接受裸地址。 |
 | `delta` | `String` | 是 | — | 图片偏色；六位十六进制表示 RGB 偏色，两位十六进制表示灰度偏色。 |
 | `similarity` | `int` | 是 | — | 图片相似率整数，范围 `0–100`。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
@@ -1916,6 +2590,9 @@ dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
+
+
 #### 返回值
 
 `DmMatch[]`；未命中或没有记录时为空数组。
@@ -1923,26 +2600,49 @@ dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const template = dm.buffer(files.readBytes('./assets/dm/button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  const result = dm.findPicSimMemEx(x1, y1, x2, y2, template, '202020', 90, 0)
-  console.log(result)
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备两张模板；即使第二张加载或查找失败，也释放已创建的缓冲区。
+  const templates = []
+  try {
+    templates.push(dm.buffer(files.readBytes('./assets/dm/button.png')))
+    templates.push(dm.buffer(files.readBytes('./assets/dm/cancel.png')))
+    // RGB 偏色；灰度匹配时可改为两位 '20'。
+    const delta = '202020'
+    // 80 表示百分比相似率，范围 0–100，不是 0.8。
+    const matches = dm.findPicSimMemEx(x1, y1, x2, y2, templates, delta, 80, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+    // value 是 templates/pictures 中从 0 开始的模板编号。
+  } finally {
+    for (const template of templates) template.close()
+  }
 } finally {
-  template.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
 
 图片任务完成后按所有权释放 `DmBuffer`，并按需调用 `freePic()` 清理缓存。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.findShape
 
@@ -1966,7 +2666,7 @@ dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x\|y\|e`；x/y 是相对基准点的偏移，e=1 要求颜色相似，e=0 要求不相似；多个关系用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -1981,7 +2681,11 @@ dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 
 #### 形状关系
 
-`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。返回坐标是基准点，`x/y` 是相对基准点的像素偏移，可以为负数。`e=1` 要求该点颜色与基准点相似，`e=0` 要求不相似；不是固定的黑白或前景/背景编号。相似度为 `1.0` 时要求对应关系严格成立，降低相似度会扩大颜色相似容差。
+
+所有偏移点必须落在查找区域内；靠近边缘而容纳不下完整形状的基准点不会命中。示例使用九个采样点，同时约束相似和不相似位置，需要按实际目标截图重新采样，不能保证匹配任意屏幕。
+
+MonkeyKing 方向仅支持 `0–3`；参考页面列出的 `0–8` 不适用于本 Android 接口。普通接口和 `E` 接口都返回 `DmMatch | null`，不解析 PC 坐标串；`Ex` 接口返回全部 `DmMatch[]`。
 
 #### 返回值
 
@@ -1990,15 +2694,35 @@ dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findShape(x1, y1, x2, y2, '1|0|1', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 按目标截图采样后替换形状：偏移相对于返回的基准点，不是绝对坐标。
+  // e=1 要求颜色与基准点相似，e=0 要求不相似；不是前景/背景颜色编号。
+  const shape = '1|1|0,1|6|1,0|10|1,9|10|1,7|6|1,7|8|0,8|9|0,2|2|1,3|1|1'
+  const similarity = 1.0
+  const direction = 0 // 从左到右，从上到下
+  const match = dm.findShape(x1, y1, x2, y2, shape, similarity, direction)
+  if (match !== null) {
+    console.log('形状', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2026,7 +2750,7 @@ dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x\|y\|e`；x/y 是相对基准点的偏移，e=1 要求颜色相似，e=0 要求不相似；多个关系用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -2041,7 +2765,11 @@ dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 
 #### 形状关系
 
-`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。返回坐标是基准点，`x/y` 是相对基准点的像素偏移，可以为负数。`e=1` 要求该点颜色与基准点相似，`e=0` 要求不相似；不是固定的黑白或前景/背景编号。相似度为 `1.0` 时要求对应关系严格成立，降低相似度会扩大颜色相似容差。
+
+所有偏移点必须落在查找区域内；靠近边缘而容纳不下完整形状的基准点不会命中。示例使用九个采样点，同时约束相似和不相似位置，需要按实际目标截图重新采样，不能保证匹配任意屏幕。
+
+MonkeyKing 方向仅支持 `0–3`；参考页面列出的 `0–8` 不适用于本 Android 接口。普通接口和 `E` 接口都返回 `DmMatch | null`，不解析 PC 坐标串；`Ex` 接口返回全部 `DmMatch[]`。
 
 #### 返回值
 
@@ -2050,15 +2778,35 @@ dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findShapeE(x1, y1, x2, y2, '1|0|1', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 按目标截图采样后替换形状：偏移相对于返回的基准点，不是绝对坐标。
+  // e=1 要求颜色与基准点相似，e=0 要求不相似；不是前景/背景颜色编号。
+  const shape = '1|1|0,1|6|1,0|10|1,9|10|1,7|6|1,7|8|0,8|9|0,2|2|1,3|1|1'
+  const similarity = 1.0
+  const direction = 0 // 从左到右，从上到下
+  const match = dm.findShapeE(x1, y1, x2, y2, shape, similarity, direction)
+  if (match !== null) {
+    console.log('形状', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2086,7 +2834,7 @@ dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `shape` | `String` | 是 | — | 形状关系，格式为 `x|y|e`，多个关系用逗号分隔。 |
+| `shape` | `String` | 是 | — | 形状关系，格式为 `x\|y\|e`；x/y 是相对基准点的偏移，e=1 要求颜色相似，e=0 要求不相似；多个关系用逗号分隔。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `direction` | `int` | 是 | — | 扫描方向；可用值见本函数的方向表。 |
 
@@ -2101,7 +2849,11 @@ dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
 
 #### 形状关系
 
-`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。方向仅支持 `0–3`，普通接口返回一个 `DmMatch | null`，`Ex` 接口返回全部结果。
+`shape` 使用 `x|y|e` 描述相对点关系，不使用颜色偏色格式；多个关系用逗号分隔。返回坐标是基准点，`x/y` 是相对基准点的像素偏移，可以为负数。`e=1` 要求该点颜色与基准点相似，`e=0` 要求不相似；不是固定的黑白或前景/背景编号。相似度为 `1.0` 时要求对应关系严格成立，降低相似度会扩大颜色相似容差。
+
+所有偏移点必须落在查找区域内；靠近边缘而容纳不下完整形状的基准点不会命中。示例使用九个采样点，同时约束相似和不相似位置，需要按实际目标截图重新采样，不能保证匹配任意屏幕。
+
+MonkeyKing 方向仅支持 `0–3`；参考页面列出的 `0–8` 不适用于本 Android 接口。普通接口和 `E` 接口都返回 `DmMatch | null`，不解析 PC 坐标串；`Ex` 接口返回全部 `DmMatch[]`。
 
 #### 返回值
 
@@ -2110,15 +2862,34 @@ dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findShapeEx(x1, y1, x2, y2, '1|0|1', 0.9, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 按目标截图采样后替换形状：偏移相对于返回的基准点，不是绝对坐标。
+  // e=1 要求颜色与基准点相似，e=0 要求不相似；不是前景/背景颜色编号。
+  const shape = '1|1|0,1|6|1,0|10|1,9|10|1,7|6|1,7|8|0,8|9|0,2|2|1,3|1|1'
+  const similarity = 1.0
+  const direction = 1 // 从左到右，从下到上
+  const matches = dm.findShapeEx(x1, y1, x2, y2, shape, similarity, direction)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('形状', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2142,7 +2913,7 @@ dm.freePic(pictures)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -2151,14 +2922,41 @@ dm.freePic(pictures)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const result = dm.freePic('button.png')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  // loadPic 不直接展开通配符；先用 matchPicName 展开，再加入明确文件名。
+  const expanded = dm.matchPicName('button*.png')
+  const pictures = expanded ? expanded + '|cancel.png' : 'cancel.png'
+  try {
+    dm.loadPic(pictures)
+    const match = dm.findPic(x1, y1, x2, y2, pictures, '202020', 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+  } finally {
+    // 多模板任务完成后释放对应缓存，不删除磁盘文件。
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2194,15 +2992,27 @@ dm.getAveHSV(x1, y1, x2, y2)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getAveHSV(x1, y1, x2, y2)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 统计输入帧中心小区域，而非把整个屏幕混成一个平均色。
+  const left = Math.floor(x2 / 3), top = Math.floor(y2 / 3)
+  console.log(dm.getAveHSV(left, top, Math.min(x2, left + 30), Math.min(y2, top + 30)))
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2238,15 +3048,27 @@ dm.getAveRGB(x1, y1, x2, y2)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getAveRGB(x1, y1, x2, y2)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 统计输入帧中心小区域，而非把整个屏幕混成一个平均色。
+  const left = Math.floor(x2 / 3), top = Math.floor(y2 / 3)
+  console.log(dm.getAveRGB(left, top, Math.min(x2, left + 30), Math.min(y2, top + 30)))
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2280,15 +3102,29 @@ dm.getColor(x, y)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getColor(x, y)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const x = Math.floor(x2 / 2), y = Math.floor(y2 / 2)
+  const color = dm.getColor(x, y)
+  console.log('中心像素', x, y, color)
+  const expected = 'ffffff'
+  console.log(color.toLowerCase() === expected ? '与目标颜色相等' : '与目标颜色不同')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2322,15 +3158,29 @@ dm.getColorBGR(x, y)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getColorBGR(x, y)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const x = Math.floor(x2 / 2), y = Math.floor(y2 / 2)
+  const color = dm.getColorBGR(x, y)
+  console.log('中心像素', x, y, color)
+  const expected = '0000ff'
+  console.log(color.toLowerCase() === expected ? '与目标颜色相等' : '与目标颜色不同')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2364,15 +3214,29 @@ dm.getColorHSV(x, y)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getColorHSV(x, y)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const x = Math.floor(x2 / 2), y = Math.floor(y2 / 2)
+  const color = dm.getColorHSV(x, y)
+  console.log('中心像素', x, y, color)
+  const expected = '0.100.100'
+  console.log(color.toLowerCase() === expected ? '与目标颜色相等' : '与目标颜色不同')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2405,20 +3269,31 @@ dm.getColorNum(x1, y1, x2, y2, color, similarity)
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；符合条件的记录、字形或像素数量，没有时为 `0`。
 
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getColorNum(x1, y1, x2, y2, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const count = dm.getColorNum(x1, y1, x2, y2, 'ffffff-202020|eeeeee-101010|dddddd-080808', 1.0)
+  console.log('符合条件的像素数', count)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2442,7 +3317,7 @@ dm.getPicSize(pictures)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 单个可读图片文件路径；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -2451,14 +3326,19 @@ dm.getPicSize(pictures)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const result = dm.getPicSize('button.png')
-console.log(result)
+// 先准备 button.png 和 cancel.png 两张模板。
+dm.setPath(files.path('./assets/dm'))
+try {
+  const size = dm.getPicSize('button.png').split(',')
+  console.log('宽度', Number(size[0]), '高度', Number(size[1]))
+} finally {
+  dm.freePic('button.png')
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2494,23 +3374,37 @@ dm.getScreenData(x1, y1, x2, y2)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const frame = dm.getScreenData(x1, y1, x2, y2)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  console.log(frame.size())
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const data = dm.getScreenData(x1, y1, x2, y2)
+  try {
+    console.log('字节数', data.size())
+    // 这是原始像素数据，不是可直接解码的图片文件。
+  } finally {
+    data.close()
+  }
 } finally {
-  frame.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+再次调用同一种数据获取方法会关闭它上次返回的缓冲区；请先消费或复制数据，不要保留旧缓冲区供后续调用使用。
 
 ### dm.getScreenDataBmp
 
@@ -2542,23 +3436,41 @@ dm.getScreenDataBmp(x1, y1, x2, y2)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const frame = dm.getScreenDataBmp(x1, y1, x2, y2)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
 try {
-  console.log(frame.size())
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const data = dm.getScreenDataBmp(x1, y1, x2, y2)
+  try {
+    console.log('字节数', data.size())
+    // 这是含 BMP 文件头的数据，可用于内存图片接口。
+    const output = files.path('./output/frame.bmp')
+    files.ensureDir(output)
+    files.writeBytes(output, data.bytes())
+    console.log('可供图片查看器打开的文件', output)
+  } finally {
+    data.close()
+  }
 } finally {
-  frame.close()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+再次调用同一种数据获取方法会关闭它上次返回的缓冲区；请先消费或复制数据，不要保留旧缓冲区供后续调用使用。
 
 ### dm.imageToBmp
 
@@ -2588,13 +3500,18 @@ dm.imageToBmp(input, output)
 #### 示例
 
 ```js
-const result = dm.imageToBmp('./assets/dm/output.bin', './assets/dm/output.bin')
-console.log(result)
+// 先准备三种格式的图片；GIF 转换只处理解码得到的一帧。
+for (const extension of ['png', 'jpg', 'gif']) {
+  const input = files.path('./assets/dm/input.' + extension)
+  const output = files.path('./output/from-' + extension + '.bmp')
+  files.ensureDir(output)
+  console.log(dm.imageToBmp(input, output) === 1 ? output : '转换失败')
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2622,24 +3539,29 @@ dm.isDisplayDead(x1, y1, x2, y2, timeout)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `timeout` | `int` | 是 | — | 非负毫秒数。 |
+| `timeout` | `int` | 是 | — | 非负秒数；连续观察区域是否保持不变。 |
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；在指定秒数内区域保持不变时为 `1`，发生变化时为 `0`。静止画面不一定表示应用故障。
 
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.isDisplayDead(x1, y1, x2, y2, 1)
-console.log(result)
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+dm.useScreen()
+// 只读取尺寸，不冻结输入；测试期间不要旋转屏幕。
+const frame = images.captureScreen()
+const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+frame.recycle()
+// timeout 单位是秒；静止画面也会返回 1，不一定意味着应用故障。
+const unchanged = dm.isDisplayDead(x1, y1, x2, y2, 2)
+console.log(unchanged === 1 ? '区域持续两秒未变化' : '区域发生变化')
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2663,7 +3585,7 @@ dm.loadPic(pictures)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 图片文件名或 `\|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
 
 #### 返回值
 
@@ -2672,18 +3594,47 @@ dm.loadPic(pictures)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const result = dm.loadPic('button.png')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  // loadPic 不直接展开通配符；先用 matchPicName 展开，再加入明确文件名。
+  const expanded = dm.matchPicName('button*.png')
+  const pictures = expanded ? expanded + '|cancel.png' : 'cancel.png'
+  try {
+    dm.loadPic(pictures)
+    const match = dm.findPic(x1, y1, x2, y2, pictures, '202020', 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+  } finally {
+    // 多模板任务完成后释放对应缓存，不删除磁盘文件。
+    dm.freePic(pictures)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+Android 不直接在 loadPic 中展开通配符；用 matchPicName 获取明确文件列表后再加载。
 
 ### dm.loadPicByte
 
@@ -2705,7 +3656,7 @@ dm.loadPicByte(data, length, pictures)
 | --- | --- | --- | --- | --- |
 | `data` | `Object` | 是 | — | 二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。 |
 | `length` | `int` | 是 | — | 按 `int` 传入；不能传入 Java 内部输出指针类型。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 内存图片的缓存名称；后续找图用此名称引用，不需要同名磁盘文件。 |
 
 #### 返回值
 
@@ -2714,13 +3665,41 @@ dm.loadPicByte(data, length, pictures)
 #### 示例
 
 ```js
-const data = files.readBytes('./assets/dm/button.png')
-console.log(dm.loadPicByte(data, data.length, 'button.png'))
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const bytes = files.readBytes('./assets/dm/button.png')
+  const data = dm.buffer(bytes)
+  try {
+    dm.loadPicByte(data, data.size(), 'memory-button.png')
+    const match = dm.findPic(x1, y1, x2, y2, 'memory-button.png', '202020', 0.9, 0)
+    if (match !== null) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+  } finally {
+    try {
+      dm.freePic('memory-button.png')
+    } finally {
+      data.close()
+    }
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2744,7 +3723,7 @@ dm.matchPicName(pictures)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
+| `pictures` | `String` | 是 | — | 文件名通配模式，例如 `*.png`；匹配结果是以竖线分隔的文件路径。 |
 
 #### 返回值
 
@@ -2753,14 +3732,16 @@ dm.matchPicName(pictures)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-const result = dm.matchPicName('button.png')
-console.log(result)
+// 先准备 button.png 和 cancel.png 两张模板。
+dm.setPath(files.path('./assets/dm'))
+const pictures = dm.matchPicName('*.png')
+if (pictures === '') console.log('没有匹配的文件')
+else for (const file of pictures.split('|')) console.log(file)
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2793,13 +3774,14 @@ dm.rgb2bgr(color)
 #### 示例
 
 ```js
-const result = dm.rgb2bgr('ffffff-202020')
-console.log(result)
+const input = '123456'
+const converted = dm.rgb2bgr(input)
+console.log(converted) // 563412；只交换红蓝通道，不带偏色或 # 前缀。
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2823,8 +3805,8 @@ dm.setExcludeRegion(mode, code)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `mode` | `int` | 是 | — | 排除区域模式编号；使用当前实现支持的模式。 |
-| `code` | `String` | 是 | — | 排除区域描述字符串；为空表示清除对应配置。 |
+| `mode` | `int` | 是 | — | `0` 追加排除矩形，`1` 设置填充色，`2` 清空排除矩形。 |
+| `code` | `String` | 是 | — | 模式 `0` 使用 `x1,y1,x2,y2\|...`；模式 `1` 使用六位 RGB 颜色；模式 `2` 使用空字符串。 |
 
 #### 返回值
 
@@ -2833,13 +3815,41 @@ dm.setExcludeRegion(mode, code)
 #### 示例
 
 ```js
-const result = dm.setExcludeRegion(0, '')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 小坐标示范；所有矩形都必须适合实际输入尺寸。
+  if (x2 < 100 || y2 < 100) throw new Error('本示例需要至少 101×101 的输入')
+  dm.setExcludeRegion(2, '')
+  try {
+    dm.setExcludeRegion(0, '0,0,20,20|40,40,60,60')
+    dm.setExcludeRegion(0, '80,80,100,100')
+    dm.setExcludeRegion(1, 'ff11ff')
+    const match = dm.findColor(x1, y1, x2, y2, '00ff00-101010', 1.0, 0)
+    if (match !== null) {
+      console.log('结果值', match.value, '坐标', match.x, match.y)
+    } else {
+      console.log('未命中')
+    }
+  } finally {
+    dm.setExcludeRegion(2, '')
+    dm.setExcludeRegion(1, 'ff00ff')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2863,7 +3873,7 @@ dm.setFindPicMultithreadCount(count)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `count` | `int` | 是 | — | 启用并行找图的模板数量门槛；至少为 `1`。 |
 
 #### 返回值
 
@@ -2872,13 +3882,42 @@ dm.setFindPicMultithreadCount(count)
 #### 示例
 
 ```js
-const result = dm.setFindPicMultithreadCount(4)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  dm.setFindPicMultithreadCount(2) // 至少两个模板时尝试并行
+  dm.setFindPicMultithreadLimit(2) // 线程数量上限
+  try {
+    dm.enableFindPicMultithread(0)
+    const serial = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    console.log('关闭多线程时的命中数', serial.length)
+    dm.enableFindPicMultithread(1)
+    const matches = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+  } finally {
+    dm.freePic('button.png|cancel.png')
+    dm.enableFindPicMultithread(0)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2902,7 +3941,7 @@ dm.setFindPicMultithreadLimit(count)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `count` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `count` | `int` | 是 | — | 并行线程数量上限；至少为 `1`。 |
 
 #### 返回值
 
@@ -2911,13 +3950,42 @@ dm.setFindPicMultithreadLimit(count)
 #### 示例
 
 ```js
-const result = dm.setFindPicMultithreadLimit(4)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  dm.setFindPicMultithreadCount(2) // 至少两个模板时尝试并行
+  dm.setFindPicMultithreadLimit(2) // 线程数量上限
+  try {
+    dm.enableFindPicMultithread(0)
+    const serial = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    console.log('关闭多线程时的命中数', serial.length)
+    dm.enableFindPicMultithread(1)
+    const matches = dm.findPicEx(x1, y1, x2, y2, 'button.png|cancel.png', '202020', 0.9, 0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('模板编号', match.value, '坐标', match.x, match.y)
+    }
+  } finally {
+    dm.freePic('button.png|cancel.png')
+    dm.enableFindPicMultithread(0)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2950,13 +4018,22 @@ dm.setPath(path)
 #### 示例
 
 ```js
-const result = dm.setPath('./assets/dm/output.bin')
-console.log(result)
+// 使用绝对目录，避免重复 setPath 时相对路径不断叠加。
+dm.setPath(files.path('./assets/dm'))
+console.log(dm.matchPicName('*.png'))
+// 也可传相对目录，但它相对于当前 DM 基准目录，不是自动相对于脚本目录。
+// 先准备 assets/dm/templates 子目录；用完恢复到已知绝对目录。
+dm.setPath('templates')
+try {
+  console.log(dm.matchPicName('*.png'))
+} finally {
+  dm.setPath(files.path('./assets/dm'))
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -2989,17 +4066,48 @@ dm.setDisplayInput(source)
 #### 示例
 
 ```js
-const result = dm.setDisplayInput('screen')
-console.log(result)
+// 文件输入不需要截图权限；坐标按该文件的实际尺寸计算。
+const file = files.path('./assets/dm/screen.png')
+const frame = images.read(file)
+if (frame === null) throw new Error('无法读取图片')
+try {
+  dm.setPath(files.path('./assets/dm'))
+  dm.setDisplayInput('pic:screen.png') // 相对于 DM 基准目录
+  console.log('相对文件输入', dm.getColor(0, 0))
+  dm.setDisplayInput('pic:' + file)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  const match = dm.findColor(x1, y1, x2, y2, 'ffffff-202020', 1.0, 0)
+  if (match !== null) {
+    console.log('结果值', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+  // 内存图像使用托管对象，不使用 PC 的 mem:整数地址。
+  const data = dm.buffer(files.readBytes(file))
+  try {
+    dm.setImage(data)
+    console.log('托管内存输入', dm.getColor(0, 0))
+  } finally {
+    data.close()
+  }
+} finally {
+  try {
+    dm.setDisplayInput('screen')
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+每次 pic: 输入都会重新解码文件，不依赖找图模板缓存；不需要为刷新输入而清除模板缓存。裸地址 mem: 输入不支持，使用 setImage(DmBuffer) 替代。
 
 ### dm.enablePicCache
 
@@ -3019,7 +4127,7 @@ dm.enablePicCache(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 返回值
 
@@ -3028,13 +4136,35 @@ dm.enablePicCache(enabled)
 #### 示例
 
 ```js
-const result = dm.enablePicCache(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备 button.png 和 cancel.png 两张模板。
+  dm.setPath(files.path('./assets/dm'))
+  dm.enablePicCache(0) // 文件模板每次重新读取，适用于磁盘模板会更新的场景。
+  try {
+    for (let i = 0; i < 2; i++) {
+      console.log(dm.findPic(x1, y1, x2, y2, 'button.png', '202020', 0.9, 0))
+    }
+  } finally {
+    dm.freePic('button.png')
+    dm.enablePicCache(1)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3067,17 +4197,18 @@ dm.buffer(bytes)
 #### 示例
 
 ```js
-const bytes = dm.buffer(files.readBytes('./assets/dm/input.bin'))
+const data = dm.buffer(files.readBytes('./assets/dm/button.png'))
 try {
-  console.log(bytes.size())
+  console.log('模板字节数', data.size())
+  // data 可传给内存找图、setImage 或其他接受编码图像的接口。
 } finally {
-  bytes.close()
+  data.close()
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3110,12 +4241,15 @@ dm.cancel()
 #### 示例
 
 ```js
+// 取消状态不可复位：仅在本脚本不再需要 DM 时执行。
 dm.cancel()
+dm.close()
+// 此后不要再次调用本脚本的 dm 对象。
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3148,12 +4282,18 @@ dm.close()
 #### 示例
 
 ```js
-dm.close()
+// 在本脚本所有 DM 任务完成后释放引擎；不是每次查找后关闭。
+try {
+  console.log('当前字库槽位', dm.getNowDict())
+} finally {
+  dm.close()
+}
+// close 后本脚本的 dm 不再可用。
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3186,12 +4326,27 @@ dm.getFrameInfo()
 #### 示例
 
 ```js
-console.log(dm.getFrameInfo())
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 可能为 null（例如没有元数据的文件输入），不能无条件读取字段。
+  const info = dm.getFrameInfo()
+  console.log(info === null ? '当前帧没有元数据' : info)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3224,12 +4379,27 @@ dm.getLastFindTimings()
 #### 示例
 
 ```js
-console.log(dm.getLastFindTimings())
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  dm.findColor(x1, y1, x2, y2, 'ff0000-101010', 1.0, 0)
+  const timings = dm.getLastFindTimings()
+  console.log(timings.valid ? timings : '没有有效的 DM 原生耗时记录')
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3253,7 +4423,7 @@ dm.keepScreen(keep)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `keep` | `boolean` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `keep` | `boolean` | 是 | — | 布尔开关；必须使用 `false/true`，不传数值。 |
 
 #### 返回值
 
@@ -3262,9 +4432,12 @@ dm.keepScreen(keep)
 #### 示例
 
 ```js
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+dm.useScreen()
 dm.keepScreen(true)
 try {
-  console.log(dm.getFrameInfo())
+  // 两次单点取色读取同一冻结帧。
+  console.log(dm.getColor(0, 0), dm.getColor(0, 0))
 } finally {
   dm.keepScreen(false)
 }
@@ -3272,7 +4445,7 @@ try {
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3305,18 +4478,31 @@ dm.setImage(image)
 #### 示例
 
 ```js
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
 const frame = images.captureScreen()
 try {
   dm.setImage(frame)
-  console.log(dm.getFrameInfo())
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  console.log('输入尺寸', frame.getWidth(), frame.getHeight())
+  const match = dm.findShape(x1, y1, x2, y2, '1|1|0,1|6|1,0|10|1,9|10|1,7|6|1,7|8|0,8|9|0,2|2|1,3|1|1', 1.0, 0)
+  if (match !== null) {
+    console.log('结果值', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
 } finally {
-  frame.recycle()
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3340,7 +4526,7 @@ dm.setSimdEnabled(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `boolean` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `boolean` | 是 | — | 布尔开关；必须使用 `false/true`，不传数值。 |
 
 #### 返回值
 
@@ -3349,12 +4535,34 @@ dm.setSimdEnabled(enabled)
 #### 示例
 
 ```js
-dm.setSimdEnabled(true)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 同一固定帧对比结果；不要只凭一次耗时判断性能。
+  dm.setSimdEnabled(false)
+  try {
+    const scalar = dm.findColor(x1, y1, x2, y2, 'ff0000-101010', 1.0, 0)
+    dm.setSimdEnabled(true)
+    const accelerated = dm.findColor(x1, y1, x2, y2, 'ff0000-101010', 1.0, 0)
+    console.log(scalar, accelerated)
+  } finally {
+    dm.setSimdEnabled(true)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3387,13 +4595,14 @@ dm.useScreen()
 #### 示例
 
 ```js
-dm.useScreen()
-console.log(dm.getFrameInfo())
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+dm.useScreen() // 解除文件/固定图输入；后续操作重新采集屏幕。
+console.log(dm.getColor(0, 0))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3421,11 +4630,11 @@ dm.addDict(index, entry)
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
-| `entry` | `String` | 是 | — | 明文字库条目，格式为 `HEX$文字$指标$高度`。 |
+| `entry` | `String` | 是 | — | 明文字库条目，格式为 `HEX$文字$指标$高度`；使用采样或字体生成的有效条目。 |
 
-#### 字库格式
+#### 采样与字形有效性
 
-字库使用 UTF-8 或 GB18030 明文条目 `HEX$文字$指标$高度`；Android 不支持加密字库和裸地址。
+先选择只包含一个实际字符的区域和正确颜色条件，再采样生成字形。`fetchWord` 在没有前景像素或字形超出支持范围时抛出异常，不是返回空字符串；记录错误并调整采样条件，不能继续导入无效字形。`addDict` 使用有效的 `HEX$文字$指标$高度` 条目；不要用随意拼接的 HEX 代替采样或字体生成。
 
 #### 返回值
 
@@ -3434,13 +4643,46 @@ dm.addDict(index, entry)
 #### 示例
 
 ```js
-const result = dm.addDict(0, '414243$确$0$16')
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 将区域缩小到一个实际字符，label 必须与截图中的字符一致。
+  // 这里演示左上角 16×24 像素，执行前请按目标位置调整。
+  const right = Math.min(x2, 15), bottom = Math.min(y2, 23)
+  // 各项是不同画面/字库的采样方案；实际使用时选择与目标画面一致的一项。
+  const modes = [
+    ['RGB 前景', 'ffffff-202020|eeeeee-101010'],
+    ['RGB 背景', 'b@000000-101010|101010-080808'],
+    ['HSV 背景', 'b@0.0.100-0.0.5'],
+    ['HSV 前景', '20.30.40-0.0.0|30.40.50-0.0.0'],
+  ]
+  for (let index = 0; index < modes.length; index++) {
+    const mode = modes[index]
+    try {
+      const glyph = dm.fetchWord(0, 0, right, bottom, mode[1], '确')
+      dm.addDict(index, glyph)
+      console.log(mode[0], '已加入字形', dm.getDictCount(index))
+    } catch (error) {
+      // 无前景像素或字形无效会抛异常，不是返回空字符串。
+      console.log(mode[0], '采样失败，请检查区域、颜色及字形尺寸', String(error))
+    }
+  }
+  dm.useDict(0)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3473,13 +4715,14 @@ dm.clearDict(index)
 #### 示例
 
 ```js
-const result = dm.clearDict(0)
-console.log(result)
+// 只清空本示例使用的临时槽位，不删除磁盘字库。
+dm.clearDict(1)
+console.log('清空后的条目数', dm.getDictCount(1))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3503,11 +4746,11 @@ dm.enableShareDict(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -3516,13 +4759,18 @@ dm.enableShareDict(enabled)
 #### 示例
 
 ```js
-const result = dm.enableShareDict(1)
-console.log(result)
+// 同一进程内，相同明文字库内容可共享；不要假定不同进程自动共享字库。
+dm.enableShareDict(1)
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+dm.useDict(0)
+console.log(dm.getDictCount(0))
+dm.enableShareDict(0)
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3550,8 +4798,12 @@ dm.fetchWord(x1, y1, x2, y2, color, text)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+
+#### 采样与字形有效性
+
+先选择只包含一个实际字符的区域和正确颜色条件，再采样生成字形。`fetchWord` 在没有前景像素或字形超出支持范围时抛出异常，不是返回空字符串；记录错误并调整采样条件，不能继续导入无效字形。`addDict` 使用有效的 `HEX$文字$指标$高度` 条目；不要用随意拼接的 HEX 代替采样或字体生成。
 
 #### 返回值
 
@@ -3560,18 +4812,46 @@ dm.fetchWord(x1, y1, x2, y2, color, text)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const glyph = dm.fetchWord(x1, y1, x2, y2, 'ffffff-202020', '确')
-if (glyph) {
-  dm.addDict(0, glyph)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 将区域缩小到一个实际字符，label 必须与截图中的字符一致。
+  // 这里演示左上角 16×24 像素，执行前请按目标位置调整。
+  const right = Math.min(x2, 15), bottom = Math.min(y2, 23)
+  // 各项是不同画面/字库的采样方案；实际使用时选择与目标画面一致的一项。
+  const modes = [
+    ['RGB 前景', 'ffffff-202020|eeeeee-101010'],
+    ['RGB 背景', 'b@000000-101010|101010-080808'],
+    ['HSV 背景', 'b@0.0.100-0.0.5'],
+    ['HSV 前景', '20.30.40-0.0.0|30.40.50-0.0.0'],
+  ]
+  for (let index = 0; index < modes.length; index++) {
+    const mode = modes[index]
+    try {
+      const glyph = dm.fetchWord(0, 0, right, bottom, mode[1], '确')
+      dm.addDict(index, glyph)
+      console.log(mode[0], '已加入字形', dm.getDictCount(index))
+    } catch (error) {
+      // 无前景像素或字形无效会抛异常，不是返回空字符串。
+      console.log(mode[0], '采样失败，请检查区域、颜色及字形尺寸', String(error))
+    }
+  }
   dm.useDict(0)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
 }
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3599,16 +4879,18 @@ dm.findStr(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3617,17 +4899,39 @@ dm.findStr(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStr(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStr(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStr(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3657,16 +4961,18 @@ dm.findStrE(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3675,17 +4981,39 @@ dm.findStrE(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrE(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStrE(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3715,16 +5043,18 @@ dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3733,17 +5063,38 @@ dm.findStrEx(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrEx(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single.length === 0 ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const matches = dm.findStrEx(x1, y1, x2, y2, candidates, color, 0.9)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3773,16 +5124,18 @@ dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3791,17 +5144,38 @@ dm.findStrExS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrExS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrExS(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single.length === 0 ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const matches = dm.findStrExS(x1, y1, x2, y2, candidates, color, 0.9)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('命中文字', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3831,16 +5205,18 @@ dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3849,17 +5225,39 @@ dm.findStrFast(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const hit = dm.findStrFast(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-if (hit) console.log(hit.value, hit.x, hit.y)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrFast(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStrFast(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3889,16 +5287,18 @@ dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3907,17 +5307,39 @@ dm.findStrFastE(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrFastE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrFastE(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStrFastE(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -3947,16 +5369,18 @@ dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -3965,17 +5389,38 @@ dm.findStrFastEx(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrFastEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrFastEx(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single.length === 0 ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const matches = dm.findStrFastEx(x1, y1, x2, y2, candidates, color, 0.9)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4005,16 +5450,18 @@ dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4023,17 +5470,38 @@ dm.findStrFastExS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrFastExS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrFastExS(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single.length === 0 ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const matches = dm.findStrFastExS(x1, y1, x2, y2, candidates, color, 0.9)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('命中文字', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4063,16 +5531,18 @@ dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4081,17 +5551,39 @@ dm.findStrFastS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrFastS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrFastS(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStrFastS(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('命中文字', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4121,16 +5613,18 @@ dm.findStrS(x1, y1, x2, y2, text, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4139,17 +5633,39 @@ dm.findStrS(x1, y1, x2, y2, text, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrS(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrS(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 多候选用竖线分隔，不代表跨行拼接。
+  const match = dm.findStrS(x1, y1, x2, y2, candidates, color, 0.9)
+  if (match !== null) {
+    console.log('命中文字', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4179,8 +5695,8 @@ dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
 | `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
@@ -4188,10 +5704,12 @@ dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4200,17 +5718,37 @@ dm.findStrWithFont(x1, y1, x2, y2, text, color, similarity, font, size, style)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrWithFont(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrWithFont(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0, 'sans-serif', 24, 0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。
+  const match = dm.findStrWithFont(x1, y1, x2, y2, candidates, color, 0.9, 'sans-serif', 24, 1 | 2)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4240,8 +5778,8 @@ dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
 | `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
@@ -4249,10 +5787,12 @@ dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4261,17 +5801,37 @@ dm.findStrWithFontE(x1, y1, x2, y2, text, color, similarity, font, size, style)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrWithFontE(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrWithFontE(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0, 'sans-serif', 24, 0)
+  console.log(single === null ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。
+  const match = dm.findStrWithFontE(x1, y1, x2, y2, candidates, color, 0.9, 'sans-serif', 24, 1 | 2)
+  if (match !== null) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  } else {
+    console.log('未命中')
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4301,8 +5861,8 @@ dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 | `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
 | `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
@@ -4310,10 +5870,12 @@ dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### FindStr 返回语义
 
-多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，`Fast` 只限制候选字形，不改变坐标含义。
+多个候选文字使用 `|` 分隔。普通接口返回首个 `DmMatch | null`，`Ex` 接口返回全部 `DmMatch[]`，`S` 接口的 `value` 为实际文字，其余变体的 `value` 为从 `0` 开始的候选编号。`Fast` 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。
+
+参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 `ocr` 的行分隔符。
 
 #### 返回值
 
@@ -4322,17 +5884,36 @@ dm.findStrWithFontEx(x1, y1, x2, y2, text, color, similarity, font, size, style)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.findStrWithFontEx(x1, y1, x2, y2, '确定|取消', 'ffffff-202020', 0.9, 'sans-serif', 24, 0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。
+  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。
+  const single = dm.findStrWithFontEx(x1, y1, x2, y2, '确定', 'ffffff-202020', 1.0, 'sans-serif', 24, 0)
+  console.log(single.length === 0 ? '未命中单个候选' : single)
+  const candidates = '确定|取消'
+  const color = 'ffffff-202020|eeeeee-101010'
+  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。
+  const matches = dm.findStrWithFontEx(x1, y1, x2, y2, candidates, color, 0.9, 'sans-serif', 24, 1 | 2)
+  if (matches.length === 0) console.log('未命中')
+  for (const match of matches) {
+    console.log('候选文字编号', match.value, '坐标', match.x, match.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4359,7 +5940,7 @@ dm.getDict(index, entry)
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
-| `entry` | `int` | 是 | — | 明文字库条目，格式为 `HEX$文字$指标$高度`。 |
+| `entry` | `int` | 是 | — | 字库内条目索引，从 `0` 开始，须小于 `getDictCount(index)`。 |
 
 #### 返回值
 
@@ -4368,13 +5949,22 @@ dm.getDict(index, entry)
 #### 示例
 
 ```js
-const result = dm.getDict(0, '414243$确$0$16')
-console.log(result)
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+dm.useDict(0)
+const count = dm.getDictCount(0)
+console.log('条目数', count)
+for (let entry = 0; entry < count; entry++) {
+  console.log(entry, dm.getDict(0, entry))
+}
+// 第二个槽位独立读取；先检查数量，避免用不存在的条目编号。
+dm.setDict(1, files.path('./assets/dm/dialog.dm.txt'))
+if (dm.getDictCount(1) > 0) console.log(dm.getDict(1, 0))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4402,18 +5992,24 @@ dm.getDictCount(index)
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；符合条件的记录、字形或像素数量，没有时为 `0`。
 
 #### 示例
 
 ```js
-const result = dm.getDictCount(0)
-console.log(result)
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+dm.useDict(0)
+const count = dm.getDictCount(0)
+console.log('条目数', count)
+for (let entry = 0; entry < count; entry++) {
+  console.log(entry, dm.getDict(0, entry))
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4437,7 +6033,7 @@ dm.getDictInfo(text, font, size, style)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `|` 分隔。 |
+| `text` | `String` | 是 | — | 待查找文字或字库文本；多个候选使用 `\|` 分隔。 |
 | `font` | `String` | 是 | — | 字体文件路径或 Android Typeface 名称。 |
 | `size` | `int` | 是 | — | 字体像素大小；必须为正整数。 |
 | `style` | `int` | 是 | — | 字体样式位：`1` 粗体、`2` 斜体、`4` 下划线、`8` 删除线，可组合。 |
@@ -4449,13 +6045,18 @@ dm.getDictInfo(text, font, size, style)
 #### 示例
 
 ```js
-const result = dm.getDictInfo('确定|取消', 'sans-serif', 24, 0)
-console.log(result)
+// 使用系统字体生成字形，不把随意编写的 HEX 当成有效字库。
+const entries = dm.getDictInfo('确定取消', 'sans-serif', 24, 0)
+dm.clearDict(1)
+for (const entry of entries.split('|')) {
+  if (entry !== '') dm.addDict(1, entry)
+}
+console.log('生成的字形数', dm.getDictCount(1))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4483,18 +6084,20 @@ dm.getNowDict()
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；当前字库槽位编号。
 
 #### 示例
 
 ```js
-const result = dm.getNowDict()
-console.log(result)
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+dm.useDict(0)
+console.log('当前使用的字库槽位', dm.getNowDict())
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4526,18 +6129,25 @@ dm.getResultCount(results)
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；符合条件的记录、字形或像素数量，没有时为 `0`。
 
 #### 示例
 
 ```js
-const result = dm.getResultCount('确定$10$20|取消$30$20')
-console.log(result)
+// 仅用于保存下来的 PC 兼容结果串；现代查找结果数组直接遍历即可。
+const results = '10,20|30,40'
+const count = dm.getResultCount(results)
+for (let index = 0; index < count; index++) {
+  const position = dm.getResultPos(results, index)
+  if (position !== null) console.log(position.x, position.y)
+}
+console.log('空串数量', dm.getResultCount(''))
+console.log('越界结果', dm.getResultPos(results, count)) // null
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4562,7 +6172,7 @@ dm.getResultPos(results, index)
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
-| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `index` | `int` | 是 | — | 兼容结果中的记录索引，从 `0` 开始；不是字库槽位。 |
 
 #### 兼容结果解析
 
@@ -4575,13 +6185,20 @@ dm.getResultPos(results, index)
 #### 示例
 
 ```js
-const result = dm.getResultPos('确定$10$20|取消$30$20', 0)
-console.log(result)
+// 仅用于保存下来的 PC 兼容结果串；现代查找结果数组直接遍历即可。
+const results = '10,20|30,40'
+const count = dm.getResultCount(results)
+for (let index = 0; index < count; index++) {
+  const position = dm.getResultPos(results, index)
+  if (position !== null) console.log(position.x, position.y)
+}
+console.log('空串数量', dm.getResultCount(''))
+console.log('越界结果', dm.getResultPos(results, count)) // null
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4613,18 +6230,27 @@ dm.getWordResultCount(results)
 
 #### 返回值
 
-`number`；成功通常为 `1`，失败为 `0`。
+`number`；符合条件的记录、字形或像素数量，没有时为 `0`。
 
 #### 示例
 
 ```js
-const result = dm.getWordResultCount('确定$10$20|取消$30$20')
-console.log(result)
+// 历史词组串，与现代 getWords() 返回的数组不同。
+const results = '确定,10,20|取消,30,40'
+const count = dm.getWordResultCount(results)
+for (let index = 0; index < count; index++) {
+  const word = dm.getWordResultStr(results, index)
+  const position = dm.getWordResultPos(results, index)
+  if (position !== null) console.log(word, position.x, position.y)
+}
+console.log('空串数量', dm.getWordResultCount(''))
+console.log('越界文字', dm.getWordResultStr(results, count)) // 空字符串
+console.log('越界位置', dm.getWordResultPos(results, count)) // null
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4649,7 +6275,7 @@ dm.getWordResultPos(results, index)
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
-| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `index` | `int` | 是 | — | 兼容结果中的记录索引，从 `0` 开始；不是字库槽位。 |
 
 #### 兼容结果解析
 
@@ -4662,13 +6288,22 @@ dm.getWordResultPos(results, index)
 #### 示例
 
 ```js
-const result = dm.getWordResultPos('确定$10$20|取消$30$20', 0)
-console.log(result)
+// 历史词组串，与现代 getWords() 返回的数组不同。
+const results = '确定,10,20|取消,30,40'
+const count = dm.getWordResultCount(results)
+for (let index = 0; index < count; index++) {
+  const word = dm.getWordResultStr(results, index)
+  const position = dm.getWordResultPos(results, index)
+  if (position !== null) console.log(word, position.x, position.y)
+}
+console.log('空串数量', dm.getWordResultCount(''))
+console.log('越界文字', dm.getWordResultStr(results, count)) // 空字符串
+console.log('越界位置', dm.getWordResultPos(results, count)) // null
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4693,7 +6328,7 @@ dm.getWordResultStr(results, index)
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `results` | `String` | 是 | — | 兼容结果字符串，仅用于结果解析接口。 |
-| `index` | `int` | 是 | — | 字库槽位，Android 支持 `0–99`。 |
+| `index` | `int` | 是 | — | 兼容结果中的记录索引，从 `0` 开始；不是字库槽位。 |
 
 #### 兼容结果解析
 
@@ -4706,13 +6341,22 @@ dm.getWordResultStr(results, index)
 #### 示例
 
 ```js
-const result = dm.getWordResultStr('确定$10$20|取消$30$20', 0)
-console.log(result)
+// 历史词组串，与现代 getWords() 返回的数组不同。
+const results = '确定,10,20|取消,30,40'
+const count = dm.getWordResultCount(results)
+for (let index = 0; index < count; index++) {
+  const word = dm.getWordResultStr(results, index)
+  const position = dm.getWordResultPos(results, index)
+  if (position !== null) console.log(word, position.x, position.y)
+}
+console.log('空串数量', dm.getWordResultCount(''))
+console.log('越界文字', dm.getWordResultStr(results, count)) // 空字符串
+console.log('越界位置', dm.getWordResultPos(results, count)) // null
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4740,12 +6384,12 @@ dm.getWords(x1, y1, x2, y2, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### 有字库与免字库
 
 该接口使用当前字库把字符分组为词组。 返回数组中的每个元素包含 `value`、`x`、`y`、`width` 和 `height`；没有结果时为空数组。
@@ -4757,17 +6401,32 @@ dm.getWords(x1, y1, x2, y2, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('未识别到词组')
+  for (const word of words) {
+    console.log(word.value, word.x, word.y, word.width, word.height)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4797,11 +6456,11 @@ dm.getWordsNoDict(x1, y1, x2, y2, color)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### 有字库与免字库
 
 该接口不读取点阵字库，直接按图像连通区域返回词组。 返回数组中的每个元素包含 `value`、`x`、`y`、`width` 和 `height`；没有结果时为空数组。
@@ -4813,15 +6472,30 @@ dm.getWordsNoDict(x1, y1, x2, y2, color)
 #### 示例
 
 ```js
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
-console.log(words.length ? words : '未识别到词组')
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 免字库模式按图像分组，不保证 value 为识别出的文字。
+  const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+  if (words.length === 0) console.log('未识别到词组')
+  for (const word of words) {
+    console.log(word.value, word.x, word.y, word.width, word.height)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4851,15 +6525,15 @@ dm.ocr(x1, y1, x2, y2, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### OCR 颜色和分隔符
 
-支持 RGB、HSV、灰度和 `b@` 背景色模式；颜色条件用 `|` 分隔。颜色表达式后可以追加分隔符，例如 `ffffff-202020,\\n`，返回值是拼接后的完整字符串；未识别到文字时返回空字符串。
+支持 RGB、HSV、灰度和 `b@` 背景色模式；颜色条件用 `|` 分隔。颜色表达式后可以追加行分隔符，例如 JS 表达式 `'ffffff-202020,' + '\n'`；运行时这里的 `\n` 是真正的换行字符。返回值是拼接后的完整字符串；未识别到文字时返回空字符串。
 
 #### 返回值
 
@@ -4868,17 +6542,44 @@ dm.ocr(x1, y1, x2, y2, color, similarity)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const text = dm.ocr(x1, y1, x2, y2, 'ffffff-202020,\\n', 0.9)
-console.log(text || '未识别到文字')
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  // 各模式用于不同截图/字库场景；按实际字库采样颜色选择，不要求结果相同。
+  const formats = [
+    ['RGB 单色', '9f2e3f-000000'],
+    ['RGB 偏色', '9f2e3f-030303'],
+    ['RGB 多色', '9f2e3f-030303|2d3f2f-000000|3f9e4d-100000'],
+    ['HSV 多色', '20.30.40-0.0.0|30.40.50-0.0.0'],
+    ['灰度多色', '#40-0|#70-10'],
+    ['背景色', 'b@ffffff-000000'],
+  ]
+  for (const item of formats) {
+    const text = dm.ocr(x1, y1, x2, y2, item[1], 1.0)
+    console.log(item[0], text || '未识别到文字')
+  }
+  // 逗号后是行分隔字符串，不是另一种颜色。
+  const pipeLines = dm.ocr(x1, y1, x2, y2, '9f2e3f-000000,|', 1.0)
+  const newLines = dm.ocr(x1, y1, x2, y2, '9f2e3f-000000,' + '\n', 1.0)
+  console.log(pipeLines, newLines)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4908,12 +6609,12 @@ dm.ocrEx(x1, y1, x2, y2, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### OCR 结构化结果
 
 Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是文字，`x/y/width/height` 是输入图像坐标。无结果返回空数组。
@@ -4925,17 +6626,46 @@ Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是�
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.ocrEx(x1, y1, x2, y2, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  const formats = [
+    ['RGB 单色', '9f2e3f-000000'],
+    ['RGB 偏色', '9f2e3f-030303'],
+    ['RGB 多色', '9f2e3f-030303|2d3f2f-000000|3f9e4d-100000'],
+    ['HSV 多色', '20.30.40-0.0.0|30.40.50-0.0.0'],
+    ['灰度多色', '#40-0|#70-10'],
+    ['背景色', 'b@ffffff-000000'],
+  ]
+  for (const item of formats) {
+    // Android 返回结构化数组，不使用 split 解析 PC 结果串。
+    console.log(item[0])
+    const matches = dm.ocrEx(x1, y1, x2, y2, item[1], 1.0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('文字', match.value, '坐标', match.x, match.y)
+    }
+    // 按返回顺序组合整体文字；不自动插入行分隔符。
+    console.log('完整文字', matches.map(match => match.value).join(''))
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -4965,12 +6695,12 @@ dm.ocrExOne(x1, y1, x2, y2, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### OCR 结构化结果
 
 Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是文字，`x/y/width/height` 是输入图像坐标。无结果返回空数组。
@@ -4982,17 +6712,46 @@ Android facade 已将 PC 的结果字符串适配为 `DmMatch[]`：`value` 是�
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
-dm.useDict(0)
-const x = 0, y = 0
-const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1
-const result = dm.ocrExOne(x1, y1, x2, y2, 'ffffff-202020', 0.9)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  const formats = [
+    ['RGB 单色', '9f2e3f-000000'],
+    ['RGB 偏色', '9f2e3f-030303'],
+    ['RGB 多色', '9f2e3f-030303|2d3f2f-000000|3f9e4d-100000'],
+    ['HSV 多色', '20.30.40-0.0.0|30.40.50-0.0.0'],
+    ['灰度多色', '#40-0|#70-10'],
+    ['背景色', 'b@ffffff-000000'],
+  ]
+  for (const item of formats) {
+    // Android 返回结构化数组，不使用 split 解析 PC 结果串。
+    console.log(item[0])
+    const matches = dm.ocrExOne(x1, y1, x2, y2, item[1], 1.0)
+    if (matches.length === 0) console.log('未命中')
+    for (const match of matches) {
+      console.log('文字', match.value, '坐标', match.x, match.y)
+    }
+    // 按返回顺序组合整体文字；不自动插入行分隔符。
+    console.log('完整文字', matches.map(match => match.value).join(''))
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5022,13 +6781,13 @@ dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
 | `y1` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `x2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
 | `y2` | `int` | 是 | — | 输入图像像素坐标；区域左上角和右下角均为包含边界。 |
-| `pictures` | `String` | 是 | — | 图片文件名或 `|` 分隔的多模板列表；相对路径基于 `setPath()`。 |
-| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`|` 多颜色和 `b@` 背景色模式。 |
+| `pictures` | `String` | 是 | — | 单个可读图片文件路径；相对路径基于 `setPath()`。 |
+| `color` | `String` | 是 | — | 文字颜色表达式；支持 RGB、HSV、灰度、`\|` 多颜色和 `b@` 背景色模式。 |
 | `similarity` | `double` | 是 | — | 相似度，范围 `0.1–1.0`；数值越高越严格。 |
 
 #### OCR 颜色格式
 
-支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。只有 `ocr` 支持在颜色表达式后追加分隔符，例如 `ffffff,\\n`。
+支持 RGB `RRGGBB-DRDGDB`、HSV `H.S.V-DH.DS.DV` 和灰度 `#40-0` 格式；多个条件使用 `|`。`b@` 表示按背景色匹配。拼接文本时可在 `ocr` 的颜色表达式后追加行分隔符，例如 JS 表达式 `'ffffff,' + '\n'`；传入真正的换行字符，不要传入反斜杠加字母 n。
 #### 文件输入
 
 该接口直接读取图片文件，不会复用屏幕帧；文件路径基于 `setPath()`。
@@ -5040,20 +6799,31 @@ dm.ocrInFile(x1, y1, x2, y2, pictures, color, similarity)
 #### 示例
 
 ```js
-dm.setPath('./assets/dm')
-dm.setDict(0, './assets/dm/main.dm.txt')
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
 dm.useDict(0)
-const text = dm.ocrInFile(0, 0, 1079, 1919, 'screen.png', 'ffffff-202020', 0.9)
-console.log(text || '文件中没有文字')
+// 文件坐标来自文件本身，不使用 device.width/height。
+const file = files.path('./assets/dm/screen.png')
+const image = images.read(file)
+if (image === null) throw new Error('无法读取图片')
+try {
+  const text = dm.ocrInFile(0, 0, image.getWidth() - 1, image.getHeight() - 1,
+    file, 'ffffff-202020', 0.9)
+  console.log(text || '文件中没有文字')
+} finally {
+  image.recycle()
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 文字识别依赖当前字库或免字库模式；空结果不是异常。
 
@@ -5087,13 +6857,20 @@ dm.saveDict(index, file)
 #### 示例
 
 ```js
-const result = dm.saveDict(0, './assets/dm/output.bin')
-console.log(result)
+// 在临时槽位生成并追加三个真实字形，再持久化，不手写虚假的 HEX。
+dm.clearDict(1)
+const entries = dm.getDictInfo('确认好', 'sans-serif', 24, 0)
+for (const entry of entries.split('|')) {
+  if (entry !== '') dm.addDict(1, entry)
+}
+const output = files.path('./output/export.dm.txt')
+files.ensureDir(output)
+console.log(dm.saveDict(1, output) === 1 ? output : '字库保存失败')
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5121,7 +6898,7 @@ dm.setColGapNoDict(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5130,13 +6907,30 @@ dm.setColGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setColGapNoDict(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 免字库分组；按实际字间距与行高调整。
+  dm.setColGapNoDict(1)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5174,18 +6968,21 @@ dm.setDict(index, file)
 #### 示例
 
 ```js
-dm.setDict(0, './assets/dm/main.dm.txt')
+// 先准备与目标字体、字号和颜色匹配的明文字库。
+dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
 dm.useDict(0)
-console.log(dm.getDictCount(0))
+console.log('字库条目数', dm.getDictCount(0))
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.setDictMem
 
@@ -5223,7 +7020,9 @@ dm.setDictMem(index, data, length)
 const bytes = files.readBytes('./assets/dm/main.dm.txt')
 const dict = dm.buffer(bytes)
 try {
-  console.log(dm.setDictMem(0, dict, bytes.length))
+  console.log(dm.setDictMem(0, dict, dict.size()))
+  dm.useDict(0)
+  console.log('条目数', dm.getDictCount(0))
 } finally {
   dict.close()
 }
@@ -5231,11 +7030,13 @@ try {
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.setExactOcr
 
@@ -5255,11 +7056,11 @@ dm.setExactOcr(enabled)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `enabled` | `int` | 是 | — | 布尔开关；使用 `0/1` 或 `false/true`。 |
+| `enabled` | `int` | 是 | — | 整数开关；必须使用 `0/1`，不传布尔值。 |
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5268,13 +7069,32 @@ dm.setExactOcr(enabled)
 #### 示例
 
 ```js
-const result = dm.setExactOcr(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  dm.setExactOcr(1)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5302,7 +7122,7 @@ dm.setMinColGap(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5311,13 +7131,32 @@ dm.setMinColGap(gap)
 #### 示例
 
 ```js
-const result = dm.setMinColGap(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  dm.setMinColGap(1)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5345,7 +7184,7 @@ dm.setMinRowGap(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5354,13 +7193,32 @@ dm.setMinRowGap(gap)
 #### 示例
 
 ```js
-const result = dm.setMinRowGap(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  dm.setMinRowGap(2)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5388,7 +7246,7 @@ dm.setRowGapNoDict(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5397,13 +7255,30 @@ dm.setRowGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setRowGapNoDict(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 免字库分组；按实际字间距与行高调整。
+  dm.setRowGapNoDict(2)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5431,7 +7306,7 @@ dm.setWordGap(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5440,13 +7315,32 @@ dm.setWordGap(gap)
 #### 示例
 
 ```js
-const result = dm.setWordGap(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  dm.setWordGap(3)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5474,7 +7368,7 @@ dm.setWordGapNoDict(gap)
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5483,13 +7377,30 @@ dm.setWordGapNoDict(gap)
 #### 示例
 
 ```js
-const result = dm.setWordGapNoDict(1)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 免字库分组；按实际字间距与行高调整。
+  dm.setWordGapNoDict(3)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5513,11 +7424,11 @@ dm.setWordLineHeight(height)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `height` | `int` | 是 | — | 分组使用的行高，单位为像素；必须为正整数。 |
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5526,13 +7437,32 @@ dm.setWordLineHeight(height)
 #### 示例
 
 ```js
-const result = dm.setWordLineHeight(64)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 先准备与目标字体、字号和颜色匹配的明文字库。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.useDict(0)
+  dm.setWordLineHeight(24)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWords(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5556,11 +7486,11 @@ dm.setWordLineHeightNoDict(height)
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `height` | `int` | 是 | — | 非负整数；具体用途由函数名称决定。 |
+| `height` | `int` | 是 | — | 分组使用的行高，单位为像素；必须为正整数。 |
 
 #### 识别参数
 
-该设置在后续识别调用中生效；间距和行高参数必须为非负整数，`setExactOcr` 与 `enableShareDict` 使用 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
+该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，`setExactOcr` 与 `enableShareDict` 使用整数 `0/1`。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。
 
 #### 返回值
 
@@ -5569,13 +7499,30 @@ dm.setWordLineHeightNoDict(height)
 #### 示例
 
 ```js
-const result = dm.setWordLineHeightNoDict(64)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 免字库分组；按实际字间距与行高调整。
+  dm.setWordLineHeightNoDict(24)
+  // 设置作用于后续调用，不会改变已经返回的结果。
+  const words = dm.getWordsNoDict(x1, y1, x2, y2, 'ffffff-202020')
+  if (words.length === 0) console.log('没有词组')
+  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
@@ -5608,17 +7555,43 @@ dm.useDict(index)
 #### 示例
 
 ```js
-const result = dm.useDict(0)
-console.log(result)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 两份字库分别适配不同界面的字体；初始化一次，切换时无需重新加载。
+  dm.setDict(0, files.path('./assets/dm/main.dm.txt'))
+  dm.setDict(1, files.path('./assets/dm/dialog.dm.txt'))
+  dm.useDict(0)
+  const previous = dm.getNowDict()
+  try {
+    dm.useDict(1)
+    console.log('当前槽位', dm.getNowDict())
+    const text = dm.ocr(x1, y1, x2, y2, 'ffffff-202020', 0.9)
+    console.log(text || '未识别到文字')
+  } finally {
+    dm.useDict(previous)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 
 未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
+
+示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
 ### dm.ocrAuto
 
@@ -5651,13 +7624,31 @@ dm.ocrAuto(options)
 #### 示例
 
 ```js
-const blocks = dm.ocrAuto({ maxSideLen: 128, doAngle: false })
-for (const block of blocks) console.log(block.text, block.confidence)
+// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
+if (!requestScreenCapture()) throw new Error('未取得截图权限')
+const frame = images.captureScreen()
+try {
+  dm.setImage(frame)
+  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
+  // 不依赖点阵字库，需要可用的内置 OCR 模型。
+  const blocks = dm.ocrAuto({ maxSideLen: 960, doAngle: false })
+  if (blocks.length === 0) console.log('未识别到文字')
+  for (const block of blocks) {
+    console.log(block.text, block.confidence, block.detectionConfidence)
+    for (const point of block.points) console.log(point.x, point.y)
+  }
+} finally {
+  try {
+    dm.useScreen()
+  } finally {
+    frame.recycle()
+  }
+}
 ```
 
 #### 注意事项
 
-示例使用 Rhino 的 camelCase API；`device.width` 和 `device.height` 表示当前输入设备尺寸。
+示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
 
 坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
 

@@ -28,16 +28,16 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n<tr>\n<td><code>entry</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>明文字库条目，格式为 <code>HEX$文字$指标$高度</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n<tr>\n<td><code>entry</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>明文字库条目，格式为 <code>HEX$文字$指标$高度</code>；使用采样或字体生成的有效条目。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
-              "textRaw": "字库格式",
-              "name": "字库格式",
-              "desc": "<p>字库使用 UTF-8 或 GB18030 明文条目 <code>HEX$文字$指标$高度</code>；Android 不支持加密字库和裸地址。</p>\n",
+              "textRaw": "采样与字形有效性",
+              "name": "采样与字形有效性",
+              "desc": "<p>先选择只包含一个实际字符的区域和正确颜色条件，再采样生成字形。<code>fetchWord</code> 在没有前景像素或字形超出支持范围时抛出异常，不是返回空字符串；记录错误并调整采样条件，不能继续导入无效字形。<code>addDict</code> 使用有效的 <code>HEX$文字$指标$高度</code> 条目；不要用随意拼接的 HEX 代替采样或字体生成。</p>\n",
               "type": "module",
-              "displayName": "字库格式"
+              "displayName": "采样与字形有效性"
             },
             {
               "textRaw": "返回值",
@@ -49,14 +49,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.addDict(0, &#39;414243$确$0$16&#39;)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 将区域缩小到一个实际字符，label 必须与截图中的字符一致。\n  // 这里演示左上角 16×24 像素，执行前请按目标位置调整。\n  const right = Math.min(x2, 15), bottom = Math.min(y2, 23)\n  // 各项是不同画面/字库的采样方案；实际使用时选择与目标画面一致的一项。\n  const modes = [\n    [&#39;RGB 前景&#39;, &#39;ffffff-202020|eeeeee-101010&#39;],\n    [&#39;RGB 背景&#39;, &#39;b@000000-101010|101010-080808&#39;],\n    [&#39;HSV 背景&#39;, &#39;b@0.0.100-0.0.5&#39;],\n    [&#39;HSV 前景&#39;, &#39;20.30.40-0.0.0|30.40.50-0.0.0&#39;],\n  ]\n  for (let index = 0; index &lt; modes.length; index++) {\n    const mode = modes[index]\n    try {\n      const glyph = dm.fetchWord(0, 0, right, bottom, mode[1], &#39;确&#39;)\n      dm.addDict(index, glyph)\n      console.log(mode[0], &#39;已加入字形&#39;, dm.getDictCount(index))\n    } catch (error) {\n      // 无前景像素或字形无效会抛异常，不是返回空字符串。\n      console.log(mode[0], &#39;采样失败，请检查区域、颜色及字形尺寸&#39;, String(error))\n    }\n  }\n  dm.useDict(0)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -98,14 +98,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.clearDict(0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 只清空本示例使用的临时槽位，不删除磁盘字库。\ndm.clearDict(1)\nconsole.log(&#39;清空后的条目数&#39;, dm.getDictCount(1))\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -133,14 +133,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>布尔开关；使用 <code>0/1</code> 或 <code>false/true</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>整数开关；必须使用 <code>0/1</code>，不传布尔值。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -154,14 +154,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.enableShareDict(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 同一进程内，相同明文字库内容可共享；不要假定不同进程自动共享字库。\ndm.enableShareDict(1)\n// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\nconsole.log(dm.getDictCount(0))\ndm.enableShareDict(0)\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -189,9 +189,16 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>六位 RGB 颜色表达式，不使用按键精灵的 BGR 顺序。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
+            },
+            {
+              "textRaw": "采样与字形有效性",
+              "name": "采样与字形有效性",
+              "desc": "<p>先选择只包含一个实际字符的区域和正确颜色条件，再采样生成字形。<code>fetchWord</code> 在没有前景像素或字形超出支持范围时抛出异常，不是返回空字符串；记录错误并调整采样条件，不能继续导入无效字形。<code>addDict</code> 使用有效的 <code>HEX$文字$指标$高度</code> 条目；不要用随意拼接的 HEX 代替采样或字体生成。</p>\n",
+              "type": "module",
+              "displayName": "采样与字形有效性"
             },
             {
               "textRaw": "返回值",
@@ -203,14 +210,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst glyph = dm.fetchWord(x1, y1, x2, y2, &#39;ffffff-202020&#39;, &#39;确&#39;)\nif (glyph) {\n  dm.addDict(0, glyph)\n  dm.useDict(0)\n}\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 将区域缩小到一个实际字符，label 必须与截图中的字符一致。\n  // 这里演示左上角 16×24 像素，执行前请按目标位置调整。\n  const right = Math.min(x2, 15), bottom = Math.min(y2, 23)\n  // 各项是不同画面/字库的采样方案；实际使用时选择与目标画面一致的一项。\n  const modes = [\n    [&#39;RGB 前景&#39;, &#39;ffffff-202020|eeeeee-101010&#39;],\n    [&#39;RGB 背景&#39;, &#39;b@000000-101010|101010-080808&#39;],\n    [&#39;HSV 背景&#39;, &#39;b@0.0.100-0.0.5&#39;],\n    [&#39;HSV 前景&#39;, &#39;20.30.40-0.0.0|30.40.50-0.0.0&#39;],\n  ]\n  for (let index = 0; index &lt; modes.length; index++) {\n    const mode = modes[index]\n    try {\n      const glyph = dm.fetchWord(0, 0, right, bottom, mode[1], &#39;确&#39;)\n      dm.addDict(index, glyph)\n      console.log(mode[0], &#39;已加入字形&#39;, dm.getDictCount(index))\n    } catch (error) {\n      // 无前景像素或字形无效会抛异常，不是返回空字符串。\n      console.log(mode[0], &#39;采样失败，请检查区域、颜色及字形尺寸&#39;, String(error))\n    }\n  }\n  dm.useDict(0)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -238,21 +245,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -266,14 +273,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStr(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStr(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStr(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -301,21 +308,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -329,14 +336,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrE(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrE(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrE(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -364,21 +371,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -392,14 +399,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrEx(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrEx(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single.length === 0 ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const matches = dm.findStrEx(x1, y1, x2, y2, candidates, color, 0.9)\n  if (matches.length === 0) console.log(&#39;未命中&#39;)\n  for (const match of matches) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -427,21 +434,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -455,14 +462,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrExS(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrExS(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single.length === 0 ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const matches = dm.findStrExS(x1, y1, x2, y2, candidates, color, 0.9)\n  if (matches.length === 0) console.log(&#39;未命中&#39;)\n  for (const match of matches) {\n    console.log(&#39;命中文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -490,21 +497,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -518,14 +525,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst hit = dm.findStrFast(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nif (hit) console.log(hit.value, hit.x, hit.y)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFast(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrFast(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -553,21 +560,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -581,14 +588,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrFastE(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFastE(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrFastE(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -616,21 +623,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -644,14 +651,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrFastEx(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFastEx(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single.length === 0 ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const matches = dm.findStrFastEx(x1, y1, x2, y2, candidates, color, 0.9)\n  if (matches.length === 0) console.log(&#39;未命中&#39;)\n  for (const match of matches) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -679,21 +686,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -707,14 +714,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrFastExS(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFastExS(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single.length === 0 ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const matches = dm.findStrFastExS(x1, y1, x2, y2, candidates, color, 0.9)\n  if (matches.length === 0) console.log(&#39;未命中&#39;)\n  for (const match of matches) {\n    console.log(&#39;命中文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -742,21 +749,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -770,14 +777,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrFastS(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFastS(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrFastS(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;命中文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -805,21 +812,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -833,14 +840,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrS(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrS(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrS(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;命中文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -868,21 +875,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -896,14 +903,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrWithFont(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9, &#39;sans-serif&#39;, 24, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrWithFont(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0, &#39;sans-serif&#39;, 24, 0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。\n  const match = dm.findStrWithFont(x1, y1, x2, y2, candidates, color, 0.9, &#39;sans-serif&#39;, 24, 1 | 2)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -931,21 +938,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -959,14 +966,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrWithFontE(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9, &#39;sans-serif&#39;, 24, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrWithFontE(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0, &#39;sans-serif&#39;, 24, 0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。\n  const match = dm.findStrWithFontE(x1, y1, x2, y2, candidates, color, 0.9, &#39;sans-serif&#39;, 24, 1 | 2)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -994,21 +1001,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "FindStr 返回语义",
               "name": "findstr_返回语义",
-              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，<code>Fast</code> 只限制候选字形，不改变坐标含义。</p>\n",
+              "desc": "<p>多个候选文字使用 <code>|</code> 分隔。普通接口返回首个 <code>DmMatch | null</code>，<code>Ex</code> 接口返回全部 <code>DmMatch[]</code>，<code>S</code> 接口的 <code>value</code> 为实际文字，其余变体的 <code>value</code> 为从 <code>0</code> 开始的候选编号。<code>Fast</code> 限制候选字形，不改变坐标含义；非候选字形可能被忽略，不应仅凭快速命中就断言画面文字完全相同。</p>\n<p>参考文档中的 PC 行分隔查找示例不直接移植：当前 Android FindStr 使用候选匹配，不将颜色参数中的分隔字符串插入跨行文字。需要拼接多行文本时使用 <code>ocr</code> 的行分隔符。</p>\n",
               "type": "module",
               "displayName": "FindStr 返回语义"
             },
@@ -1022,14 +1029,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.findStrWithFontEx(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9, &#39;sans-serif&#39;, 24, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 系统字体应与画面中的字体和像素字号匹配；此模式无需加载点阵字库。\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrWithFontEx(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0, &#39;sans-serif&#39;, 24, 0)\n  console.log(single.length === 0 ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 样式位可以组合：1 | 2 表示粗体加斜体；按目标字体调整。\n  const matches = dm.findStrWithFontEx(x1, y1, x2, y2, candidates, color, 0.9, &#39;sans-serif&#39;, 24, 1 | 2)\n  if (matches.length === 0) console.log(&#39;未命中&#39;)\n  for (const match of matches) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1057,7 +1064,7 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n<tr>\n<td><code>entry</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>明文字库条目，格式为 <code>HEX$文字$指标$高度</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n<tr>\n<td><code>entry</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库内条目索引，从 <code>0</code> 开始，须小于 <code>getDictCount(index)</code>。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
@@ -1071,14 +1078,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getDict(0, &#39;414243$确$0$16&#39;)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\nconst count = dm.getDictCount(0)\nconsole.log(&#39;条目数&#39;, count)\nfor (let entry = 0; entry &lt; count; entry++) {\n  console.log(entry, dm.getDict(0, entry))\n}\n// 第二个槽位独立读取；先检查数量，避免用不存在的条目编号。\ndm.setDict(1, files.path(&#39;./assets/dm/dialog.dm.txt&#39;))\nif (dm.getDictCount(1) &gt; 0) console.log(dm.getDict(1, 0))\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1113,21 +1120,21 @@
             {
               "textRaw": "返回值",
               "name": "返回值",
-              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "desc": "<p><code>number</code>；符合条件的记录、字形或像素数量，没有时为 <code>0</code>。</p>\n",
               "type": "module",
               "displayName": "返回值"
             },
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getDictCount(0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\nconst count = dm.getDictCount(0)\nconsole.log(&#39;条目数&#39;, count)\nfor (let entry = 0; entry &lt; count; entry++) {\n  console.log(entry, dm.getDict(0, entry))\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1155,7 +1162,7 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>text</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>待查找文字或字库文本；多个候选使用 `\\</td>\n<td>` 分隔。</td>\n</tr>\n<tr>\n<td><code>font</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体文件路径或 Android Typeface 名称。</td>\n</tr>\n<tr>\n<td><code>size</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体像素大小；必须为正整数。</td>\n</tr>\n<tr>\n<td><code>style</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字体样式位：<code>1</code> 粗体、<code>2</code> 斜体、<code>4</code> 下划线、<code>8</code> 删除线，可组合。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
@@ -1169,14 +1176,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getDictInfo(&#39;确定|取消&#39;, &#39;sans-serif&#39;, 24, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 使用系统字体生成字形，不把随意编写的 HEX 当成有效字库。\nconst entries = dm.getDictInfo(&#39;确定取消&#39;, &#39;sans-serif&#39;, 24, 0)\ndm.clearDict(1)\nfor (const entry of entries.split(&#39;|&#39;)) {\n  if (entry !== &#39;&#39;) dm.addDict(1, entry)\n}\nconsole.log(&#39;生成的字形数&#39;, dm.getDictCount(1))\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1211,21 +1218,21 @@
             {
               "textRaw": "返回值",
               "name": "返回值",
-              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "desc": "<p><code>number</code>；当前字库槽位编号。</p>\n",
               "type": "module",
               "displayName": "返回值"
             },
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getNowDict()\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\nconsole.log(&#39;当前使用的字库槽位&#39;, dm.getNowDict())\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1267,21 +1274,21 @@
             {
               "textRaw": "返回值",
               "name": "返回值",
-              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "desc": "<p><code>number</code>；符合条件的记录、字形或像素数量，没有时为 <code>0</code>。</p>\n",
               "type": "module",
               "displayName": "返回值"
             },
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getResultCount(&#39;确定$10$20|取消$30$20&#39;)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 仅用于保存下来的 PC 兼容结果串；现代查找结果数组直接遍历即可。\nconst results = &#39;10,20|30,40&#39;\nconst count = dm.getResultCount(results)\nfor (let index = 0; index &lt; count; index++) {\n  const position = dm.getResultPos(results, index)\n  if (position !== null) console.log(position.x, position.y)\n}\nconsole.log(&#39;空串数量&#39;, dm.getResultCount(&#39;&#39;))\nconsole.log(&#39;越界结果&#39;, dm.getResultPos(results, count)) // null\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1309,7 +1316,7 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果中的记录索引，从 <code>0</code> 开始；不是字库槽位。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
@@ -1330,14 +1337,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getResultPos(&#39;确定$10$20|取消$30$20&#39;, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 仅用于保存下来的 PC 兼容结果串；现代查找结果数组直接遍历即可。\nconst results = &#39;10,20|30,40&#39;\nconst count = dm.getResultCount(results)\nfor (let index = 0; index &lt; count; index++) {\n  const position = dm.getResultPos(results, index)\n  if (position !== null) console.log(position.x, position.y)\n}\nconsole.log(&#39;空串数量&#39;, dm.getResultCount(&#39;&#39;))\nconsole.log(&#39;越界结果&#39;, dm.getResultPos(results, count)) // null\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1379,21 +1386,21 @@
             {
               "textRaw": "返回值",
               "name": "返回值",
-              "desc": "<p><code>number</code>；成功通常为 <code>1</code>，失败为 <code>0</code>。</p>\n",
+              "desc": "<p><code>number</code>；符合条件的记录、字形或像素数量，没有时为 <code>0</code>。</p>\n",
               "type": "module",
               "displayName": "返回值"
             },
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getWordResultCount(&#39;确定$10$20|取消$30$20&#39;)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 历史词组串，与现代 getWords() 返回的数组不同。\nconst results = &#39;确定,10,20|取消,30,40&#39;\nconst count = dm.getWordResultCount(results)\nfor (let index = 0; index &lt; count; index++) {\n  const word = dm.getWordResultStr(results, index)\n  const position = dm.getWordResultPos(results, index)\n  if (position !== null) console.log(word, position.x, position.y)\n}\nconsole.log(&#39;空串数量&#39;, dm.getWordResultCount(&#39;&#39;))\nconsole.log(&#39;越界文字&#39;, dm.getWordResultStr(results, count)) // 空字符串\nconsole.log(&#39;越界位置&#39;, dm.getWordResultPos(results, count)) // null\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1421,7 +1428,7 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果中的记录索引，从 <code>0</code> 开始；不是字库槽位。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
@@ -1442,14 +1449,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getWordResultPos(&#39;确定$10$20|取消$30$20&#39;, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 历史词组串，与现代 getWords() 返回的数组不同。\nconst results = &#39;确定,10,20|取消,30,40&#39;\nconst count = dm.getWordResultCount(results)\nfor (let index = 0; index &lt; count; index++) {\n  const word = dm.getWordResultStr(results, index)\n  const position = dm.getWordResultPos(results, index)\n  if (position !== null) console.log(word, position.x, position.y)\n}\nconsole.log(&#39;空串数量&#39;, dm.getWordResultCount(&#39;&#39;))\nconsole.log(&#39;越界文字&#39;, dm.getWordResultStr(results, count)) // 空字符串\nconsole.log(&#39;越界位置&#39;, dm.getWordResultPos(results, count)) // null\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1477,7 +1484,7 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>字库槽位，Android 支持 <code>0–99</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>results</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果字符串，仅用于结果解析接口。</td>\n</tr>\n<tr>\n<td><code>index</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>兼容结果中的记录索引，从 <code>0</code> 开始；不是字库槽位。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
@@ -1498,14 +1505,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.getWordResultStr(&#39;确定$10$20|取消$30$20&#39;, 0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 历史词组串，与现代 getWords() 返回的数组不同。\nconst results = &#39;确定,10,20|取消,30,40&#39;\nconst count = dm.getWordResultCount(results)\nfor (let index = 0; index &lt; count; index++) {\n  const word = dm.getWordResultStr(results, index)\n  const position = dm.getWordResultPos(results, index)\n  if (position !== null) console.log(word, position.x, position.y)\n}\nconsole.log(&#39;空串数量&#39;, dm.getWordResultCount(&#39;&#39;))\nconsole.log(&#39;越界文字&#39;, dm.getWordResultStr(results, count)) // 空字符串\nconsole.log(&#39;越界位置&#39;, dm.getWordResultPos(results, count)) // null\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1533,14 +1540,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
@@ -1561,14 +1568,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;未识别到词组&#39;)\n  for (const word of words) {\n    console.log(word.value, word.x, word.y, word.width, word.height)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1596,14 +1603,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
@@ -1624,14 +1631,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\nconsole.log(words.length ? words : &#39;未识别到词组&#39;)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 免字库模式按图像分组，不保证 value 为识别出的文字。\n  const words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\n  if (words.length === 0) console.log(&#39;未识别到词组&#39;)\n  for (const word of words) {\n    console.log(word.value, word.x, word.y, word.width, word.height)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1659,21 +1666,21 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
             {
               "textRaw": "OCR 颜色和分隔符",
               "name": "ocr_颜色和分隔符",
-              "desc": "<p>支持 RGB、HSV、灰度和 <code>b@</code> 背景色模式；颜色条件用 <code>|</code> 分隔。颜色表达式后可以追加分隔符，例如 <code>ffffff-202020,\\\\n</code>，返回值是拼接后的完整字符串；未识别到文字时返回空字符串。</p>\n",
+              "desc": "<p>支持 RGB、HSV、灰度和 <code>b@</code> 背景色模式；颜色条件用 <code>|</code> 分隔。颜色表达式后可以追加行分隔符，例如 JS 表达式 <code>&#39;ffffff-202020,&#39; + &#39;\\n&#39;</code>；运行时这里的 <code>\\n</code> 是真正的换行字符。返回值是拼接后的完整字符串；未识别到文字时返回空字符串。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色和分隔符"
             },
@@ -1687,14 +1694,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst text = dm.ocr(x1, y1, x2, y2, &#39;ffffff-202020,\\\\n&#39;, 0.9)\nconsole.log(text || &#39;未识别到文字&#39;)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 各模式用于不同截图/字库场景；按实际字库采样颜色选择，不要求结果相同。\n  const formats = [\n    [&#39;RGB 单色&#39;, &#39;9f2e3f-000000&#39;],\n    [&#39;RGB 偏色&#39;, &#39;9f2e3f-030303&#39;],\n    [&#39;RGB 多色&#39;, &#39;9f2e3f-030303|2d3f2f-000000|3f9e4d-100000&#39;],\n    [&#39;HSV 多色&#39;, &#39;20.30.40-0.0.0|30.40.50-0.0.0&#39;],\n    [&#39;灰度多色&#39;, &#39;#40-0|#70-10&#39;],\n    [&#39;背景色&#39;, &#39;b@ffffff-000000&#39;],\n  ]\n  for (const item of formats) {\n    const text = dm.ocr(x1, y1, x2, y2, item[1], 1.0)\n    console.log(item[0], text || &#39;未识别到文字&#39;)\n  }\n  // 逗号后是行分隔字符串，不是另一种颜色。\n  const pipeLines = dm.ocr(x1, y1, x2, y2, &#39;9f2e3f-000000,|&#39;, 1.0)\n  const newLines = dm.ocr(x1, y1, x2, y2, &#39;9f2e3f-000000,&#39; + &#39;\\n&#39;, 1.0)\n  console.log(pipeLines, newLines)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1722,14 +1729,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
@@ -1750,14 +1757,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.ocrEx(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  const formats = [\n    [&#39;RGB 单色&#39;, &#39;9f2e3f-000000&#39;],\n    [&#39;RGB 偏色&#39;, &#39;9f2e3f-030303&#39;],\n    [&#39;RGB 多色&#39;, &#39;9f2e3f-030303|2d3f2f-000000|3f9e4d-100000&#39;],\n    [&#39;HSV 多色&#39;, &#39;20.30.40-0.0.0|30.40.50-0.0.0&#39;],\n    [&#39;灰度多色&#39;, &#39;#40-0|#70-10&#39;],\n    [&#39;背景色&#39;, &#39;b@ffffff-000000&#39;],\n  ]\n  for (const item of formats) {\n    // Android 返回结构化数组，不使用 split 解析 PC 结果串。\n    console.log(item[0])\n    const matches = dm.ocrEx(x1, y1, x2, y2, item[1], 1.0)\n    if (matches.length === 0) console.log(&#39;未命中&#39;)\n    for (const match of matches) {\n      console.log(&#39;文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n    }\n    // 按返回顺序组合整体文字；不自动插入行分隔符。\n    console.log(&#39;完整文字&#39;, matches.map(match =&gt; match.value).join(&#39;&#39;))\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1785,14 +1792,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
@@ -1813,14 +1820,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst x = 0, y = 0\nconst x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\nconst result = dm.ocrExOne(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  const formats = [\n    [&#39;RGB 单色&#39;, &#39;9f2e3f-000000&#39;],\n    [&#39;RGB 偏色&#39;, &#39;9f2e3f-030303&#39;],\n    [&#39;RGB 多色&#39;, &#39;9f2e3f-030303|2d3f2f-000000|3f9e4d-100000&#39;],\n    [&#39;HSV 多色&#39;, &#39;20.30.40-0.0.0|30.40.50-0.0.0&#39;],\n    [&#39;灰度多色&#39;, &#39;#40-0|#70-10&#39;],\n    [&#39;背景色&#39;, &#39;b@ffffff-000000&#39;],\n  ]\n  for (const item of formats) {\n    // Android 返回结构化数组，不使用 split 解析 PC 结果串。\n    console.log(item[0])\n    const matches = dm.ocrExOne(x1, y1, x2, y2, item[1], 1.0)\n    if (matches.length === 0) console.log(&#39;未命中&#39;)\n    for (const match of matches) {\n      console.log(&#39;文字&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n    }\n    // 按返回顺序组合整体文字；不自动插入行分隔符。\n    console.log(&#39;完整文字&#39;, matches.map(match =&gt; match.value).join(&#39;&#39;))\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1848,14 +1855,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>图片文件名或 `</td>\n<td><code>分隔的多模板列表；相对路径基于</code>setPath()`。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>x1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y1</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>x2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>y2</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>输入图像像素坐标；区域左上角和右下角均为包含边界。</td>\n</tr>\n<tr>\n<td><code>pictures</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>单个可读图片文件路径；相对路径基于 <code>setPath()</code>。</td>\n</tr>\n<tr>\n<td><code>color</code></td>\n<td><code>String</code></td>\n<td>是</td>\n<td>—</td>\n<td>文字颜色表达式；支持 RGB、HSV、灰度、`\\</td>\n<td><code>多颜色和</code>b@` 背景色模式。</td>\n</tr>\n<tr>\n<td><code>similarity</code></td>\n<td><code>double</code></td>\n<td>是</td>\n<td>—</td>\n<td>相似度，范围 <code>0.1–1.0</code>；数值越高越严格。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "OCR 颜色格式",
               "name": "ocr_颜色格式",
-              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。只有 <code>ocr</code> 支持在颜色表达式后追加分隔符，例如 <code>ffffff,\\\\n</code>。</p>\n",
+              "desc": "<p>支持 RGB <code>RRGGBB-DRDGDB</code>、HSV <code>H.S.V-DH.DS.DV</code> 和灰度 <code>#40-0</code> 格式；多个条件使用 <code>|</code>。<code>b@</code> 表示按背景色匹配。拼接文本时可在 <code>ocr</code> 的颜色表达式后追加行分隔符，例如 JS 表达式 <code>&#39;ffffff,&#39; + &#39;\\n&#39;</code>；传入真正的换行字符，不要传入反斜杠加字母 n。</p>\n",
               "type": "module",
               "displayName": "OCR 颜色格式"
             },
@@ -1876,14 +1883,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setPath(&#39;./assets/dm&#39;)\ndm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst text = dm.ocrInFile(0, 0, 1079, 1919, &#39;screen.png&#39;, &#39;ffffff-202020&#39;, 0.9)\nconsole.log(text || &#39;文件中没有文字&#39;)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\n// 文件坐标来自文件本身，不使用 device.width/height。\nconst file = files.path(&#39;./assets/dm/screen.png&#39;)\nconst image = images.read(file)\nif (image === null) throw new Error(&#39;无法读取图片&#39;)\ntry {\n  const text = dm.ocrInFile(0, 0, image.getWidth() - 1, image.getHeight() - 1,\n    file, &#39;ffffff-202020&#39;, 0.9)\n  console.log(text || &#39;文件中没有文字&#39;)\n} finally {\n  image.recycle()\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n<p>文件 OCR 不复用屏幕帧，文件路径必须可读。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。</p>\n<p>文字识别依赖当前字库或免字库模式；空结果不是异常。</p>\n<p>文件 OCR 不复用屏幕帧，文件路径必须可读。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1925,14 +1932,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.saveDict(0, &#39;./assets/dm/output.bin&#39;)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在临时槽位生成并追加三个真实字形，再持久化，不手写虚假的 HEX。\ndm.clearDict(1)\nconst entries = dm.getDictInfo(&#39;确认好&#39;, &#39;sans-serif&#39;, 24, 0)\nfor (const entry of entries.split(&#39;|&#39;)) {\n  if (entry !== &#39;&#39;) dm.addDict(1, entry)\n}\nconst output = files.path(&#39;./output/export.dm.txt&#39;)\nfiles.ensureDir(output)\nconsole.log(dm.saveDict(1, output) === 1 ? output : &#39;字库保存失败&#39;)\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -1967,7 +1974,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -1981,14 +1988,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setColGapNoDict(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 免字库分组；按实际字间距与行高调整。\n  dm.setColGapNoDict(1)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2037,14 +2044,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">dm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconsole.log(dm.getDictCount(0))\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 先准备与目标字体、字号和颜色匹配的明文字库。\ndm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\ndm.useDict(0)\nconsole.log(&#39;字库条目数&#39;, dm.getDictCount(0))\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2093,14 +2100,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const bytes = files.readBytes(&#39;./assets/dm/main.dm.txt&#39;)\nconst dict = dm.buffer(bytes)\ntry {\n  console.log(dm.setDictMem(0, dict, bytes.length))\n} finally {\n  dict.close()\n}\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">const bytes = files.readBytes(&#39;./assets/dm/main.dm.txt&#39;)\nconst dict = dm.buffer(bytes)\ntry {\n  console.log(dm.setDictMem(0, dict, dict.size()))\n  dm.useDict(0)\n  console.log(&#39;条目数&#39;, dm.getDictCount(0))\n} finally {\n  dict.close()\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2128,14 +2135,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>布尔开关；使用 <code>0/1</code> 或 <code>false/true</code>。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>enabled</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>整数开关；必须使用 <code>0/1</code>，不传布尔值。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2149,14 +2156,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setExactOcr(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  dm.setExactOcr(1)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2191,7 +2198,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2205,14 +2212,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setMinColGap(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  dm.setMinColGap(1)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2247,7 +2254,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2261,14 +2268,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setMinRowGap(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  dm.setMinRowGap(2)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2303,7 +2310,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2317,14 +2324,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setRowGapNoDict(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 免字库分组；按实际字间距与行高调整。\n  dm.setRowGapNoDict(2)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2359,7 +2366,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2373,14 +2380,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setWordGap(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  dm.setWordGap(3)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2415,7 +2422,7 @@
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2429,14 +2436,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setWordGapNoDict(1)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 免字库分组；按实际字间距与行高调整。\n  dm.setWordGapNoDict(3)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2464,14 +2471,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>非负整数；具体用途由函数名称决定。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>分组使用的行高，单位为像素；必须为正整数。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2485,14 +2492,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setWordLineHeight(64)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  dm.setWordLineHeight(24)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWords(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2520,14 +2527,14 @@
             {
               "textRaw": "参数",
               "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>非负整数；具体用途由函数名称决定。</td>\n</tr>\n</tbody>\n</table>\n",
+              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>height</code></td>\n<td><code>int</code></td>\n<td>是</td>\n<td>—</td>\n<td>分组使用的行高，单位为像素；必须为正整数。</td>\n</tr>\n</tbody>\n</table>\n",
               "type": "module",
               "displayName": "参数"
             },
             {
               "textRaw": "识别参数",
               "name": "识别参数",
-              "desc": "<p>该设置在后续识别调用中生效；间距和行高参数必须为非负整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
+              "desc": "<p>该设置在后续识别调用中生效；间距必须为非负整数，行高必须为正整数，<code>setExactOcr</code> 与 <code>enableShareDict</code> 使用整数 <code>0/1</code>。修改后重新调用 OCR 或 FindStr 才会看到新设置的效果。</p>\n",
               "type": "module",
               "displayName": "识别参数"
             },
@@ -2541,14 +2548,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.setWordLineHeightNoDict(64)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 免字库分组；按实际字间距与行高调整。\n  dm.setWordLineHeightNoDict(24)\n  // 设置作用于后续调用，不会改变已经返回的结果。\n  const words = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\n  if (words.length === 0) console.log(&#39;没有词组&#39;)\n  for (const word of words) console.log(word.value, word.x, word.y, word.width, word.height)\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2590,14 +2597,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const result = dm.useDict(0)\nconsole.log(result)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 两份字库分别适配不同界面的字体；初始化一次，切换时无需重新加载。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.setDict(1, files.path(&#39;./assets/dm/dialog.dm.txt&#39;))\n  dm.useDict(0)\n  const previous = dm.getNowDict()\n  try {\n    dm.useDict(1)\n    console.log(&#39;当前槽位&#39;, dm.getNowDict())\n    const text = dm.ocr(x1, y1, x2, y2, &#39;ffffff-202020&#39;, 0.9)\n    console.log(text || &#39;未识别到文字&#39;)\n  } finally {\n    dm.useDict(previous)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n<p>示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2646,14 +2653,14 @@
             {
               "textRaw": "示例",
               "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">const blocks = dm.ocrAuto({ maxSideLen: 128, doAngle: false })\nfor (const block of blocks) console.log(block.text, block.confidence)\n</code></pre>\n",
+              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 不依赖点阵字库，需要可用的内置 OCR 模型。\n  const blocks = dm.ocrAuto({ maxSideLen: 960, doAngle: false })\n  if (blocks.length === 0) console.log(&#39;未识别到文字&#39;)\n  for (const block of blocks) {\n    console.log(block.text, block.confidence, block.detectionConfidence)\n    for (const point of block.points) console.log(point.x, point.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
               "type": "module",
               "displayName": "示例"
             },
             {
               "textRaw": "注意事项",
               "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API；<code>device.width</code> 和 <code>device.height</code> 表示当前输入设备尺寸。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
+              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
               "type": "module",
               "displayName": "注意事项"
             }
@@ -2666,7 +2673,7 @@
     {
       "textRaw": "组合示例",
       "name": "组合示例",
-      "desc": "<pre><code class=\"lang-js\">const x1 = 0, y1 = 0, x2 = device.width - 1, y2 = device.height - 1\ndm.setDict(0, &#39;./assets/dm/main.dm.txt&#39;)\ndm.useDict(0)\nconst hit = dm.findStrFast(x1, y1, x2, y2, &#39;确定|取消&#39;, &#39;ffffff-202020&#39;, 0.9)\nif (hit == null) console.log(&#39;未命中&#39;)\nconst blocks = dm.getWordsNoDict(x1, y1, x2, y2, &#39;ffffff-202020&#39;)\nconsole.log(blocks)\ndm.close()\n</code></pre>\n",
+      "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 先准备与目标字体、字号和颜色匹配的明文字库。\n  dm.setDict(0, files.path(&#39;./assets/dm/main.dm.txt&#39;))\n  dm.useDict(0)\n  // 先演示单个候选；Ex 变体即使只传一个候选也返回数组。\n  const single = dm.findStrFast(x1, y1, x2, y2, &#39;确定&#39;, &#39;ffffff-202020&#39;, 1.0)\n  console.log(single === null ? &#39;未命中单个候选&#39; : single)\n  const candidates = &#39;确定|取消&#39;\n  const color = &#39;ffffff-202020|eeeeee-101010&#39;\n  // 多候选用竖线分隔，不代表跨行拼接。\n  const match = dm.findStrFast(x1, y1, x2, y2, candidates, color, 0.9)\n  if (match !== null) {\n    console.log(&#39;候选文字编号&#39;, match.value, &#39;坐标&#39;, match.x, match.y)\n  } else {\n    console.log(&#39;未命中&#39;)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
       "type": "module",
       "displayName": "组合示例"
     }

@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { apiSymbolAnchorId } from '../scripts/api/coverage-generator'
+import { getDmExample, shapePattern } from '../scripts/dm-examples.mjs'
+import { createMarkdownRenderer } from 'vitepress'
 
 interface ManifestSymbol {
   readonly id: string
@@ -63,13 +65,79 @@ function readManifest(): Manifest {
 }
 
 function sectionFor(page: string, name: string): string {
-  const start = page.indexOf(`### dm.${name}`)
-  expect(start, name).toBeGreaterThanOrEqual(0)
-  const next = page.indexOf('\n### ', start + 1)
-  return page.slice(start, next < 0 ? page.length : next)
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const heading = new RegExp(`^### dm\\.${escapedName}[\\t ]*\\r?$`, 'm').exec(page)
+  expect(heading, name).not.toBeNull()
+  const start = heading!.index
+  const bodyStart = start + heading![0].length
+  const next = /^#{1,3} /m.exec(page.slice(bodyStart))
+  return page.slice(start, next ? bodyStart + next.index : page.length)
 }
 
 describe('formal dm API surface', () => {
+  test('documents arrays of buffers and strict boolean versus numeric switches', () => {
+    const page = readText('docs/api/media/dm.md')
+    expect(sectionFor(page, 'appendPicAddr')).toContain('`DmBuffer[]`')
+    expect(sectionFor(page, 'appendPicAddr')).toContain('已有托管模板数组')
+    expect(sectionFor(page, 'enablePicCache')).toContain('必须使用 `0/1`，不传布尔值')
+    expect(sectionFor(page, 'keepScreen')).toContain('必须使用 `false/true`，不传数值')
+    expect(sectionFor(page, 'setSimdEnabled')).toContain('必须使用 `false/true`，不传数值')
+    expect(sectionFor(page, 'fetchWord')).toContain('没有前景像素或字形超出支持范围时抛出异常')
+    expect(sectionFor(page, 'findPicSimEx')).toContain('不提供每次命中的实际相似率字段')
+  })
+  test('renders complete pipe-delimited formats in five-column parameter tables', async () => {
+    const renderer = await createMarkdownRenderer(process.cwd())
+    const page = readText('docs/api/media/dm.md')
+    for (const [name, param, format] of [
+      ['findShape', 'shape', 'x|y|e'],
+      ['findMultiColor', 'offsets', 'x|y|颜色'],
+      ['setExcludeRegion', 'code', 'x1,y1,x2,y2|...'],
+    ]) {
+      const html = renderer.render(sectionFor(page, name))
+      const row = html.match(new RegExp(`<tr>\\s*<td><code>${param}</code></td>[\\s\\S]*?</tr>`))?.[0]
+      expect(row, `${name}.${param}`).toBeDefined()
+      expect(row?.match(/<td>/g)).toHaveLength(5)
+      expect(row).toContain(`<code>${format}</code>`)
+    }
+    const shape = renderer.render(sectionFor(page, 'findShape'))
+    expect(shape).toContain('e=0 要求不相似')
+  })
+
+  test('keeps API, reference and combination examples synchronized', () => {
+    const page = readText('docs/api/media/dm.md')
+    const references = [
+      readText('docs/reference/dm/image.md'),
+      readText('docs/reference/dm/text.md'),
+    ].join('\n')
+    const manifest = readManifest()
+    for (const symbol of manifest.symbols.filter(
+      (symbol) => symbol.public && symbol.owner === 'dm' &&
+        !symbol.canonicalId && symbol.kind !== 'module',
+    )) {
+      expect(sectionFor(references, symbol.name).trim(), symbol.id)
+        .toBe(sectionFor(page, symbol.name).trim())
+    }
+    const combinations = readText('docs/reference/dm/examples.md')
+    for (const name of ['findShape', 'findShapeEx', 'findPicEx', 'findPicMem', 'ocr', 'findStrFast']) {
+      expect(combinations, name).toContain(getDmExample(name).code)
+    }
+  })
+
+  test('isolates exact method headings even when Ex and E precede the base method', () => {
+    const page = [
+      '### dm.findShapeEx', 'all-results',
+      '### dm.findShapeE', 'first-result',
+      '### dm.findShape', '#### 示例', 'base-result',
+      '## Next family', 'not-part-of-the-method',
+    ].join('\n')
+
+    expect(sectionFor(page, 'findShapeEx')).toBe('### dm.findShapeEx\nall-results\n')
+    expect(sectionFor(page, 'findShapeE')).toBe('### dm.findShapeE\nfirst-result\n')
+    expect(sectionFor(page, 'findShape')).toBe('### dm.findShape\n#### 示例\nbase-result\n')
+    expect(() => sectionFor('### dm.findShapeEx\nnot-the-base-method', 'findShape')).toThrow()
+    expect(() => sectionFor('### dm.findShapeEx\nnot-the-E-method', 'findShapeE')).toThrow()
+  })
+
   test('matches the reviewed Rhino surface and excludes Java implementation types', () => {
     const manifest = readManifest()
     const dmSymbols = manifest.symbols.filter(
@@ -131,11 +199,17 @@ describe('formal dm API surface', () => {
       expect(section, symbol.id).toContain('#### 返回值')
       expect(section, symbol.id).toContain('#### 示例')
       expect(section, symbol.id).toContain('#### 注意事项')
+      expect(section, `${symbol.id}: shared explicit example`).toContain(
+        `\`\`\`js\n${getDmExample(symbol.name).code}\n\`\`\``,
+      )
     }
-    expect(page).toContain("'123456-000000|aabbcc-030303|ddeeff-202020'")
-    expect(page).toContain("'8|0|aabbcc-030303,-4|3|ddeeff-202020'")
-    expect(page).toContain('template.close()')
-    expect(page).toContain('const x = 0, y = 0')
+    const multiColor = sectionFor(page, 'findMultiColor')
+    expect(multiColor).toMatch(/-\d+\|\d+\|/)
+    expect(multiColor).toMatch(/\d+\|-\d+\|/)
+    expect(multiColor).toMatch(/\|\-[0-9a-f]{6}/i)
+    expect(sectionFor(page, 'findPicMem')).toContain('template.close()')
+    expect(sectionFor(page, 'getColor')).toContain('Math.floor(x2 / 2)')
+    expect(sectionFor(page, 'findShape')).toContain(shapePattern)
     expect(page).toContain("files.readBytes('./assets/dm/button.png')")
     expect(page).not.toContain('new Uint8Array(')
   })
@@ -176,8 +250,6 @@ describe('formal dm API surface', () => {
   test('documents official color matching format and similarity constraints', () => {
     const page = readText('docs/api/media/dm.md')
     for (const name of ['findColor', 'findColorE', 'findColorEx']) {
-      const start = page.indexOf(`### dm.${name}`)
-      expect(start, name).toBeGreaterThanOrEqual(0)
       const section = sectionFor(page, name)
       expect(section, name).toContain('RRGGBB-DRDGDB')
       expect(section, name).toContain('反色模式')
@@ -185,8 +257,7 @@ describe('formal dm API surface', () => {
       expect(section, name).toContain('1.0')
     }
     for (const name of ['findMultiColor', 'findMultiColorE', 'findMultiColorEx']) {
-      const start = page.indexOf(`### dm.${name}`)
-      const section = page.slice(start, page.indexOf('\n### ', start + 1))
+      const section = sectionFor(page, name)
       expect(section, name).toContain('x|y|颜色')
       expect(section, name).toContain('颜色前加 `-`')
       expect(section, name).toContain('0.1')
@@ -194,8 +265,7 @@ describe('formal dm API surface', () => {
       expect(section, name).not.toContain('从中心向外')
     }
     for (const name of ['findPic', 'findPicSim']) {
-      const start = page.indexOf(`### dm.${name}`)
-      const section = page.slice(start, page.indexOf('\n### ', start + 1))
+      const section = sectionFor(page, name)
       expect(section, name).toContain('六位 RGB 偏色')
       expect(section, name).toContain('两位十六进制表示灰度偏色')
     }
