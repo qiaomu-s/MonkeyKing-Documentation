@@ -52,6 +52,7 @@ export interface LegacyJsonBuildOptions {
 }
 
 export const retiredLegacyJsonFilenames = Object.freeze([
+  'dmOcrAuto.json',
   '404.json',
   'coverpage.json',
   'sidebar.json',

@@ -7,12 +7,12 @@
   "scope": {
     "manifest": "../MonkeyKing/docs/dm/api-manifest.json",
     "manifestCount": 104,
-    "androidExtensionCount": 10,
-    "totalCount": 114,
+    "androidExtensionCount": 9,
+    "totalCount": 113,
     "referenceCounts": {
       "verified": 103,
       "missing": 1,
-      "android-extension": 10
+      "android-extension": 9
     }
   },
   "methodology": {
@@ -74,14 +74,14 @@
   ],
   "registrySnapshot": {
     "file": "scripts/dm-examples.mjs",
-    "sha256": "ea8023ee9c6651f8e505f75675baf3ced1b26a8e2bc6bc9801413d409dc3df89",
-    "checkedOn": "2026-10-02",
-    "generatorSha256": "bed451ddc7e6859d4ed2ca0ad53662a304818fd0366974a3eb7729294d18ec96",
-    "comparison": "全部 114 项与当前生成源逐项对应；103 项参考示例适配，1 项原页无例子，10 项 Android 扩展示例。存在的平台限制已记录；不包含 Android 设备运行证据。",
+    "sha256": "669f9ef84ee8fbf3ee9ed0ce40f0962c753702f1b2000f490d9516cd7fc00456",
+    "checkedOn": "2026-10-03",
+    "generatorSha256": "64316b80d7c24eaa98ebfb25fb4e4c5d1cf2ba3c7782a9108adab286ab1e15ce",
+    "comparison": "全部 113 项与当前生成源逐项对应；103 项参考示例适配，1 项原页无例子，9 项 Android 扩展示例。存在的平台限制已记录；不包含 Android 设备运行证据。",
     "coverageCounts": {
       "partial": 24,
       "adapted": 71,
-      "not-applicable": 11,
+      "not-applicable": 10,
       "adapted-with-documented-limitation": 8
     }
   },
@@ -8541,7 +8541,7 @@
       "androidAdaptation": {
         "reviewStatus": "implementation-checked",
         "cautions": [
-          "只接受整数 0/1，不是相似度值；该配置作用于字库匹配而不是 ocrAuto 外部识别器。",
+          "只接受整数 0/1，不是相似度值；该配置作用于字库匹配，独立 OCR 模块不消费此配置。",
           "原生 exact 模式按整个字形面积计算匹配，而非只按前景计数；示例不要承诺提高所有字体识别率。"
         ],
         "evidence": [
@@ -8554,11 +8554,6 @@
             "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/DmEngine.java",
             "line": 210,
             "symbol": "private static final Set<String> SETTINGS"
-          },
-          {
-            "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/DmEngine.java",
-            "line": 66,
-            "symbol": "public synchronized Object ocrAuto"
           },
           {
             "file": "../MonkeyKing/libs/dm/src/main/cpp/core.cpp",
@@ -9895,7 +9890,7 @@
       "androidAdaptation": {
         "reviewStatus": "implementation-checked",
         "cautions": [
-          "读取最近一次查找/OCR 尝试的快照，先检查 valid；未命中仍可有有效原生耗时，异常或 ocrAuto 则不能当有效原生统计。",
+          "读取最近一次查找/OCR 尝试的快照，先检查 valid；未命中仍可有有效原生耗时，异常则不能当有效原生统计。",
           "耗时字段以纳秒计；读取本身不执行查找，不用未执行操作的零值宣称性能。"
         ],
         "evidence": [
@@ -9903,11 +9898,6 @@
             "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/DmEngine.java",
             "line": 79,
             "symbol": "public synchronized Map<String,Object> getLastFindTimings()"
-          },
-          {
-            "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/DmEngine.java",
-            "line": 66,
-            "symbol": "public synchronized Object ocrAuto"
           },
           {
             "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/FindTimings.java",
@@ -10000,68 +9990,6 @@
       ],
       "completionEvidence": {
         "exampleKey": "keepScreen",
-        "validation": "示例语法、合同和受控 JavaScript mock；未运行 Android 图色算法或真机验证。"
-      }
-    },
-    {
-      "name": "ocrAuto",
-      "modern": "ocrAuto",
-      "javaSignature": "Object ocrAuto(Map options)",
-      "origin": "android-extension",
-      "referenceUrl": null,
-      "manifestSource": null,
-      "retrievalDate": "2026-10-02",
-      "referenceStatus": "android-extension",
-      "referenceApplicability": "not-applicable",
-      "referenceNote": "Android 引擎/脚本绑定扩展，没有对应的 PC 参考示例；未伪造网址或 verified 状态。",
-      "referenceEvidence": null,
-      "referenceScenarios": [],
-      "referenceExampleIssues": [],
-      "androidAdaptation": {
-        "reviewStatus": "implementation-checked",
-        "cautions": [
-          "明确调用外部 OCR provider，不依赖点阵字库；无 provider 会抛 UnsupportedOperationException。",
-          "options 传 Map，当前脚本绑定提供 text/confidence/detectionConfidence/points；输出不是 DmMatch[]，且原生 find timings 保持 invalid。"
-        ],
-        "evidence": [
-          {
-            "file": "../MonkeyKing/libs/dm/src/main/java/com/monkeyking/dm/DmEngine.java",
-            "line": 66,
-            "symbol": "public synchronized Object ocrAuto"
-          },
-          {
-            "file": "../MonkeyKing/app/src/main/java/com/monkeyking/runtime/api/augment/dm/DmBindings.kt",
-            "line": 27,
-            "symbol": "val result = MonkeyKing.instance.rapidOcrEngine.detectText"
-          }
-        ]
-      },
-      "registryComparison": {
-        "reviewStatus": "compared",
-        "file": "scripts/dm-examples.mjs",
-        "exampleKey": "ocrAuto",
-        "codeSha256": "6d0a936dd70a7a987ba59190f26a8b8a3bbcae3629a1a40fba7b3ffc4ba25cf3",
-        "declaredScenarios": [
-          "免点阵字库",
-          "模型选项",
-          "空结果",
-          "置信度和四边形"
-        ],
-        "coverageStatus": "not-applicable",
-        "scenarioMappings": [],
-        "residualGaps": [],
-        "note": "Android 专属场景已静态核对 registry 与实现，不声称上游验证。"
-      },
-      "gapStatus": "not-applicable",
-      "completionStatus": "complete",
-      "androidSuggestedScenarios": [
-        "免点阵字库",
-        "模型选项",
-        "空结果",
-        "置信度和四边形"
-      ],
-      "completionEvidence": {
-        "exampleKey": "ocrAuto",
         "validation": "示例语法、合同和受控 JavaScript mock；未运行 Android 图色算法或真机验证。"
       }
     },

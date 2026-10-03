@@ -13,7 +13,6 @@ const engineEntries = [
   ['getFrameInfo', 'Bundle getFrameInfo()'],
   ['getLastFindTimings', 'Map getLastFindTimings()'],
   ['keepScreen', 'void keepScreen(boolean keep)'],
-  ['ocrAuto', 'Object ocrAuto(Map options)'],
   ['setImage', 'void setImage(Object image)'],
   ['setSimdEnabled', 'void setSimdEnabled(boolean enabled)'],
   ['useScreen', 'void useScreen()'],
@@ -134,9 +133,6 @@ function returnDescription(name, returnType) {
       name === 'ocrEx' || name === 'ocrExOne') {
     return '`DmMatch[]`；没有结果时为空数组。'
   }
-  if (name === 'ocrAuto') {
-    return '`Object[]`；每个 block 包含 `text`、`confidence`、`detectionConfidence` 和 `points`。'
-  }
   if (name === 'buffer' || returnType === 'DmBuffer') {
     return '`DmBuffer`；调用方负责在 `finally` 中调用 `close()`。'
   }
@@ -208,7 +204,6 @@ function parameterDescription(param, name) {
   if (paramName === 'count' || paramName === 'width' || paramName === 'gap') return '非负整数；具体用途由函数名称决定。'
   if (paramName === 'mode') return '`0` 追加排除矩形，`1` 设置填充色，`2` 清空排除矩形。'
   if (paramName === 'code') return '模式 `0` 使用 `x1,y1,x2,y2|...`；模式 `1` 使用六位 RGB 颜色；模式 `2` 使用空字符串。'
-  if (paramName === 'options') return '通用 OCR 选项对象，例如 `{ maxSideLen: 128, doAngle: false }`。'
   if (paramName === 'buffers') return '已有托管模板数组；首次使用空数组 `[]`，后续传入上次 appendPicAddr 返回的数组。'
   if (paramName === 'bytes' || paramName === 'data' || paramName === 'buffers' || type.includes('ByteBuffer')) {
     return '二进制输入；使用 `DmBuffer`、`byte[]` 或直接 ByteBuffer，不接受裸地址。'
@@ -270,6 +265,8 @@ function pictureSection(name) {
   return `#### 图片偏色与变体
 
 \`delta\` 使用六位 RGB 偏色（例如 \`203040\`），也可使用两位灰度偏色（例如 \`20\`）。普通找图相似度为 \`0.1–1.0\`；\`findPicSim*\` 使用 \`0–100\` 的整数相似率。带 \`Ex\` 返回全部命中，带 \`S\` 将结果值改为图片名，带 \`Mem\` 从 \`DmBuffer\` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。\`E\` 与普通入口一样返回首个 \`DmMatch | null\`；五个 \`Ex\` / \`ExS\` 入口返回 \`DmMatch[]\`，未命中为空数组。\`value\` 是从 \`0\` 开始的模板编号，只有 \`findPicS\` 与 \`findPicExS\` 改为图片名；\`x/y\` 是输入图像内模板左上角，\`width/height\` 是模板尺寸。
 ${pictureSimNames.has(name) ? '\nAndroid `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。\n' : ''}`
 }
 
@@ -301,9 +298,6 @@ Android facade 已将 PC 的结果字符串适配为 \`DmMatch[]\`：\`value\` �
   }
   if (name === 'ocrInFile') {
     return '#### 文件输入\n\n该接口直接读取图片文件，不会复用屏幕帧；文件路径基于 `setPath()`。'
-  }
-  if (name === 'ocrAuto') {
-    return '#### 通用 OCR\n\n该扩展使用 MonkeyKing 内置 OCR 模型，不依赖 DM 点阵字库；模型不可用或输入无效时抛出错误。'
   }
   if ([
     'setExactOcr', 'enableShareDict', 'setMinColGap', 'setMinRowGap',
@@ -391,7 +385,8 @@ ${noteFor(name)}
 `
 }
 
-const allEntries = [...manifestEntries, ...engineEntries]
+// Retired methods must not return through a later Android manifest import.
+const allEntries = [...manifestEntries, ...engineEntries].filter(({ modern }) => modern !== 'ocrAuto')
 validateDmExamples(allEntries.map(({ modern }) => modern))
 const imageEntries = allEntries.filter(({ modern }) => imageNames.has(modern))
 const textEntries = allEntries.filter(({ modern }) => !imageNames.has(modern))

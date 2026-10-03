@@ -1,6 +1,6 @@
 # dm 图色与文字识别
 
-`dm` 是 Monkey King 的 Android 脚本级对象，提供取色、偏色、多点找色、找图、截图、点阵 OCR、免字库识别和通用 OCR。完整 API 请参阅 [dm 图色与文字识别 API](../../api/media/dm.md)。
+`dm` 是 Monkey King 的 Android 脚本级对象，提供取色、偏色、多点找色、找图、截图、点阵 OCR 和免字库识别。完整 API 请参阅 [dm 图色与文字识别 API](../../api/media/dm.md)。
 
 每个脚本实例独立维护输入源、图片缓存、冻结帧、字库槽位和识别参数。脚本结束或显式调用 `dm.close()` 后，相关资源才会释放。
 
@@ -21,7 +21,8 @@
 - 多结果：`DmMatch[]`，未命中为空数组；
 - `DmMatch` 字段：`value`、`x`、`y`、`width`、`height`；
 - OCR：`string` 或结构化 `DmMatch[]`；
-- `ocrAuto`：包含文字、置信度和四边形点的 block 数组。
+
+通用模型识别使用独立 `ocr` 模块，见 [独立 OCR 迁移指南](ocr-auto.md)。
 
 ## 常用流程
 

@@ -2609,62 +2609,6 @@
               "displayName": "注意事项"
             }
           ]
-        },
-        {
-          "textRaw": "dm.ocrAuto",
-          "name": "ocrAuto",
-          "desc": "<p><a id=\"api-symbol-ZG0ub2NyQXV0bw\"></a></p>\n",
-          "modules": [
-            {
-              "textRaw": "签名",
-              "name": "签名",
-              "desc": "<pre><code class=\"lang-js\">dm.ocrAuto(options)\n</code></pre>\n",
-              "type": "module",
-              "displayName": "签名"
-            },
-            {
-              "textRaw": "实现与兼容",
-              "name": "实现与兼容",
-              "desc": "<p>原始命令：<code>ocrAuto</code>；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。</p>\n",
-              "type": "module",
-              "displayName": "实现与兼容"
-            },
-            {
-              "textRaw": "参数",
-              "name": "参数",
-              "desc": "<table>\n<thead>\n<tr>\n<th>参数</th>\n<th>类型</th>\n<th>必填</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><code>options</code></td>\n<td><code>Map</code></td>\n<td>是</td>\n<td>—</td>\n<td>通用 OCR 选项对象，例如 <code>{ maxSideLen: 128, doAngle: false }</code>。</td>\n</tr>\n</tbody>\n</table>\n",
-              "type": "module",
-              "displayName": "参数"
-            },
-            {
-              "textRaw": "通用 OCR",
-              "name": "通用_ocr",
-              "desc": "<p>该扩展使用 MonkeyKing 内置 OCR 模型，不依赖 DM 点阵字库；模型不可用或输入无效时抛出错误。</p>\n",
-              "type": "module",
-              "displayName": "通用 OCR"
-            },
-            {
-              "textRaw": "返回值",
-              "name": "返回值",
-              "desc": "<p><code>Object[]</code>；每个 block 包含 <code>text</code>、<code>confidence</code>、<code>detectionConfidence</code> 和 <code>points</code>。</p>\n",
-              "type": "module",
-              "displayName": "返回值"
-            },
-            {
-              "textRaw": "示例",
-              "name": "示例",
-              "desc": "<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。\nif (!requestScreenCapture()) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  dm.setImage(frame)\n  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1\n  // 不依赖点阵字库，需要可用的内置 OCR 模型。\n  const blocks = dm.ocrAuto({ maxSideLen: 960, doAngle: false })\n  if (blocks.length === 0) console.log(&#39;未识别到文字&#39;)\n  for (const block of blocks) {\n    console.log(block.text, block.confidence, block.detectionConfidence)\n    for (const point of block.points) console.log(point.x, point.y)\n  }\n} finally {\n  try {\n    dm.useScreen()\n  } finally {\n    frame.recycle()\n  }\n}\n</code></pre>\n",
-              "type": "module",
-              "displayName": "示例"
-            },
-            {
-              "textRaw": "注意事项",
-              "name": "注意事项",
-              "desc": "<p>示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。</p>\n<p>坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。</p>\n<p>未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。</p>\n",
-              "type": "module",
-              "displayName": "注意事项"
-            }
-          ]
         }
       ],
       "type": "module",

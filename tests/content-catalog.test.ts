@@ -40,7 +40,7 @@ const expectedCanonicalOnlyEntries = [
   ['reference.dm.image', 'docs/reference/dm/image.md', 'dmImage'],
   ['reference.dm.dictionary', 'docs/reference/dm/dictionary.md', 'dmDictionary'],
   ['reference.dm.text', 'docs/reference/dm/text.md', 'dmText'],
-  ['reference.dm.ocr-auto', 'docs/reference/dm/ocr-auto.md', 'dmOcrAuto'],
+  ['reference.dm.ocr-auto', 'docs/reference/dm/ocr-auto.md', 'ocrMigration'],
   ['reference.dm.compatibility', 'docs/reference/dm/compatibility.md', 'dmCompatibility'],
   ['reference.dm.examples', 'docs/reference/dm/examples.md', 'dmExamples'],
   ['reference.dm.vscode', 'docs/reference/dm/vscode.md', 'dmVscode'],

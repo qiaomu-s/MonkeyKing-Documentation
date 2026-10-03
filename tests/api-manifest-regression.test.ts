@@ -16,7 +16,7 @@ describe('pinned MonkeyKing API manifest', () => {
     // The current Android DM surface no longer exposes the two PC-only
     // password entry points; keep the assertion tied to the checked-in
     // source-backed manifest.
-    expect(manifest.symbols).toHaveLength(4_612)
+    expect(manifest.symbols).toHaveLength(4_611)
     expect(manifest).not.toHaveProperty('source')
     expect(symbolIds.has('global:__engine__')).toBe(false)
     for (const id of [

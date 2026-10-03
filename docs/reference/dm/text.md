@@ -2984,67 +2984,6 @@ try {
 
 示例中的模板、截图和字库路径是前置资源，不是随文档附带的文件；请先准备相应文件，再按实际画面调整颜色和阈值。
 
-### dm.ocrAuto
-
-<a id="api-symbol-ZG0ub2NyQXV0bw"></a>
-
-#### 签名
-
-```js
-dm.ocrAuto(options)
-```
-
-#### 实现与兼容
-
-原始命令：`ocrAuto`；这是 MonkeyKing Android 扩展入口，不属于 PC 大漠兼容命令。
-
-#### 参数
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| `options` | `Map` | 是 | — | 通用 OCR 选项对象，例如 `{ maxSideLen: 128, doAngle: false }`。 |
-
-#### 通用 OCR
-
-该扩展使用 MonkeyKing 内置 OCR 模型，不依赖 DM 点阵字库；模型不可用或输入无效时抛出错误。
-
-#### 返回值
-
-`Object[]`；每个 block 包含 `text`、`confidence`、`detectionConfidence` 和 `points`。
-
-#### 示例
-
-```js
-// 在普通工作脚本运行；UI 脚本请放入工作线程，先取得截图权限。
-if (!requestScreenCapture()) throw new Error('未取得截图权限')
-const frame = images.captureScreen()
-try {
-  dm.setImage(frame)
-  const x1 = 0, y1 = 0, x2 = frame.getWidth() - 1, y2 = frame.getHeight() - 1
-  // 不依赖点阵字库，需要可用的内置 OCR 模型。
-  const blocks = dm.ocrAuto({ maxSideLen: 960, doAngle: false })
-  if (blocks.length === 0) console.log('未识别到文字')
-  for (const block of blocks) {
-    console.log(block.text, block.confidence, block.detectionConfidence)
-    for (const point of block.points) console.log(point.x, point.y)
-  }
-} finally {
-  try {
-    dm.useScreen()
-  } finally {
-    frame.recycle()
-  }
-}
-```
-
-#### 注意事项
-
-示例使用 Rhino 的 camelCase API，独立运行于普通工作脚本；UI 脚本请放入工作线程。屏幕示例需要截图权限，区域尺寸从实际输入帧读取。
-
-坐标必须属于当前输入帧；右下角坐标包含在扫描区域内。
-
-未命中时按本条目的返回值说明处理，不要读取未初始化的输出变量。
-
 
 ## 组合示例
 

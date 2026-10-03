@@ -60,7 +60,8 @@ export function projectApiManifest(manifest: ApiManifest): PublicApiManifest {
     .sort((left, right) => compareText(left.id, right.id))
 
   const symbols: PublicApiSymbol[] = manifest.symbols
-    .filter((symbol) => symbol.public && symbol.id !== 'global:__engine__')
+    .filter((symbol) => symbol.public && symbol.id !== 'global:__engine__' &&
+      symbol.id !== 'dm.ocrAuto' && symbol.canonicalId !== 'dm.ocrAuto')
     .map((symbol) => ({
       id: symbol.id,
       owner: symbol.owner,

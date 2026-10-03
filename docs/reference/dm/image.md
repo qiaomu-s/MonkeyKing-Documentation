@@ -1369,6 +1369,8 @@ dm.findPic(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 
 #### 返回值
 
@@ -1461,6 +1463,8 @@ dm.findPicE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 
 #### 返回值
@@ -1555,6 +1559,8 @@ dm.findPicEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 
 #### 返回值
 
@@ -1647,6 +1653,8 @@ dm.findPicExS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 
 #### 返回值
 
@@ -1738,6 +1746,8 @@ dm.findPicMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 
 #### 返回值
@@ -1832,6 +1842,8 @@ dm.findPicMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 
 #### 返回值
 
@@ -1925,6 +1937,8 @@ dm.findPicMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 
 #### 返回值
 
@@ -2016,6 +2030,8 @@ dm.findPicS(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 
 #### 返回值
@@ -2109,6 +2125,8 @@ dm.findPicSim(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 
@@ -2205,6 +2223,8 @@ dm.findPicSimE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 
 
@@ -2300,6 +2320,8 @@ dm.findPicSimEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 
 
@@ -2393,6 +2415,8 @@ dm.findPicSimMem(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 
@@ -2489,6 +2513,8 @@ dm.findPicSimMemE(x1, y1, x2, y2, pictures, delta, similarity, direction)
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
 
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
+
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 
 
@@ -2583,6 +2609,8 @@ dm.findPicSimMemEx(x1, y1, x2, y2, pictures, delta, similarity, direction)
 #### 图片偏色与变体
 
 `delta` 使用六位 RGB 偏色（例如 `203040`），也可使用两位灰度偏色（例如 `20`）。普通找图相似度为 `0.1–1.0`；`findPicSim*` 使用 `0–100` 的整数相似率。带 `Ex` 返回全部命中，带 `S` 将结果值改为图片名，带 `Mem` 从 `DmBuffer` 或字节数组读取模板。
+
+所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。`E` 与普通入口一样返回首个 `DmMatch | null`；五个 `Ex` / `ExS` 入口返回 `DmMatch[]`，未命中为空数组。`value` 是从 `0` 开始的模板编号，只有 `findPicS` 与 `findPicExS` 改为图片名；`x/y` 是输入图像内模板左上角，`width/height` 是模板尺寸。
 
 Android `DmMatch` 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 `value` 当成分数。
 

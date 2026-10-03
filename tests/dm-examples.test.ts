@@ -26,7 +26,7 @@ const methods = [
   'getNowDict', 'getPicSize', 'getResultCount', 'getResultPos',
   'getScreenData', 'getScreenDataBmp', 'getWordResultCount', 'getWordResultPos',
   'getWordResultStr', 'getWords', 'getWordsNoDict', 'imageToBmp', 'isDisplayDead',
-  'keepScreen', 'loadPic', 'loadPicByte', 'matchPicName', 'ocr', 'ocrAuto',
+  'keepScreen', 'loadPic', 'loadPicByte', 'matchPicName', 'ocr',
   'ocrEx', 'ocrExOne', 'ocrInFile', 'rgb2bgr', 'saveDict', 'setColGapNoDict',
   'setDict', 'setDictMem', 'setDisplayInput', 'setExactOcr', 'setExcludeRegion',
   'setFindPicMultithreadCount', 'setFindPicMultithreadLimit', 'setImage',
@@ -109,7 +109,7 @@ function expectLoggedHits(
 }
 
 describe('explicit DM example registry', () => {
-  test('covers exactly the 114 canonical public dm functions', () => {
+  test('covers exactly the 113 canonical public dm functions', () => {
     const manifest = JSON.parse(readFileSync(resolve('api-surface/manifest.json'), 'utf8')) as {
       symbols: { public: boolean; owner: string; canonicalId?: string; kind: string; name: string }[]
     }
@@ -117,8 +117,8 @@ describe('explicit DM example registry', () => {
       .filter((symbol) => symbol.public && symbol.owner === 'dm'
         && !symbol.canonicalId && symbol.kind === 'function')
       .map((symbol) => symbol.name)
-    expect(methods).toHaveLength(114)
-    expect(new Set(methods).size).toBe(114)
+    expect(methods).toHaveLength(113)
+    expect(new Set(methods).size).toBe(113)
     expect([...methods].sort()).toEqual(canonical.sort())
     expect(() => validateDmExamples(methods)).not.toThrow()
   })

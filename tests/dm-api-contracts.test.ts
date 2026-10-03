@@ -191,7 +191,7 @@ describe('formal dm API surface', () => {
       (symbol) => symbol.public && symbol.owner === 'dm' && !symbol.canonicalId && symbol.kind !== 'module',
     )
 
-    expect(dmSymbols).toHaveLength(114)
+    expect(dmSymbols).toHaveLength(113)
     for (const symbol of dmSymbols) {
       const section = sectionFor(page, symbol.name)
       expect(section, symbol.id).toContain('#### 签名')

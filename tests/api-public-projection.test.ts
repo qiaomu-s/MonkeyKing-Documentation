@@ -65,6 +65,20 @@ function internalManifest(): ApiManifest {
 }
 
 describe('public API projection', () => {
+  test('does not republish the retired DM OCR bridge or aliases from an old snapshot', () => {
+    const manifest = internalManifest()
+    const template = manifest.symbols[0]
+    const projected = projectApiManifest({
+      ...manifest,
+      symbols: [
+        ...manifest.symbols,
+        { ...template, id: 'dm.ocrAuto', owner: 'dm', name: 'ocrAuto' },
+        { ...template, id: 'global:oldOcr', canonicalId: 'dm.ocrAuto' },
+      ],
+    })
+    expect(projected.symbols.map(({ id }) => id)).toEqual(['alpha.run'])
+  })
+
   test('publishes only the v3 runtime contract', () => {
     const projected = projectApiManifest(internalManifest())
 

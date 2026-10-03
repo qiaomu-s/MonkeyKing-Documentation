@@ -73,9 +73,9 @@ export const dynamicOverrides: readonly DynamicOverride[] = [
     sourceClassName: 'DmEngine',
     optional: true,
     includePublicMembers: true,
-    excludeMembers: ['invoke', 'setImage'],
+    excludeMembers: ['invoke', 'setImage', 'ocrAuto'],
     reason:
-      'DmBindings adds only these public DmEngine methods to the reflected script object; invoke and the overloaded Java setImage methods remain implementation details.',
+      'DmBindings adds only these public DmEngine methods to the reflected script object; invoke, the overloaded Java setImage methods, and the retired ocrAuto bridge are not public contracts.',
     source: {
       path: 'app/src/main/java/com/monkeyking/runtime/api/augment/dm/DmBindings.kt',
       line: 42,

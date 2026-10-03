@@ -584,13 +584,6 @@ try {
 } finally {
   dm.setSimdEnabled(true)
 }`), ['标量与加速切换', '固定输入结果比较', '恢复默认'])
-add('ocrAuto', screen(`// 不依赖点阵字库，需要可用的内置 OCR 模型。
-const blocks = dm.ocrAuto({ maxSideLen: 960, doAngle: false })
-if (blocks.length === 0) console.log('未识别到文字')
-for (const block of blocks) {
-  console.log(block.text, block.confidence, block.detectionConfidence)
-  for (const point of block.points) console.log(point.x, point.y)
-}`), ['免点阵字库', '模型选项', '空结果', '置信度和四边形'])
 add('cancel', `// 取消状态不可复位：仅在本脚本不再需要 DM 时执行。
 dm.cancel()
 dm.close()

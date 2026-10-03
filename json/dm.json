@@ -4,7 +4,7 @@
     {
       "textRaw": "dm 图色与文字识别",
       "name": "dm_图色与文字识别",
-      "desc": "<p><code>dm</code> 是 Monkey King 的 Android 脚本级对象，提供取色、偏色、多点找色、找图、截图、点阵 OCR、免字库识别和通用 OCR。完整 API 请参阅 <a href=\"../../api/media/dm.md\">dm 图色与文字识别 API</a>。</p>\n<p>每个脚本实例独立维护输入源、图片缓存、冻结帧、字库槽位和识别参数。脚本结束或显式调用 <code>dm.close()</code> 后，相关资源才会释放。</p>\n",
+      "desc": "<p><code>dm</code> 是 Monkey King 的 Android 脚本级对象，提供取色、偏色、多点找色、找图、截图、点阵 OCR 和免字库识别。完整 API 请参阅 <a href=\"../../api/media/dm.md\">dm 图色与文字识别 API</a>。</p>\n<p>每个脚本实例独立维护输入源、图片缓存、冻结帧、字库槽位和识别参数。脚本结束或显式调用 <code>dm.close()</code> 后，相关资源才会释放。</p>\n",
       "modules": [
         {
           "textRaw": "输入源",
@@ -16,7 +16,7 @@
         {
           "textRaw": "返回值",
           "name": "返回值",
-          "desc": "<p>查找接口不再使用 PC 的 <code>intX/intY</code> 输出指针：</p>\n<ul>\n<li>单结果：<code>DmMatch | null</code>；</li>\n<li>多结果：<code>DmMatch[]</code>，未命中为空数组；</li>\n<li><code>DmMatch</code> 字段：<code>value</code>、<code>x</code>、<code>y</code>、<code>width</code>、<code>height</code>；</li>\n<li>OCR：<code>string</code> 或结构化 <code>DmMatch[]</code>；</li>\n<li><code>ocrAuto</code>：包含文字、置信度和四边形点的 block 数组。</li>\n</ul>\n",
+          "desc": "<p>查找接口不再使用 PC 的 <code>intX/intY</code> 输出指针：</p>\n<ul>\n<li>单结果：<code>DmMatch | null</code>；</li>\n<li>多结果：<code>DmMatch[]</code>，未命中为空数组；</li>\n<li><code>DmMatch</code> 字段：<code>value</code>、<code>x</code>、<code>y</code>、<code>width</code>、<code>height</code>；</li>\n<li>OCR：<code>string</code> 或结构化 <code>DmMatch[]</code>；</li>\n</ul>\n<p>通用模型识别使用独立 <code>ocr</code> 模块，见 <a href=\"ocr-auto.md\">独立 OCR 迁移指南</a>。</p>\n",
           "type": "module",
           "displayName": "返回值"
         },

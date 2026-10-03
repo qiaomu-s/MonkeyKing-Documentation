@@ -4656,14 +4656,6 @@
       "target": "docs/api/media/dm.md#api-symbol-ZG0ub2Ny"
     },
     {
-      "id": "coverage:dm.ocrAuto",
-      "patterns": [
-        "dm.ocrAuto"
-      ],
-      "status": "documented",
-      "target": "docs/api/media/dm.md#api-symbol-ZG0ub2NyQXV0bw"
-    },
-    {
       "id": "coverage:dm.ocrEx",
       "patterns": [
         "dm.ocrEx"

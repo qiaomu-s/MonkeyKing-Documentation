@@ -251,7 +251,7 @@ const contentDefinitions = [
   [undefined, 'reference/dm/image', 'DM 图色与找图', ['dmImage']],
   [undefined, 'reference/dm/dictionary', 'DM 明文字库', ['dmDictionary']],
   [undefined, 'reference/dm/text', 'DM 字库文字识别', ['dmText']],
-  [undefined, 'reference/dm/ocr-auto', 'DM 通用 OCR', ['dmOcrAuto']],
+  [undefined, 'reference/dm/ocr-auto', '独立 OCR 迁移指南', ['ocrMigration']],
   [undefined, 'reference/dm/compatibility', 'DM Android 兼容约定', ['dmCompatibility']],
   [undefined, 'reference/dm/examples', 'DM Java / JS 示例', ['dmExamples']],
   [undefined, 'reference/dm/vscode', 'VS Code 大漠字库工具', ['dmVscode']],

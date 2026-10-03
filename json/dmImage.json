@@ -1120,7 +1120,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1183,7 +1183,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1246,7 +1246,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1309,7 +1309,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1372,7 +1372,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1435,7 +1435,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1498,7 +1498,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1561,7 +1561,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1624,7 +1624,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1687,7 +1687,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1750,7 +1750,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1813,7 +1813,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1876,7 +1876,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },
@@ -1939,7 +1939,7 @@
             {
               "textRaw": "图片偏色与变体",
               "name": "图片偏色与变体",
-              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
+              "desc": "<p><code>delta</code> 使用六位 RGB 偏色（例如 <code>203040</code>），也可使用两位灰度偏色（例如 <code>20</code>）。普通找图相似度为 <code>0.1–1.0</code>；<code>findPicSim*</code> 使用 <code>0–100</code> 的整数相似率。带 <code>Ex</code> 返回全部命中，带 <code>S</code> 将结果值改为图片名，带 <code>Mem</code> 从 <code>DmBuffer</code> 或字节数组读取模板。</p>\n<p>所有十四个找图入口均接受八个参数，区域右下角包含在扫描范围内。<code>E</code> 与普通入口一样返回首个 <code>DmMatch | null</code>；五个 <code>Ex</code> / <code>ExS</code> 入口返回 <code>DmMatch[]</code>，未命中为空数组。<code>value</code> 是从 <code>0</code> 开始的模板编号，只有 <code>findPicS</code> 与 <code>findPicExS</code> 改为图片名；<code>x/y</code> 是输入图像内模板左上角，<code>width/height</code> 是模板尺寸。</p>\n<p>Android <code>DmMatch</code> 不提供每次命中的实际相似率字段；输入阈值不是输出分数。参考 PC 示例中的命中分数不能从本接口读取，不应把 <code>value</code> 当成分数。</p>\n",
               "type": "module",
               "displayName": "图片偏色与变体"
             },

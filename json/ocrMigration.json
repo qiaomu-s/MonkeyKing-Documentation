@@ -1,0 +1,28 @@
+{
+  "source": "..\\docs\\reference\\dm\\ocr-auto.md",
+  "modules": [
+    {
+      "textRaw": "独立 OCR 迁移指南",
+      "name": "独立_ocr_迁移指南",
+      "desc": "<p>通用模型识别使用独立 <code>ocr</code> 模块。DM 的 <code>dm.ocr</code>、<code>dm.ocrInFile</code>、<code>dm.ocrEx</code>、<code>dm.ocrExOne</code> 和正常字库识别继续使用 DM 点阵字库；它们不会自动切换到模型 OCR。迁移模型识别代码时，直接传入图片，不需要设置 DM 输入源。</p>\n",
+      "modules": [
+        {
+          "textRaw": "十二个识别入口",
+          "name": "十二个识别入口",
+          "desc": "<table>\n<thead>\n<tr>\n<th>模块</th>\n<th>文本快捷调用</th>\n<th>文本识别</th>\n<th>结构化检测</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>当前模式</td>\n<td><code>ocr(...)</code></td>\n<td><code>ocr.recognizeText(...)</code></td>\n<td><code>ocr.detect(...)</code></td>\n</tr>\n<tr>\n<td>ML Kit</td>\n<td><code>ocr.mlkit(...)</code></td>\n<td><code>ocr.mlkit.recognizeText(...)</code></td>\n<td><code>ocr.mlkit.detect(...)</code></td>\n</tr>\n<tr>\n<td>Paddle</td>\n<td><code>ocr.paddle(...)</code></td>\n<td><code>ocr.paddle.recognizeText(...)</code></td>\n<td><code>ocr.paddle.detect(...)</code></td>\n</tr>\n<tr>\n<td>Rapid</td>\n<td><code>ocr.rapid(...)</code></td>\n<td><code>ocr.rapid.recognizeText(...)</code></td>\n<td><code>ocr.rapid.detect(...)</code></td>\n</tr>\n</tbody>\n</table>\n<p>以上入口均同步识别。主模块默认使用 <code>mlkit</code>，可通过 <code>ocr.mode</code> 或单次 <code>options.mode</code> 切换；引擎子模块固定使用对应引擎。完整输入形式与依赖见 <a href=\"../../api/media/ocr.md\">OCR API</a>，引擎专属参数见 <a href=\"../../api/types/ocr-options.md\">OcrOptions</a>。</p>\n",
+          "type": "module",
+          "displayName": "十二个识别入口"
+        },
+        {
+          "textRaw": "迁移图片与结果",
+          "name": "迁移图片与结果",
+          "desc": "<p>需要文字时使用快捷调用或 <code>recognizeText</code>，返回 <code>string[]</code>。需要置信度与位置时使用 <code>detect</code>，返回 <code>OcrResult[]</code>，读取 <code>text</code>、<code>label</code>、<code>confidence</code> 和 Android 矩形 <code>bounds</code>；不要继续读取旧桥接结果的 <code>points</code> 或 <code>detectionConfidence</code>。</p>\n<pre><code class=\"lang-js\">// 在普通工作脚本运行；UI 脚本请使用工作线程。\nif (!images.requestScreenCapture(false)) throw new Error(&#39;未取得截图权限&#39;)\nconst frame = images.captureScreen()\ntry {\n  const results = ocr.rapid.detect(frame)\n  for (const result of results) {\n    const bounds = result.bounds\n    console.log(result.text, result.confidence,\n      bounds.left, bounds.top, bounds.right, bounds.bottom)\n  }\n} finally {\n  frame.recycle()\n}\n</code></pre>\n<p>也可传图片路径，或省略图片直接识别当前屏幕；省略图片仍需截图权限。区域使用 <code>{ region: [x, y, width, height] }</code>，检测结果的 <code>bounds</code> 属于原图坐标系。</p>\n<p>不要把旧桥接的 <code>maxSideLen</code>、<code>doAngle</code> 直接当作独立模块的选项。Rapid 只消费通用区域选项，Paddle 的尺寸设置使用 <code>detLongSize</code>，置信度设置使用 <code>scoreThreshold</code>；应依据各引擎文档重新配置。没有识别结果或引擎任务失败时可能返回 <code>[]</code>；错误参数、无效图片路径及依赖准备错误应按实际异常处理。空数组本身不能证明模型可用。</p>\n",
+          "type": "module",
+          "displayName": "迁移图片与结果"
+        }
+      ],
+      "type": "module",
+      "displayName": "独立 OCR 迁移指南"
+    }
+  ]
+}

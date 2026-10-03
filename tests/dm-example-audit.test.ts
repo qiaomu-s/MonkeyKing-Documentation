@@ -36,12 +36,12 @@ describe('internal DM reference example audit', () => {
       .map((symbol) => symbol.name)
     expect(audit.publish).toBe(false)
     expect(audit.visibility).toBe('internal-nonpublic')
-    expect(audit.entries).toHaveLength(114)
+    expect(audit.entries).toHaveLength(113)
     expect(audit.entries.map((entry) => entry.modern).sort()).toEqual(names.sort())
     expect(audit.entries.filter((entry) => entry.referenceStatus === 'verified')).toHaveLength(103)
     expect(audit.entries.filter((entry) => entry.referenceStatus === 'missing').map((entry) => entry.modern))
       .toEqual(['getScreenData'])
-    expect(audit.entries.filter((entry) => entry.referenceStatus === 'android-extension')).toHaveLength(10)
+    expect(audit.entries.filter((entry) => entry.referenceStatus === 'android-extension')).toHaveLength(9)
     for (const entry of audit.entries) {
       if (entry.referenceStatus === 'verified') {
         expect(entry.referenceEvidence?.available, entry.modern).toBe(true)

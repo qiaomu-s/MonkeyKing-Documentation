@@ -7160,16 +7160,6 @@
     },
     {
       "annotations": [],
-      "id": "dm.ocrAuto",
-      "kind": "function",
-      "name": "ocrAuto",
-      "overloads": [],
-      "owner": "dm",
-      "public": true,
-      "signatures": []
-    },
-    {
-      "annotations": [],
       "id": "dm.ocrEx",
       "kind": "function",
       "name": "ocrEx",

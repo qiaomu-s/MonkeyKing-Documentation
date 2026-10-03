@@ -654,16 +654,60 @@ if(p){
 
 ## images.findImageInRegion(img, template, x, y[, width, height, threshold])
 
-区域找图的简便方法. 相当于：
+支持选项对象与位置参数两种重载。Android Rhino 运行时将此入口与 `images.findImage`、`images.findPointByImage` 分派到同一实现，接受 2–7 个实参。
 
-```
-images.findImage(img, template, {
-    region: [x, y, width, height],
-    threshold: threshold
-})
+```ts
+images.findImageInRegion(
+  img: ImageWrapper | string,
+  template: ImageWrapper | string,
+  options?: {
+    region?: number[] | android.graphics.Rect | org.opencv.core.Rect
+    weakThreshold?: number
+    threshold?: number
+    similarity?: number
+    level?: number
+  },
+): org.opencv.core.Point | null
+
+images.findImageInRegion(
+  img: ImageWrapper | string,
+  template: ImageWrapper | string,
+  x: number,
+  y?: number,
+  width?: number,
+  height?: number,
+  threshold?: number,
+): org.opencv.core.Point | null
 ```
 
-该函数也可以作为全局函数使用.
+第三个参数是 JS 选项对象时使用对象重载；第三个参数是坐标时使用位置重载。`img` 和 `template` 都可传 `ImageWrapper` 或可读图片路径。命中返回模板左上角的 OpenCV `Point`，坐标属于原图；未命中返回 `null`。
+
+| 选项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `region` | 整张图片 | `[x, y, width, height]` 或 Android / OpenCV 矩形；数组省略宽高时使用图片剩余宽高。区域不得超出输入图片。 |
+| `weakThreshold` | `0.6` | 金字塔粗匹配阈值。 |
+| `threshold` | `0.9` | 模板匹配阈值，使用 `0–1` 浮点数。 |
+| `similarity` | 未设置 | 当前共享解析器将其转换为 `round(255 * (1 - similarity))` 后传给模板匹配；不能与 `threshold` 同时设置。模板找图建议直接使用 `threshold`。 |
+| `level` | `-1` | 金字塔层数；`-1` 使用自动策略。 |
+
+位置重载等价于传入 `{ region: [x, y, width, height], threshold }`；`y` 缺省时为 `0`，宽高缺省时使用图片剩余尺寸，阈值缺省为 `0.9`。位置重载不单独接受 `weakThreshold` 或 `level`，需要调整时使用对象重载。只传两张图片也受支持，识别整张图。该函数也可以作为全局 `findImageInRegion` 使用。
+
+```js
+// 图片路径会由运行时解码并释放临时图片。
+const point = images.findImageInRegion(
+  '/sdcard/Download/screen.png',
+  '/sdcard/Download/button.png',
+  { region: [0, 50, 400, 300], threshold: 0.8, weakThreshold: 0.6, level: -1 },
+)
+if (point !== null) console.log(point.x, point.y)
+
+const positional = images.findImageInRegion(
+  '/sdcard/Download/screen.png',
+  '/sdcard/Download/button.png',
+  0, 50, 400, 300, 0.8,
+)
+if (positional !== null) console.log(positional.x, positional.y)
+```
 
 ## images.matchTemplate(img, template, options)
 
@@ -1602,7 +1646,8 @@ console.log(typeof images.findImage);
 <!-- api-member-contract id="images.findImageInRegion" -->
 `images.findImageInRegion` · Rhino 2.0 示例：
 ```js
-console.log(typeof images.findImageInRegion);
+const point = images.findImageInRegion('/sdcard/Download/screen.png', '/sdcard/Download/button.png', { region: [0, 50, 400, 300], threshold: 0.8 });
+if (point !== null) console.log(point.x, point.y);
 ```
 
 <!-- api-member-contract id="images.findMultiColors" -->
